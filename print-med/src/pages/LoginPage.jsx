@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo from '../assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';
+import loginData from '../data/loginData.json';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -16,8 +17,12 @@ const LoginPage = () => {
     e.preventDefault();
     const { username, password } = credentials;
 
-    // Default credentials
-    if (username === 'admin' && password === 'admin') {
+    // Check if the credentials match any entry in loginData.json
+    const user = loginData.loginData.find(
+      (user) => user.username === username && user.password === password
+    );
+
+    if (user) {
       navigate('/dashboard'); // Redirect to dashboard on success
     } else {
       setError('Invalid username or password'); // Display error if credentials are wrong

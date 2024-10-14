@@ -1,0 +1,57 @@
+{
+    "patients": [
+      { 
+        "id": "001",
+        "firstName": "John",
+        "middleName": "Michael",
+        "lastName": "Doe",
+        "suffix": "Jr.",
+        "birthday": "1995-04-15",
+        "sex": "Male",
+        "address": "123 Elm St, Springfield",
+        "civilStatus": "Single",
+        "religion": "Christianity",
+        "phoneNumber": "09123456789" 
+      },
+      { 
+        "id": "002", 
+        "firstName": "Jane",
+        "middleName": "Anne",
+        "lastName": "Smith",
+        "suffix": "",
+        "birthday": "2005-02-20",
+        "sex": "Female",
+        "address": "456 Oak St, Springfield",
+        "civilStatus": "Single",
+        "religion": "Catholic",
+        "phoneNumber": "09198765432"
+      },
+      { 
+        "id": "003", 
+        "firstName": "Jane",
+        "middleName": "Anne",
+        "lastName": "Smith",
+        "suffix": "",
+        "birthday": "2005-02-20",
+        "sex": "Female",
+        "address": "456 Oak St, Springfield",
+        "civilStatus": "Single",
+        "religion": "Catholic",
+        "phoneNumber": "09198765432"
+      },
+      { 
+        "id": "004", 
+        "firstName": "Jane",
+        "middleName": "Anne",
+        "lastName": "Smith",
+        "suffix": "",
+        "birthday": "2005-02-20",
+        "sex": "Female",
+        "address": "456 Oak St, Springfield",
+        "civilStatus": "Single",
+        "religion": "Catholic",
+        "phoneNumber": "09198765432"
+      }
+    ]
+  }
+  

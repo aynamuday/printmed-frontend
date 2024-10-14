@@ -1,4 +1,25 @@
+import React, { useState, useEffect } from 'react';
+import opdFindings from '../data/opdFindings.json';
+
 const PatientDetails = ({ patient, onClose }) => {
+  useEffect(() => {
+
+    // Load findings for the selected patient
+    const patientFindings = opdFindings.find(finding => finding.patientId === patient.id);
+    if (patientFindings) {
+      setFindings(patientFindings.findings);
+    }
+  }, [patient]);
+
+  const handleAddFinding = () => {
+    if (newFinding.presumption && newFinding.dateConsulted) {
+      setFindings([...findings, newFinding]);
+      setNewFinding({ presumption: '', dateConsulted: '' }); // Reset new finding input
+    } else {
+      alert('Please fill out both fields.');
+    }
+  };
+  
     return (
       <div className="mt-4 p-4 bg-white shadow-lg rounded">
         <h1 className="text-xl font-bold">Patient No. {patient.id}</h1>
@@ -6,20 +27,26 @@ const PatientDetails = ({ patient, onClose }) => {
           <div className="w-1/2">
             <h2 className="text-lg font-semibold">Details</h2>
             <div className="mt-2">
-              <p>Name: <span className="font-medium">{patient.name}</span></p>
-              <p>Age: <span className="font-medium">{patient.age}</span></p>
-              <p>Sex: <span className="font-medium">Female</span></p>
-              <p>Address: <span className="font-medium">Blk 17 Lot 23 Silcas Southwoods, Biñan City, Laguna</span></p>
-              <p>Birthday: <span className="font-medium">September 9, 2003</span></p>
-              <p>Birthplace: <span className="font-medium">Parañaque City</span></p>
-              <p>Civil Status: <span className="font-medium">Married</span></p>
-              <p>Religion: <span className="font-medium">Catholic</span></p>
-              <p>Mobile Number: <span className="font-medium">09217376109</span></p>
+              <p>Name: <span className="font-medium">{`${patient.firstName} ${patient.middleName} ${patient.lastName}`}</span></p>
+              <p>Sex: <span className="font-medium">{patient.sex}</span></p>
+              <p>Address: <span className="font-medium">{patient.address}</span></p>
+              <p>Birthday: <span className="font-medium">{patient.birthday}</span></p>
+              <p>Civil Status: <span className="font-medium">{patient.civilStatus}</span></p>
+              <p>Religion: <span className="font-medium">{patient.religion}</span></p>
+              <p>Mobile Number: <span className="font-medium">{patient.phoneNumber}</span></p>
             </div>
           </div>
   
           <div className="w-1/2">
-            <h2 className="text-lg font-semibold">Findings</h2>
+            <div className="grid grid-cols-2 gap-4 bg-red-500">
+              <h2 className="text-lg font-semibold">OPD Findings</h2>
+              <button
+                className="bg-blue-500 text-black px-2 py-1 rounded ml-2"
+                onClick={handleAddFinding}
+              >
+                <i className="bi bi-plus"></i>
+              </button>
+            </div>
             <div className="mt-2">
               <table className="min-w-full">
                 <thead>

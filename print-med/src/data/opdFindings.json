@@ -1,0 +1,52 @@
+[
+    {
+      "patientId": 1,
+      "findings": [
+        {
+          "presumption": "Migraine",
+          "dateConsulted": "08-09-2021"
+        },
+        {
+          "presumption": "Flu",
+          "dateConsulted": "10-15-2021"
+        }
+      ]
+    },
+    {
+      "patientId": 2,
+      "findings": [
+        {
+          "presumption": "Cough",
+          "dateConsulted": "09-20-2021"
+        }
+      ]
+    },
+    {
+      "patientId": 3,
+      "findings": [
+        {
+          "presumption": "Cough",
+          "dateConsulted": "09-20-2021"
+        }
+      ]
+    },
+    {
+      "patientId": 4,
+      "findings": [
+        {
+          "presumption": "Cough",
+          "dateConsulted": "09-20-2021"
+        }
+      ]
+    },
+    {
+      "patientId": 5,
+      "findings": [
+        {
+          "presumption": "Cough",
+          "dateConsulted": "09-20-2021"
+        }
+      ]
+    }
+  ]
+  

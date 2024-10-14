@@ -37,13 +37,13 @@ const Sidebar = () => {
           <hr className="my-2 text-gray-600" />
 
           <div>
-            <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700">
+            {/* <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700">
               <i className="bi bi-search text-sm"></i>
               <input
                 className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
                 placeholder="Search"
               />
-            </div>
+            </div> */}
 
             <NavLink to="/dashboard" className={linkClass}>
               <i className="bi bi-house-door-fill"></i>
@@ -55,7 +55,7 @@ const Sidebar = () => {
               <span className="text-[20px] ml-4 text-gray-200">Patient Records</span>
             </NavLink>
 
-            <NavLink to="/add-record" className={linkClass}>
+            <NavLink to="/add-records" className={linkClass}>
               <i className="bi bi-person-plus-fill"></i>
               <span className="text-[20px] ml-4 text-gray-200">Add Record</span>
             </NavLink>
