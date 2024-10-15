@@ -1,57 +1,61 @@
 {
-    "patients": [
-      { 
-        "id": "001",
-        "firstName": "John",
-        "middleName": "Michael",
-        "lastName": "Doe",
-        "suffix": "Jr.",
-        "birthday": "1995-04-15",
-        "sex": "Male",
-        "address": "123 Elm St, Springfield",
-        "civilStatus": "Single",
-        "religion": "Christianity",
-        "phoneNumber": "09123456789" 
-      },
-      { 
-        "id": "002", 
-        "firstName": "Jane",
-        "middleName": "Anne",
-        "lastName": "Smith",
-        "suffix": "",
-        "birthday": "2005-02-20",
-        "sex": "Female",
-        "address": "456 Oak St, Springfield",
-        "civilStatus": "Single",
-        "religion": "Catholic",
-        "phoneNumber": "09198765432"
-      },
-      { 
-        "id": "003", 
-        "firstName": "Jane",
-        "middleName": "Anne",
-        "lastName": "Smith",
-        "suffix": "",
-        "birthday": "2005-02-20",
-        "sex": "Female",
-        "address": "456 Oak St, Springfield",
-        "civilStatus": "Single",
-        "religion": "Catholic",
-        "phoneNumber": "09198765432"
-      },
-      { 
-        "id": "004", 
-        "firstName": "Jane",
-        "middleName": "Anne",
-        "lastName": "Smith",
-        "suffix": "",
-        "birthday": "2005-02-20",
-        "sex": "Female",
-        "address": "456 Oak St, Springfield",
-        "civilStatus": "Single",
-        "religion": "Catholic",
-        "phoneNumber": "09198765432"
-      }
-    ]
-  }
-  
+  "patients": [
+    {
+      "id": "1",
+      "firstName": "John",
+      "middleName": "Michael",
+      "lastName": "Doe",
+      "suffix": "Jr.",
+      "birthday": "1995-04-15",
+      "sex": "Male",
+      "address": "123 Elm St, Springfield",
+      "civilStatus": "Single",
+      "religion": "Christianity",
+      "phoneNumber": "09123456789",
+      "physician": ""
+    },
+    {
+      "id": "2",
+      "firstName": "Jane",
+      "middleName": "Anne",
+      "lastName": "Smith",
+      "suffix": "",
+      "birthday": "2005-02-20",
+      "sex": "Female",
+      "address": "456 Oak St, Springfield",
+      "civilStatus": "Single",
+      "religion": "Catholic",
+      "phoneNumber": "09198765432",
+      "physician": ""
+    },
+    {
+      "id": "3",
+      "firstName": "NICO",
+      "middleName": "SALIDO",
+      "lastName": "AMPOLOQUIO",
+      "suffix": "",
+      "birthday": "2003-01-08",
+      "sex": "Male",
+      "address": "B16 L29 P1 Southville 5 Timbao, Binan City, Laguna",
+      "civilStatus": "single",
+      "religion": "Catholic",
+      "phoneNumber": "09165945462",
+      "physician": "Physician 3"
+    },
+    {
+      "id": 4,
+      "firstName": "Max",
+      "middleName": "White",
+      "lastName": "Cage",
+      "suffix": "V",
+      "birthday": "1990-01-23",
+      "sex": "Female",
+      "address": "123 Brgy. Saksakan",
+      "civilStatus": "Widowed",
+      "religion": "Iglesia",
+      "phoneNumber": "09874561358",
+      "doctor": "",
+      "physician": "Physician 2"
+    }
+  ]
+}

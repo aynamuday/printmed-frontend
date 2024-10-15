@@ -1,56 +1,98 @@
 import React, { useState } from 'react';
 import PatientDetails from '../components/PatientDetails';
 import patientsName from '../data/patientsName.json';
+import opdFindings from '../data/opdFindings.json'; // Importing the opdFindings data
 
 const PatientRecord = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedFinding, setSelectedFinding] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [patientToView, setPatientToView] = useState(null);
   const [password, setPassword] = useState('');
+  const [patientToView, setPatientToView] = useState(null);
 
-  const [patientList, setPatientList] = useState(patientsName.patients);
+  const [patientList] = useState(patientsName.patients);
 
   const handleView = (patient) => {
     setPatientToView(patient);
-    setShowPasswordModal(true);
+    setShowPasswordModal(true); // Show password modal
   };
 
   const verifyPassword = () => {
     if (password === 'admin') {
-      setSelectedPatient(patientToView);
+      setSelectedPatient(patientToView); // Select patient after successful password verification
       setShowPasswordModal(false);
-      setPassword(''); // Reset password field after verification
+      setPassword(''); // Reset password field
     } else {
       alert('Incorrect password!');
     }
   };
 
-  const handleClose = () => {
-    setSelectedPatient(null);
+  const handleFindingClick = (finding) => {
+    setSelectedFinding(finding); // Show specific OPD finding details
   };
 
-  const verifyFingerprint = () => {
-    const isVerified = window.confirm("Simulating: Is the fingerprint scan successful?");
-    return isVerified;
+  const handleClose = () => {
+    setSelectedPatient(null);
+    setSelectedFinding(null);
+  };
+
+  const getPatientFindings = (patientId) => {
+    const patientFindings = opdFindings.find((entry) => entry.patientId === patientId);
+    return patientFindings ? patientFindings.findings : [];
   };
 
   return (
     <div className="w-full mr-10 md:w-[75%] md:ml-[25%]">
       <div className="grid grid-cols-2 gap-4 mt-10">
-          <h2 className="text-2xl mb-4 mt-4">Patient Records</h2>
-            <div className="flex items-center rounded-md px-4 duration-300 cursor-pointer bg-[#D9D9D9] w-[90%] h-[80%]">
-              <i className="bi bi-search text-sm"></i>
-              <input
-                className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
-                placeholder="Search"
-              />
-            </div>
+        <h2 className="text-2xl mb-4 mt-4">Patient Records</h2>
+        <div className="flex items-center rounded-md px-4 duration-300 cursor-pointer bg-[#D9D9D9] w-[90%] h-[80%]">
+          <i className="bi bi-search text-sm"></i>
+          <input
+            className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
+            placeholder="Search"
+          />
+        </div>
       </div>
 
-      {/* Conditional Rendering: Show patient records or details */}
-      {selectedPatient ? (
-        <PatientDetails patient={selectedPatient} onClose={handleClose} />
+      {/* Conditional Rendering: Show patient records, patient details or OPD finding details */}
+      {selectedFinding ? (
+        <div className="bg-white p-4 shadow rounded-lg">
+          <h3 className="text-xl mb-4">OPD Finding Details</h3>
+          <p><strong>Presumption:</strong> {selectedFinding.presumption}</p>
+          <p><strong>Date Consulted:</strong> {selectedFinding.dateConsulted}</p>
+          <p><strong>Blood Pressure:</strong> {selectedFinding.details.bloodPressure}</p>
+          <p><strong>Temperature:</strong> {selectedFinding.details.temperature}</p>
+          <p><strong>Weight:</strong> {selectedFinding.details.weight}</p>
+          <p><strong>Height:</strong> {selectedFinding.details.height}</p>
+          <p><strong>Diagnosis:</strong> {selectedFinding.details.diagnosis}</p>
+          <p><strong>Medication:</strong> {selectedFinding.details.medication}</p>
+          <p><strong>Advice:</strong> {selectedFinding.details.advice}</p>
+          <p><strong>Physician:</strong> {selectedFinding.details.physician}</p>
+          <p><strong>Payment Amount:</strong> {selectedFinding.details.paymentAmount}</p>
+          <button
+            className="bg-gray-300 px-4 py-2 rounded mt-4"
+            onClick={handleClose}
+          >
+            Close
+          </button>
+        </div>
+      ) : selectedPatient ? (
+        <div className="bg-white p-4 shadow rounded-lg">
+          <PatientDetails patient={selectedPatient} onClose={handleClose} />
+          {/* <h3 className="text-xl mb-4 mt-4">OPD Findings</h3> */}
+          <ul>
+            {getPatientFindings(selectedPatient.id).map((finding, index) => (
+              <li key={index} className="mb-2">
+                <button
+                  className="text-blue-500 underline"
+                  onClick={() => handleFindingClick(finding)}
+                >
+                  {finding.presumption} - {finding.dateConsulted}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
         <table className="min-w-[95%] bg-white shadow rounded-lg">
           <thead>
@@ -71,7 +113,7 @@ const PatientRecord = () => {
                 <td className="py-2 px-4">{`${patient.firstName} ${patient.middleName} ${patient.lastName} ${patient.suffix}`}</td>
                 <td className="py-2 px-4">{patient.birthday}</td>
                 <td className="py-2 px-4">{patient.sex}</td>
-                <td className="py-2 px-4">N/A</td>
+                <td className="py-2 px-4">{patient.physician}</td>
                 <td className="py-2 px-4">N/A</td>
                 <td className="py-2 px-4">
                   <button
@@ -109,24 +151,6 @@ const PatientRecord = () => {
               <button
                 className="bg-gray-300 px-4 py-2 rounded"
                 onClick={() => setShowPasswordModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-md shadow-md">
-            <h2 className="text-xl mb-4">Fingerprint Verification</h2>
-            <p>Place your finger on the scanner to verify your identity.</p>
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-gray-300 px-4 py-2 rounded"
-                onClick={handleCancelDelete}
               >
                 Cancel
               </button>

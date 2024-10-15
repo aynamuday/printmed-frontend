@@ -11,6 +11,7 @@ import PatientRecordsPage from './pages/PatientRecordsPage';
 import AddRecordPage from './pages/AddRecordPage';
 import SettingsPage from './pages/SettingsPage';
 import Queue from './pages/Queue';
+import { UserProvider } from './components/UserContext';
 
 
 
@@ -30,7 +31,11 @@ const App = () => {
   );
 
   
-  return <RouterProvider router={router} />;
+  return (
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
+  )
 };
 
 export default App;

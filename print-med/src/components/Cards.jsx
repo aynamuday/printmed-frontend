@@ -23,6 +23,9 @@ const Cards = () => {
             <p className="text-2xl font-bold">{dashboardInfo.totalPayments}</p>
           </div>
         </div>
+        <div className="grid grid-cols-1 gap-4 mt-10">
+          yung video ng hospital dito
+        </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import logo from '../assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';
-import loginData from '../data/loginData.json';
+import usersData from '../data/usersData.json';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -18,7 +18,7 @@ const LoginPage = () => {
     const { username, password } = credentials;
 
     // Check if the credentials match any entry in loginData.json
-    const user = loginData.loginData.find(
+    const user = usersData.users.find(
       (user) => user.username === username && user.password === password
     );
 

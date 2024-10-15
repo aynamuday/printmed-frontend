@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../assets/images/logo.png';
 
 const Forms = () => {
@@ -13,7 +13,19 @@ const Forms = () => {
     civilStatus: '',
     religion: '',
     phoneNumber: '',
+    doctor: '', // Add the doctor field
   });
+
+  const [patients, setPatients] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to handle submission status
+
+  useEffect(() => {
+    // Fetch existing patients to determine the next ID
+    fetch('http://localhost:8000/patients')
+      .then((response) => response.json())
+      .then((data) => setPatients(data));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,29 +38,56 @@ const Forms = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Prepare the new patient record
-    const newPatient = {
-      id: String(Date.now()), // Generate a unique ID based on timestamp
-      ...formData,
-    };
+    // Prompt the user to confirm the information
+    const confirmMessage = `Is all information correct?\n\n${JSON.stringify(formData, null, 2)}`;
+    
+    if (window.confirm(confirmMessage)) {
+      setIsSubmitting(true); // Set submitting state
 
-    // Save the new patient to patientRecords.json (placeholder logic)
-    // You would need an API call or another method to actually save this to a file
-    console.log('New Patient Record:', newPatient);
+      // Calculate the next ID based on existing patients
+      const newID = patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 0;
 
-    // Reset form after submission
-    setFormData({
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      suffix: '',
-      birthday: '',
-      sex: '',
-      address: '',
-      civilStatus: '',
-      religion: '',
-      phoneNumber: '',
-    });
+      // Prepare the new patient record with the calculated ID
+      const newPatient = {
+        id: newID, // Set the calculated ID
+        ...formData,
+      };
+
+      // Save the new patient to patientsName.json using json-server
+      fetch('http://localhost:8000/patients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPatient),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('New Patient Record:', data);
+          setSuccessMessage('Patient added successfully!'); // Show success message
+          // Reset form after submission
+          setFormData({
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+            birthday: '',
+            sex: '',
+            address: '',
+            civilStatus: '',
+            religion: '',
+            phoneNumber: '',
+            doctor: '', // Reset the doctor field
+          });
+          // Update patients list with the new patient
+          setPatients((prevPatients) => [...prevPatients, data]);
+          setIsSubmitting(false); // Reset submitting state
+        })
+        .catch((error) => {
+          console.error('Error adding patient:', error);
+          setIsSubmitting(false); // Reset submitting state on error
+        });
+    }
   };
 
   return (
@@ -56,7 +95,13 @@ const Forms = () => {
       <div className="w-full md:w-[70%] md:ml-[20%]">
         <h2 className="text-2xl font-semibold text-center mb-4">Add Patient Record</h2>
       </div>
-      
+
+      {successMessage && (
+        <div className="mb-4 text-green-600 text-center">
+          {successMessage}
+        </div>
+      )}
+
       <div className="w-full md:w-[70%] md:ml-[20%] bg-gray-100 p-6 rounded-lg shadow-md">
         <div className="p-2.5 mt-1 flex justify-center items-center rounded-md bg-gray-100">
           <img src={logo} className="h-20" alt="Logo" />
@@ -117,14 +162,18 @@ const Forms = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Sex:</label>
-            <input
-              type="text"
+            <select
               name="sex"
               value={formData.sex}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               required
-            />
+            >
+              <option value="" disabled>Select Your Sex</option> {/* Default option */}
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Address:</label>
@@ -139,14 +188,21 @@ const Forms = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Civil Status:</label>
-            <input
-              type="text"
+            <select
               name="civilStatus"
               value={formData.civilStatus}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               required
-            />
+            >
+              <option value="" disabled>Select Your Civil Status</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Its Complicated">It's Complicated</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Separated">Separated</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Religion:</label>
@@ -169,15 +225,28 @@ const Forms = () => {
               required
             />
           </div>
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700">Biometrics:</label>
-            <button className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-green-600 text-white py-2">
-              Scan Fingerprint
-            </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Assigned Physician:</label>
+            <select
+              name="physician" // Update the name to match the selected value
+              value={formData.physician}
+              onChange={handleChange}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+              required
+            >
+              <option value="" disabled>Select Your Physician</option> {/* Default option */}
+              <option value="Physician 1">Physician 1</option>
+              <option value="Physician 2">Physician 2</option>
+              <option value="Physician 3">Physician 3</option>
+            </select>
           </div>
-          <div className="mt-4 text-center col-span-3">
-            <button type="submit" className="text-white px-4 py-2 rounded bg-[#6CB6AD]">
-              Done
+          <div className="col-span-3 flex justify-center mt-4">
+            <button
+              type="submit"
+              className={`bg-blue-500 text-white px-4 py-2 rounded-md shadow ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Patient Record'}
             </button>
           </div>
         </form>
