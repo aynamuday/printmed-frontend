@@ -27,35 +27,26 @@
       "religion": "Catholic",
       "phoneNumber": "09198765432",
       "physician": ""
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "username": "admin1",
+      "password": "admin123",
+      "role": "admin"
     },
     {
-      "id": "3",
-      "firstName": "NICO",
-      "middleName": "SALIDO",
-      "lastName": "AMPOLOQUIO",
-      "suffix": "",
-      "birthday": "2003-01-08",
-      "sex": "Male",
-      "address": "B16 L29 P1 Southville 5 Timbao, Binan City, Laguna",
-      "civilStatus": "single",
-      "religion": "Catholic",
-      "phoneNumber": "09165945462",
-      "physician": "Physician 3"
+      "id": 2,
+      "username": "doctor1",
+      "password": "doctor123",
+      "role": "doctor"
     },
     {
-      "id": 4,
-      "firstName": "Max",
-      "middleName": "White",
-      "lastName": "Cage",
-      "suffix": "V",
-      "birthday": "1990-01-23",
-      "sex": "Female",
-      "address": "123 Brgy. Saksakan",
-      "civilStatus": "Widowed",
-      "religion": "Iglesia",
-      "phoneNumber": "09874561358",
-      "doctor": "",
-      "physician": "Physician 2"
+      "id": 3,
+      "username": "nurse1",
+      "password": "nurse123",
+      "role": "nurse"
     }
   ]
 }
