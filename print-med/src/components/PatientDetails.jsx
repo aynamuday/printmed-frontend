@@ -144,6 +144,7 @@ const PatientDetails = ({ patient, onClose }) => {
             <p>Civil Status: <span className="font-medium">{patient.civilStatus}</span></p>
             <p>Religion: <span className="font-medium">{patient.religion}</span></p>
             <p>Mobile Number: <span className="font-medium">{patient.phoneNumber}</span></p>
+            <p>Physician: <span className="font-medium">{patient.physician}</span></p>
           </div>
         </div>
 

@@ -31,19 +31,19 @@
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "username": "admin1",
       "password": "admin123",
       "role": "admin"
     },
     {
-      "id": 2,
+      "id": "2",
       "username": "doctor1",
       "password": "doctor123",
       "role": "doctor"
     },
     {
-      "id": 3,
+      "id": "3",
       "username": "nurse1",
       "password": "nurse123",
       "role": "nurse"

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import PatientDetails from '../components/PatientDetails';
 import patientsName from '../data/patientsName.json';
 import opdFindings from '../data/opdFindings.json'; // Importing the opdFindings data
+import { useUser } from '../components/UserContext';
 
 const PatientRecord = () => {
+  const { currentUser } = useUser(); // Access the currentUser
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedFinding, setSelectedFinding] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -17,8 +19,17 @@ const PatientRecord = () => {
     setShowPasswordModal(true); // Show password modal
   };
 
+  // const verifyPassword = () => {
+  //   if (password === 'admin') {
+  //     setSelectedPatient(patientToView); // Select patient after successful password verification
+  //     setShowPasswordModal(false);
+  //     setPassword(''); // Reset password field
+  //   } else {
+  //     alert('Incorrect password!');
+  //   }
+  // };
   const verifyPassword = () => {
-    if (password === 'admin') {
+    if (password === currentUser.password) { // Use currentUser password
       setSelectedPatient(patientToView); // Select patient after successful password verification
       setShowPasswordModal(false);
       setPassword(''); // Reset password field
@@ -139,7 +150,7 @@ const PatientRecord = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="border border-gray-300 p-2 rounded w-full"
-              placeholder="Enter admin password"
+              placeholder="Enter your password"
             />
             <div className="flex justify-end mt-4">
               <button

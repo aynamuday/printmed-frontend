@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/images/logo.png';
+import { useUser } from '../components/UserContext';
 
 const Forms = () => {
   const [formData, setFormData] = useState({
@@ -13,19 +14,28 @@ const Forms = () => {
     civilStatus: '',
     religion: '',
     phoneNumber: '',
-    doctor: '', // Add the doctor field
+    physician: '', // Add the physician field
   });
 
   const [patients, setPatients] = useState([]);
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
   const [isSubmitting, setIsSubmitting] = useState(false); // State to handle submission status
+  const { currentUser } = useUser(); // State for current user
 
   useEffect(() => {
     // Fetch existing patients to determine the next ID
     fetch('http://localhost:8000/patients')
       .then((response) => response.json())
       .then((data) => setPatients(data));
-  }, []);
+
+    // Fetch the current user (this could be from an API, local storage, or context)
+    if (currentUser) {
+      setFormData(prevData => ({
+        ...prevData,
+        physician: currentUser.username, // Set physician as the currentUser's username
+      }));
+    }
+  }, [currentUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,7 +87,7 @@ const Forms = () => {
             civilStatus: '',
             religion: '',
             phoneNumber: '',
-            doctor: '', // Reset the doctor field
+            physician: '', // Reset the doctor field to the current user
           });
           // Update patients list with the new patient
           setPatients((prevPatients) => [...prevPatients, data]);
@@ -227,18 +237,15 @@ const Forms = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Assigned Physician:</label>
-            <select
-              name="physician" // Update the name to match the selected value
+            <input
+              type="text"
+              name="physician"
               value={formData.physician}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+              disabled // Make the input read-only or remove this if you want to keep it editable
               required
-            >
-              <option value="" disabled>Select Your Physician</option> {/* Default option */}
-              <option value="Physician 1">Physician 1</option>
-              <option value="Physician 2">Physician 2</option>
-              <option value="Physician 3">Physician 3</option>
-            </select>
+            />
           </div>
           <div className="col-span-3 flex justify-center mt-4">
             <button
