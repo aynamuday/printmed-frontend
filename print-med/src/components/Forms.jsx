@@ -216,13 +216,20 @@ const Forms = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Religion:</label>
-            <input
-              type="text"
+            <select
               name="religion"
               value={formData.religion}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-            />
+              required
+            >
+              <option value="" disabled>Select Your Religion</option>
+              <option value="Roman Catholic">Roman Catholic</option>
+              <option value="Muslim">Muslim</option>
+              <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+              <option value="Jehovas Witnesses">Jehovas Witnesses</option>
+              <option value="Born Again">Born Again</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number:</label>
