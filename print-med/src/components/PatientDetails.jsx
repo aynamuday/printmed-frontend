@@ -52,14 +52,14 @@ const PatientDetails = ({ patient, onClose }) => {
 
   const handleFingerprintVerification = () => {
     // Simulate fingerprint verification
-    const success = true; // Replace this with real fingerprint verification logic
+    const success = false; // Replace this with real fingerprint verification logic
 
     if (success) {
       saveFinding(); // Save finding if fingerprint is verified
     } else {
       alert('Fingerprint verification failed.');
     }
-    setShowFingerprintModal(false);
+    setShowFingerprintModal(true);
   };
 
   const saveFinding = () => {

@@ -1,12 +1,51 @@
 import React, { useState } from 'react';
 
-const AddFindingForm = ({ newFinding, setNewFinding, onAddFinding, onCancel, displayDate, showForm, setShowForm }) => {
+const AddFindingForm = ({
+  newFinding,
+  setNewFinding,
+  onAddFinding, // Function for submitting the new finding
+  onCancel,
+  displayDate,
+  showForm,
+  setShowForm,
+  patientId, // ID of the patient to update
+  existingFindings // Existing findings of the patient
+}) => {
+  // Handle input changes for each form field
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewFinding((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleAddFinding = async () => {
+    try {
+      // Make a PATCH request to update the specific patient's opdFindings array
+      const response = await fetch(`http://localhost:8000/patients/${patientId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          opdFindings: [...existingFindings, newFinding], // Append new finding to the opdFindings array
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update patient data');
+      }
+
+      const updatedPatient = await response.json();
+      console.log('Patient updated successfully:', updatedPatient);
+
+      // Clear form and hide it after successful submission
+      setShowForm(false);
+      setNewFinding({}); // Reset form fields
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -156,7 +195,7 @@ const AddFindingForm = ({ newFinding, setNewFinding, onAddFinding, onCancel, dis
 
           {/* Action Buttons */}
           <div className="flex mt-4">
-            <button onClick={onAddFinding} className="bg-green-500 text-white px-4 py-2 rounded">Add Finding</button>
+            <button onClick={handleAddFinding} className="bg-green-500 text-white px-4 py-2 rounded">Add Finding</button>
             <button onClick={onCancel} className="ml-4 bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
           </div>
         </div>

@@ -12,7 +12,8 @@
       "civilStatus": "Single",
       "religion": "Christianity",
       "phoneNumber": "09123456789",
-      "physician": ""
+      "physician": "",
+      "opdFindings": []
     },
     {
       "id": "2",
@@ -26,7 +27,23 @@
       "civilStatus": "Single",
       "religion": "Catholic",
       "phoneNumber": "09198765432",
-      "physician": ""
+      "physician": "",
+      "opdFindings": []
+    },
+    {
+      "id": 3,
+      "firstName": "Janet",
+      "middleName": "Salido",
+      "lastName": "Ampoloquio",
+      "suffix": "",
+      "birthday": "1975-02-15",
+      "sex": "Female",
+      "address": "Blk 16 Lot 29 Phase 1 Southville 5 Timbao",
+      "civilStatus": "Married",
+      "religion": "Roman Catholic",
+      "phoneNumber": "09483309614",
+      "physician": "doctor1",
+      "opdFindings": []
     }
   ],
   "users": [
