@@ -38,7 +38,7 @@ const Sidebar = () => {
 
           <div>
 
-            <NavLink to="/dashboard" className={linkClass}>
+            <NavLink to="/" className={linkClass}>
               <i className="bi bi-house-door-fill"></i>
               <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
             </NavLink>
@@ -58,10 +58,60 @@ const Sidebar = () => {
               <span className="text-[20px] ml-4 text-gray-200">Settings</span>
             </NavLink>
 
+            <NavLink to="/queue-view" className={linkClass}>
+              <i className="bi bi-inbox-fill"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Queue - View</span>
+            </NavLink>
+
             <NavLink to="/queue" className={linkClass}>
               <i className="bi bi-inbox-fill"></i>
               <span className="text-[20px] ml-4 text-gray-200">Queue</span>
             </NavLink>
+
+            <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600">
+              <i className="bi bi-box-arrow-in-right"></i>
+              <Link to='/' className="text-[20px] ml-4 text-gray-200">Logout</Link>
+            </div>
+
+            <NavLink to="/dashboard-admin" className={linkClass}>
+              <i className="bi bi-house-door-fill"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Dashboard - Admin</span>
+            </NavLink>
+
+            <NavLink to="/department" className={linkClass}>
+              <i className="bi bi-building"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Department</span>
+            </NavLink>
+
+            <NavLink to="/user-management" className={linkClass}>
+              <i class="bi bi-people"></i>
+              <span className="text-[20px] ml-4 text-gray-200">User Management</span>
+            </NavLink>
+
+            <NavLink to="/settings" className={linkClass}>
+              <i className="bi bi-gear-fill"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+            </NavLink>
+
+            <NavLink to="/reports" className={linkClass}>
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Reports</span>
+            </NavLink>
+
+            <NavLink to="/audit" className={linkClass}>
+              <i class="bi bi-journal-check"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Audit</span>
+            </NavLink>
+
+            <NavLink to="/add-account" className={linkClass}>
+              <i class="bi bi-plus-circle"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Add Account</span>
+            </NavLink>      
+
+            <NavLink to="/queueiview" className={linkClass}>
+              <i className="bi bi-inbox-fill"></i>
+              <span className="text-[20px] ml-4 text-gray-200">Queue - View</span>
+            </NavLink>      
 
             <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600">
               <i className="bi bi-box-arrow-in-right"></i>

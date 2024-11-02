@@ -161,110 +161,110 @@ const Forms = () => {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               />
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Birthday:</label>
-            <input
-              type="date"
-              name="birthday"
-              value={formData.birthday}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Sex:</label>
-            <select
-              name="sex"
-              value={formData.sex}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            >
-              <option value="" disabled>Select Your Sex</option> {/* Default option */}
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address:</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Civil Status:</label>
-            <select
-              name="civilStatus"
-              value={formData.civilStatus}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            >
-              <option value="" disabled>Select Your Civil Status</option>
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Widowed">Widowed</option>
-              <option value="Its Complicated">It's Complicated</option>
-              <option value="Divorced">Divorced</option>
-              <option value="Separated">Separated</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Religion:</label>
-            <select
-              name="religion"
-              value={formData.religion}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            >
-              <option value="" disabled>Select Your Religion</option>
-              <option value="Roman Catholic">Roman Catholic</option>
-              <option value="Muslim">Muslim</option>
-              <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
-              <option value="Jehovas Witnesses">Jehovas Witnesses</option>
-              <option value="Born Again">Born Again</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number:</label>
-            <input
-              type="text"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Assigned Physician:</label>
-            <input
-              type="text"
-              name="physician"
-              value={formData.physician}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-              disabled // Make the input read-only or remove this if you want to keep it editable
-              required
-            />
-          </div>
-          <div className="col-span-3 flex justify-center mt-4">
-            <button
-              type="submit"
-              className={`bg-blue-500 text-white px-4 py-2 rounded-md shadow ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : 'Save Patient Record'}
-            </button>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Birthday:</label>
+              <input
+                type="date"
+                name="birthday"
+                value={formData.birthday}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Sex:</label>
+              <select
+                name="sex"
+                value={formData.sex}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              >
+                <option value="" disabled>Select Sex</option> {/* Default option */}
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Address:</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              />
+            </div>
+            <div className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700">Civil Status:</label>
+              <select
+                name="civilStatus"
+                value={formData.civilStatus}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              >
+                <option value="" disabled>Select Status</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Its Complicated">It's Complicated</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Separated">Separated</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Religion:</label>
+              <select
+                name="religion"
+                value={formData.religion}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              >
+                <option value="" disabled>Select Your Religion</option>
+                <option value="Roman Catholic">Roman Catholic</option>
+                <option value="Muslim">Muslim</option>
+                <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                <option value="Jehovas Witnesses">Jehovas Witnesses</option>
+                <option value="Born Again">Born Again</option>
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Phone Number:</label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                required
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Assigned Physician:</label>
+              <input
+                type="text"
+                name="physician"
+                value={formData.physician}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                disabled // Make the input read-only or remove this if you want to keep it editable
+                required
+              />
+            </div>
+            <div className="col-span-1 flex justify-center mt-4">
+              <button
+                type="submit"
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md shadow ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Patient Record'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

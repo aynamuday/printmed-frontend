@@ -13,7 +13,22 @@
       "religion": "Christianity",
       "phoneNumber": "09123456789",
       "physician": "",
-      "opdFindings": []
+      "opdFindings": [
+        {
+          "presumption": "as",
+          "dateConsulted": "2024-10-28",
+          "bloodPressure": "sa",
+          "temperature": "sa",
+          "weight": "sas",
+          "height": "asa",
+          "diagnosis": "sasa",
+          "medication": "sasas",
+          "advice": "sas",
+          "physician": "Nico",
+          "paymentAmount": "1000",
+          "patientId": "1"
+        }
+      ]
     },
     {
       "id": "2",
@@ -31,7 +46,7 @@
       "opdFindings": []
     },
     {
-      "id": 3,
+      "id": "3",
       "firstName": "Janet",
       "middleName": "Salido",
       "lastName": "Ampoloquio",
@@ -43,7 +58,21 @@
       "religion": "Roman Catholic",
       "phoneNumber": "09483309614",
       "physician": "doctor1",
-      "opdFindings": []
+      "opdFindings": [
+        {
+          "presumption": "asa",
+          "dateConsulted": "2024-10-28",
+          "bloodPressure": "saas",
+          "temperature": "sa",
+          "weight": "asa",
+          "height": "sa",
+          "diagnosis": "sasa",
+          "medication": "assa",
+          "advice": "asa",
+          "physician": "asas",
+          "paymentAmount": "5000"
+        }
+      ]
     }
   ],
   "users": [

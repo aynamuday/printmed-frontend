@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import opdFindings from '../data/opdFindings.json';
+//import opdFindings from '../data/opdFindings.json';
 
 const PatientDetails = ({ patient, onClose }) => {
   const [findings, setFindings] = useState([]);
@@ -34,9 +34,9 @@ const PatientDetails = ({ patient, onClose }) => {
     setNewFinding((prev) => ({ ...prev, dateConsulted: formattedDate }));
     setDisplayDate(displayFormattedDate);
 
-    const patientFindings = opdFindings.find(finding => finding.patientId === patient.id);
-    if (patientFindings) {
-      setFindings(patientFindings.findings);
+    //const patient = opdFindings.find(finding => finding.patientId === patient.id);
+    if (patient) {
+      setFindings(patient.opdFindings);
     }
   }, [patient]);
 
@@ -52,34 +52,53 @@ const PatientDetails = ({ patient, onClose }) => {
 
   const handleFingerprintVerification = () => {
     // Simulate fingerprint verification
-    const success = false; // Replace this with real fingerprint verification logic
+    const success = true; // Replace this with real fingerprint verification logic
 
     if (success) {
       saveFinding(); // Save finding if fingerprint is verified
     } else {
       alert('Fingerprint verification failed.');
     }
-    setShowFingerprintModal(true);
+    setShowFingerprintModal(false);
   };
 
   const saveFinding = () => {
-    const updatedFindings = [...findings, newFinding];
-    setFindings(updatedFindings);
-    setNewFinding({
-      presumption: '',
-      dateConsulted: '',
-      bloodPressure: '',
-      temperature: '',
-      weight: '',
-      height: '',
-      diagnosis: '',
-      medication: '',
-      advice: '',
-      physician: '',
-      paymentAmount: '',
-    });
-    setShowForm(false);
-  };
+    const updatedFinding = {
+        ...newFinding,
+        patientId: patient.id, // Add patient ID to the new finding
+    };
+
+    // POST request to add the new finding to the server
+    fetch(`http://localhost:8000/patients/${patient.id}`, {
+        method: 'PATCH', // Use PATCH to update the existing patient record
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            opdFindings: [...findings, updatedFinding], // Append new finding to the existing ones
+        }),
+    })
+    .then(response => response.json())
+    .then(updatedPatient => {
+        setFindings(updatedPatient.opdFindings); // Update local state with the new findings
+        // Reset newFinding and hide the form
+        setNewFinding({
+            presumption: '',
+            dateConsulted: '',
+            bloodPressure: '',
+            temperature: '',
+            weight: '',
+            height: '',
+            diagnosis: '',
+            medication: '',
+            advice: '',
+            physician: '',
+            paymentAmount: '',
+        });
+        setShowForm(false);
+    })
+    .catch(error => console.error('Error updating patient findings:', error));
+};
 
   const handleSelectFinding = (finding) => {
     setSelectedFinding(finding);
@@ -334,7 +353,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
           {/*Showed if the user wants to print a specific opd finding of a patient*/}
           {selectedFinding && (
-            <div id="findingDetails" className="mt-4 p-4 border rounded bg-gray-100">
+            <div className="mt-4 p-4 border border-gray-300 rounded">
               <h3 className="text-lg font-semibold">Finding Details</h3>
               <p>Presumption: <strong>{selectedFinding.presumption}</strong></p>
               <p>Date Consulted: <strong>{selectedFinding.dateConsulted}</strong></p>

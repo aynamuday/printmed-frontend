@@ -1,5 +1,13 @@
 const FindingsList = ({ findings, onAddFinding, onViewFinding }) => (
     <div className="mt-2">
+      <div className="grid grid-cols-2 gap-4 bg-red-500 p-2">
+            <h2 className="text-lg font-semibold text-white">OPD Findings</h2>
+            <button
+              className="bg-blue-500 text-white px-2 py-1 rounded"
+              onClick={() => setShowForm(!showForm)}>
+              <i className="bi bi-plus"></i>
+            </button>
+          </div>
       <table className="min-w-full">
         <thead>
           <tr className="bg-gray-200">
