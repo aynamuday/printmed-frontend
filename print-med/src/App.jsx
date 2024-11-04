@@ -1,54 +1,68 @@
-import {
-  Route,
-  createBrowserRouter,
-  createRoutesFromElements,
-  RouterProvider,
-} from 'react-router-dom';
-import MainLayout from './layout/MainLayout';
-import LoginPage from './pages/LoginPage';
-import Dashboard from "./pages/DashboardPage";
-import PatientRecordsPage from './pages/PatientRecordsPage';
-import AddRecordPage from './pages/AddRecordPage';
-import SettingsPage from './pages/SettingsPage';
-import Queue from './pages/Queue';
-import UserManagement from './pages/UserManagement';
-import Reports from './pages/Reports';
-import AddAccount from './pages/AddAccount';
-import DashboardAdmin from './pages/DashboardAdmin';
-import DepartmentPage from './pages/DepartmentPage';
-import AuditPage from './pages/AuditPage';
-import QueueView from './pages/QueueView';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import AppContext from './context/AppContext';
 import { useContext } from 'react';
-import AppContext, { AppProvider } from './context/AppContext'; // Import AppProvider
+import ProtectedRoute from './ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import DashboardAdminPage from './pages/DashboardAdminPage';
 
 const App = () => {
-  const { user } = useContext(AppContext); // Access user from AppContext
-
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path='/' element={<MainLayout />}>
-        <Route index element={<LoginPage />} />
-        <Route path='dashboard' element={<Dashboard />} />
-        <Route path='patient-records' element={<PatientRecordsPage />} />
-        <Route path='add-records' element={<AddRecordPage />} />
-        <Route path='settings' element={<SettingsPage />} />
-        <Route path='queue-view' element={<QueueView />} />
-        <Route path='queue' element={<Queue />} />
-        <Route path='dashboard-admin' element={<DashboardAdmin />} />
-        <Route path='user-management' element={<UserManagement />} />
-        <Route path='department' element={<DepartmentPage />} />
-        <Route path='reports' element={<Reports />} />
-        <Route path='audit' element={<AuditPage />} />
-        <Route path='add-account' element={<AddAccount />} />
-      </Route>
-    )
-  );
+  const { user } = useContext(AppContext);
 
   return (
-    <AppProvider> {/* Wrap RouterProvider with AppProvider */}
-      <RouterProvider router={router} />
-    </AppProvider>
-  );
+    <BrowserRouter>
+      <Routes>
+        { !user ? (
+          // routes if user IS NOT logged in
+          <>
+            <Route path='/' element={<Navigate to='login'/>}/>
+            <Route path='login' element={<LoginPage/>}/>
+            {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
+          </>
+        ) : (
+          // routes if user IS logged in
+          <Route element={<ProtectedRoute/>}>
+            {/* <Route path='login'element={<Navigate to='/'/>}/> */}
+            {/* <Route path='reset-password' element={<Navigate to='/'/>}/> */}
+
+            {/* <Route path='profile' element={<DashboardPhysicianSecretaryPage/>}/> */}
+            {/* <Route path='update-email' element={<UpdateEmailPage/>}/>
+            <Route path='change-password' element={<ChangePasswordPage/>}/> */}
+            
+            { user.role === "admin" ? (
+              <>
+                <Route path='/' element={<DashboardAdminPage/>}/>
+                {/* <Route path='users' element={<UsersPage/>}/>
+                <Route path='add-user' element={<AddUserPage/>}/>
+                <Route path='departments' element={<DepartmentsPage/>}/>
+                <Route path='audits' element={<AuditsPage/>}/> */}
+              </>
+            ) : ( user.role === "physician" || user.role === "secretary" ? (
+              <>
+                {/* <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/> */}
+                {/* <Route path='add-patient' element={<AddPatientPage/>}/> */}
+              </>
+            ) : ( user.role === "physician" ? (
+              <>
+                {/* <Route path='update-patient' element={<UpdatePatientPage/>}/>
+                <Route path='patient' element={<PatientPage/>}/>
+                <Route path='payments' element={<PaymentsPage/>}/> */}
+              </>
+            ) : ( user.role === "secretary" ? (
+              <>
+                {/* <Route path='patients' element={<PatientsPage/>}/> */}
+              </>
+            ) : ( user.role === "queue manager" ? (
+              <>
+                {/* <Route path='/' element={<DashboardQueueManagerPage/>}/> */}
+              </>
+            ) : ( <Navigate to="/" /> ) ) ) ) ) }
+          </Route>
+        ) }
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  )
 };
 
 export default App;

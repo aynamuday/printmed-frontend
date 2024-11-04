@@ -1,18 +1,19 @@
 import React, { useContext, useState } from "react";
 import { NavLink, Link } from 'react-router-dom';
-import "bootstrap-icons/font/bootstrap-icons.css"; 
+// import "bootstrap-icons/font/bootstrap-icons.css"; 
 import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 
 const Sidebar = () => {
-  const {user} = useContext(AppContext)
+  const {user, setUser, token, setToken} = useContext(AppContext)
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const linkClass= ({ isActive }) => isActive ? 
+  const linkClass = ({ isActive }) => isActive ? 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
@@ -38,87 +39,65 @@ const Sidebar = () => {
 
           <hr className="my-2 text-gray-600" />
 
-          <div className="">
-
-            <NavLink to="/dashboard" className={linkClass}>
-              <i className="bi bi-house-door-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
-            </NavLink>
-
-            <NavLink to="/patient-records" className={linkClass}>
-              <i className="bi bi-person-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Patient Records</span>
-            </NavLink>
-
-            <NavLink to="/add-records" className={linkClass}>
-              <i className="bi bi-person-plus-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Add Record</span>
-            </NavLink>
-
-            <NavLink to="/settings" className={linkClass}>
-              <i className="bi bi-gear-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Settings</span>
-            </NavLink>
-
-            <NavLink to="/queue-view" className={linkClass}>
-              <i className="bi bi-inbox-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Queue - View</span>
-            </NavLink>
-
-            <NavLink to="/queue" className={linkClass}>
-              <i className="bi bi-inbox-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Queue</span>
-            </NavLink>
-
-            <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600">
-              <i className="bi bi-box-arrow-in-right"></i>
-              <Link to='/' className="text-[20px] ml-4 text-gray-200">Logout</Link>
-            </div>
-
-            <NavLink to="/dashboard-admin" className={linkClass}>
-              <i className="bi bi-house-door-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Dashboard - Admin</span>
-            </NavLink>
-
-            <NavLink to="/department" className={linkClass}>
-              <i className="bi bi-building"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Department</span>
-            </NavLink>
-
-            <NavLink to="/user-management" className={linkClass}>
-              <i className="bi bi-people"></i>
-              <span className="text-[20px] ml-4 text-gray-200">User Management</span>
-            </NavLink>
-
-            <NavLink to="/settings" className={linkClass}>
-              <i className="bi bi-gear-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Settings</span>
-            </NavLink>
-
-            {/* <NavLink to="/reports" className={linkClass}>
-              <i className="bi bi-file-earmark-bar-graph"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Reports</span>
-            </NavLink> */}
-
-            <NavLink to="/audit" className={linkClass}>
-              <i className="bi bi-journal-check"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Audit</span>
-            </NavLink>
-
-            <NavLink to="/add-account" className={linkClass}>
-              <i className="bi bi-plus-circle"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Add Account</span>
-            </NavLink>      
-
-            <NavLink to="/queue-view" className={linkClass}>
-              <i className="bi bi-inbox-fill"></i>
-              <span className="text-[20px] ml-4 text-gray-200">Queue - View</span>
-            </NavLink>      
-
-            <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600">
-              <i className="bi bi-box-arrow-in-right"></i>
-              <Link to='/' className="text-[20px] ml-4 text-gray-200">Logout</Link>
-            </div>
+          <div>
+            { user.role === "admin" ? (
+              <>
+                <NavLink to="/" className={linkClass}>
+                  <i className="bi bi-house-door-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                </NavLink>
+                <NavLink to="/users" className={linkClass}>
+                  <i className="bi bi-people"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Users</span>
+                </NavLink>
+                <NavLink to="/audits" className={linkClass}>
+                  <i className="bi bi-file-earmark-bar-graph"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Audits</span>
+                </NavLink>
+                <NavLink to="/departments" className={linkClass}>
+                  <i className="bi bi-building"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Departments</span>
+                </NavLink>
+                <NavLink to="/add-user" className={linkClass}>
+                  <i className="bi bi-plus-circle"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Add User</span>
+                </NavLink> 
+                <NavLink to="/profile" className={linkClass}>
+                  <i className="bi bi-gear-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+              </>
+            ) : ( user.role === "physician" ? (
+              <>
+                <NavLink to="/" className={linkClass}>
+                  <i className="bi bi-house-door-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                </NavLink>
+                <NavLink to="/profile" className={linkClass}>
+                  <i className="bi bi-gear-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+              </>
+            ) : ( user.role === "secretary" ? (
+              <>
+                <NavLink to="/" className={linkClass}>
+                  <i className="bi bi-house-door-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                </NavLink>
+                <NavLink to="/patients" className={linkClass}>
+                  <i className="bi bi-person-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Patients</span>
+                </NavLink>
+                <NavLink to="/add-patient" className={linkClass}>
+                  <i className="bi bi-person-plus-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Add Patient</span>
+                </NavLink>
+                <NavLink to="/profile" className={linkClass}>
+                  <i className="bi bi-gear-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+              </>
+            ) : (<></>))) }
           </div>
         </div>
       </div>
