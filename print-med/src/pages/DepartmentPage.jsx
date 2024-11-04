@@ -69,7 +69,7 @@ const DepartmentPage = () => {
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
           />
-          <button onClick={handleAddDepartment} className="bg-blue-500 text-white p-2 rounded ml-2">
+          <button onClick={handleAddDepartment} className="bg-[#6CB6AD] hover:bg-blue-600 text-white p-2 rounded ml-2">
             Add Department
           </button>
         </div>

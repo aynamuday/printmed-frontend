@@ -86,7 +86,7 @@ const Sidebar = () => {
             </NavLink>
 
             <NavLink to="/user-management" className={linkClass}>
-              <i class="bi bi-people"></i>
+              <i className="bi bi-people"></i>
               <span className="text-[20px] ml-4 text-gray-200">User Management</span>
             </NavLink>
 
@@ -96,17 +96,17 @@ const Sidebar = () => {
             </NavLink>
 
             {/* <NavLink to="/reports" className={linkClass}>
-              <i class="bi bi-file-earmark-bar-graph"></i>
+              <i className="bi bi-file-earmark-bar-graph"></i>
               <span className="text-[20px] ml-4 text-gray-200">Reports</span>
             </NavLink> */}
 
             <NavLink to="/audit" className={linkClass}>
-              <i class="bi bi-journal-check"></i>
+              <i className="bi bi-journal-check"></i>
               <span className="text-[20px] ml-4 text-gray-200">Audit</span>
             </NavLink>
 
             <NavLink to="/add-account" className={linkClass}>
-              <i class="bi bi-plus-circle"></i>
+              <i className="bi bi-plus-circle"></i>
               <span className="text-[20px] ml-4 text-gray-200">Add Account</span>
             </NavLink>      
 

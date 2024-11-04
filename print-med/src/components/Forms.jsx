@@ -267,7 +267,7 @@ const Forms = () => {
             <div className="mt-6 col-end-8 col-span-2">
               <button
                 type="submit"
-                className={`w-full p-2 text-white bg-blue-600 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full p-2 text-white bg-[#6CB6AD] hover:bg-blue-600 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Submitting...' : 'Add Patient'}

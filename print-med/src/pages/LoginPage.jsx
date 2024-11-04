@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import logo from '../assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';
 import AppContext from '../context/AppContext';
+import { ScaleLoader } from 'react-spinners';
 
 const LoginPage = () => {
   const { setToken } = useContext(AppContext); // Access context to set authentication token
@@ -15,7 +16,8 @@ const LoginPage = () => {
   const [otp, setOtp] = useState(''); // State to hold OTP entered by the user
   const [isOtpSent, setIsOtpSent] = useState(false); // State to determine if OTP has been sent
   const [error, setError] = useState(''); // State for error messages
-
+  const [loading, setLoading] = useState(false);
+  
   // Function to handle input changes for login credentials
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +36,7 @@ const LoginPage = () => {
   // Function to handle form submission for login
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     // Sending login credentials to the API
     const res = await fetch("/api/login", {
@@ -47,6 +50,8 @@ const LoginPage = () => {
     const data = await res.json(); // Parse the JSON response from the API
 
     console.log('Login Response:', data); // Log the response for debugging
+
+    setLoading(false);
 
     if (res.ok) {
       localStorage.setItem("token", data.token); // Save the token in localStorage for future requests
@@ -63,6 +68,8 @@ const LoginPage = () => {
   // Function to verify the OTP entered by the user
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     // Get the token from localStorage
     const token = localStorage.getItem("token");
@@ -84,11 +91,17 @@ const LoginPage = () => {
 
     console.log('Verify OTP Response:', data); // Log the OTP verification response
 
+    setLoading(false);
+
     if (res.ok) { // Check if the response indicates success
-      navigate('/dashboard'); // Redirect to the dashboard upon successful verification
+      navigate('/dashboard'); 
     } else {
-      setError(data.error || 'Invalid OTP'); // Display error message if OTP verification fails
+      setError(data.error || 'Invalid OTP'); 
     }
+  };
+
+  const handleForgotPassword = () => {
+    alert("Please contact the administrator");
   };
 
   return (
@@ -181,14 +194,28 @@ const LoginPage = () => {
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              disabled={loading}
             >
-              {isOtpSent ? 'Verify OTP' : 'Login'} {/* Change button text based on OTP state */}
-            </button>
+              {loading ? ( // Show loader or button text based on loading state
+                <div className="flex items-center">
+                  <ScaleLoader color="#ffffff" height={20} width={5} radius={2} margin={2} />
+                  <span className="ml-2">Loading...</span>
+                </div>
+              ) : (
+                isOtpSent ? 'Verify OTP' : 'Login'
+              )}
+              </button>
           </div>
 
           {!isOtpSent && (
             <div className="text-center">
-              <a href="#" className="text-sm text-gray-600 hover:text-gray-900">Forgot Password</a>
+              <a
+                href="#"
+                onClick={handleForgotPassword}
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
+                Forgot Password
+              </a>
             </div>
           )}
         </form>
