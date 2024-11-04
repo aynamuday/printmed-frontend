@@ -82,12 +82,12 @@ const LoginPage = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
+    setLoading(true);
+
     const res = await fetch("/api/verify-otp", {
       method: "POST",
       body: JSON.stringify(otp),
     });
-
-    setLoading(true);
 
     const data = await res.json();
 
