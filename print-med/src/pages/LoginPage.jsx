@@ -1,23 +1,33 @@
-import React, { useContext, useState } from 'react';
-import logo from '../assets/images/logo.png';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppContext from '../context/AppContext';
 import { ScaleLoader } from 'react-spinners';
+import logo from '../assets/images/logo.png';
 
 const LoginPage = () => {
-  const { setToken } = useContext(AppContext); // Access context to set authentication token
-  const navigate = useNavigate(); // Hook to programmatically navigate to other routes
+  const navigate = useNavigate();
+  const { setToken } = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+
   const [credentials, setCredentials] = useState({
     role: '',
     personnel_number: '',
     email: '',
     password: '',
   });
-  const [otp, setOtp] = useState(''); // State to hold OTP entered by the user
-  const [isOtpSent, setIsOtpSent] = useState(false); // State to determine if OTP has been sent
-  const [error, setError] = useState(''); // State for error messages
-  const [loading, setLoading] = useState(false);
-  
+
+  const [otp, setOtp] = useState({
+    token: '',
+    email: '',
+    code: ''
+  }); 
+  const [isOtpSent, setIsOtpSent] = useState(false); 
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    console.log(otp)
+  }, [otp])
+
   // Function to handle input changes for login credentials
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,37 +40,40 @@ const LoginPage = () => {
 
   // Function to handle changes to the OTP input
   const handleOtpChange = (e) => {
-    setOtp(e.target.value);
+    setOtp({
+      ...otp,
+      code: e.target.value
+    });
   };
 
   // Function to handle form submission for login
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     // Sending login credentials to the API
     const res = await fetch("/api/login", {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials), // Convert credentials to JSON format
+      body: JSON.stringify(credentials)
     });
 
-    const data = await res.json(); // Parse the JSON response from the API
+    const data = await res.json();
 
-    console.log('Login Response:', data); // Log the response for debugging
+    console.log('Login Response:', data); 
 
     setLoading(false);
 
     if (res.ok) {
-      localStorage.setItem("token", data.token); // Save the token in localStorage for future requests
-      localStorage.setItem("role", data.role); // Save the user role in localStorage
-      setToken(data.token); // Update context with the new token
-      setIsOtpSent(true); // Indicate that OTP has been sent to the user
-      setError(''); // Clear any previous error messages
+      setIsOtpSent(true);
+
+      setOtp({
+        token: data.token,
+        email: data.email,
+        code: ''
+      });
+
+      setError('');
     } else {
-      // Set error message if login fails
       setError(data.error || 'Invalid credentials'); // Default to 'Invalid credentials' if no specific error is provided
     }
   };
@@ -69,52 +82,43 @@ const LoginPage = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
-
-    // Get the token from localStorage
-    const token = localStorage.getItem("token");
-
-    // Sending OTP verification request to the API
     const res = await fetch("/api/verify-otp", {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: credentials.email, // Email used for the OTP
-        code: otp, // Change this from `otp` to `code` to match backend requirements
-        token: token, // Include the token in the request body
-      }),
+      body: JSON.stringify(otp),
     });
 
-    const data = await res.json(); // Parse the JSON response from the API
+    setLoading(true);
 
-    console.log('Verify OTP Response:', data); // Log the OTP verification response
+    const data = await res.json();
+
+    console.log('Verify OTP Response:', data);
 
     setLoading(false);
 
-    if (res.ok) { // Check if the response indicates success
-      navigate('/dashboard'); 
+    if (res.ok) { 
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      navigate('/');
     } else {
-      setError(data.error || 'Invalid OTP'); 
+      setError(data.error || 'Invalid OTP');
     }
   };
 
   const handleForgotPassword = () => {
-    alert("Please contact the administrator");
+    alert("Please contact the administrator.");
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
       <div>
         <div className="flex flex-col items-center">
-          <img src={logo} alt="Carmona Hospital and Medical Center" className="w-100 h-40" />
-          <h2 className="text-center text-2xl font-bold mt-4">Patient Management Record System</h2>
+          <img src={logo} alt="Carmona Hospital and Medical Center" className="w-100 h-32" />
+          <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={isOtpSent ? handleVerifyOtp : handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={isOtpSent ? handleVerifyOtp : handleLogin}>
           {!isOtpSent ? (
-            // Initial Login Form
+            // Login Form
             <div className="rounded-md shadow-sm space-y-4">
               <div>
                 <label htmlFor="role" className="sr-only">Role</label>
@@ -126,10 +130,10 @@ const LoginPage = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select Role</option>
-                  <option value="admin">Admin</option>
                   <option value="physician">Physician</option>
                   <option value="secretary">Secretary</option>
                   <option value="queue manager">Queue Manager</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
 
@@ -140,7 +144,7 @@ const LoginPage = () => {
                   type="text"
                   required
                   className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Enter your personnel number"
+                  placeholder="Personnel Number"
                   value={credentials.personnel_number}
                   onChange={handleChange}
                 />
@@ -152,7 +156,7 @@ const LoginPage = () => {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Email"
                   value={credentials.email}
                   onChange={handleChange}
@@ -165,7 +169,7 @@ const LoginPage = () => {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
@@ -173,7 +177,7 @@ const LoginPage = () => {
               </div>
             </div>
           ) : (
-            // OTP Input Form
+            // Verify OTP Form
             <div>
               <label htmlFor="otp" className="block text-sm font-medium text-gray-700">Enter OTP</label>
               <input
@@ -182,7 +186,7 @@ const LoginPage = () => {
                 required
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Enter OTP"
-                value={otp}
+                value={otp.code}
                 onChange={handleOtpChange}
               />
             </div>
@@ -196,7 +200,7 @@ const LoginPage = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               disabled={loading}
             >
-              {loading ? ( // Show loader or button text based on loading state
+              { loading ? ( // Show loader or button text based on loading state
                 <div className="flex items-center">
                   <ScaleLoader color="#ffffff" height={20} width={5} radius={2} margin={2} />
                   <span className="ml-2">Loading...</span>
@@ -209,13 +213,13 @@ const LoginPage = () => {
 
           {!isOtpSent && (
             <div className="text-center">
-              <a
+              <button
                 href="#"
                 onClick={handleForgotPassword}
                 className="text-sm text-gray-600 hover:text-gray-900"
               >
                 Forgot Password
-              </a>
+              </button>
             </div>
           )}
         </form>

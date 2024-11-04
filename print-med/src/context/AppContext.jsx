@@ -7,7 +7,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null)
 
   async function getUser() {
-    const res = await fetch("/api/users", {
+    const res = await fetch("/api/user", {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -17,7 +17,6 @@ export const AppProvider = ({ children }) => {
     if (res.ok) {
         setUser(data);
     }
-
 }
   useEffect(()=> {
     if (token) {
