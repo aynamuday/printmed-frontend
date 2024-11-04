@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar"
 import Cards from "../components/Cards"
 
 
-const DashboardPage = () => {
+const DashboardPhysicianSecretaryPage = () => {
   return (
     <>
         <Sidebar />
@@ -13,4 +13,4 @@ const DashboardPage = () => {
   )
 }
 
-export default DashboardPage
+export default DashboardPhysicianSecretaryPage

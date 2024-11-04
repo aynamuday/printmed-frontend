@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-const DepartmentPage = () => {
+const DepartmentsPage = () => {
   const [departments, setDepartments] = useState([]);
   const [newDepartment, setNewDepartment] = useState("");
   const [editDepartmentId, setEditDepartmentId] = useState(null);
@@ -141,4 +141,4 @@ const DepartmentPage = () => {
   );
 };
 
-export default DepartmentPage;
+export default DepartmentsPage;

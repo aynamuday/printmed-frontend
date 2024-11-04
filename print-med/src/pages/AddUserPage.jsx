@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
 // import axios from 'axios'; // Removed axios import
 
-const AddAccount = () => {
+const AddUserPage = () => {
   // State to manage form inputs
   const [formData, setFormData] = useState({
     role: '',
@@ -212,4 +212,4 @@ const AddAccount = () => {
   );
 }
 
-export default AddAccount;
+export default AddUserPage;

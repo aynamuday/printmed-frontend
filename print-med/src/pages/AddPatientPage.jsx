@@ -1,15 +1,15 @@
-import CardsAdmin from "../components/CardsAdmin"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
+import Forms from "../components/Forms"
 
-const DashboardAdmin = () => {
+const AddPatientPage = () => {
   return (
     <>
         <Sidebar />
         <Header />
-        <CardsAdmin />
+        <Forms />
     </>
   )
 }
 
-export default DashboardAdmin
+export default AddPatientPage

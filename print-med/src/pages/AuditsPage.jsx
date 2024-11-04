@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 
-const AuditPage = () => {
+const AuditsPage = () => {
   const [audits, setAudits] = useState([]);
 
   const fetchAudits = async () => {
@@ -56,4 +56,4 @@ const AuditPage = () => {
   );
 };
 
-export default AuditPage;
+export default AuditsPage;

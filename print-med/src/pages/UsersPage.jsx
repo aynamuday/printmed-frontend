@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-const UserManagement = () => {
+const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [departments, setDepartments] = useState(['All', 'Admin', 'Doctor', 'Nurse']);
@@ -143,4 +143,4 @@ const UserManagement = () => {
   );
 }
 
-export default UserManagement;
+export default UsersPage;
