@@ -1,9 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import AppContext from './context/AppContext';
 import { useContext } from 'react';
+import AppContext from './context/AppContext';
 import ProtectedRoute from './ProtectedRoute';
+
 import LoginPage from './pages/LoginPage';
+import SettingsPage from './pages/SettingsPage';
 import DashboardAdminPage from './pages/DashboardAdminPage';
+import UsersPage from './pages/UsersPage';
+import AddUserPage from './pages/AddUserPage';
+import DepartmentsPage from './pages/DepartmentsPage';
+import AuditsPage from './pages/AuditsPage';
+import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretaryPage';
+import PatientsPage from './pages/PatientsPage';
+import AddPatientPage from './pages/AddPatientPage';
+import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 
 const App = () => {
   const { user } = useContext(AppContext);
@@ -24,38 +34,36 @@ const App = () => {
             {/* <Route path='login'element={<Navigate to='/'/>}/> */}
             {/* <Route path='reset-password' element={<Navigate to='/'/>}/> */}
 
-            {/* <Route path='profile' element={<DashboardPhysicianSecretaryPage/>}/> */}
+            <Route path='settings' element={<SettingsPage/>}/>
             {/* <Route path='update-email' element={<UpdateEmailPage/>}/>
             <Route path='change-password' element={<ChangePasswordPage/>}/> */}
             
             { user.role === "admin" ? (
               <>
                 <Route path='/' element={<DashboardAdminPage/>}/>
-                {/* <Route path='users' element={<UsersPage/>}/>
+                <Route path='users' element={<UsersPage/>}/>
                 <Route path='add-user' element={<AddUserPage/>}/>
                 <Route path='departments' element={<DepartmentsPage/>}/>
-                <Route path='audits' element={<AuditsPage/>}/> */}
-              </>
-            ) : ( user.role === "physician" || user.role === "secretary" ? (
-              <>
-                {/* <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/> */}
-                {/* <Route path='add-patient' element={<AddPatientPage/>}/> */}
+                <Route path='audits' element={<AuditsPage/>}/>
               </>
             ) : ( user.role === "physician" ? (
               <>
+                <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
                 {/* <Route path='update-patient' element={<UpdatePatientPage/>}/>
-                <Route path='patient' element={<PatientPage/>}/>
-                <Route path='payments' element={<PaymentsPage/>}/> */}
+                <Route path='patient' element={<PatientPage/>}/> */}
               </>
             ) : ( user.role === "secretary" ? (
               <>
-                {/* <Route path='patients' element={<PatientsPage/>}/> */}
+                <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
+                <Route path='patients' element={<PatientsPage/>}/>
+                <Route path='add-patient' element={<AddPatientPage/>}/>
+                {/* <Route path='payments' element={<PaymentsPage/>}/> */}
               </>
             ) : ( user.role === "queue manager" ? (
               <>
-                {/* <Route path='/' element={<DashboardQueueManagerPage/>}/> */}
+                <Route path='/' element={<DashboardQueueManagerPage/>}/>
               </>
-            ) : ( <Navigate to="/" /> ) ) ) ) ) }
+            ) : ( <Navigate to="/" /> ) ) ) ) }
           </Route>
         ) }
 

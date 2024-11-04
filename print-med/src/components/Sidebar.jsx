@@ -50,19 +50,19 @@ const Sidebar = () => {
                   <i className="bi bi-people"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Users</span>
                 </NavLink>
-                <NavLink to="/audits" className={linkClass}>
-                  <i className="bi bi-file-earmark-bar-graph"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Audits</span>
-                </NavLink>
-                <NavLink to="/departments" className={linkClass}>
-                  <i className="bi bi-building"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Departments</span>
-                </NavLink>
                 <NavLink to="/add-user" className={linkClass}>
                   <i className="bi bi-plus-circle"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Add User</span>
                 </NavLink> 
-                <NavLink to="/profile" className={linkClass}>
+                <NavLink to="/departments" className={linkClass}>
+                  <i className="bi bi-building"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Departments</span>
+                </NavLink>
+                <NavLink to="/audits" className={linkClass}>
+                  <i className="bi bi-file-earmark-bar-graph"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Audits</span>
+                </NavLink>
+                <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
@@ -73,7 +73,11 @@ const Sidebar = () => {
                   <i className="bi bi-house-door-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
                 </NavLink>
-                <NavLink to="/profile" className={linkClass}>
+                <NavLink to="/payments" className={linkClass}>
+                  <i className="bi bi-cash-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Payments</span>
+                </NavLink>
+                <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
@@ -92,7 +96,11 @@ const Sidebar = () => {
                   <i className="bi bi-person-plus-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Add Patient</span>
                 </NavLink>
-                <NavLink to="/profile" className={linkClass}>
+                <NavLink to="/payments" className={linkClass}>
+                  <i className="bi bi-cash-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Payments</span>
+                </NavLink>
+                <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
