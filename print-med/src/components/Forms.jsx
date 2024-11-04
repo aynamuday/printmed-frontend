@@ -110,7 +110,7 @@ const Forms = () => {
   return (
     <div className="flex flex-col h-screen bg-white items-center justify-center w-full md:w-[100%]">
       <div className="w-full md:w-[70%] md:ml-[20%]">
-        <h2 className="text-2xl font-semibold text-center mb-4">Add Patient Record</h2>
+        <h2 className="text-2xl font-semibold text-center mb-4 -mt-10">Add Patient Record</h2>
       </div>
 
       {successMessage && (
@@ -178,7 +178,7 @@ const Forms = () => {
                 required
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1">
               <label className="block text-sm font-medium text-gray-700">Sex:</label>
               <select
                 name="sex"
@@ -193,7 +193,7 @@ const Forms = () => {
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-4">
               <label className="block text-sm font-medium text-gray-700">Address:</label>
               <input
                 type="text"
@@ -264,15 +264,15 @@ const Forms = () => {
                 readOnly
               />
             </div>
-          </div>
-          <div className="mt-6">
-            <button
-              type="submit"
-              className={`w-full p-2 text-white bg-blue-600 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : 'Add Patient'}
-            </button>
+            <div className="mt-6 col-end-8 col-span-2">
+              <button
+                type="submit"
+                className={`w-full p-2 text-white bg-blue-600 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Add Patient'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

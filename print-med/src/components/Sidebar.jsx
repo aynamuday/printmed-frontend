@@ -17,7 +17,7 @@ const Sidebar = () => {
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
   return (
-    <div className="">
+    <>
       <span
         className="absolute text-white text-4xl top-5 left-4 cursor-pointer"
         onClick={toggleSidebar}
@@ -95,10 +95,10 @@ const Sidebar = () => {
               <span className="text-[20px] ml-4 text-gray-200">Settings</span>
             </NavLink>
 
-            <NavLink to="/reports" className={linkClass}>
+            {/* <NavLink to="/reports" className={linkClass}>
               <i class="bi bi-file-earmark-bar-graph"></i>
               <span className="text-[20px] ml-4 text-gray-200">Reports</span>
-            </NavLink>
+            </NavLink> */}
 
             <NavLink to="/audit" className={linkClass}>
               <i class="bi bi-journal-check"></i>
@@ -122,7 +122,7 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
