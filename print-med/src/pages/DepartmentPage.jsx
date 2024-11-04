@@ -75,7 +75,7 @@ const DepartmentPage = () => {
         </div>
 
         {/* Department List Table */}
-        <table className="min-w-full bg-white border border-gray-300">
+        <table className="min-w-full bg-white border border-gray-300 text-center">
           <thead>
             <tr>
               <th className="border-b border-gray-300 p-2">Department ID</th>

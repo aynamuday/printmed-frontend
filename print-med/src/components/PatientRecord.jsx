@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PatientDetails from '../components/PatientDetails';
 import patientsName from '../data/patientsName.json';
 import opdFindings from '../data/opdFindings.json'; // Importing the opdFindings data
-import { useUser } from '../components/UserContext';
+import AppContext from '../context/AppContext'; // Import AppContext
 
 const PatientRecord = () => {
-  const { currentUser } = useUser(); // Access the currentUser
+  const { user } = useContext(AppContext); // Access user from AppContext
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedFinding, setSelectedFinding] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
   const [patientToView, setPatientToView] = useState(null);
-
   const [patientList] = useState(patientsName.patients);
 
   const handleView = (patient) => {
@@ -19,17 +18,8 @@ const PatientRecord = () => {
     setShowPasswordModal(true); // Show password modal
   };
 
-  // const verifyPassword = () => {
-  //   if (password === 'admin') {
-  //     setSelectedPatient(patientToView); // Select patient after successful password verification
-  //     setShowPasswordModal(false);
-  //     setPassword(''); // Reset password field
-  //   } else {
-  //     alert('Incorrect password!');
-  //   }
-  // };
   const verifyPassword = () => {
-    if (password === currentUser.password) { // Use currentUser password
+    if (password === user.password) { // Use user password from AppContext
       setSelectedPatient(patientToView); // Select patient after successful password verification
       setShowPasswordModal(false);
       setPassword(''); // Reset password field
@@ -90,7 +80,6 @@ const PatientRecord = () => {
       ) : selectedPatient ? (
         <div className="bg-white p-4 shadow rounded-lg">
           <PatientDetails patient={selectedPatient} onClose={handleClose} />
-          {/* <h3 className="text-xl mb-4 mt-4">OPD Findings</h3> */}
           <ul>
             {getPatientFindings(selectedPatient.id).map((finding, index) => (
               <li key={index} className="mb-2">

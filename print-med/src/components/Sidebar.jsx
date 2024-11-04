@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { NavLink, Link } from 'react-router-dom';
 import "bootstrap-icons/font/bootstrap-icons.css"; 
 import logo from '../assets/images/logo.png';
+import AppContext from "../context/AppContext";
 
 const Sidebar = () => {
+  const {user} = useContext(AppContext)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -15,7 +17,7 @@ const Sidebar = () => {
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
   return (
-    <div>
+    <div className="">
       <span
         className="absolute text-white text-4xl top-5 left-4 cursor-pointer"
         onClick={toggleSidebar}
@@ -36,9 +38,9 @@ const Sidebar = () => {
 
           <hr className="my-2 text-gray-600" />
 
-          <div>
+          <div className="">
 
-            <NavLink to="/" className={linkClass}>
+            <NavLink to="/dashboard" className={linkClass}>
               <i className="bi bi-house-door-fill"></i>
               <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
             </NavLink>
@@ -108,7 +110,7 @@ const Sidebar = () => {
               <span className="text-[20px] ml-4 text-gray-200">Add Account</span>
             </NavLink>      
 
-            <NavLink to="/queueiview" className={linkClass}>
+            <NavLink to="/queue-view" className={linkClass}>
               <i className="bi bi-inbox-fill"></i>
               <span className="text-[20px] ml-4 text-gray-200">Queue - View</span>
             </NavLink>      

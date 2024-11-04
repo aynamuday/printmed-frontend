@@ -6,7 +6,7 @@ const AuditPage = () => {
   const [audits, setAudits] = useState([]);
 
   const fetchAudits = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/audits'); // Adjust to your actual API
+    const response = await fetch('/api/audits'); 
     const data = await response.json();
     setAudits(data);
   };

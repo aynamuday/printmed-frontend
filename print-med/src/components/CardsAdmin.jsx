@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 
 const CardsAdmin = () => {
   const [users, setUsers] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('All'); // Default to show all
-  const [departments, setDepartments] = useState(['All', 'Doctors', 'Nurses', 'Patients']); // Example departments, update from API
+  const [selectedDepartment, setSelectedDepartment] = useState('All'); 
+  const [departments, setDepartments] = useState(['All', 'Doctors', 'Nurses', 'Patients']); 
 
-  // Sample fetch function to simulate getting data from an API
-  const fetchUsers = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/users'); // Update to your actual users API
-    const data = await response.json();
-    setUsers(data);
-  };
+  // Sample data for users
+  const sampleUsers = [
+    { name: 'Dr. Smith', userNumber: '001', time: '10:00 AM', changes: 'Added new patient', department: 'Doctors' },
+    { name: 'Nurse Jane', userNumber: '002', time: '10:30 AM', changes: 'Updated patient record', department: 'Nurses' },
+    { name: 'Patient John', userNumber: '003', time: '11:00 AM', changes: 'Consulted doctor', department: 'Patients' },
+    { name: 'Dr. Doe', userNumber: '004', time: '11:30 AM', changes: 'Prescribed medication', department: 'Doctors' },
+    { name: 'Nurse Anna', userNumber: '005', time: '12:00 PM', changes: 'Administered vaccine', department: 'Nurses' },
+    { name: 'Patient Sarah', userNumber: '006', time: '12:30 PM', changes: 'Follow-up visit', department: 'Patients' },
+  ];
 
   useEffect(() => {
-    fetchUsers();
+    // Simulate fetching users from an API
+    setUsers(sampleUsers);
   }, []);
 
   // Function to handle department sorting
@@ -24,8 +28,8 @@ const CardsAdmin = () => {
   // Filter users by the selected department
   const filteredUsers = selectedDepartment === 'All'
     ? users
-    : users.filter(user => user.department === selectedDepartment); // Adjust based on your data structure
-
+    : users.filter(user => user.department === selectedDepartment); 
+  
   // Count registered users by department
   const countByDepartment = (department) => {
     return users.filter(user => user.department === department).length;
@@ -80,18 +84,18 @@ const CardsAdmin = () => {
           </thead>
           <tbody>
             {filteredUsers.length > 0 ? (
-                filteredUsers.map((user, index) => (
+              filteredUsers.map((user, index) => (
                 <tr key={index}>
-                    <td className="border-b border-gray-300 p-2">{user.name}</td>
-                    <td className="border-b border-gray-300 p-2">{user.userNumber}</td>
-                    <td className="border-b border-gray-300 p-2">{user.time}</td>
-                    <td className="border-b border-gray-300 p-2">{user.changes}</td>
+                  <td className="border-b border-gray-300 p-2">{user.name}</td>
+                  <td className="border-b border-gray-300 p-2">{user.userNumber}</td>
+                  <td className="border-b border-gray-300 p-2">{user.time}</td>
+                  <td className="border-b border-gray-300 p-2">{user.changes}</td>
                 </tr>
-                ))
+              ))
             ) : (
-                <tr>
-                    <td colSpan="4" className="border-b border-gray-300 p-2 text-center">No users found</td>
-                </tr>
+              <tr>
+                <td colSpan="4" className="border-b border-gray-300 p-2 text-center">No users found</td>
+              </tr>
             )}
           </tbody>
         </table>

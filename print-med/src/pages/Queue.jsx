@@ -10,7 +10,7 @@ const Queue = () => {
 
   // Function to fetch initial queue values from API
   const fetchQueueData = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/queue');
+    const response = await fetch('/api/queue');
     const data = await response.json();
     setPediaQueue(data.pediaQueue || 0); // Adjust according to your API response structure
     setNeuroQueue(data.neuroQueue || 0);
@@ -19,7 +19,7 @@ const Queue = () => {
 
   // Function to clear the queue
   const clearQueue = async (type) => {
-    const response = await fetch(`http://127.0.0.1:8000/api/queue/${type}/clear`, {
+    const response = await fetch(`/api/queue/${type}/2/clear`, {
       method: 'POST',
     });
 
@@ -32,7 +32,7 @@ const Queue = () => {
 
   // Function to delete the queue
   const deleteQueue = async (type) => {
-    const response = await fetch(`http://127.0.0.1:8000/api/queue/${type}/delete`, {
+    const response = await fetch(`/api/queue/${type}/2`, {
       method: 'DELETE',
     });
 
@@ -46,7 +46,7 @@ const Queue = () => {
 
   // Functions to increment each queue and update API
   const incrementQueue = async (type) => {
-    const response = await fetch(`http://127.0.0.1:8000/api/queue/${type}/increment`, {
+    const response = await fetch(`/api/queue/${type}/increment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const Queue = () => {
     }
   };
 
-  useEffect(() => {
+    useEffect(() => {
     fetchQueueData();
   }, []);
 

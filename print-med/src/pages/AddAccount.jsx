@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
-import axios from 'axios';
+// import axios from 'axios'; // Removed axios import
 
 const AddAccount = () => {
   // State to manage form inputs
@@ -24,8 +24,8 @@ const AddAccount = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/departments'); // Adjust API endpoint accordingly
-        setDepartments(response.data); // Assuming the response data is an array of departments
+        // const response = await axios.get('http://127.0.0.1:8000/api/departments'); // Adjust API endpoint accordingly
+        // setDepartments(response.data); // Assuming the response data is an array of departments
       } catch (error) {
         console.error('Error fetching departments:', error);
         setErrorMessage('Unable to load departments. Please try again later.');
@@ -48,8 +48,8 @@ const AddAccount = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/register', formData);
-      console.log('Account created successfully:', response.data);
+      // const response = await axios.post('http://127.0.0.1:8000/api/register', formData);
+      console.log('Account created successfully:', formData); // Log the form data instead
       // Clear the form after submission
       setFormData({
         role: '',

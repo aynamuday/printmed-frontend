@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import logo from '../assets/images/logo.png';
-import { useUser } from '../components/UserContext';
+import AppContext from '../context/AppContext'; // Adjust the path as necessary
 
 const Forms = () => {
   const [formData, setFormData] = useState({
@@ -14,28 +14,34 @@ const Forms = () => {
     civilStatus: '',
     religion: '',
     phoneNumber: '',
-    physician: '', // Add the physician field
+    physician: '',
   });
 
   const [patients, setPatients] = useState([]);
-  const [successMessage, setSuccessMessage] = useState(''); // State for success message
-  const [isSubmitting, setIsSubmitting] = useState(false); // State to handle submission status
-  const { currentUser } = useUser(); // State for current user
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { token, user } = useContext(AppContext); // Access token and user from AppContext
 
   useEffect(() => {
-    // Fetch existing patients to determine the next ID
-    fetch('http://localhost:8000/patients')
-      .then((response) => response.json())
-      .then((data) => setPatients(data));
+    // Fetch existing patients from the API
+    fetch('/api/patients/')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => setPatients(data))
+      .catch((error) => console.error('Error fetching patients:', error));
 
-    // Fetch the current user (this could be from an API, local storage, or context)
-    if (currentUser) {
-      setFormData(prevData => ({
+    // Set physician from the user data
+    if (user) {
+      setFormData((prevData) => ({
         ...prevData,
-        physician: currentUser.username, // Set physician as the currentUser's username
+        physician: user.username, // Assuming the user object has a username field
       }));
     }
-  }, [currentUser]);
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,35 +53,37 @@ const Forms = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Prompt the user to confirm the information
-    const confirmMessage = `Is all information correct?\n\n${JSON.stringify(formData, null, 2)}`;
-    
-    if (window.confirm(confirmMessage)) {
-      setIsSubmitting(true); // Set submitting state
 
-      // Calculate the next ID based on existing patients
+    const confirmMessage = `Is all information correct?\n\n${JSON.stringify(formData, null, 2)}`;
+
+    if (window.confirm(confirmMessage)) {
+      setIsSubmitting(true);
+
       const newID = patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 0;
 
-      // Prepare the new patient record with the calculated ID
       const newPatient = {
-        id: newID, // Set the calculated ID
+        id: newID,
         ...formData,
       };
 
-      // Save the new patient to patientsName.json using json-server
-      fetch('http://localhost:8000/patients', {
+      // Save the new patient to the API
+      fetch('/api/patients/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Include token in the request
         },
         body: JSON.stringify(newPatient),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then((data) => {
           console.log('New Patient Record:', data);
-          setSuccessMessage('Patient added successfully!'); // Show success message
-          // Reset form after submission
+          setSuccessMessage('Patient added successfully!');
           setFormData({
             firstName: '',
             middleName: '',
@@ -87,15 +95,14 @@ const Forms = () => {
             civilStatus: '',
             religion: '',
             phoneNumber: '',
-            physician: '', // Reset the doctor field to the current user
+            physician: user.username, // Reset physician to current user's username
           });
-          // Update patients list with the new patient
           setPatients((prevPatients) => [...prevPatients, data]);
-          setIsSubmitting(false); // Reset submitting state
+          setIsSubmitting(false);
         })
         .catch((error) => {
           console.error('Error adding patient:', error);
-          setIsSubmitting(false); // Reset submitting state on error
+          setIsSubmitting(false);
         });
     }
   };
@@ -116,7 +123,6 @@ const Forms = () => {
         <div className="p-2.5 mt-1 flex justify-center items-center rounded-md bg-gray-100">
           <img src={logo} className="h-20" alt="Logo" />
         </div>
-        {/* <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4"> */}
         <form onSubmit={handleSubmit} className="px-8">
           <div className="grid grid-cols-7 gap-4">
             <div className="col-span-2">
@@ -181,7 +187,7 @@ const Forms = () => {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
                 required
               >
-                <option value="" disabled>Select Sex</option> {/* Default option */}
+                <option value="" disabled>Select Sex</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -211,7 +217,7 @@ const Forms = () => {
                 <option value="Single">Single</option>
                 <option value="Married">Married</option>
                 <option value="Widowed">Widowed</option>
-                <option value="Its Complicated">It's Complicated</option>
+                <option value="It's Complicated">It's Complicated</option>
                 <option value="Divorced">Divorced</option>
                 <option value="Separated">Separated</option>
               </select>
@@ -231,6 +237,9 @@ const Forms = () => {
                 <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
                 <option value="Jehovas Witnesses">Jehovas Witnesses</option>
                 <option value="Born Again">Born Again</option>
+                <option value="Buddhist">Buddhist</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Others">Others</option>
               </select>
             </div>
             <div className="col-span-2">
@@ -245,26 +254,25 @@ const Forms = () => {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Assigned Physician:</label>
+              <label className="block text-sm font-medium text-gray-700">Physician:</label>
               <input
                 type="text"
                 name="physician"
                 value={formData.physician}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                disabled // Make the input read-only or remove this if you want to keep it editable
-                required
+                readOnly
               />
             </div>
-            <div className="col-span-1 flex justify-center mt-4">
-              <button
-                type="submit"
-                className={`bg-blue-500 text-white px-4 py-2 rounded-md shadow ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Save Patient Record'}
-              </button>
-            </div>
+          </div>
+          <div className="mt-6">
+            <button
+              type="submit"
+              className={`w-full p-2 text-white bg-blue-600 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Submitting...' : 'Add Patient'}
+            </button>
           </div>
         </form>
       </div>

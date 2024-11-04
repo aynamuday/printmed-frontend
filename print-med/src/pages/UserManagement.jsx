@@ -9,9 +9,18 @@ const UserManagement = () => {
 
   // Sample fetch function to simulate getting data from an API
   const fetchUsers = async () => {
-    const response = await fetch('YOUR_API_URL'); // Replace with your API URL
-    const data = await response.json();
-    setUsers(data);
+    // const response = await fetch('YOUR_API_URL'); // Replace with your API URL
+    // const data = await response.json();
+    // setUsers(data);
+
+    // Simulating user data for demonstration purposes
+    const simulatedUsers = [
+      { userNumber: '1', name: 'John Doe', dateRegistered: '2024-01-15', role: 'Admin' },
+      { userNumber: '2', name: 'Jane Smith', dateRegistered: '2024-01-16', role: 'Doctor' },
+      { userNumber: '3', name: 'Emily Johnson', dateRegistered: '2024-01-17', role: 'Nurse' },
+      // Add more simulated user objects as needed
+    ];
+    setUsers(simulatedUsers);
   };
 
   useEffect(() => {
@@ -87,7 +96,7 @@ const UserManagement = () => {
                 <th className="border-b border-gray-300 p-2">User Name</th>
                 <th className="border-b border-gray-300 p-2">Date Registered</th>
                 <th className="border-b border-gray-300 p-2">Role</th>
-                <th className="border-b border-gray-300 p-2">Actions</th> {/* New column for actions */}
+                <th className="border-b border-gray-300 p-2">Actions</th>
               </tr>
             </thead>
             <tbody>

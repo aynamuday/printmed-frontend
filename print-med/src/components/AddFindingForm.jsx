@@ -23,7 +23,7 @@ const AddFindingForm = ({
   const handleAddFinding = async () => {
     try {
       // Make a PATCH request to update the specific patient's opdFindings array
-      const response = await fetch(`http://localhost:8000/patients/${patientId}`, {
+      const response = await fetch(`/api/patients/${patientId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
