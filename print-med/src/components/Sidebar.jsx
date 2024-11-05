@@ -50,84 +50,84 @@ const Sidebar = () => {
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/users" className={linkClass}>
                   <i className="bi bi-people"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Users</span>
+                  <span className="text-[20px] ml-4 text-white">Users</span>
                 </NavLink>
                 <NavLink to="/add-user" className={linkClass}>
                   <i className="bi bi-plus-circle"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Add User</span>
+                  <span className="text-[20px] ml-4 text-white">Add User</span>
                 </NavLink> 
                 <NavLink to="/departments" className={linkClass}>
                   <i className="bi bi-building"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Departments</span>
+                  <span className="text-[20px] ml-4 text-white">Departments</span>
                 </NavLink>
                 <NavLink to="/audits" className={linkClass}>
                   <i className="bi bi-file-earmark-bar-graph"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Audits</span>
+                  <span className="text-[20px] ml-4 text-white">Audits</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                  <span className="text-[20px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "physician" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/patient" className={linkClass}>
                   <i className="bi bi-person"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Patient Records</span>
+                  <span className="text-[20px] ml-4 text-white">Patient Records</span>
                 </NavLink>
                 <NavLink to="/add-patient" className={linkClass}>
                   <i className="bi bi-person-plus"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Add Patient</span>
+                  <span className="text-[20px] ml-4 text-white">Add Patient</span>
                 </NavLink>
                 <NavLink to="/payments" className={linkClass}>
                   <i className="bi bi-cash"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Payments</span>
+                  <span className="text-[20px] ml-4 text-white">Payments</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                  <span className="text-[20px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "secretary" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/patients" className={linkClass}>
                   <i className="bi bi-person-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Patients</span>
+                  <span className="text-[20px] ml-4 text-white">Patients</span>
                 </NavLink>
                 <NavLink to="/add-patient" className={linkClass}>
                   <i className="bi bi-person-plus-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Add Patient</span>
+                  <span className="text-[20px] ml-4 text-white">Add Patient</span>
                 </NavLink>
                 <NavLink to="/payments" className={linkClass}>
                   <i className="bi bi-cash-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Payments</span>
+                  <span className="text-[20px] ml-4 text-white">Payments</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                  <span className="text-[20px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "queue manager" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                  <span className="text-[20px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : (<></>)))) }
