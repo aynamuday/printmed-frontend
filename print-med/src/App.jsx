@@ -5,6 +5,8 @@ import ProtectedRoute from './ProtectedRoute';
 
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
+import UpdateEmailPage from './pages/UpdateEmailPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import DashboardAdminPage from './pages/DashboardAdminPage';
 import UsersPage from './pages/UsersPage';
 import AddUserPage from './pages/AddUserPage';
@@ -14,11 +16,13 @@ import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretary
 import PatientsPage from './pages/PatientsPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
-import Payment from './pages/Payment';
-import Queue from './pages/Queue';
 
 const App = () => {
-  const { user } = useContext(AppContext);
+  const { user, loading } = useContext(AppContext);
+
+  if (loading) {
+    return
+  }
 
   return (
     <BrowserRouter>
@@ -37,8 +41,8 @@ const App = () => {
             {/* <Route path='reset-password' element={<Navigate to='/'/>}/> */}
 
             <Route path='settings' element={<SettingsPage/>}/>
-            {/* <Route path='update-email' element={<UpdateEmailPage/>}/>
-            <Route path='change-password' element={<ChangePasswordPage/>}/> */}
+            <Route path='settings/update-email' element={<UpdateEmailPage/>}/>
+            <Route path='settings/change-password' element={<ChangePasswordPage/>}/>
             
             { user.role === "admin" ? (
               <>

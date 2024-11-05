@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  const [loading, setLoading] = useState(true)
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(null)
 
@@ -15,17 +16,26 @@ export const AppProvider = ({ children }) => {
     const data = await res.json();
 
     if (res.ok) {
-        setUser(data);
+      setUser(data);
+    } else {
+      localStorage.removeItem('token')
+      setToken(null)
+      setUser(null)
     }
-}
+
+    setLoading(false)
+  }
+
   useEffect(()=> {
     if (token) {
         getUser();
-    }
+    } else {
+      setLoading(false)
+    } 
   }, [token]);
 
   return (
-    <AppContext.Provider value={{ token, setToken, user, setUser }}>
+    <AppContext.Provider value={{ token, setToken, user, setUser, loading }}>
       {children}
     </AppContext.Provider>
   );

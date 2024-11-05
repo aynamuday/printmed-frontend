@@ -1,63 +1,87 @@
-import React, { useContext, useState } from 'react';
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
-import UpdateEmailPage from './UpdateEmailPage';
-import ChangePasswordPage from './ChangePasswordPage';
-import AppContext from '../context/AppContext'; // Adjust the import based on your structure
+import React from 'react'
+import { useContext } from 'react'
+import { Link, Navigate } from 'react-router-dom'
+import AppContext from '../context/AppContext'
+import Settings from '../components/Settings'
 
 const SettingsPage = () => {
-  const { user } = useContext(AppContext); // Get current user from AppContext
-  const [showUpdateEmail, setShowUpdateEmail] = useState(false);
-  const [showChangePassword, setShowChangePassword] = useState(false);
+    const { user, setUser, token, setToken } = useContext(AppContext);
+  const navigate = Navigate
 
-  return (
-    <>
-      <Sidebar />
-      <Header />
+  const handleLogout = async () => {
+    const isConfirmed = window.confirm('Are you sure you want to log out?');
+    
+    if (isConfirmed) {
+      const res = await fetch("api/logout", {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer: ${token}`
+        }
+      })
+  
+      await res.json()
       
-    </>
-  );
-};
+      localStorage.removeItem('token')
+      setToken(null)
+      setUser(null)
+      navigate('/login')
+    }
+  }
+    
+  return (
+    <Settings children={<>
+      <h2 className="text-4xl font-bold">{ user.full_name.toUpperCase() }</h2>
+        <p className="text-black-500">{ user.personnel_number }</p>
+        <p className="text-black-500">{ user.email }</p>
 
-export default SettingsPage;
+        <div className='min-h-10'></div>
 
-{/* <div className="w-full md:w-[70%] md:ml-[25%]">
-        <div className="flex flex-col items-center justify-center mt-10 bg-[#6CB6AD] p-10 rounded-lg shadow-lg">
-          <div className="w-24 h-24 rounded-full overflow-hidden">
-            {/* Profile Picture *
-          </div>
-
-          {user ? (
+        <div className=' grid grid-cols-2 gap-x-14 gap-y-0'>
+        { user.role === "physician" ? (
             <>
-              <h2 className="text-lg font-bold mt-4">DOC. {user.username.toUpperCase()}</h2>
-              <p className="text-gray-500">{user.email || `${user.username}@doctor.crm.ph`}</p>
-              <p className="mt-2 text-gray-700">
-                <strong>Specialization:</strong> {user.specialization}
-              </p>
-              <p className="text-gray-700">
-                <strong>Room Assigned:</strong> {user.roomAssigned}
-              </p>
-
-              <div className="mt-6 space-y-4 w-full flex flex-col items-center">
-                <button
-                  onClick={() => setShowUpdateEmail(true)}
-                  className="w-48 px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                  Update Email
-                </button>
-                <button
-                  onClick={() => setShowChangePassword(true)}
-                  className="w-48 px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                >
-                  Change Password
-                </button>
-              </div>
+                <p>Department:</p>
+                <p><strong>{user.department_name}</strong></p>
+                <p>Room Assigned:</p>
+                <p><strong>{user.room_assigned}</strong></p>
             </>
-          ) : (
-            <p>No user logged in.</p>
-          )}
+        ) : ( user.role === "secretary" ? (
+            <>
+            <p>Department:</p>
+            <p><strong>{user.department_name}</strong></p>
+            </>
+        ) : (<></>))}
+
+        <p>Sex:</p>
+        <p><strong>{user.sex}</strong></p>
+        <p>Birthdate:</p>
+        <p><strong>{user.birthdate}</strong></p>
         </div>
 
-        {showUpdateEmail && <UpdateEmailPage onClose={() => setShowUpdateEmail(false)} />}
-        {showChangePassword && <ChangePasswordPage onClose={() => setShowChangePassword(false)} />}
-      </div> */}
+        <div className='min-h-10'></div>
+
+        <div className="mt-6 space-y-4 w-full flex flex-col items-center">
+        <Link
+            to="/settings/update-email"
+            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none text-center"
+        >
+            Update Email
+        </Link>
+        <Link
+            to="/settings/change-password"
+            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none text-center"
+        >
+            Change Password
+        </Link>
+        <div className='min-h-3'></div>
+        <button
+            onClick={handleLogout}
+            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none"
+        >
+            Logout
+        </button>
+        </div>
+    </>}/>
+  )
+}
+
+export default SettingsPage
