@@ -24,10 +24,6 @@ const LoginPage = () => {
   const [isOtpSent, setIsOtpSent] = useState(false); 
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    console.log(otp)
-  }, [otp])
-
   // Function to handle input changes for login credentials
   const handleChange = (e) => {
     const { name, value } = e.target;

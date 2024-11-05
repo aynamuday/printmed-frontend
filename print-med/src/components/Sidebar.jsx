@@ -72,10 +72,6 @@ const Sidebar = () => {
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
-                <NavLink onClick={handleLogout} className={linkClass}>
-                  <i className="bi bi-box-arrow-right"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
-                </NavLink>
               </>
             ) : ( user.role === "physician" ? (
               <>
@@ -98,10 +94,6 @@ const Sidebar = () => {
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
-                </NavLink>
-                <NavLink onClick={handleLogout} className={linkClass}>
-                  <i className="bi bi-box-arrow-right"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
                 </NavLink>
               </>
             ) : ( user.role === "secretary" ? (
@@ -126,10 +118,6 @@ const Sidebar = () => {
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
-                <NavLink onClick={handleLogout} className={linkClass}>
-                  <i className="bi bi-box-arrow-right"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
-                </NavLink>
               </>
             ) : ( user.role === "queue manager" ? (
               <>
@@ -140,10 +128,6 @@ const Sidebar = () => {
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
-                </NavLink>
-                <NavLink onClick={handleLogout} className={linkClass}>
-                  <i className="bi bi-box-arrow-right"></i>
-                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
                 </NavLink>
               </>
             ) : (<></>)))) }
