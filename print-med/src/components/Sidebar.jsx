@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 // import "bootstrap-icons/font/bootstrap-icons.css"; 
 import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 
 const Sidebar = () => {
   const {user, setUser, token, setToken} = useContext(AppContext)
-
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -16,6 +16,12 @@ const Sidebar = () => {
   const linkClass = ({ isActive }) => isActive ? 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
+
+  const handleLogout = () => {
+    setUser(null); // Clear user data
+    setToken(null); // Clear token
+    navigate("/login"); // Redirect to login page
+  };
 
   return (
     <>
@@ -66,6 +72,10 @@ const Sidebar = () => {
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
                 </NavLink>
+                <NavLink onClick={handleLogout} className={linkClass}>
+                  <i className="bi bi-box-arrow-right"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
+                </NavLink>
               </>
             ) : ( user.role === "physician" ? (
               <>
@@ -73,13 +83,25 @@ const Sidebar = () => {
                   <i className="bi bi-house-door-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
                 </NavLink>
+                <NavLink to="/patient" className={linkClass}>
+                  <i className="bi bi-person"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Patient Records</span>
+                </NavLink>
+                <NavLink to="/add-patient" className={linkClass}>
+                  <i className="bi bi-person-plus"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Add Patient</span>
+                </NavLink>
                 <NavLink to="/payments" className={linkClass}>
-                  <i className="bi bi-cash-fill"></i>
+                  <i className="bi bi-cash"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Payments</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+                <NavLink onClick={handleLogout} className={linkClass}>
+                  <i className="bi bi-box-arrow-right"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
                 </NavLink>
               </>
             ) : ( user.role === "secretary" ? (
@@ -103,6 +125,10 @@ const Sidebar = () => {
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+                <NavLink onClick={handleLogout} className={linkClass}>
+                  <i className="bi bi-box-arrow-right"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
                 </NavLink>
               </>
             ) : (<></>))) }

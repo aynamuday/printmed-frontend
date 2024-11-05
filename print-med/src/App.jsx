@@ -14,6 +14,7 @@ import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretary
 import PatientsPage from './pages/PatientsPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
+import Payment from './pages/Payment';
 
 const App = () => {
   const { user } = useContext(AppContext);
@@ -49,8 +50,10 @@ const App = () => {
             ) : ( user.role === "physician" ? (
               <>
                 <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-                {/* <Route path='update-patient' element={<UpdatePatientPage/>}/>
-                <Route path='patient' element={<PatientPage/>}/> */}
+                {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
+                <Route path='patient' element={<PatientsPage/>}/>
+                <Route path='add-patient' element={<AddPatientPage/>}/>
+                <Route path='/payments' element={<Payment />}/>
               </>
             ) : ( user.role === "secretary" ? (
               <>

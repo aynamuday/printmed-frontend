@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import opdFindings from '../data/opdFindings.json';
 
 const PatientDetails = ({ patient, onClose }) => {
   const [findings, setFindings] = useState([]);
@@ -17,9 +16,7 @@ const PatientDetails = ({ patient, onClose }) => {
     physician: '',
     paymentAmount: '',
   });
-  const [selectedFinding, setSelectedFinding] = useState(null); // State for selected finding
-  const [displayDate, setDisplayDate] = useState('');//State for selected date
-  const [showFingerprintModal, setShowFingerprintModal] = useState(false);
+  const [displayDate, setDisplayDate] = useState(''); // State for selected date
 
   useEffect(() => {
     const currentDate = new Date();
@@ -34,103 +31,57 @@ const PatientDetails = ({ patient, onClose }) => {
     setNewFinding((prev) => ({ ...prev, dateConsulted: formattedDate }));
     setDisplayDate(displayFormattedDate);
 
-    //const patient = opdFindings.find(finding => finding.patientId === patient.id);
     if (patient) {
       setFindings(patient.opdFindings);
     }
   }, [patient]);
 
-
   const handleAddFinding = () => {
     if (newFinding.presumption && newFinding.dateConsulted) {
-      // Show the fingerprint modal for verification
-      setShowFingerprintModal(true);
+      saveFinding(); // Directly save the finding
     } else {
       alert('Please fill out the required fields.');
     }
   };
 
-  const handleFingerprintVerification = () => {
-    // Simulate fingerprint verification
-    const success = true; // Replace this with real fingerprint verification logic
-
-    if (success) {
-      saveFinding(); // Save finding if fingerprint is verified
-    } else {
-      alert('Fingerprint verification failed.');
-    }
-    setShowFingerprintModal(false);
-  };
-
   const saveFinding = () => {
     const updatedFinding = {
-        ...newFinding,
-        patientId: patient.id, // Add patient ID to the new finding
+      ...newFinding,
+      patientId: patient.id, // Add patient ID to the new finding
     };
 
     // POST request to add the new finding to the server
     fetch(`http://localhost:8000/patients/${patient.id}`, {
-        method: 'PATCH', // Use PATCH to update the existing patient record
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            opdFindings: [...findings, updatedFinding], // Append new finding to the existing ones
-        }),
+      method: 'PATCH', // Use PATCH to update the existing patient record
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        opdFindings: [...findings, updatedFinding], // Append new finding to the existing ones
+      }),
     })
     .then(response => response.json())
     .then(updatedPatient => {
-        setFindings(updatedPatient.opdFindings); // Update local state with the new findings
-        // Reset newFinding and hide the form
-        setNewFinding({
-            presumption: '',
-            dateConsulted: '',
-            bloodPressure: '',
-            temperature: '',
-            weight: '',
-            height: '',
-            diagnosis: '',
-            medication: '',
-            advice: '',
-            physician: '',
-            paymentAmount: '',
-        });
-        setShowForm(false);
+      setFindings(updatedPatient.opdFindings); // Update local state with the new findings
+      // Reset newFinding and hide the form
+      setNewFinding({
+        presumption: '',
+        dateConsulted: '',
+        bloodPressure: '',
+        temperature: '',
+        weight: '',
+        height: '',
+        diagnosis: '',
+        medication: '',
+        advice: '',
+        physician: '',
+        paymentAmount: '',
+      });
+      setShowForm(false);
     })
     .catch(error => console.error('Error updating patient findings:', error));
-};
-
-  const handleSelectFinding = (finding) => {
-    setSelectedFinding(finding);
   };
 
-  const handlePrintFinding = () => {
-    const printContent = document.getElementById('findingDetails');
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-      <head>
-        <title>OPD Finding</title>
-        <style>
-          body { font-family: Arial, sans-serif; }
-          h2 { color: #333; }
-          .detail { margin-bottom: 10px; }
-        </style>
-      </head>
-      <body>
-        <h2>OPD Finding Details</h2>
-        <div>${printContent.innerHTML}</div>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-  };
-
-  const handleCloseFinding = () => {
-    setSelectedFinding(null); // Clear selected finding
-  };
-  
   const handleCancelNewFinding = () => {
     setShowForm(false);
     setNewFinding({
@@ -152,7 +103,6 @@ const PatientDetails = ({ patient, onClose }) => {
     <div className="mt-4 p-4 bg-white shadow-lg rounded">
       <h1 className="text-xl font-bold">Patient No. {patient.id}</h1>
       <div className="flex justify-between mt-4">
-        
         <div className="w-1/2">
           <h2 className="text-lg font-semibold">Details</h2>
           <div className="mt-2">
@@ -241,8 +191,6 @@ const PatientDetails = ({ patient, onClose }) => {
                 </div>
 
                 <div>
-                </div>
-                <div>
                   <label className="block mb-1">Diagnosis:</label>
                   <textarea
                     className="w-full p-2 border border-gray-300 rounded resize-y"
@@ -273,9 +221,6 @@ const PatientDetails = ({ patient, onClose }) => {
                 </div>
 
                 <div>
-                </div>
-
-                <div>
                   <label className="block mb-1">Payment Amount:</label>
                   <input
                     type="text"
@@ -287,103 +232,35 @@ const PatientDetails = ({ patient, onClose }) => {
               </div>
               <button
                 onClick={handleAddFinding}
-                className="mt-4 bg-green-500 text-white px-4 py-2 rounded"
-              >
-                Add Finding
+                className="mt-4 bg-green-500 text-white px-4 py-2 rounded">
+                Save
               </button>
               <button
                 onClick={handleCancelNewFinding}
-                className="mt-2 bg-red-500 text-white px-4 py-2 rounded ml-2"
-              >
+                className="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded">
                 Cancel
               </button>
             </div>
           )}
-          
-          {/* Modal for fingerprint verification */}
-          {showFingerprintModal && (
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-              <div className="bg-white p-4 rounded shadow-lg">
-                <h3 className="text-lg font-semibold">Confirm with Fingerprint</h3>
-                <p>Please scan the patient's fingerprint to confirm the new OPD finding.</p>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <button onClick={handleFingerprintVerification} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-                      Verify Fingerprint
-                  </button>
-                  <button
-                    onClick={() => setShowFingerprintModal(false)}
-                    className="mt-4 bg-gray-300 text-black px-4 py-2 rounded"
-                    >
-                      Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/*Lists of OPD Findings of a specific patient*/}
-          <div className="mt-2">
-            <table className="min-w-full">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="text-left p-2">Presumption</th>
-                  <th className="text-left p-2">Date Consulted</th>
-                  <th className="text-left p-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {findings.map((finding, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="p-2">{finding.presumption}</td>
-                    <td className="p-2">{finding.dateConsulted}</td>
-                    <td className="p-2">
-                      <button
-                        className="text-blue-600 underline"
-                        onClick={() => handleSelectFinding(finding)}
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/*Showed if the user wants to print a specific opd finding of a patient*/}
-          {selectedFinding && (
-            <div className="mt-4 p-4 border border-gray-300 rounded">
-              <h3 className="text-lg font-semibold">Finding Details</h3>
-              <p>Presumption: <strong>{selectedFinding.presumption}</strong></p>
-              <p>Date Consulted: <strong>{selectedFinding.dateConsulted}</strong></p>
-              <p>Blood Pressure: <strong>{selectedFinding.bloodPressure}</strong></p>
-              <p>Temperature: <strong>{selectedFinding.temperature}</strong></p>
-              <p>Weight: <strong>{selectedFinding.weight}</strong></p>
-              <p>Height: <strong>{selectedFinding.height}</strong></p>
-              <p>Diagnosis: <strong>{selectedFinding.diagnosis}</strong></p>
-              <p>Medication: <strong>{selectedFinding.medication}</strong></p>
-              <p>Advice: <strong>{selectedFinding.advice}</strong></p>
-              <p>Physician: <strong>{selectedFinding.physician}</strong></p>
-              <p>Payment Amount: <strong>{selectedFinding.paymentAmount}</strong></p>
-              <button
-                onClick={handlePrintFinding}
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Print Finding
-              </button>
-              <button
-                onClick={handleCloseFinding}
-                className="mt-2 bg-red-500 text-white px-4 py-2 rounded ml-2"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-
+          <ul className="mt-4">
+            {findings.length > 0 ? (
+              findings.map((finding, index) => (
+                <li key={index} className="p-2 border-b">
+                  <h3 className="font-semibold">{finding.presumption} - {finding.dateConsulted}</h3>
+                  <p>Diagnosis: {finding.diagnosis}</p>
+                  <p>Medication: {finding.medication}</p>
+                  <p>Advice: {finding.advice}</p>
+                </li>
+              ))
+            ) : (
+              <li>No findings recorded for this patient.</li>
+            )}
+          </ul>
         </div>
       </div>
-      <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded" onClick={onClose}>
+      <button
+        onClick={onClose}
+        className="mt-4 bg-gray-300 text-black px-4 py-2 rounded">
         Close
       </button>
     </div>

@@ -14,10 +14,17 @@ const SettingsPage = () => {
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[70%] md:ml-[25%]">
+      
+    </>
+  );
+};
+
+export default SettingsPage;
+
+{/* <div className="w-full md:w-[70%] md:ml-[25%]">
         <div className="flex flex-col items-center justify-center mt-10 bg-[#6CB6AD] p-10 rounded-lg shadow-lg">
           <div className="w-24 h-24 rounded-full overflow-hidden">
-            {/* Profile Picture */}
+            {/* Profile Picture *
           </div>
 
           {user ? (
@@ -53,9 +60,4 @@ const SettingsPage = () => {
 
         {showUpdateEmail && <UpdateEmailPage onClose={() => setShowUpdateEmail(false)} />}
         {showChangePassword && <ChangePasswordPage onClose={() => setShowChangePassword(false)} />}
-      </div>
-    </>
-  );
-};
-
-export default SettingsPage;
+      </div> */}
