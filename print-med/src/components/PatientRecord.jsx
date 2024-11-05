@@ -2,11 +2,11 @@ import React, { useState, useContext } from 'react';
 import AppContext from '../context/AppContext';
 
 const PatientRecord = () => {
-  const { user } = useContext(AppContext); // Access user from AppContext
+  const { user } = useContext(AppContext);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedFinding, setSelectedFinding] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
-  // Proxy data for patients
   const patientList = [
     {
       id: 1,
@@ -56,15 +56,14 @@ const PatientRecord = () => {
         },
       ],
     },
-    // Additional patients can be added here
   ];
 
   const handleView = (patient) => {
-    setSelectedPatient(patient); // Select patient without password verification
+    setSelectedPatient(patient);
   };
 
   const handleFindingClick = (finding) => {
-    setSelectedFinding(finding); // Show specific OPD finding details
+    setSelectedFinding(finding);
   };
 
   const handleClose = () => {
@@ -72,13 +71,17 @@ const PatientRecord = () => {
     setSelectedFinding(null);
   };
 
+  const handleAddFinding = () => {
+    setShowForm(false); // Hide the form after adding the finding
+  };
+  
   const handlePrint = () => {
     const printContent = document.getElementById('print-section').innerHTML;
     const originalContent = document.body.innerHTML;
     document.body.innerHTML = printContent;
     window.print();
     document.body.innerHTML = originalContent;
-    window.location.reload(); // Reload to reset the content
+    window.location.reload();
   };
 
   return (
@@ -102,7 +105,6 @@ const PatientRecord = () => {
 
       <div className="w-full flex flex-col items-center mt-10">
         {!selectedPatient ? (
-          // Patient List Table
           <table className="min-w-[90%] bg-white shadow rounded-lg">
             <thead>
               <tr className="bg-gray-200">
@@ -155,37 +157,45 @@ const PatientRecord = () => {
 
             {/* OPD Findings Section */}
             <div className="w-1/2 p-4">
-            <div className="flex justify-between items-center mb-2 bg-[#B43C3A] text-white">
-              <h3 className="text-xl font-semibold ">OPD Findings</h3>
-              <button 
-                className="text-white" 
-                onClick={handlePrint} 
-                aria-label="Print"
-              >
-                <i className="bi bi-printer text-xl"></i> {/* Adjust the size of the icon here */}
-              </button>
-            </div>
-            {selectedFinding ? (
-              <div id="print-section">
-                <p><strong>History of Illness:</strong> {selectedFinding.presumption}</p>
-                <p><strong>Blood Pressure:</strong> {selectedFinding.details.bloodPressure}</p>
-                <p><strong>Temperature:</strong> {selectedFinding.details.temperature}</p>
-                <p><strong>Weight:</strong> {selectedFinding.details.weight}</p>
-                <p><strong>Height:</strong> {selectedFinding.details.height}</p>
-                <p><strong>Diagnosis:</strong> {selectedFinding.details.diagnosis}</p>
-                <p><strong>Medication:</strong> {selectedFinding.details.medication}</p>
-                <p><strong>Advice:</strong> {selectedFinding.details.advice}</p>
-                <p><strong>Other Complaints:</strong> {selectedFinding.details.otherComplaints}</p>
-                <p><strong>Physician:</strong> {selectedFinding.details.physician}</p>
-                <p><strong>Date Consulted:</strong> {selectedFinding.dateConsulted}</p>
-                <p><strong>Payment Amount:</strong> {selectedFinding.details.paymentAmount}</p>
-                <button
-                  className="bg-gray-300 px-4 py-2 rounded mt-4"
-                  onClick={() => setSelectedFinding(null)}
-                >
-                  Back to Findings
-                </button>
+              <div className="flex justify-between items-center mb-2 bg-[#B43C3A] text-white">
+                <h3 className="text-xl font-semibold">OPD Findings</h3>
+                <button 
+                    className="text-white"
+                    aria-label="Plus"
+                  >
+                    <i className="bi bi-plus"></i>
+                  </button>
+                {selectedFinding && (
+                  <button 
+                    className="text-white" 
+                    onClick={handlePrint} 
+                    aria-label="Print"
+                  >
+                    <i className="bi bi-printer text-xl"></i>
+                  </button>
+                )}
               </div>
+              {selectedFinding ? (
+                <div id="print-section">
+                  <p><strong>History of Illness:</strong> {selectedFinding.presumption}</p>
+                  <p><strong>Blood Pressure:</strong> {selectedFinding.details.bloodPressure}</p>
+                  <p><strong>Temperature:</strong> {selectedFinding.details.temperature}</p>
+                  <p><strong>Weight:</strong> {selectedFinding.details.weight}</p>
+                  <p><strong>Height:</strong> {selectedFinding.details.height}</p>
+                  <p><strong>Diagnosis:</strong> {selectedFinding.details.diagnosis}</p>
+                  <p><strong>Medication:</strong> {selectedFinding.details.medication}</p>
+                  <p><strong>Advice:</strong> {selectedFinding.details.advice}</p>
+                  <p><strong>Other Complaints:</strong> {selectedFinding.details.otherComplaints}</p>
+                  <p><strong>Physician:</strong> {selectedFinding.details.physician}</p>
+                  <p><strong>Date Consulted:</strong> {selectedFinding.dateConsulted}</p>
+                  <p><strong>Payment Amount:</strong> {selectedFinding.details.paymentAmount}</p>
+                  <button
+                    className="bg-gray-300 px-4 py-2 rounded mt-4"
+                    onClick={() => setSelectedFinding(null)}
+                  >
+                    Back to Findings
+                  </button>
+                </div>
               ) : (
                 <>
                   <div className="flex items-center rounded-md px-4 duration-300 cursor-pointer bg-[#D9D9D9] mb-4 h-10">
