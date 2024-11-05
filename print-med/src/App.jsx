@@ -15,6 +15,7 @@ import PatientsPage from './pages/PatientsPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 import Payment from './pages/Payment';
+import Queue from './pages/Queue';
 
 const App = () => {
   const { user } = useContext(AppContext);
@@ -64,7 +65,7 @@ const App = () => {
               </>
             ) : ( user.role === "queue manager" ? (
               <>
-                <Route path='/' element={<DashboardQueueManagerPage/>}/>
+                <Route path='/' element={<Queue/>}/>
               </>
             ) : ( <Navigate to="/" /> ) ) ) ) }
           </Route>

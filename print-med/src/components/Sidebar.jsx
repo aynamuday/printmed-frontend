@@ -131,7 +131,22 @@ const Sidebar = () => {
                   <span className="text-[20px] ml-4 text-gray-200">Logout</span>
                 </NavLink>
               </>
-            ) : (<></>))) }
+            ) : ( user.role === "queue manager" ? (
+              <>
+                <NavLink to="/" className={linkClass}>
+                  <i className="bi bi-house-door-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Dashboard</span>
+                </NavLink>
+                <NavLink to="/settings" className={linkClass}>
+                  <i className="bi bi-gear-fill"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Settings</span>
+                </NavLink>
+                <NavLink onClick={handleLogout} className={linkClass}>
+                  <i className="bi bi-box-arrow-right"></i>
+                  <span className="text-[20px] ml-4 text-gray-200">Logout</span>
+                </NavLink>
+              </>
+            ) : (<></>)))) }
           </div>
         </div>
       </div>

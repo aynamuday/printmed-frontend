@@ -1,8 +1,12 @@
-import React from 'react'
+import Header from "../components/Header"
+import Sidebar from "../components/Sidebar"
 
 const DashboardQueueManagerPage = () => {
   return (
-    <div>DashboardQueueManagerPage</div>
+    <>
+      <Sidebar />
+      <Header />
+    </>
   )
 }
 
