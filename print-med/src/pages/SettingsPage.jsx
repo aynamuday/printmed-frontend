@@ -3,15 +3,32 @@ import { useContext } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import AppContext from '../context/AppContext'
 import Settings from '../components/Settings'
+import Swal from 'sweetalert2';
 
 const SettingsPage = () => {
-    const { user, setUser, token, setToken } = useContext(AppContext);
+  const { user, setUser, token, setToken } = useContext(AppContext);
   const navigate = Navigate
 
   const handleLogout = async () => {
-    const isConfirmed = window.confirm('Are you sure you want to log out?');
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log me out!',
+      cancelButtonText: 'Cancel',
+      position: 'center',
+      allowOutsideClick: false, // Disable closing when clicking outside
+      showClass: {
+        popup: 'animate__animated animate__fadeIn'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOut'
+      }
+    });
     
-    if (isConfirmed) {
+    
+    if (result.isConfirmed) {
       const res = await fetch("api/logout", {
         method: 'POST',
         headers: {

@@ -18,6 +18,7 @@ import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 import Queue from './pages/Queue';
 import RegistrationPage from './pages/RegistrationPage';
+import Payment from './pages/Payment';
 
 
 const App = () => {
@@ -69,6 +70,7 @@ const App = () => {
                 <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
                 <Route path='patients' element={<PatientsPage/>}/>
                 <Route path='add-patient' element={<AddPatientPage/>}/>
+                <Route path='/payments' element={<Payment />}/>
                 {/* <Route path='payments' element={<PaymentsPage/>}/> */}
               </>
             ) : ( user.role === "queue manager" ? (

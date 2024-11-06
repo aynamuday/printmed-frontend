@@ -43,7 +43,7 @@ const Sidebar = () => {
             <i className="bi bi-x ml-20 cursor-pointer lg:hidden" onClick={toggleSidebar}></i>
           </div>
 
-          <hr className="my-2 text-gray-600" />
+          <hr className="my-2 text-white" />
 
           <div>
             { user.role === "admin" ? (

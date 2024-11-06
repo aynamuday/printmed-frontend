@@ -95,7 +95,7 @@ const Queue = () => {
             <p className="text-7xl my-4">{entQueue}</p>
           </div>
 
-          <div class="col-start-2 col-span-1 gap-4">
+          <div className="col-start-2 col-span-1 gap-4">
             <button 
                 className="w-full px-4 py-2 bg-[#6CB6AD] font-bold text-3xl text-black rounded-lg hover:bg-blue-600 mt-5"
                 onClick={() => incrementQueue('pedia')}

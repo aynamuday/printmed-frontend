@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import logo from '../assets/images/logo.png';
-import AppContext from '../context/AppContext'; // Adjust the path as necessary
+import AppContext from '../context/AppContext';
+import Swal from 'sweetalert2';
 
 const Forms = () => {
   const [formData, setFormData] = useState({
@@ -18,27 +19,20 @@ const Forms = () => {
   });
 
   const [patients, setPatients] = useState([]);
-  const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { token, user } = useContext(AppContext); // Access token and user from AppContext
+  const [errors, setErrors] = useState({});
+  const { token, user } = useContext(AppContext);
 
   useEffect(() => {
-    // Fetch existing patients from the API
     fetch('/api/patients/')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => setPatients(data))
       .catch((error) => console.error('Error fetching patients:', error));
 
-    // Set physician from the user data
     if (user) {
       setFormData((prevData) => ({
         ...prevData,
-        physician: user.username, // Assuming the user object has a username field
+        physician: user.username,
       }));
     }
   }, [user]);
@@ -47,65 +41,121 @@ const Forms = () => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value || '',
     }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let formIsValid = true;
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+      formIsValid = false;
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+      formIsValid = false;
+    }
+    if (!formData.birthday) {
+      newErrors.birthday = 'Birthday is required';
+      formIsValid = false;
+    }
+    if (!formData.sex) {
+      newErrors.sex = 'Sex is required';
+      formIsValid = false;
+    }
+    if (!formData.civilStatus) {
+      newErrors.civilStatus = 'Civil status is required';
+      formIsValid = false;
+    }
+    if (!formData.religion) {
+      newErrors.religion = 'Religion is required';
+      formIsValid = false;
+    }
+    if (!formData.address) {
+      newErrors.address = 'Address is required';
+      formIsValid = false;
+    }
+    if (!formData.phoneNumber || isNaN(formData.phoneNumber) || formData.phoneNumber.length !== 11) {
+      newErrors.phoneNumber = 'Please enter a valid phone number (11 digits)';
+      formIsValid = false;
+    }
+    if (!formData.physician) {
+      newErrors.physician = 'Physician is requires';
+      formIsValid = false;
+    }
+
+    setErrors(newErrors);
+    return formIsValid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const confirmMessage = `Is all information correct?\n\n${JSON.stringify(formData, null, 2)}`;
-
-    if (window.confirm(confirmMessage)) {
-      setIsSubmitting(true);
-
-      const newID = patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 0;
-
-      const newPatient = {
-        id: newID,
-        ...formData,
-      };
-
-      // Save the new patient to the API
-      fetch('/api/patients/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include token in the request
-        },
-        body: JSON.stringify(newPatient),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log('New Patient Record:', data);
-          setSuccessMessage('Patient added successfully!');
-          setFormData({
-            firstName: '',
-            middleName: '',
-            lastName: '',
-            suffix: '',
-            birthday: '',
-            sex: '',
-            address: '',
-            civilStatus: '',
-            religion: '',
-            phoneNumber: '',
-            physician: user.username, // Reset physician to current user's username
-          });
-          setPatients((prevPatients) => [...prevPatients, data]);
-          setIsSubmitting(false);
-        })
-        .catch((error) => {
-          console.error('Error adding patient:', error);
-          setIsSubmitting(false);
-        });
+  
+    if (validateForm()) {
+      Swal.fire({
+        title: 'Are you sure you want to add this patient?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, add patient!',
+        cancelButtonText: 'Cancel',
+        position: 'center',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setIsSubmitting(true);
+          const newPatient = {
+            id: patients.length > 0 ? Math.max(...patients.map((p) => p.id)) + 1 : 0,
+            ...formData,
+          };
+  
+          fetch('/api/patients/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(newPatient),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              setPatients((prevPatients) => [...prevPatients, data]);
+              setIsSubmitting(false);
+              setFormData({
+                firstName: '',
+                middleName: '',
+                lastName: '',
+                suffix: '',
+                birthday: '',
+                sex: '',
+                address: '',
+                civilStatus: '',
+                religion: '',
+                phoneNumber: '',
+                physician: '',
+              });
+  
+              Swal.fire({
+                title: 'Patient Added Successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                position: 'center',
+              }).then(() => {
+                // Redirect to forms or reset the form view here
+                window.location.reload(); // Optionally reloads the page to return to form
+                // If using a router (e.g., React Router), you can also use history.push('/forms') if forms is a route
+              });
+            })
+            .catch((error) => {
+              console.error('Error adding patient:', error);
+              setIsSubmitting(false);
+            });
+        }
+      });
     }
   };
+  
 
   return (
     <div className="flex flex-col h-screen bg-white items-center justify-center w-full md:w-[100%]">
@@ -113,105 +163,98 @@ const Forms = () => {
         <h2 className="text-2xl font-semibold text-center mb-4 -mt-10">Add Patient Record</h2>
       </div>
 
-      {successMessage && (
-        <div className="mb-4 text-green-600 text-center">
-          {successMessage}
-        </div>
-      )}
-
       <div className="w-full md:w-[70%] md:ml-[20%] bg-gray-100 p-6 rounded-lg shadow-md">
         <div className="p-2.5 mt-1 flex justify-center items-center rounded-md bg-gray-100">
           <img src={logo} className="h-20" alt="Logo" />
         </div>
         <form onSubmit={handleSubmit} className="px-8">
           <div className="grid grid-cols-7 gap-4">
+
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">First Name:</label>
+              <label className="block text-sm font-medium text-gray-700"></label>
               <input
                 type="text"
                 name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Middle Name:</label>
-              <input
-                type="text"
-                name="middleName"
-                value={formData.middleName}
+                placeholder="First Name"
+                value={formData.firstName || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               />
+              {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
             </div>
+
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Last Name:</label>
+              <label className="block text-sm font-medium text-gray-700"></label>
               <input
                 type="text"
                 name="lastName"
-                value={formData.lastName}
+                placeholder="Last Name"
+                value={formData.lastName || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
+              />
+              {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700"></label>
+              <input
+                type="text"
+                name="middleName"
+                placeholder="Middle Name"
+                value={formData.middleName || ''}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               />
             </div>
+
             <div className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700">Suffix:</label>
+              <label className="block text-sm font-medium text-gray-700"></label>
               <input
                 type="text"
                 name="suffix"
-                value={formData.suffix}
+                placeholder="Suffix"
+                value={formData.suffix || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
               />
+              {errors.suffix && <p className="text-red-500 text-sm">{errors.suffix}</p>}
             </div>
+
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Birthday:</label>
+              <label className="block text-sm font-medium text-gray-700">Birthday</label>
               <input
                 type="date"
                 name="birthday"
-                value={formData.birthday}
+                value={formData.birthday || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
               />
+              {errors.birthday && <p className="text-red-500 text-sm">{errors.birthday}</p>}
             </div>
+
             <div className="col-span-1">
               <label className="block text-sm font-medium text-gray-700">Sex:</label>
               <select
                 name="sex"
-                value={formData.sex}
+                value={formData.sex || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
               >
                 <option value="" disabled>Select Sex</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Other">Other</option>
               </select>
+              {errors.sex && <p className="text-red-500 text-sm">{errors.sex}</p>}
             </div>
-            <div className="col-span-4">
-              <label className="block text-sm font-medium text-gray-700">Address:</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
-              />
-            </div>
-            <div className="col-span-1">
+
+            <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700">Civil Status:</label>
               <select
                 name="civilStatus"
-                value={formData.civilStatus}
+                value={formData.civilStatus || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
               >
                 <option value="" disabled>Select Status</option>
                 <option value="Single">Single</option>
@@ -221,15 +264,16 @@ const Forms = () => {
                 <option value="Divorced">Divorced</option>
                 <option value="Separated">Separated</option>
               </select>
+              {errors.civilStatus && <p className="text-red-500 text-sm">{errors.civilStatus}</p>}
             </div>
+
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700">Religion:</label>
               <select
                 name="religion"
-                value={formData.religion}
+                value={formData.religion || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
               >
                 <option value="" disabled>Select Your Religion</option>
                 <option value="Roman Catholic">Roman Catholic</option>
@@ -241,29 +285,48 @@ const Forms = () => {
                 <option value="Hindu">Hindu</option>
                 <option value="Others">Others</option>
               </select>
+              {errors.religion && <p className="text-red-500 text-sm">{errors.religion}</p>}
             </div>
+
+            <div className="col-span-4">
+              <label className="block text-sm font-medium text-gray-700"></label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={formData.address || ''}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+              />
+              {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+            </div>
+            
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Phone Number:</label>
+              <label className="block text-sm font-medium text-gray-700"></label>
               <input
                 type="text"
                 name="phoneNumber"
-                value={formData.phoneNumber}
+                placeholder="Phone Number"
+                value={formData.phoneNumber || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                required
               />
+              {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber}</p>}
             </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Physician:</label>
+
+            <div className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700"></label>
               <input
                 type="text"
                 name="physician"
-                value={formData.physician}
+                placeholder="Physician"
+                value={formData.physician || ''}
                 onChange={handleChange}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
-                readOnly
               />
+              {errors.physician && <p className="text-red-500 text-sm">{errors.physician}</p>}
             </div>
+
             <div className="mt-6 col-end-8 col-span-2">
               <button
                 type="submit"
