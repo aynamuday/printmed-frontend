@@ -16,6 +16,7 @@ import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretary
 import PatientsPage from './pages/PatientsPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
+import Queue from './pages/Queue';
 
 const App = () => {
   const { user, loading } = useContext(AppContext);

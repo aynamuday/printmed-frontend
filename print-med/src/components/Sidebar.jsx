@@ -111,7 +111,7 @@ const Sidebar = () => {
                   <span className="text-[20px] ml-4 text-white">Add Patient</span>
                 </NavLink>
                 <NavLink to="/payments" className={linkClass}>
-                  <i className="bi bi-cash-fill"></i>
+                  <i className="bi bi-cash"></i>
                   <span className="text-[20px] ml-4 text-white">Payments</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
