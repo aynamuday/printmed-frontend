@@ -87,6 +87,15 @@ const Forms = () => {
     }
 
     setErrors(newErrors);
+    if (!formIsValid) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Complete The Forms',
+        text: 'Please fill in all the input field.',
+      });
+      return;
+    }
+    
     return formIsValid;
   };
 
