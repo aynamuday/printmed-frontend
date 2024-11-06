@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import AppContext from './context/AppContext';
 import ProtectedRoute from './ProtectedRoute';
+import { AdminProvider } from './context/AdminContext';
+import { BounceLoader } from 'react-spinners';
 
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
@@ -27,11 +29,64 @@ const App = () => {
     return
   }
 
+  const generalRoutes = (
+    <>
+      <Route path='settings' element={<SettingsPage/>}/>
+      <Route path='settings/update-email' element={<UpdateEmailPage/>}/>
+      <Route path='settings/change-password' element={<ChangePasswordPage/>}/>
+    </>
+  )
+
+  let roleBasedRoutes;
+
+  if (user) {
+    if (user.role === "admin") {
+      roleBasedRoutes = (
+        <Route element={<AdminProvider />}>
+          <Route path='/' element={<DashboardAdminPage/>}/>
+          <Route path='users' element={<UsersPage/>}/>
+          <Route path='add-user' element={<AddUserPage/>}/>
+          <Route path='departments' element={<DepartmentsPage/>}/>
+          <Route path='audits' element={<AuditsPage/>}/>
+          { generalRoutes }
+        </Route>
+      )
+    } else if (user.role === "physician") {
+      roleBasedRoutes = (
+        <>
+          <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
+          {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
+          <Route path='patient' element={<PatientsPage/>}/>
+          <Route path='add-patient' element={<AddPatientPage/>}/>
+          <Route path='/payments' element={<Payment />}/>
+          { generalRoutes }
+        </>
+      )
+    } else if (user.role === "secretary") {
+      roleBasedRoutes = (
+        <>
+          <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
+          <Route path='patients' element={<PatientsPage/>}/>
+          <Route path='add-patient' element={<AddPatientPage/>}/>
+          {/* <Route path='payments' element={<PaymentsPage/>}/> */}
+          { generalRoutes }
+        </>
+      )
+    } else if (user.role === "queue manager") {
+      roleBasedRoutes = (
+        <>
+          <Route path='/' element={<Queue/>}/>
+          { generalRoutes }
+        </>
+      )
+    }
+  }
+
   return (
     <BrowserRouter>
       <Routes>
+        {/* if user is NOT logged in */}
         { !user ? (
-          // routes if user IS NOT logged in
           <>
             <Route path='/' element={<Navigate to='login'/>}/>
             <Route path='login' element={<LoginPage/>}/>
@@ -41,44 +96,9 @@ const App = () => {
         ) : (
           // routes if user IS logged in
           <Route element={<ProtectedRoute/>}>
-            {/* <Route path='login'element={<Navigate to='/'/>}/> */}
-            {/* <Route path='reset-password' element={<Navigate to='/'/>}/> */}
-
-            <Route path='settings' element={<SettingsPage/>}/>
-            <Route path='settings/update-email' element={<UpdateEmailPage/>}/>
-            <Route path='settings/change-password' element={<ChangePasswordPage/>}/>
-            
-            { user.role === "admin" ? (
-              <>
-                <Route path='/' element={<DashboardAdminPage/>}/>
-                <Route path='users' element={<UsersPage/>}/>
-                <Route path='add-user' element={<AddUserPage/>}/>
-                <Route path='departments' element={<DepartmentsPage/>}/>
-                <Route path='audits' element={<AuditsPage/>}/>
-              </>
-            ) : ( user.role === "physician" ? (
-              <>
-                <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-                {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
-                <Route path='patient' element={<PatientsPage/>}/>
-                <Route path='add-patient' element={<AddPatientPage/>}/>
-                <Route path='/payments' element={<Payment />}/>
-              </>
-            ) : ( user.role === "secretary" ? (
-              <>
-                <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-                <Route path='patients' element={<PatientsPage/>}/>
-                <Route path='add-patient' element={<AddPatientPage/>}/>
-                {/* <Route path='payments' element={<PaymentsPage/>}/> */}
-              </>
-            ) : ( user.role === "queue manager" ? (
-              <>
-                <Route path='/' element={<Queue/>}/>
-              </>
-            ) : ( <Navigate to="/" /> ) ) ) ) }
+            { roleBasedRoutes }
           </Route>
         ) }
-
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
