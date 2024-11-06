@@ -49,6 +49,10 @@ const LoginPage = () => {
     setErrors({ ...errors, otp: '' });
   };
 
+  const handleRegister = () => {
+    navigate('/register'); // Redirects to RegistrationPage
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -216,6 +220,12 @@ const LoginPage = () => {
               Forgot Password
             </button>
           )}
+            <button
+              onClick={handleRegister}
+              className="text-sm text-blue-600 hover:text-blue-800 mt-4 w-full flex justify-center"
+            >
+              Register
+            </button>
         </form>
       </div>
     </div>

@@ -17,6 +17,8 @@ import PatientsPage from './pages/PatientsPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 import Queue from './pages/Queue';
+import RegistrationPage from './pages/RegistrationPage';
+
 
 const App = () => {
   const { user, loading } = useContext(AppContext);
@@ -33,6 +35,7 @@ const App = () => {
           <>
             <Route path='/' element={<Navigate to='login'/>}/>
             <Route path='login' element={<LoginPage/>}/>
+            <Route path='register' element={<RegistrationPage />} />
             {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
           </>
         ) : (
