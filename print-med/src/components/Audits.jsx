@@ -28,20 +28,24 @@ const Audits = ({ forDashboard = false }) => {
 
     // fetch the audits
     const getAudits = async (page = 1, resource='', dateFrom='', dateUntil='') => {
-        setLoadingAudits(true)
-
         let url = `/api/audits?page=${page}`
 
-        if (!(dateFrom.trim() === "")) {
-            url += `&date_from=${dateFrom}`
-        }
-
-        if (!(dateUntil.trim() === "")) {
-            url += `&date_until=${dateUntil}`
-        }
-
-        if (!(resource.trim() === "")) {
-            url += `&resource=${resource}`
+        if (forDashboard) {
+            url += `&date_from=${dateToday}`
+    
+            if (!(resource.trim() === "")) {
+                url += `&resource=${resource}`
+            }
+        }  else {
+            if (!(dateFrom.trim() === "")) {
+                url += `&date_from=${dateFrom}`
+            }
+            if (!(dateUntil.trim() === "")) {
+                url += `&date_until=${dateUntil}`
+            }
+            if (!(resource.trim() === "")) {
+                url += `&resource=${resource}`
+            }
         }
 
         console.log(url)
@@ -53,7 +57,6 @@ const Audits = ({ forDashboard = false }) => {
         })
 
         const data = await res.json()
-        console.log(data.data)
         forDashboard ? setAuditsToday(data) : setAuditsAll(data)
 
         setLoadingAudits(false)
@@ -61,12 +64,23 @@ const Audits = ({ forDashboard = false }) => {
 
     useEffect(() => {
         if(audits.length < 1) {
-            getAudits(1, undefined, undefined, undefined)
+            setLoadingAudits(true)
+        }
+
+        if (forDashboard) {
+            getAudits(1, auditsTodayResource, undefined, undefined)
+        }  else {
+            const dateFrom = auditsAllFilters.dateFrom
+            const dateUntil = auditsAllFilters.dateUntil
+            const resource = auditsAllFilters.resource
+
+            getAudits(1, resource, dateFrom, dateUntil)
         }
     }, [])
 
     // executes when user selects audit resource
     const handleAuditsResourceChange = (e) => {
+        setLoadingAudits(true)
         if (forDashboard) {
             setAuditsTodayResource(e.target.value)
             getAudits(1, e.target.value, undefined, undefined)
@@ -83,6 +97,7 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user selects date from
     const handleAuditsDateFromChange = (e) => {
         if (!forDashboard) {
+            setLoadingAudits(true)
             setAuditsAllFilters({
                 ...auditsAllFilters,
                 dateFrom: e.target.value
@@ -95,6 +110,7 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user selects date until
     const handleAuditsDateUntilChange = (e) => {
         if (!forDashboard) {
+            setLoadingAudits(true)
             setAuditsAllFilters({
                 ...auditsAllFilters,
                 dateUntil: e.target.value
@@ -108,6 +124,7 @@ const Audits = ({ forDashboard = false }) => {
 
     // executes when user click previous button for audits
     const handlePreviousAudits = () => {
+        setLoadingAudits(true)
         if (forDashboard) {
             getAudits(auditsToday.current_page - 1, auditsTodayResource, undefined, undefined)
         } else {
@@ -117,6 +134,7 @@ const Audits = ({ forDashboard = false }) => {
 
     // executes when user click next button for audits
     const handleNextAudits = () => {
+        setLoadingAudits(true)
         if (forDashboard) {
             getAudits(auditsToday.current_page + 1, auditsTodayResource, undefined, undefined)
         } else {
@@ -180,7 +198,7 @@ const Audits = ({ forDashboard = false }) => {
         <>  
             { audits ? (
                 <>
-                    <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-16` : ``}`}>
+                    <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
                         <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
                         <div className={`flex justify-end gap-4 items-end`}>
                             {/* select audit resource dropdown */}

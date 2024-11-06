@@ -12,7 +12,6 @@ import Audits from '../components/Audits';
 const DashboardAdminPage = () => {
   const { token } = useContext(AppContext)
   const { usersCount, setUsersCount } = useContext(AdminContext)
-  const [loadingDashboard, setLoadingDashboard] = useState(false)
 
   // fetch the users count
   const getUsersCount = async () => {
@@ -29,9 +28,7 @@ const DashboardAdminPage = () => {
 
   // execute the fetches
   useEffect(() => {
-    if (usersCount.length < 1) {
-      getUsersCount()
-    }
+    getUsersCount()
   }, [])
   
   return (
