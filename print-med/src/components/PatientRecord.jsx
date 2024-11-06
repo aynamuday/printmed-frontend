@@ -533,64 +533,62 @@ const PatientRecord = () => {
               
               ) : (
                 <>
-  {selectedFinding ? (
-    <div id="print-section">
-      <p><strong>History of Illness:</strong> {selectedFinding.presumption}</p>
-      <p><strong>Blood Pressure:</strong> {selectedFinding.details.bloodPressure}</p>
-      <p><strong>Temperature:</strong> {selectedFinding.details.temperature}</p>
-      <p><strong>Weight:</strong> {selectedFinding.details.weight}</p>
-      <p><strong>Height:</strong> {selectedFinding.details.height}</p>
-      <p><strong>Diagnosis:</strong> {selectedFinding.details.diagnosis}</p>
-      <p><strong>Medication:</strong> {selectedFinding.details.medication}</p>
-      <p><strong>Advice:</strong> {selectedFinding.details.advice}</p>
-      <p><strong>Other Complaints:</strong> {selectedFinding.details.otherComplaints}</p>
-      <p><strong>Physician:</strong> {selectedFinding.details.physician}</p>
-      <p><strong>Date Consulted:</strong> {selectedFinding.dateConsulted}</p>
-      <p><strong>Payment Amount:</strong> {selectedFinding.details.paymentAmount}</p>
-      <button
-        className="bg-gray-300 px-4 py-2 rounded mt-4"
-        onClick={() => setSelectedFinding(null)}
-      >
-        Back to Findings
-      </button>
-    </div>
-  ) : (
-    <>
-      <div className="flex items-center rounded-md px-4 duration-300 cursor-pointer bg-[#D9D9D9] mb-4 h-10">
-        <i className="bi bi-search text-sm"></i>
-        <input
-          className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
-          placeholder="Search OPD Findings"
-        />
-      </div>
-      <table className="min-w-full bg-white shadow rounded-lg">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="py-2 px-4 border">History of Illness</th>
-            <th className="py-2 px-4 border">Date Consulted</th>
-          </tr>
-        </thead>
-        <tbody>
-          {patientFindings.map((finding, index) => (
-            <tr key={index} className="border-b">
-              <td className="py-2 px-4">
-                <button
-                  className="text-blue-500 underline"
-                  onClick={() => handleFindingClick(finding)}
-                >
-                  {finding.presumption}
-                </button>
-              </td>
-              <td className="py-2 px-4">{finding.dateConsulted}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  )}
-</>
-
-
+                  {selectedFinding ? (
+                    <div id="print-section">
+                      <p><strong>History of Illness:</strong> {selectedFinding.presumption}</p>
+                      <p><strong>Blood Pressure:</strong> {selectedFinding.details.bloodPressure}</p>
+                      <p><strong>Temperature:</strong> {selectedFinding.details.temperature}</p>
+                      <p><strong>Weight:</strong> {selectedFinding.details.weight}</p>
+                      <p><strong>Height:</strong> {selectedFinding.details.height}</p>
+                      <p><strong>Diagnosis:</strong> {selectedFinding.details.diagnosis}</p>
+                      <p><strong>Medication:</strong> {selectedFinding.details.medication}</p>
+                      <p><strong>Advice:</strong> {selectedFinding.details.advice}</p>
+                      <p><strong>Other Complaints:</strong> {selectedFinding.details.otherComplaints}</p>
+                      <p><strong>Physician:</strong> {selectedFinding.details.physician}</p>
+                      <p><strong>Date Consulted:</strong> {selectedFinding.dateConsulted}</p>
+                      <p><strong>Payment Amount:</strong> {selectedFinding.details.paymentAmount}</p>
+                      <button
+                        className="bg-gray-300 px-4 py-2 rounded mt-4"
+                        onClick={() => setSelectedFinding(null)}
+                      >
+                        Back to Findings
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center rounded-md px-4 duration-300 cursor-pointer bg-[#D9D9D9] mb-4 h-10">
+                        <i className="bi bi-search text-sm"></i>
+                        <input
+                          className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
+                          placeholder="Search OPD Findings"
+                        />
+                      </div>
+                      <table className="min-w-full bg-white shadow rounded-lg">
+                        <thead>
+                          <tr className="bg-gray-200">
+                            <th className="py-2 px-4 border">History of Illness</th>
+                            <th className="py-2 px-4 border">Date Consulted</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {patientFindings.map((finding, index) => (
+                            <tr key={index} className="border-b">
+                              <td className="py-2 px-4">
+                                <button
+                                  className="text-blue-500 underline"
+                                  onClick={() => handleFindingClick(finding)}
+                                >
+                                  {finding.presumption}
+                                </button>
+                              </td>
+                              <td className="py-2 px-4">{finding.dateConsulted}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </>
               )}
               <button
                 className="bg-gray-300 px-4 py-2 rounded mt-4"
