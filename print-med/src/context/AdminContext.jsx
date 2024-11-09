@@ -1,9 +1,10 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState, useContext } from 'react';
 import { Outlet } from 'react-router-dom';
+import AppContext from './AppContext';
 
 const AdminContext = createContext();
 
-export const AdminProvider = ({ children }) => {
+export const AdminProvider = () => {
   const [fetchedForDashboard, setFetchedForDashboard] = useState(false)
   const [usersCount, setUsersCount] = useState([])
   const [auditsToday, setAuditsToday] = useState([])
@@ -16,6 +17,13 @@ export const AdminProvider = ({ children }) => {
     dateUntil: ''
   })
   const [loadingAuditsAllDownload, setLoadingAuditsAllDownload] = useState(false)
+  const [users, setUsers] = useState([])
+  const [searchUser, setSearchUser] = useState("")
+  const [usersFilters, setUsersFilters] = useState({
+    role: '',
+    department_id: '',
+    status: ''
+  })
 
   return (
     <AdminContext.Provider value={{ fetchedForDashboard, setFetchedForDashboard,
@@ -25,7 +33,10 @@ export const AdminProvider = ({ children }) => {
                                   loadingAuditsTodayDownload, setLoadingAuditsTodayDownload,
                                   auditsAll, setAuditsAll,
                                   auditsAllFilters, setAuditsAllFilters,
-                                  loadingAuditsAllDownload, setLoadingAuditsAllDownload
+                                  loadingAuditsAllDownload, setLoadingAuditsAllDownload,
+                                  users, setUsers,
+                                  searchUser, setSearchUser,
+                                  usersFilters, setUsersFilters
     }}>
       <Outlet />
     </AdminContext.Provider>
