@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
 import { ClipLoader, PulseLoader } from 'react-spinners';
-import { getCurrentDate } from '../utils/dateUtils';
+import { getFormattedDate } from '../utils/dateUtils';
 
 import AuditsTable from './AuditsTable';
 
@@ -24,7 +24,7 @@ const Audits = ({ forDashboard = false }) => {
     } = useContext(AdminContext)
     const [ loadingAudits, setLoadingAudits ] = useState(false)
     const audits = forDashboard ? auditsToday : auditsAll
-    const dateToday = getCurrentDate()
+    const dateToday = getFormattedDate()
 
     // fetch the audits
     const getAudits = async (page = 1, resource='', dateFrom='', dateUntil='') => {
@@ -47,8 +47,6 @@ const Audits = ({ forDashboard = false }) => {
                 url += `&resource=${resource}`
             }
         }
-
-        console.log(url)
 
         const res = await fetch(url, {
             headers: {
@@ -259,7 +257,7 @@ const Audits = ({ forDashboard = false }) => {
 
                             {/* download audits button */}
                             { audits.data && audits.data.length > 0 && ( 
-                                <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white font-medium rounded-md hover:bg-[#37c9b8]' onClick={handleAuditsDownload} 
+                                <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-black font-medium rounded-md hover:bg-[#37c9b8]' onClick={handleAuditsDownload} 
                                         disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
                                     { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
                                         <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
@@ -275,7 +273,7 @@ const Audits = ({ forDashboard = false }) => {
                         </div>
                     ) : (
                         // audits table
-                        <AuditsTable audits={ audits.data } />
+                        <AuditsTable forDashboard={ forDashboard } audits={ audits.data } />
                     )}
                 </>
             ) : (<></>)}

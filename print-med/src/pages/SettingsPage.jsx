@@ -79,20 +79,20 @@ const SettingsPage = () => {
         <div className="mt-6 space-y-4 w-full flex flex-col items-center">
         <Link
             to="/settings/update-email"
-            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none text-center"
+            className="w-48 px-4 py-2 bg-[#51918a] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
         >
             Update Email
         </Link>
         <Link
             to="/settings/change-password"
-            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none text-center"
+            className="w-48 px-4 py-2 bg-[#51918a] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
         >
             Change Password
         </Link>
         <div className='min-h-3'></div>
         <button
             onClick={handleLogout}
-            className="w-48 px-4 py-2 bg-white rounded-md hover:bg-gray-300 focus:outline-none"
+            className="w-48 px-4 py-2 bg-[#b43c39] text-white rounded-md hover:bg-[#a43331] focus:outline-none"
         >
             Logout
         </button>
