@@ -32,6 +32,7 @@ const Payment = ({ forDashboard = false }) => {
     if (forDashboard) {
       // For the dashboard, only fetch today's payments
       queryParams.append('date_from', dateToday);
+      queryParams.append('date_until', dateToday);
     } else {
       if (dateFrom) queryParams.append('date_from', dateFrom);
       if (dateUntil) queryParams.append('date_until', dateUntil);
@@ -41,6 +42,7 @@ const Payment = ({ forDashboard = false }) => {
     }
 
     const url = `/api/payments?page=${pagination.currentPage}&${queryParams.toString()}`;
+    console.log(url)
 
     try {
       const res = await fetch(url, {
@@ -49,16 +51,17 @@ const Payment = ({ forDashboard = false }) => {
         },
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        const data = await res.json();
         setPayments(data.payments);
         setPagination({
-          currentPage: data.current_page,
-          totalPages: data.total_pages,
+          currentPage: data.payments.current_page,
+          totalPages: data.payments.total_pages,
         });
+        console.log(data)
       } else {
-        const errorData = await res.json();
-        console.error('API error:', errorData);
+        console.error('API error:', data);
       }
     } catch (error) {
       console.error('Error connecting to API:', error);
@@ -185,7 +188,7 @@ const Payment = ({ forDashboard = false }) => {
           <PulseLoader color="#6CB6AD" loading={loading} size={15} />
         </div>
       ) : (
-        <PaymentTable payments={payments} />
+        <PaymentTable payments={payments.data} />
       )}
     </>
   );
