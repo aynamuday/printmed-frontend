@@ -17,8 +17,6 @@ const UsersPage = () => {
 
     // fetch the users
     const getUsers = async (page = 1, role='', department_id='', status='') => {
-        setLoading(true)
-
         let url = `/api/users?page=${page}`
 
         if (!(role.trim() === "")) {

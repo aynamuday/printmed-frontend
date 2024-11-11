@@ -83,6 +83,12 @@ const AddUserPage = () => {
             Swal.fire({
               title: 'User Added Successfully!',
               confirmButtonText: 'OK',
+              customClass: {
+                title: 'text-xl font-bold text-black text-center',
+                confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
+                cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
+                popup: 'border-2 rounded-xl p-6'
+              }
             });
           } else {
             setErrors(data)
@@ -107,9 +113,7 @@ const AddUserPage = () => {
                 <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
             </div>
         ) : <></>}
-
-        <h2 className="text-2xl font-semibold text-center mb-4">Create New User</h2>
-
+        
         <div className="w-full md:w-[70%] bg-gray-100 pt-12 pb-14 rounded-lg shadow-md mb-6">
           <div className="flex justify-center items-center rounded-md">
             <img src={logo} className="h-20" alt="Logo" />

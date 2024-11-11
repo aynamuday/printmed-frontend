@@ -11,20 +11,17 @@ const SettingsPage = () => {
 
   const handleLogout = async () => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you really want to log out?',
-      icon: 'warning',
+      title: 'Are you sure you want to log out?',
       showCancelButton: true,
       confirmButtonText: 'Yes, log me out!',
       cancelButtonText: 'Cancel',
-      position: 'center',
-      allowOutsideClick: false, // Disable closing when clicking outside
-      showClass: {
-        popup: 'animate__animated animate__fadeIn'
+      allowOutsideClick: false,
+      customClass: {
+        title: 'text-xl font-bold text-black text-center',
+        confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
+        cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
+        popup: 'border-2 rounded-xl p-6'
       },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOut'
-      }
     });
   
     if (result.isConfirmed) {
