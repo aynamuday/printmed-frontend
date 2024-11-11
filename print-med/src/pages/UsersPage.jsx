@@ -129,11 +129,9 @@ const UsersPage = () => {
                             <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
                                     name="resource" id="resource" value={usersFilters.department_id} onChange={handleDepartmentIdChange}>
                                 <option value="">Select department</option>
-                                { departments && departments.map((department, index) => (
-                                    <>
-                                        <option key={index} value={department.id}>{department.name}</option>
-                                    </>
-                                )) }
+                                {departments && departments.map((department) => (
+                                    <option key={department.id} value={department.id}>{department.name}</option>
+                                ))}
                             </select>
 
                             {/* select status dropdown */}

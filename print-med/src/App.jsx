@@ -21,6 +21,7 @@ import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 import Queue from './pages/Queue';
 import RegistrationPage from './pages/RegistrationPage';
 import Payment from './pages/Payment';
+import PaymentPage from './pages/PaymentPage';
 
 
 const App = () => {
@@ -57,9 +58,10 @@ const App = () => {
         <>
           <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
           {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
-          <Route path='patient' element={<PatientsPage/>}/>
+          <Route path='patients' element={<PatientsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
-          <Route path='/payments' element={<Payment />}/>
+          <Route path='payments' element={<PaymentPage/>}/>
+          {/* <Route path='/payments' element={<Payment />}/> */}
           { generalRoutes }
         </>
       )
@@ -69,7 +71,8 @@ const App = () => {
           <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
           <Route path='patients' element={<PatientsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
-          <Route path='/payments' element={<Payment/>}/>
+          <Route path='payments' element={<PaymentPage/>}/>
+          {/* <Route path='/payments' element={<Payment/>}/> */}
           {/* <Route path='payments' element={<PaymentsPage/>}/> */}
           { generalRoutes }
         </>

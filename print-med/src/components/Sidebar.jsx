@@ -79,9 +79,9 @@ const Sidebar = () => {
                   <i className="bi bi-house-door-fill"></i>
                   <span className="text-[20px] ml-4 text-white">Dashboard</span>
                 </NavLink>
-                <NavLink to="/patient" className={linkClass}>
-                  <i className="bi bi-person"></i>
-                  <span className="text-[20px] ml-4 text-white">Patient Records</span>
+                <NavLink to="/patients" className={linkClass}>
+                  <i className="bi bi-person-fill"></i>
+                  <span className="text-[20px] ml-4 text-white">Patients</span>
                 </NavLink>
                 <NavLink to="/add-patient" className={linkClass}>
                   <i className="bi bi-person-plus"></i>
