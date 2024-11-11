@@ -60,6 +60,8 @@ const Payment = ({ forDashboard = false }) => {
     })
 
     const data = await res.json()
+    console.log(url)
+    console.log(data.payments.data)
     forDashboard ? setPaymentsToday(data) : setPaymentsAll(data)
 
     setLoadingPayment(false)
@@ -199,7 +201,7 @@ const Payment = ({ forDashboard = false }) => {
 
   return (
     <>
-      { payments ? (
+      { payments.payments ? (
         <>
           <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
             <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Payments | Today" : "Payments" }</h2>
@@ -274,7 +276,7 @@ const Payment = ({ forDashboard = false }) => {
             </div>
           ) : (
             // payments table
-            <PaymentTable forDashboard={ forDashboard } payments={ payments.data } />
+            <PaymentTable forDashboard={ forDashboard } payments={ payments.payments.data } />
           ) }
         </>
       ) : (<></>)}

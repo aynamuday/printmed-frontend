@@ -40,7 +40,7 @@ export const SecretaryPhysicianProvider = () => {
         paymentsAll,
         setPaymentsAll,
         paymentsAllFilters,
-        setPaymentsAllFilters,  // corrected camelCase here
+        setPaymentsAllFilters,
         loadingPaymentsAllDownload,
         setLoadingPaymentsAllDownload,
         users,
