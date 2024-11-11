@@ -21,7 +21,7 @@ const PaymentTable = ({ payments, onTogglePaymentStatus }) => {
         </tr>
       </thead>
       <tbody>
-        {payments.length > 0 ? (
+        {payments && payments.length > 0 ? (
           payments.map((payment, index) => (
             <tr key={index}>
               <td className="border p-2 border-[#828282] text-center">{payment.patient_name}</td>

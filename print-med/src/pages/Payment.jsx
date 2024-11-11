@@ -173,8 +173,8 @@ const Payment = ({ forDashboard = false }) => {
               {pagination.currentPage} OF {pagination.totalPages}
             </button>
             <button
-              className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${pagination.currentPage === pagination.totalPages ? 'bg-opacity-70' : ''} text-white text-sm`}
-              disabled={pagination.currentPage === pagination.totalPages}
+              className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${pagination.currentPage === pagination.totalPages || !pagination.totalPages ? 'bg-opacity-70' : ''} text-white text-sm`}
+              disabled={pagination.currentPage == pagination.totalPages || !pagination.totalPages}
               onClick={handleNextPage}
             >
               &gt;
