@@ -1,197 +1,287 @@
 import React, { useState, useEffect, useContext } from 'react';
-import PaymentTable from '../components/PaymentTable';
-import { PulseLoader } from 'react-spinners';
 import AppContext from '../context/AppContext';
+//import AdminContext from '../context/AdminContext';
+import SecretaryPhysicianContext from '../context/SecretaryPhysicianContext';
+import { ClipLoader, PulseLoader } from 'react-spinners';
 import { getFormattedDate } from '../utils/dateUtils';
 
+import PaymentTable from '../components/PaymentTable';
+
 const Payment = ({ forDashboard = false }) => {
-  const { token } = useContext(AppContext);
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    dateFrom: '',
-    dateUntil: '',
-    method: '',
-    isPaid: '',
-    departmentId: '',
-  });
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-  });
+  const { token } = useContext(AppContext)
+  const {
+    paymentsToday, 
+    setPaymentsToday,
+    paymentsTodayResource, 
+    setPaymentsTodayResource, 
+    loadingPaymentsTodayDownload, 
+    setLoadingPaymentsTodayDownload, 
+    paymentsAll, 
+    setPaymentsAll, 
+    paymentsAllFilters, 
+    setPaymentsAllFilters, 
+    loadingPaymentsAllDownload, 
+    setLoadingPaymentsAllDownload
+  } = useContext(SecretaryPhysicianContext)
+  const [ loadingPayments, setLoadingPayments ] = useState(false);
+  const [ loadingPayment, setLoadingPayment ] = useState(false);
+  const payments = forDashboard ? paymentsToday : paymentsAll
+  const dateToday = getFormattedDate()
 
-  const dateToday = getFormattedDate();
+  // Fetch the payments
+  const getPayments = async (page = 1, resource='', dateFrom='', dateUntil='') => {
+    let url = `/api/payments?page=${page}`
 
-  // Fetch payments with applied filters
-  const getPayments = async () => {
-    setLoading(true);
-    const { dateFrom, dateUntil, method, isPaid, departmentId } = filters;
-
-    // Filter out empty filters
-    const queryParams = new URLSearchParams();
     if (forDashboard) {
-      // For the dashboard, only fetch today's payments
-      queryParams.append('date_from', dateToday);
-      queryParams.append('date_until', dateToday);
-    } else {
-      if (dateFrom) queryParams.append('date_from', dateFrom);
-      if (dateUntil) queryParams.append('date_until', dateUntil);
-      if (method) queryParams.append('method', method);
-      if (isPaid) queryParams.append('is_paid', isPaid);
-      if (departmentId) queryParams.append('department_id', departmentId);
-    }
+      url += `&date_from=${dateToday}`
 
-    const url = `/api/payments?page=${pagination.currentPage}&${queryParams.toString()}`;
-    console.log(url)
-
-    try {
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setPayments(data.payments);
-        setPagination({
-          currentPage: data.payments.current_page,
-          totalPages: data.payments.total_pages,
-        });
-        console.log(data)
-      } else {
-        console.error('API error:', data);
+      if (!(resource.trim() === "")) {
+          url += `&resource=${resource}`
       }
-    } catch (error) {
-      console.error('Error connecting to API:', error);
+    } else {
+      if (!(dateFrom.trim() === "")) {
+          url += `&date_from=${dateFrom}`
+      }
+      if (!(dateUntil.trim() === "")) {
+          url += `&date_until=${dateUntil}`
+      }
+      if (!(resource.trim() === "")) {
+          url += `&resource=${resource}`
+      }
     }
-    setLoading(false);
-  };
 
-  // Execute the fetch when filters change or page is updated
+    //const url = `/api/payments?page=${pagination.currentPage}&${queryParams.toString()}`;
+    //console.log(url)
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    const data = await res.json()
+    forDashboard ? setPaymentsToday(data) : setPaymentsAll(data)
+
+    setLoadingPayment(false)
+  }
+
   useEffect(() => {
-    getPayments();
-  }, [filters, pagination.currentPage]);
+    if(payments.length < 1) {
+      setLoadingPayment(true)
+    }
 
-  // Handle filter changes
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({
-      ...filters,
-      [name]: value,
-    });
-  };
+    if (forDashboard) {
+      getPayments(1, paymentsTodayResource, undefined, undefined)
+    } else {
+      const dateFrom = paymentsAllFilters.dateFrom
+      const dateUntil = paymentsAllFilters.dateUntil
+      const resource = paymentsAllFilters.resource
 
-  // Handle pagination
-  const handlePreviousPage = () => {
-    if (pagination.currentPage > 1) {
-      setPagination({
-        ...pagination,
-        currentPage: pagination.currentPage - 1,
-      });
+      getPayments(1, resource, dateFrom, dateUntil)
+    }
+  }, [])
+
+  //executes when user selects payment resource
+  const handlePaymentsResourceChange = (e) => {
+    setLoadingPayments(true)
+    if (forDashboard) {
+      setPaymentsTodayResource(e.target.value)
+      getPayments(1, e.target.value, undefined, undefined)
+    } else {
+      setPaymentsAllFilters({
+        ...paymentsAllFilters,
+        resource: e.target.value
+      })
+
+      getPayments(1, e.target.value, paymentsAllFilters.dateFrom, paymentsAllFilters.dateUntil)
     }
   };
 
-  const handleNextPage = () => {
-    if (pagination.currentPage < pagination.totalPages) {
-      setPagination({
-        ...pagination,
-        currentPage: pagination.currentPage + 1,
-      });
+  //executes when use selects date from
+  const handlePaymentsDateFromChange = (e) => {
+    if (!forDashboard) {
+      setLoadingPayments(true)
+      setPaymentsAllFilters({
+        ...paymentsAllFilters,
+        dateFrom: e.target.value
+      })
+
+      getPayments(1, paymentsAllFilters.resource, e.target.value, paymentsAllFilters.dateUntil)
     }
   };
+
+  // executes when user selects date until
+  const handlePaymentsDateUntilChange = (e) => {
+    if (!forDashboard) {
+      setLoadingPayments(true)
+      setPaymentsAllFilters({
+        ...paymentsAllFilters,
+        dateUntil: e.target.value
+      })
+
+      console.log(e.target.value)
+
+      getPayments(1, paymentsAllFilters.resource, paymentsAllFilters.dateFrom, e.target.value)
+    }
+  };
+
+  // executes when user click previous button for payments
+  const handlePreviousPayments = () => {
+    setLoading(true)
+    if (forDashboard) {
+      getPayments(paymentsToday.current_page - 1, paymentsTodayResource, undefined, undefined)
+    } else {
+      getPayments(paymentsToday.current_page - 1, {...paymentsAllFilters, resource}, paymentsAllFilters.dateFrom, paymentsAllFilters.dateUntil)
+    }
+  }
+
+  //executes when user click the next button for payments
+  const handleNextPayments = () => {
+    setLoading(true)
+    if (forDashboard) {
+      getPayments(paymentsToday.current_page + 1, paymentsTodayResource, undefined, undefined)
+    } else {
+      getPayments(paymentsToday.current_page + 1, {...paymentsAllFilters, resource}, paymentsAllFilters.dateFrom, paymentsAllFilters.dateUntil)
+    }
+  };
+
+  // executes when button for payments download is clicked
+  const handlePaymentsDownload = async () => {
+    forDashboard ? setLoadingPaymentsTodayDownload(true) : setLoadingPaymentsAllDownload(true)
+
+    let fetchUrl = `/api/payments/download?`
+
+    if (forDashboard) {
+      fetchUrl += `date_from=${dateToday}`
+
+      if (!(paymentsTodayResource.trim() === "")) {
+        fetchUrl += `$resource=${resource}`
+      }
+    } else {
+      const dateFrom = paymentsAllFilters.dateFrom
+      const dateUntil = paymentsAllFilters.dateUntil
+      const resource = paymentsAllFilters.resource
+
+      if (!(dateFrom.trim() === "")) {
+        fetchUrl += `date_from`
+      }
+      if (!(dateUntil.trim() === "")) {
+        dateFrom.trim() === "" ? fetchUrl += `` : fetchUrl += `&`
+        fetchUrl += `date_until=${dateUntil}`
+      }
+      if (!(resource.trim() === "")) {
+        dateFrom.trim() === "" && dateUntil.trim() === "" ? fetchUrl += `` : fetchUrl += `&`
+        fetchUrl += `resource=${resource}`
+      }
+    }
+
+    const res = await fetch(fetchUrl, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    const blob = await res.blob()
+    console.log(blob)
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `printmed-payments-${dateToday}`
+    link.click()
+
+    window.URL.revokeObjectURL(url)
+
+    forDashboard ? setLoadingPaymentsAllDownload(false) :setLoadingPaymentsAllDownload(false)
+  }
+
+  const resourceValue = forDashboard ? paymentsTodayResource :paymentsAllFilters.resource
 
   return (
     <>
-      <div className="flex justify-between items-end mb-6 mt-12">
-        <h2 className="font-bold text-2xl">Payments | Today</h2>
-        <div className="flex justify-end gap-4 items-end">
-          {/* Filter dropdowns */}
-          {!forDashboard && (
-            <>
-              <select
-                className="px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none"
-                name="method"
-                value={filters.method}
-                onChange={handleFilterChange}
-              >
-                <option value="">Payment Method</option>
-                <option value="credit_card">Credit Card</option>
-                <option value="cash">Cash</option>
-                <option value="bank_transfer">Bank Transfer</option>
-              </select>
+      { payments ? (
+        <>
+          <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+            <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Payments | Today" : "Payments" }</h2>
+            <div className={`flex justify-end gap-4 items-end`}>
+              {/* select audit resource dropdown */}
+              <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                      name="resource" id="resource" value={resourceValue} onChange={handlePaymentsResourceChange}>
+                <option value="">Select resource</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+                </select>
 
-              <select
-                className="px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none"
-                name="isPaid"
-                value={filters.isPaid}
-                onChange={handleFilterChange}
-              >
-                <option value="">Paid Status</option>
-                <option value="true">Paid</option>
-                <option value="false">Unpaid</option>
-              </select>
+                {!forDashboard ? (
+                  <>
+                    {/* date from */}
+                    <div>
+                      <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
+                        <input
+                          type="date"
+                          name="dateFrom"
+                          value={paymentsAllFilters.dateFrom}
+                          onChange={handlePaymentsDateFromChange}
+                          max={dateToday}
+                          className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                        />
+                    </div>
+                    {/* date until */}
+                    <div>
+                      <label htmlFor="dateUntil" className='text-xs block mb-1'>Date Until</label>
+                        <input
+                          type="date"
+                          name="dateUntil"
+                          value={paymentsAllFilters.dateUntil}
+                          onChange={handlePaymentsDateUntilChange}
+                          min={paymentsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : ''}
+                          max={dateToday}
+                          className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                        />
+                    </div>
+                  </>
+                ) : (<></>)}
+                {/* pagination buttons */}
+                <div>
+                  <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${payments.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          disabled={payments.current_page <= 1} onClick={handlePreviousPayments}>
+                    &lt;
+                  </button>
+                  <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                          {payments.current_page} OF {payments.last_page}
+                  </button>
+                  <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${payments.current_page === payments.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          disabled={payments.current_page === payments.last_page} onClick={handleNextPayments}>
+                    &gt;
+                  </button>
+                </div>
 
-              <div>
-                <label htmlFor="dateFrom" className="text-xs block mb-1">Date From</label>
-                <input
-                  type="date"
-                  name="dateFrom"
-                  value={filters.dateFrom}
-                  onChange={handleFilterChange}
-                  max={dateToday}
-                  className="block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="dateUntil" className="text-xs block mb-1">Date Until</label>
-                <input
-                  type="date"
-                  name="dateUntil"
-                  value={filters.dateUntil}
-                  onChange={handleFilterChange}
-                  min={filters.dateFrom !== "" ? filters.dateFrom : ''}
-                  max={dateToday}
-                  className="block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none"
-                />
-              </div>
-            </>
-          )}
-
-          {/* Pagination buttons */}
-          <div>
-            <button
-              className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${pagination.currentPage === 1 ? 'bg-opacity-70' : ''} text-white text-sm`}
-              disabled={pagination.currentPage <= 1}
-              onClick={handlePreviousPage}
-            >
-              &lt;
-            </button>
-            <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
-              {pagination.currentPage} OF {pagination.totalPages}
-            </button>
-            <button
-              className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${pagination.currentPage === pagination.totalPages || !pagination.totalPages ? 'bg-opacity-70' : ''} text-white text-sm`}
-              disabled={pagination.currentPage == pagination.totalPages || !pagination.totalPages}
-              onClick={handleNextPage}
-            >
-              &gt;
-            </button>
+                {/* download payments button */}
+                { payments.data && payments.data.length > 0 && ( 
+                  <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-black font-medium rounded-md hover:bg-[#37c9b8]' onClick={handlePaymentsDownload} 
+                          disabled={ forDashboard ? loadingPaymentsTodayDownload : loadingPaymentsAllDownload }>
+                    { (forDashboard && loadingPaymentsTodayDownload) || (!forDashboard && loadingPaymentsAllDownload) ? (
+                      <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingPaymentsTodayDownload : loadingPaymentsAllDownload} size={14} />
+                    ) : ( "Download" ) }
+                  </button>
+                )}
+            </div>
           </div>
-        </div>
-      </div>
 
-      {loading ? (
-        <div className="flex justify-center items-center mt-20">
-          <PulseLoader color="#6CB6AD" loading={loading} size={15} />
-        </div>
-      ) : (
-        <PaymentTable payments={payments.data} />
-      )}
+          { loadingPayments ? (
+            <div className='flex justify-center items-center mt-20'>
+              <PulseLoader color="#6CB6AD" loading={loadingPayments} size={15} />
+            </div>
+          ) : (
+            // payments table
+            <PaymentTable forDashboard={ forDashboard } payments={ payments.data } />
+          ) }
+        </>
+      ) : (<></>)}
     </>
   );
 };
 
-export default Payment;
+export default Payment
+
+      

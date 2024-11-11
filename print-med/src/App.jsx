@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AdminProvider } from './context/AdminContext';
 import { BounceLoader } from 'react-spinners';
 
+import { SecretaryPhysicianProvider } from './context/SecretaryPhysicianContext';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
 import UpdateEmailPage from './pages/UpdateEmailPage';
@@ -55,7 +56,7 @@ const App = () => {
       )
     } else if (user.role === "physician") {
       roleBasedRoutes = (
-        <>
+        <Route element={<SecretaryPhysicianProvider />}>
           <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
           {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
           <Route path='patients' element={<PatientsPage/>}/>
@@ -63,11 +64,11 @@ const App = () => {
           <Route path='payments' element={<PaymentPage/>}/>
           {/* <Route path='/payments' element={<Payment />}/> */}
           { generalRoutes }
-        </>
+        </Route>
       )
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
-        <>
+        <Route element={<SecretaryPhysicianProvider />}>
           <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
           <Route path='patients' element={<PatientsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
@@ -75,7 +76,7 @@ const App = () => {
           {/* <Route path='/payments' element={<Payment/>}/> */}
           {/* <Route path='payments' element={<PaymentsPage/>}/> */}
           { generalRoutes }
-        </>
+        </Route>
       )
     } else if (user.role === "queue manager") {
       roleBasedRoutes = (
