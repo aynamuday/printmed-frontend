@@ -26,23 +26,37 @@ const SettingsPage = () => {
         popup: 'animate__animated animate__fadeOut'
       }
     });
-    
-    if (result.isConfirmed) {
-      const res = await fetch("api/logout", {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer: ${token}`
-        }
-      })
   
-      await res.json()
-      
-      localStorage.removeItem('token')
-      setToken(null)
-      setUser(null)
-      navigate('/login')
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch("api/logout", {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`  // Fixed header format
+          }
+        });
+  
+        if (!res.ok) {
+          throw new Error('Logout failed');
+        }
+  
+        await res.json();
+  
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout Error:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'There was an issue logging out. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+      }
     }
-  }
+  };  
 
   return (
     <Settings children={<>
