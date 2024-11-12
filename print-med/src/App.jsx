@@ -23,6 +23,7 @@ import Queue from './pages/Queue';
 import RegistrationPage from './pages/RegistrationPage';
 import Payment from './pages/Payment';
 import PaymentPage from './pages/PaymentPage';
+import { QueueManagerProvider } from './context/QueueManagerContext';
 
 
 const App = () => {
@@ -82,8 +83,10 @@ const App = () => {
     } else if (user.role === "queue manager") {
       roleBasedRoutes = (
         <>
+          <Route element={<QueueManagerProvider />}>
           <Route path='/' element={<Queue/>}/>
           { generalRoutes }
+          </Route>
         </>
       )
     }
