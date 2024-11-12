@@ -5,6 +5,7 @@ import { PulseLoader } from 'react-spinners';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import UsersTable from '../components/UsersTable';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const UsersPage = () => {
     const { token, departments } = useContext(AppContext)
@@ -16,9 +17,12 @@ const UsersPage = () => {
     const [ loading, setLoading ] = useState(false)
 
     // fetch the users
-    const getUsers = async (page = 1, role='', department_id='', status='') => {
+    const getUsers = async (page = 1, search='', role='', department_id='', status='') => {
         let url = `/api/users?page=${page}`
 
+        if (!(search.trim() === "")) {
+            url += `&search=${search.trim()}`
+        }
         if (!(role.trim() === "")) {
             url += `&role=${role}`
         }
@@ -34,6 +38,8 @@ const UsersPage = () => {
                 Authorization: `Bearer ${token}`
             }
         })
+
+        console.log(url)
 
         const data = await res.json()
         setUsers(data)
@@ -62,7 +68,7 @@ const UsersPage = () => {
             role: e.target.value
         })
             
-        getUsers(1, e.target.value, usersFilters.department_id, usersFilters.status)
+        getUsers(1, undefined, e.target.value, usersFilters.department_id, usersFilters.status)
     };
 
     // executes when user selects audit resource
@@ -74,7 +80,7 @@ const UsersPage = () => {
             department_id: e.target.value
         })
             
-        getUsers(1, usersFilters.role, e.target.value, usersFilters.status)
+        getUsers(1, undefined,  usersFilters.role, e.target.value, usersFilters.status)
     };
 
     // executes when user selects audit resource
@@ -86,21 +92,34 @@ const UsersPage = () => {
             status: e.target.value
         })
             
-        getUsers(usersFilters.role, usersFilters.department_id, e.target.value)
+        getUsers(users.current_page, undefined, usersFilters.role, usersFilters.department_id, e.target.value)
     };
 
     // executes when user click previous button for audits
     const handlePrevious = () => {
         setLoading(true)
         
-        getUsers(users.current_page - 1, usersFilters.role, usersFilters.department_id, usersFilters.status)
+        getUsers(users.current_page - 1, undefined, usersFilters.role, usersFilters.department_id, usersFilters.status)
     };
 
     // executes when user click next button for audits
     const handleNext = () => {
         setLoading(true)
         
-        getUsers(users.current_page + 1, usersFilters.role, usersFilters.department_id, usersFilters.status)
+        getUsers(users.current_page + 1, undefined, usersFilters.role, usersFilters.department_id, usersFilters.status)
+    };
+
+    // executes when user click search
+    const handleSearch = () => {
+        setLoading(true)
+    
+        setUsersFilters({
+            role: '',
+            department_id: '',
+            status: ''
+        })
+            
+        getUsers(1, searchUser, undefined, undefined, undefined)
     };
 
     return (
@@ -141,6 +160,23 @@ const UsersPage = () => {
                                 <option value="locked">Locked</option>
                                 <option value="new">New</option>
                             </select>
+
+                            <div>
+                                <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Personnel No."}</label>
+                                <div className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                                    <input
+                                        type="text"
+                                        name="search"
+                                        className="focus:outline-none focus:border-none"
+                                        value={searchUser}
+                                        onChange={(e) => {setSearchUser(e.target.value)}}
+                                        placeholder='Search'
+                                    />
+                                    <button onClick={() => handleSearch()} className="btn btn-primary d-flex align-items-center">
+                                        <i className="bi bi-search me-2 text-[#374151]"></i>
+                                    </button>
+                                </div>
+                            </div>
 
                             {/* pagination buttons */}
                             <div>
