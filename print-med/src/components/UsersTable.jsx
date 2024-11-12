@@ -4,6 +4,7 @@ import { getFormattedDate } from '../utils/dateUtils'
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
 import { PulseLoader } from 'react-spinners';
+import { Link } from 'react-router-dom';
 
 const UsersTable = ({ users }) => {
   const { token, user } = useContext(AppContext)
@@ -128,15 +129,19 @@ const UsersTable = ({ users }) => {
                       <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                       <td className="border p-2 border-[#828282] text-center">{
                         <div className='flex flex-row w-100 items-center justify-center gap-4'>
-                          <button onClick={() => handleToggleLockButton(item.id)} className={`py-1 w-32 rounded-lg ${item.is_locked ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                          <Link to={`/view-user/${item.id}`} className={`py-1 w-24 rounded-lg bg-green-500 text-white`}>
+                            View
+                          </Link>
+
+                          <button onClick={() => handleToggleLockButton(item.id)} className={`py-1 w-24 rounded-lg ${item.is_locked ? 'bg-orange-500 text-white' : 'bg-red-500 text-white'}`}>
                             { item.is_locked ? 'Unlock' : 'Lock'}
                           </button>
 
-                          { user.failed_login_attempts > 2 ? (
-                            <button onClick={() => handleUnrestrictButton(item.id)} className='py-1 w-32 rounded-lg bg-blue-500 text-white'>
+                          { user.failed_login_attempts > 2 && (
+                            <button onClick={() => handleUnrestrictButton(item.id)} className='py-1 w-28 rounded-lg bg-blue-500 text-white'>
                               Unrestrict
                             </button>
-                          ) : <></>}
+                          )}
                         </div>
                       }</td>
                     </tr>

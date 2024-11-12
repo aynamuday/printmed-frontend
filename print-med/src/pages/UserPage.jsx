@@ -5,10 +5,11 @@ import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
-const AddUserPage = () => {
+const UserPage = () => {
   const { departments, token } = useContext(AppContext)
-
+  
   const [formData, setFormData] = useState({
     role: '',
     personnel_number: '',
@@ -19,10 +20,93 @@ const AddUserPage = () => {
     sex: '',
     birthdate: '',
     email: '',
-    department_id: '',
+    department_id: ''
   });
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
+
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { userId } = useParams();
+
+  if (location.pathname.includes('/view-user') && !userId) {
+    navigate('/')
+    return
+  }
+
+  useEffect(() => {
+    if (location.pathname.includes('/view-user') && userId) {
+      fetchUser()
+    } else {
+      setErrors([])
+      setLoading(false)
+      setFormData({
+        role: '',
+        personnel_number: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        suffix: '',
+        sex: '',
+        birthdate: '',
+        email: '',
+        department_id: '',
+      });
+    }
+  }, [userId])
+
+  //fetches the user if route is for update
+  const fetchUser = async () => {
+    setLoading(true)
+
+    const url = "/api/users/" + userId
+
+    const res = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+
+      const middleName = data.middleName ?? ''
+      const suffix = data.suffix ?? ''
+      const departmentId = data.department_id ?? ''
+
+      setFormData({
+        role: data.role,
+        personnel_number: data.personnel_number,
+        first_name: data.first_name,
+        middle_name: middleName,
+        last_name: data.last_name,
+        suffix: suffix,
+        sex: data.sex,
+        birthdate: data.birthdate,
+        email: data.email,
+        department_id: departmentId
+      })
+    } else {
+      Swal.fire({
+        showConfirmButton: false,
+        title: 'User not found.',
+        icon: 'error',
+        showCloseButton: true,
+        customClass: {
+          title: 'text-xl font-bold text-black text-center',
+          confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
+          cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
+          popup: 'border-2 rounded-xl pb-10'
+        },
+      }).then((result) => {
+            if(result.isDismissed) {
+              navigate('/users')
+            }
+          });
+    }
+
+    setLoading(false)
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,9 +120,9 @@ const AddUserPage = () => {
     e.preventDefault();
 
     Swal.fire({
-      title: 'Are you sure you want to add this user?',
+      title: 'Are you sure?',
       showCancelButton: true,
-      confirmButtonText: 'Yes, add user',
+      confirmButtonText: 'Yes',
       cancelButtonText: 'Cancel',
       customClass: {
         title: 'text-xl font-bold text-black text-center',
@@ -47,6 +131,7 @@ const AddUserPage = () => {
         popup: 'border-2 rounded-xl p-6'
       },
     }).then(async (result) => {
+      setErrors([])
       setLoading(true)
 
       if (result.isConfirmed) {
@@ -56,8 +141,11 @@ const AddUserPage = () => {
             Object.entries(formData).filter(([key, value]) => value !== '')
           );
 
-          const res = await fetch('/api/register', {
-            method: 'POST',
+          const url = userId ? '/api/users/' + userId + '/update-information' : '/api/register'
+          const method = userId ? "PUT" : "POST"
+
+          const res = await fetch(url, {
+            method: method,
             headers: { 
               Authorization: `Bearer ${token}`
             },
@@ -80,22 +168,24 @@ const AddUserPage = () => {
               department_id: '',
             });
 
+            const dialogTitle = userId ? "User updated successfully!" : "User added successfully!"
             Swal.fire({
-              title: 'User Added Successfully!',
-              confirmButtonText: 'OK',
+              icon: "success",
+              title: dialogTitle,
+              showConfirmButton: false,
+              showCloseButton: true,
               customClass: {
                 title: 'text-xl font-bold text-black text-center',
                 confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
                 cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-                popup: 'border-2 rounded-xl p-6'
+                popup: 'border-2 rounded-xl p-6 pb-10'
               }
             });
           } else {
             setErrors(data)
-            console.log(data)
           }
         } catch (error) {
-          console.error('Error adding user:', error);
+          console.error('Error:', error);
         }
       }
 
@@ -107,20 +197,23 @@ const AddUserPage = () => {
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-10 grid grid-cols-1 place-items-center relative">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 grid grid-cols-1 place-items-center relative">
         { loading ? (
             <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
                 <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
             </div>
         ) : <></>}
         
-        <div className="w-full md:w-[70%] bg-gray-100 pt-12 pb-14 rounded-lg shadow-md mb-6">
+        <div className="w-full md:w-[70%] bg-gray-100 pt-10 pb-14 rounded-lg shadow-md mb-6">
+
           <div className="flex justify-center items-center rounded-md">
             <img src={logo} className="h-20" alt="Logo" />
           </div>
 
+          <h2 className="text-xl text-center font-bold m-6">{userId ? "Update User Account" : "Create New Account"}</h2>
+
           <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
-            <div className="grid grid-cols-1 gap-4 w-[60%]">
+            <div className="grid grid-cols-2 gap-4 w-[70%]">
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">Role</label>
                 <select
@@ -139,27 +232,6 @@ const AddUserPage = () => {
                 {errors.errors && errors.role[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.role[0]}</p>}
               </div>
 
-              {(formData.role === 'physician' || formData.role === 'secretary') && (
-                <div className="mb-2">
-                  <label className="block text-sm font-medium text-gray-700"></label>
-                  <select
-                    name="department_id"
-                    value={formData.department_id}
-                    onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
-                    required
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map((department) => (
-                      <option key={department.id} value={department.id}>
-                        {department.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.errors && errors.department_id[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.department_id[0]}</p>}
-                </div>
-              )}
-
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">Personnel Number</label>
                 <input
@@ -174,7 +246,7 @@ const AddUserPage = () => {
                 {errors.errors && errors.personnel_number[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.personnel_number[0]}</p>}
               </div>
 
-              <div className="mb-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700">First Name</label>
                 <input
                   type="text"
@@ -185,11 +257,11 @@ const AddUserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.first_name[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.first_name[0]}</p>}
+                {errors.errors && errors.first_name[0] && <p className="text-red-600 mt-1">{errors.errors.first_name[0]}</p>}
               </div>
 
-              <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Middle Name (optional)</label>
                 <input
                   type="text"
                   name="middle_name"
@@ -198,7 +270,7 @@ const AddUserPage = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                 />
-                {errors.errors && errors.middle_name[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.middle_name[0]}</p>}
+                {errors.errors && errors.middle_name[0] && <p className="text-red-600 mt-1">{errors.errors.middle_name[0]}</p>}
               </div>
 
               <div className="mb-2">
@@ -215,8 +287,8 @@ const AddUserPage = () => {
                 {errors.errors && errors.last_name[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.last_name[0]}</p>}
               </div>
 
-              <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Suffix</label>
+              <div className="mb-2 w-1/2">
+                <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
                 <input
                   type="text"
                   name="suffix"
@@ -272,14 +344,38 @@ const AddUserPage = () => {
                 {errors.errors && errors.email[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.email[0]}</p>}
               </div>
 
-              {!errors.errors && errors.message && <p className="text-red-600 mt-4 mb-1 text-center">{errors.message}</p>}
+              {(formData.role === 'physician' || formData.role === 'secretary') && (
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-gray-700">Department</label>
+                  <select
+                    name="department_id"
+                    value={formData.department_id}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((department) => (
+                      <option key={department.id} value={department.id}>
+                        {department.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.errors && errors.department_id[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.department_id[0]}</p>}
+                </div>
+              )}
+            </div>
 
-              <button
-                type="submit"
-                className="mt-1 block w-full h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
-              >
-                Create Account
-              </button>
+            <div className="mt-8 w-full">
+              {!errors.errors && errors.message && <p className="text-red-600 mb-1 text-center">{errors.message}</p>}
+
+              <div className="flex justify-center items-center">
+                <button
+                  type="submit"
+                  className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                    { userId ? "Save" : "Create Account" }
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -288,4 +384,4 @@ const AddUserPage = () => {
   );
 };
 
-export default AddUserPage;
+export default UserPage;

@@ -12,7 +12,7 @@ import UpdateEmailPage from './pages/UpdateEmailPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import DashboardAdminPage from './pages/DashboardAdminPage';
 import UsersPage from './pages/UsersPage';
-import AddUserPage from './pages/AddUserPage';
+import UserPage from './pages/UserPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
 import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretaryPage';
@@ -48,7 +48,8 @@ const App = () => {
         <Route element={<AdminProvider />}>
           <Route path='/' element={<DashboardAdminPage/>}/>
           <Route path='users' element={<UsersPage/>}/>
-          <Route path='add-user' element={<AddUserPage/>}/>
+          <Route path='add-user' element={<UserPage/>}/>
+          <Route path='view-user/:userId' element={<UserPage/>}/>
           <Route path='departments' element={<DepartmentsPage/>}/>
           <Route path='audits' element={<AuditsPage/>}/>
           { generalRoutes }

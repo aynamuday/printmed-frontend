@@ -3,119 +3,169 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import AppContext from "../context/AppContext";
 import Swal from "sweetalert2";
+import { BounceLoader } from "react-spinners";
+import globalSwal from "../utils/globalSwal";
 
 const DepartmentsPage = () => {
   const { token } = useContext(AppContext);
-  const [departments, setDepartments] = useState([]);
-  const [newDepartment, setNewDepartment] = useState("");
-  const [editDepartmentId, setEditDepartmentId] = useState(null);
-  const [editDepartmentName, setEditDepartmentName] = useState("");
+  const { departments, setDepartments } = useContext(AppContext);
+  const [newDepartment, setNewDepartment] = useState("")
+  const [editDepartment, setEditDepartment] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  const fetchDepartments = async () => {
-    if (!token) {
-      console.error("No token available.");
-      return;
+  const handleAddDepartment = async () => {
+    if(newDepartment.trim() === "") {
+      return
     }
 
+    setLoading(true)
+
+    if (departments.some(item => item.name.toLowerCase() === newDepartment.toLowerCase())) {
+      setLoading(false)
+
+      globalSwal.fire({
+        showConfirmButton: false,
+        title: 'Department already exists.',
+        icon: 'error',
+        showCloseButton: true
+      })
+      return;
+    }
+    
     try {
-      const response = await fetch("/api/departments", {
-        method: 'GET',
+      const res = await fetch("/api/departments", {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-        }
+        },
+        body: JSON.stringify({name: newDepartment}),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      const data = await res.json();
+
+      if (res.ok) {
+        setDepartments(prevDepartments => [...prevDepartments, data]);
+        setNewDepartment("");
+
+        globalSwal.fire({
+          showConfirmButton: false,
+          title: 'Department added successfully!',
+          icon: 'success',
+          showCloseButton: true
+        })
+      } else {
+        globalSwal.fire({
+          showConfirmButton: false,
+          title: "Error adding the department.",
+          icon: 'error',
+          showCloseButton: true
+        })
       }
-
-      const data = await response.json();
-      setDepartments(data);
-      console.log("API fetched successfully:", data);
-
     } catch (error) {
-      console.error("Error fetching departments:", error);
+      console.error("Error adding department:", error);
     }
+
+    setLoading(false)
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchDepartments();
-    }
-  }, [token]);
+  // Handle edit department
+  const handleEditDepartmentChange = (department) => {
+    setEditDepartment(department);
+  };
 
-  // Handle adding a new department with confirmation and duplication check
-  const handleAddDepartment = async () => {
-    if (!newDepartment) return;
+  const handleSaveEdit = async () => {
+    if (departments.some(item => item.name.toLowerCase() === editDepartment.name.toLowerCase())) {
+      setLoading(false)
 
-    // Check if department already exists
-    const departmentExists = departments.some(dept => dept.name.toLowerCase() === newDepartment.toLowerCase());
-
-    if (departmentExists) {
-      Swal.fire('Error', 'This department already exists, please add a new one.', 'error');
+      globalSwal.fire({
+        showConfirmButton: false,
+        title: 'Department already exists.',
+        icon: 'error',
+        showCloseButton: true
+      })
       return;
     }
 
-    Swal.fire({
-      title: 'Are you sure you want to add this department?',
-      text: newDepartment,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, add it!',
-      cancelButtonText: 'No, cancel!',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const newDept = { name: newDepartment };
-        try {
-          const response = await fetch("/api/departments", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(newDept),
-          });
+    setLoading(true)
 
-          if (response.ok) {
-            const data = await response.json();
-            setDepartments([...departments, data]);
-            setNewDepartment(""); // Clear input field
-            Swal.fire('Success!', 'Department added successfully', 'success');
-          } else {
-            throw new Error('Error adding department');
-          }
-        } catch (error) {
-          console.error("Error adding department:", error);
-        }
+    try {
+      const res = await fetch(`/api/departments/${editDepartment.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({name: editDepartment.name}),
+      });
+
+      const data = await res.json();
+
+      console.log(data)
+
+      if (res.ok) {
+        setDepartments(
+          departments.map(item =>
+            item.id === editDepartment.id ? { ...item, name: data.name } : item
+          )
+        );
+        setEditDepartment([]);
+
+        globalSwal.fire({
+          showConfirmButton: false,
+          title: 'Department edited successfully!',
+          icon: 'success',
+          showCloseButton: true
+        })
+      } else {
+        globalSwal.fire({
+          showConfirmButton: false,
+          title: "Error updating the department.",
+          icon: 'error',
+          showCloseButton: true
+        })
       }
-    });
+    } catch (error) {
+      console.error("Error editing department:", error);
+    }
+
+    setLoading(false)
   };
 
-  // Handle deleting a department
+  // Handle delete department
   const handleDeleteDepartment = (id) => {
-    Swal.fire({
+    globalSwal.fire({
       title: 'Are you sure you want to delete this department?',
-      text: "This action cannot be undone!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await fetch(`/api/departments/${id}`, {
+          const res = await fetch(`/api/departments/${id}`, {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`,
             }
           });
 
-          if (response.ok) {
-            // Remove department from the state after deletion
+          const data = await res.json()
+
+          if (res.ok) {
             setDepartments(departments.filter(dept => dept.id !== id));
-            Swal.fire('Deleted!', 'Your department has been deleted.', 'success');
+
+            globalSwal.fire({
+              showConfirmButton: false,
+              title: 'Department deleted successfully!',
+              icon: 'success',
+              showCloseButton: true
+            })
           } else {
-            throw new Error('Error deleting department');
+            globalSwal.fire({
+              showConfirmButton: false,
+              title: "Department cannot be deleted.",
+              icon: 'error',
+              showCloseButton: true
+            })
           }
         } catch (error) {
           console.error("Error deleting department:", error);
@@ -124,121 +174,84 @@ const DepartmentsPage = () => {
     });
   };
 
-  // Handle editing department
-  const handleEditDepartment = (id, name) => {
-    setEditDepartmentId(id);
-    setEditDepartmentName(name);
-  };
-
-  // Handle saving edited department
-  const handleSaveEdit = async () => {
-    const updatedDept = { name: editDepartmentName };
-    try {
-      const response = await fetch(`/api/departments/${editDepartmentId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedDept),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDepartments(
-          departments.map(dept =>
-            dept.id === editDepartmentId ? { ...dept, name: data.name } : dept
-          )
-        );
-        setEditDepartmentId(null);
-        setEditDepartmentName("");
-        Swal.fire('Success!', 'Department edited successfully', 'success');
-      } else {
-        throw new Error('Error saving department changes');
-      }
-    } catch (error) {
-      console.error("Error editing department:", error);
-    }
-  };
-
   return (
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-10 p-4">
-        <h2 className="text-2xl mb-4">Department Management</h2>
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-8 mb-8 p-4 relative">
+        { loading &&
+            <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
+                <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
+            </div>
+        }
+
+        <h2 className="text-2xl mb-4 font-bold">Departments</h2>
 
         {/* Add Department Form */}
         <div className="mb-6">
           <input
             type="text"
-            className="border border-gray-300 p-2 rounded"
-            placeholder="New Department Name"
+            className="border border-gray-600 p-2 rounded"
+            placeholder="Name"
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
           />
-          <button onClick={handleAddDepartment} className="bg-[#6CB6AD] hover:bg-blue-600 text-white p-2 rounded ml-2">
-            Add Department
+          <button onClick={handleAddDepartment} className="bg-[#248176] text-white py-2 px-8 rounded ml-2">
+            Add
           </button>
         </div>
 
         {/* Department List Table */}
-        <table className="min-w-full bg-white border border-gray-300 text-center">
+        <table className="w-[50%] border border-spacing-0 border-gray-300">
           <thead>
             <tr>
-              <th className="border-b border-gray-300 p-2">Department ID</th>
-              <th className="border-b border-gray-300 p-2">Department Name</th>
-              <th className="border-b border-gray-300 p-2">Actions</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">ID</th>
+              <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Name</th>
+              <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {departments.map((dept) => (
-              <tr key={dept.id}>
-                <td className="border-b border-gray-300 p-2">{dept.id}</td>
-                <td className="border-b border-gray-300 p-2">
-                  {editDepartmentId === dept.id ? (
+            { departments && departments.map((item) => (
+              <tr key={item.id}>
+                <td className="border p-2 border-[#828282] text-center">
+                  {item.id}
+                </td>
+                <td className="border p-2 border-[#828282] text-center">
+                  {editDepartment && editDepartment.id === item.id ? (
                     <input
                       type="text"
-                      className="border border-gray-300 p-1 rounded"
-                      value={editDepartmentName}
-                      onChange={(e) => setEditDepartmentName(e.target.value)}
+                      className="border border-gray-800 w-full h-full py-1 rounded text-center"
+                      value={editDepartment.name}
+                      onChange={(e) => {setEditDepartment({...editDepartment, name: e.target.value})}}
                     />
                   ) : (
-                    dept.name
+                    <>{item.name}</>
                   )}
                 </td>
-                <td className="border-b border-gray-300 p-2">
-                  {editDepartmentId === dept.id ? (
-                    <>
-                      <button
-                        onClick={handleSaveEdit}
-                        className="bg-green-500 text-white p-1 rounded mr-2"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditDepartmentId(null)}
-                        className="bg-gray-500 text-white p-1 rounded"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleEditDepartment(dept.id, dept.name)}
-                        className="bg-[#6CB6AD] text-white p-1 rounded mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteDepartment(dept.id)}
-                        className="bg-red-500 text-white p-1 rounded"
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
+                <td className="border p-2 border-[#828282]">
+                  <div className='flex flex-row w-100 items-center justify-center gap-4'>
+                    { editDepartment && editDepartment.id === item.id ? (
+                        <>
+                          <button onClick={() => {handleSaveEdit()}} className={`py-1 w-20 rounded-lg bg-green-500 text-white`}>
+                            Save
+                          </button>
+
+                          <button onClick={() => {setEditDepartment(null)}} className='py-1 w-20 rounded-lg bg-gray-500 text-white'>
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => {handleEditDepartmentChange(item)}} className={`py-1 w-20 rounded-lg bg-blue-500 text-white`}>
+                            Edit
+                          </button>
+
+                          <button onClick={() => {handleDeleteDepartment(item.id)}} className='py-1 w-20 rounded-lg bg-red-500 text-white'>
+                            Delete
+                          </button>
+                        </>
+                      )}
+                  </div>
                 </td>
               </tr>
             ))}
