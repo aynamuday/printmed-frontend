@@ -2,11 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AppContext from '../context/AppContext';
-import QueueManagerContext from '../context/QueueManagerContext'; // Context for managing state
+import QueueManagerContext from '../context/QueueManagerContext';
 
 const QueuePage = () => {
   const { token } = useContext(AppContext);
-  const { updateQueue, setUpdateQueue } = useContext(QueueManagerContext); // Accessing context state
+  const { updateQueue, setUpdateQueue } = useContext(QueueManagerContext);
 
   useEffect(() => {
     const apiUrl = '/api/queue';
@@ -25,7 +25,7 @@ const QueuePage = () => {
         return response.json();
       })
       .then(data => {
-        setUpdateQueue(data); // Setting the initial state from API response
+        setUpdateQueue(data);
         console.log("API connected successfully and data fetched.");
       })
       .catch(error => console.error("Error fetching department queues:", error));
@@ -35,14 +35,13 @@ const QueuePage = () => {
   const incrementQueue = (queueId) => {
     const updatedQueues = updateQueue.map(queue => {
       if (queue.id === queueId) {
-        return { ...queue, total: queue.total + 1 }; // Increment the total for the correct department
+        return { ...queue, total: queue.total + 1 };
       }
       return queue;
     });
 
-    setUpdateQueue(updatedQueues); // Update the state
+    setUpdateQueue(updatedQueues);
 
-    // Optionally, sync the change with the backend
     fetch(`/api/queue/${queueId}/increment-total`, {
       method: "PUT",
       headers: {
@@ -57,14 +56,13 @@ const QueuePage = () => {
   const decrementQueue = (queueId) => {
     const updatedQueues = updateQueue.map(queue => {
       if (queue.id === queueId) {
-        return { ...queue, total: Math.max(queue.total - 1, 0) }; // Decrement the total but not below 0
+        return { ...queue, total: Math.max(queue.total - 1, 0) };
       }
       return queue;
     });
 
-    setUpdateQueue(updatedQueues); // Update the state
+    setUpdateQueue(updatedQueues);
 
-    // Optionally, sync the change with the backend
     fetch(`/api/queue/${queueId}/decrement-total`, {
       method: "PUT",
       headers: {
@@ -79,14 +77,13 @@ const QueuePage = () => {
   const clearQueue = (queueId) => {
     const updatedQueues = updateQueue.map(queue => {
       if (queue.id === queueId) {
-        return { ...queue, total: 0 }; // Reset the total to 0
+        return { ...queue, total: 0 };
       }
       return queue;
     });
 
-    setUpdateQueue(updatedQueues); // Update the state
+    setUpdateQueue(updatedQueues);
 
-    // Optionally, sync the change with the backend
     fetch(`/api/queue/${queueId}/clear`, {
       method: "PUT",
       headers: {
