@@ -141,7 +141,7 @@ const QueuePage = () => {
                   {/* Increment button centered */}
                   <button
                     onClick={() => incrementQueue(queue.id)}
-                    className="bg-blue-500 text-white p-4 rounded-md shadow-md hover:bg-blue-600 transition w-16"
+                    className="bg-[#6CB6AD] text-white p-4 rounded-md shadow-md hover:bg-red-600 transition w-16"
                   >
                     <i className="bi bi-plus"></i>
                   </button>
@@ -151,14 +151,14 @@ const QueuePage = () => {
                   {queue.total > 0 && (
                     <button
                       onClick={() => decrementQueue(queue.id)}
-                      className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600 transition"
+                      className="bg-[#6CB6AD] text-white p-2 rounded-md shadow-md hover:bg-red-600 transition"
                     >
                       <i className="bi bi-dash"></i>
                     </button>
                   )}
                   <button
                     onClick={() => clearQueue(queue.id)}
-                    className="bg-gray-500 text-white p-2 rounded-md shadow-md hover:bg-gray-600 transition"
+                    className="bg-[#6CB6AD] text-white p-2 rounded-md shadow-md hover:bg-red-600 transition"
                   >
                     <i className="bi bi-x"></i>
                   </button>
