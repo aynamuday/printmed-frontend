@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import Swal from "sweetalert2";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
@@ -87,17 +86,11 @@ const UserPage = () => {
         department_id: departmentId
       })
     } else {
-      Swal.fire({
+      globalSwal.fire({
         showConfirmButton: false,
         title: 'User not found.',
         icon: 'error',
         showCloseButton: true,
-        customClass: {
-          title: 'text-xl font-bold text-black text-center',
-          confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
-          cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-          popup: 'border-2 rounded-xl pb-10'
-        },
       }).then((result) => {
             if(result.isDismissed) {
               navigate('/users')
@@ -119,17 +112,11 @@ const UserPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    Swal.fire({
+    globalSwal.fire({
       title: 'Are you sure?',
       showCancelButton: true,
       confirmButtonText: 'Yes',
-      cancelButtonText: 'Cancel',
-      customClass: {
-        title: 'text-xl font-bold text-black text-center',
-        confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
-        cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-        popup: 'border-2 rounded-xl p-6'
-      },
+      cancelButtonText: 'Cancel'
     }).then(async (result) => {
       setErrors([])
       setLoading(true)
@@ -169,17 +156,11 @@ const UserPage = () => {
             });
 
             const dialogTitle = userId ? "User updated successfully!" : "User added successfully!"
-            Swal.fire({
+            globalSwal.fire({
               icon: "success",
               title: dialogTitle,
               showConfirmButton: false,
-              showCloseButton: true,
-              customClass: {
-                title: 'text-xl font-bold text-black text-center',
-                confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
-                cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-                popup: 'border-2 rounded-xl p-6 pb-10'
-              }
+              showCloseButton: true
             });
           } else {
             setErrors(data)

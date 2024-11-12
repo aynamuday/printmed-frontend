@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import AppContext from "../context/AppContext";
-import Swal from "sweetalert2";
 import { BounceLoader } from "react-spinners";
 import globalSwal from "../utils/globalSwal";
 
