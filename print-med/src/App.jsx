@@ -84,8 +84,8 @@ const App = () => {
       roleBasedRoutes = (
         <>
           <Route element={<QueueManagerProvider />}>
-          <Route path='/' element={<Queue/>}/>
-          { generalRoutes }
+            <Route path='/' element={<Queue/>}/>
+            { generalRoutes }
           </Route>
         </>
       )
