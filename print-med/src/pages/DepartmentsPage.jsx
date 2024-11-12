@@ -139,6 +139,8 @@ const DepartmentsPage = () => {
       cancelButtonText: 'Cancel'
     }).then(async (result) => {
       if (result.isConfirmed) {
+        setLoading(true)
+
         try {
           const res = await fetch(`/api/departments/${id}`, {
             method: 'DELETE',
@@ -162,6 +164,7 @@ const DepartmentsPage = () => {
             globalSwal.fire({
               showConfirmButton: false,
               title: "Department cannot be deleted.",
+              text: "This department is used to identify users and records.",
               icon: 'error',
               showCloseButton: true
             })
@@ -169,6 +172,8 @@ const DepartmentsPage = () => {
         } catch (error) {
           console.error("Error deleting department:", error);
         }
+
+        setLoading(false)
       }
     });
   };
@@ -190,12 +195,12 @@ const DepartmentsPage = () => {
         <div className="mb-6">
           <input
             type="text"
-            className="border border-gray-600 p-2 rounded"
+            className="border border-gray-600 p-2 rounded h-8"
             placeholder="Name"
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
           />
-          <button onClick={handleAddDepartment} className="bg-[#248176] text-white py-2 px-8 rounded ml-2">
+          <button onClick={handleAddDepartment} className="bg-[#248176] text-white px-8 rounded ml-2 h-8">
             Add
           </button>
         </div>

@@ -185,7 +185,7 @@ const UserPage = () => {
             </div>
         ) : <></>}
         
-        <div className="w-full md:w-[70%] bg-gray-100 pt-10 pb-14 rounded-lg shadow-md mb-6">
+        <div className="w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
 
           <div className="flex justify-center items-center rounded-md">
             <img src={logo} className="h-20" alt="Logo" />

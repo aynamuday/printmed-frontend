@@ -3,25 +3,18 @@ import { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppContext from '../context/AppContext'
 import Settings from '../components/Settings'
-import Swal from 'sweetalert2';
 
 const SettingsPage = () => {
   const { user, setUser, token, setToken } = useContext(AppContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    const result = await Swal.fire({
+      const result = await globalSwal.fire({
       title: 'Are you sure you want to log out?',
       showCancelButton: true,
       confirmButtonText: 'Yes, log me out!',
       cancelButtonText: 'Cancel',
       allowOutsideClick: false,
-      customClass: {
-        title: 'text-xl font-bold text-black text-center',
-        confirmButton: 'bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700',
-        cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-        popup: 'border-2 rounded-xl p-6'
-      },
     });
   
     if (result.isConfirmed) {
@@ -45,11 +38,11 @@ const SettingsPage = () => {
         navigate('/login');
       } catch (error) {
         console.error('Logout Error:', error);
-        Swal.fire({
+        globalSwal.fire({
           title: 'Error',
           text: 'There was an issue logging out. Please try again.',
           icon: 'error',
-          confirmButtonText: 'Ok'
+          confirmButtonText: 'Ok',
         });
       }
     }
