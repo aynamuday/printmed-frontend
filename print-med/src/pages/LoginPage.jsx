@@ -54,6 +54,7 @@ const LoginPage = () => {
   }
 
   const handleLogin = async (e) => {
+    setErrors('')
     e.preventDefault();
 
     // Validation for each field
@@ -93,6 +94,7 @@ const LoginPage = () => {
   };
 
   const handleVerifyOtp = async (e) => {
+    setErrors('')
     e.preventDefault();
     if (!otp.code) {
       setErrors({ ...errors, otp: 'OTP is required.' });
@@ -141,6 +143,7 @@ const LoginPage = () => {
                   className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   value={credentials.role}
                   onChange={handleChange}
+                  required
                 >
                   <option value="">Select Role</option>
                   <option value="physician">Physician</option>
@@ -159,6 +162,7 @@ const LoginPage = () => {
                   placeholder="Personnel Number"
                   value={credentials.personnel_number}
                   onChange={handleChange}
+                  required
                 />
                 {errors.personnel_number && <p className="text-red-500 text-sm">{errors.personnel_number}</p>}
               </div>
@@ -171,6 +175,7 @@ const LoginPage = () => {
                   placeholder="Email"
                   value={credentials.email}
                   onChange={handleChange}
+                  required
                 />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
@@ -183,6 +188,7 @@ const LoginPage = () => {
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
+                  required
                 />
                 {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
