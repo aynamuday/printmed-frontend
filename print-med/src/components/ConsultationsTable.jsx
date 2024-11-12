@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { getFormattedDate } from '../utils/dateUtils'
+import PhysicianContext from '../context/PhysicianContext'
 
 const ConsultationsTable = ({consultations}) => {
+    const { setConsultation } = useContext(PhysicianContext)
+
   return (
     <div>
         <table className="min-w-full border border-spacing-0 border-gray-300">
@@ -15,7 +18,7 @@ const ConsultationsTable = ({consultations}) => {
             <tbody>
             { consultations ? (
                 consultations.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={item.id} onClick={() => {(setConsultation(item))}} className='cursor-pointer'>
                         <td className="border p-2 border-[#828282] text-center">{item.chief_complaint}</td>
                         <td className="border p-2 border-[#828282] text-center">{item.primary_diagnosis}</td>
                         <td className="border p-2 border-[#828282] text-center">{getFormattedDate(item.created_at)}</td>

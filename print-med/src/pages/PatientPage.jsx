@@ -4,10 +4,17 @@ import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import PatientDetails from '../components/PatientDetails'
 import ConsultationsTable from '../components/ConsultationsTable'
+import Consultation from '../components/Consultation'
+
 import AppContext from '../context/AppContext'
+import PhysicianContext from '../context/PhysicianContext'
+import globalSwal from '../utils/globalSwal'
 
 const PatientPage = (patientId) => {
     const { token } = useContext(AppContext)
+    const { consultation, setConsultation } = useContext(PhysicianContext)
+    const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
+    const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
 
     patientId = 1
 
@@ -16,6 +23,8 @@ const PatientPage = (patientId) => {
     const [loading, setLoading] = useState(false)
 
     const fetchPatient = async () => {
+        globalSwal.showLoading()
+        
         const res = await fetch(`/api/patients/${patientId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -43,6 +52,8 @@ const PatientPage = (patientId) => {
         }
 
         setLoading(false)
+
+        globalSwal.close()
     }
 
     useEffect(() => {
@@ -65,14 +76,24 @@ const PatientPage = (patientId) => {
                     </div>
                     <div  className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
                         <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
-                            <p className='font-semibold text-white text-lg'>Consultation Records</p>
-                            <button>
-                                <i className="bi bi-plus-square-fill me-2 text-white"></i>
-                            </button>
+                            <div className='flex gap-4'>
+                                {(consultation || editConsultation || addConsultation) && 
+                                    <button onClick={() => {setConsultation(null); setAddConsultation(false);}}>
+                                        <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
+                                    </button>
+                                }
+                                <p className='font-semibold text-white text-lg'>Consultation Records</p>
+                            </div>
+                            <div className='flex gap-4'>
+                                {consultation && !editConsultation && <button onClick={() => {setEditConsultation(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
+                                {!consultation && !addConsultation && <button onClick={() => {setAddConsultation(true)}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
+                            </div>
                         </div>
                         <div>
                             <div className='grid grid-cols-1 justify-center px-4 py-6'>
-                                <ConsultationsTable consultations={consultations.data}/>
+                                { consultation && <Consultation /> }
+                                { addConsultation &&  <Consultation /> }
+                                {!consultation && !addConsultation && <ConsultationsTable consultations={consultations.data} />}
                             </div>
                         </div>
                     </div>

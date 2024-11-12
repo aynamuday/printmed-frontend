@@ -43,6 +43,8 @@ const PatientDetails = ({patient}) => {
 
         if(res.ok) {
             patient = data
+        } else {
+            setErrors(data)
         }
 
         setUpdate(false)
@@ -54,10 +56,11 @@ const PatientDetails = ({patient}) => {
     <div>
         <div className='bg-[#D9D9D9] bg-opacity-30'>
             <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
-                <p className='font-semibold text-white text-lg'>Details</p>
-                <button onClick={() => {setUpdate(!update)}}>
-                    <i className={`bi ${update ? 'bi-x-circle-fill' : 'bi-pencil-square'} me-2 text-white`}></i>
-                </button>
+                <div className='flex gap-4'>
+                    { update && <button onClick={() => {setUpdate(false)}}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>}
+                    <p className='font-semibold text-white text-lg'>Details</p>
+                </div>
+                {!update && <button onClick={() => {setUpdate(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
             </div>
 
             <div className='pt-4 pb-6 px-4'>
@@ -223,6 +226,10 @@ const PatientDetails = ({patient}) => {
                     ) : (
                         <p className="block text-black col-span-2">{patient.email}</p>
                     ) }
+                </div>
+                <div className='grid grid-cols-3 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-1">Follow-up Date</p>
+                    { !update && ( <p className="block text-black col-span-2">{patient.follow_up_date}</p>) }
                 </div>
                 { update && (
                     <div className="mt-8 w-full">
