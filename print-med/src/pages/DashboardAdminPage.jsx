@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
 import { PulseLoader } from 'react-spinners';
@@ -36,7 +36,7 @@ const DashboardAdminPage = () => {
       <Sidebar />
       <Header />  
 
-      <div className="w-full md:w-[75%] md:ml-[22%]">
+      <div className="w-full md:w-[75%] md:ml-[22%] mb-8">
         { usersCount.length < 1 ? (
           <div className='flex justify-center items-center mt-40'>
             <PulseLoader color="#6CB6AD" loading={usersCount.length < 1} size={15} />

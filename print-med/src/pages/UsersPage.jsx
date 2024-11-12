@@ -17,8 +17,6 @@ const UsersPage = () => {
 
     // fetch the users
     const getUsers = async (page = 1, role='', department_id='', status='') => {
-        setLoading(true)
-
         let url = `/api/users?page=${page}`
 
         if (!(role.trim() === "")) {
@@ -111,7 +109,7 @@ const UsersPage = () => {
             <Header />  
             
             { users ? (
-                <div className="w-full md:w-[75%] md:ml-[22%] mt-10">
+                <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-10">
                     <div className={`flex justify-between items-end mb-6 mt-12`}>
                         <h2 className={`font-bold text-2xl`}>{ "Users" }</h2>
                         <div className={`flex justify-end gap-4 items-end`}>
