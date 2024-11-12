@@ -19,11 +19,12 @@ const Payment = ({ forDashboard = false }) => {
     setPaymentsAllFilters,
   } = useContext(SecretaryPhysicianContext);
   const [loadingPayments, setLoadingPayments] = useState(false);
+  const [method, setMethod] = useState("");
   const payments = forDashboard ? paymentsToday : paymentsAll;
   const dateToday = getFormattedDate();
 
   // Fetch the payments
-  const getPayments = async (page = 1, resource = '', dateFrom = '', dateUntil = '') => {
+  const getPayments = async (page = 1, resource = '', dateFrom = '', dateUntil = '', method = '') => {
     let url = `/api/payments?page=${page}`;
   
     if (forDashboard) {
@@ -47,6 +48,9 @@ const Payment = ({ forDashboard = false }) => {
       }
       if (resource.trim()) {
         url += `&is_paid=${resource === 'paid' ? 1 : 0}`; // Map 'paid'/'unpaid' to 1/0 for API
+      }
+      if (method) {
+        url += `&method=${method}`;
       }
     }
   
@@ -88,9 +92,9 @@ const Payment = ({ forDashboard = false }) => {
       const dateUntil = paymentsAllFilters.dateUntil;
       const resource = paymentsAllFilters.resource;
 
-      getPayments(1, resource, dateFrom, dateUntil);
+      getPayments(1, resource, dateFrom, dateUntil, method);
     }
-  }, []);
+  }, [method]);
 
   // Executes when user selects payment resource (Paid or Unpaid)
   const handlePaymentsResourceChange = (e) => {
@@ -156,6 +160,11 @@ const Payment = ({ forDashboard = false }) => {
 
   const resourceValue = forDashboard ? paymentsTodayResource : paymentsAllFilters.resource;
 
+  // Handle method change
+  const handleMethodChange = (e) => {
+    setMethod(e.target.value);
+  };
+  
   return (
     <>
       {payments.payments ? (
@@ -173,9 +182,21 @@ const Payment = ({ forDashboard = false }) => {
                 value={resourceValue}
                 onChange={handlePaymentsResourceChange}
               >
-                <option value="">Select resource</option>
+                <option value="">Select Status</option>
                 <option value="paid">Paid</option>
                 <option value="unpaid">Unpaid</option>
+              </select>
+
+              <select
+                className="px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none"
+                name="method"
+                id="method"
+                value={method}
+                onChange={handleMethodChange}
+              >
+                <option value="">Select Method</option>
+                <option value="hmo">HMO</option>
+                <option value="cash">Cash</option>
               </select>
 
               {!forDashboard ? (

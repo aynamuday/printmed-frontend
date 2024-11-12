@@ -62,8 +62,7 @@ const PaymentTable = ({ forDashboard, payments: initialPayments }) => {
         <tr>
           <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Time</th>
           <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Patient Name</th>
-          <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Method</th>
-          <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">HMO</th>
+          <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">METHOD</th>
           <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Amount</th>
           <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Paid</th>
           <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Department</th>
@@ -79,7 +78,6 @@ const PaymentTable = ({ forDashboard, payments: initialPayments }) => {
               </td>
               <td className="border p-2 border-[#828282] text-center">{payment.patient_name}</td>
               <td className="border p-2 border-[#828282] text-center">{payment.method}</td>
-              <td className="border p-2 border-[#828282] text-center">{payment.hmo}</td>
               <td className="border p-2 border-[#828282] text-center">{payment.amount}</td>
               <td className="border p-2 border-[#828282] text-center">{payment.is_paid ? 'Paid' : 'Unpaid'}</td>
               <td className="border p-2 border-[#828282] text-center">{payment.department}</td>
@@ -97,7 +95,7 @@ const PaymentTable = ({ forDashboard, payments: initialPayments }) => {
           ))
         ) : (
           <tr>
-            <td colSpan="8" className="border p-2 border-[#828282] text-center">
+            <td colSpan="7" className="border p-2 border-[#828282] text-center">
               No payments found
             </td>
           </tr>
