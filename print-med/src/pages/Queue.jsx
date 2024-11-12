@@ -40,8 +40,10 @@ const QueuePage = () => {
       return queue;
     });
 
+    // Update state optimistically
     setUpdateQueue(updatedQueues);
 
+    // Only update API if the increment was successful
     fetch(`/api/queue/${queueId}/increment-total`, {
       method: "PUT",
       headers: {
@@ -49,20 +51,33 @@ const QueuePage = () => {
         'Authorization': `Bearer ${token}`,
       },
     })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Increment successful");
+        } else {
+          throw new Error('Failed to increment queue');
+        }
+      })
       .catch(error => console.error("Error incrementing queue:", error));
   };
 
   // Handle decrement of queue
   const decrementQueue = (queueId) => {
+    // Prevent decrement if total is already 0
+    const queue = updateQueue.find(q => q.id === queueId);
+    if (queue.total === 0) return; // No decrement if total is 0
+
     const updatedQueues = updateQueue.map(queue => {
       if (queue.id === queueId) {
-        return { ...queue, total: Math.max(queue.total - 1, 0) };
+        return { ...queue, total: queue.total - 1 };
       }
       return queue;
     });
 
+    // Update state optimistically
     setUpdateQueue(updatedQueues);
 
+    // Only update API if the decrement was successful
     fetch(`/api/queue/${queueId}/decrement-total`, {
       method: "PUT",
       headers: {
@@ -70,6 +85,13 @@ const QueuePage = () => {
         'Authorization': `Bearer ${token}`,
       },
     })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Decrement successful");
+        } else {
+          throw new Error('Failed to decrement queue');
+        }
+      })
       .catch(error => console.error("Error decrementing queue:", error));
   };
 
@@ -82,8 +104,10 @@ const QueuePage = () => {
       return queue;
     });
 
+    // Update state optimistically
     setUpdateQueue(updatedQueues);
 
+    // Only update API if the clear was successful
     fetch(`/api/queue/${queueId}/clear`, {
       method: "PUT",
       headers: {
@@ -91,6 +115,13 @@ const QueuePage = () => {
         'Authorization': `Bearer ${token}`,
       },
     })
+      .then((response) => {
+        if (response.ok) {
+          console.log("Clear successful");
+        } else {
+          throw new Error('Failed to clear queue');
+        }
+      })
       .catch(error => console.error("Error clearing queue:", error));
   };
 
@@ -107,25 +138,31 @@ const QueuePage = () => {
                 <h2 className="font-bold text-lg">{queue.department_name}</h2>
                 <p className="text-8xl font-medium">{queue.total}</p>
                 <div className="flex justify-between mt-4">
+                  {/* Increment button centered */}
                   <button
                     onClick={() => incrementQueue(queue.id)}
-                    className="bg-blue-500 text-white p-2 rounded-md shadow-md hover:bg-blue-600 transition"
+                    className="bg-blue-500 text-white p-4 rounded-md shadow-md hover:bg-blue-600 transition w-16"
                   >
                     <i className="bi bi-plus"></i>
                   </button>
+                </div>
+                {/* Decrement and Clear buttons */}
+                <div className="flex justify-between mt-4">
+                  {queue.total > 0 && (
+                    <button
+                      onClick={() => decrementQueue(queue.id)}
+                      className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600 transition"
+                    >
+                      <i className="bi bi-dash"></i>
+                    </button>
+                  )}
                   <button
-                    onClick={() => decrementQueue(queue.id)}
-                    className="bg-red-500 text-white p-2 rounded-md shadow-md hover:bg-red-600 transition"
+                    onClick={() => clearQueue(queue.id)}
+                    className="bg-gray-500 text-white p-2 rounded-md shadow-md hover:bg-gray-600 transition"
                   >
-                    <i className="bi bi-dash"></i>
+                    <i className="bi bi-x"></i>
                   </button>
                 </div>
-                <button
-                  onClick={() => clearQueue(queue.id)}
-                  className="absolute top-2 right-2 text-3xl text-gray-700 hover:text-gray-900"
-                >
-                  <i className="bi bi-x"></i>
-                </button>
               </div>
             ))}
           </div>
