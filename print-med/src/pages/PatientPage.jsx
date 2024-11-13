@@ -12,6 +12,7 @@ import globalSwal from '../utils/globalSwal'
 
 const PatientPage = (patientId) => {
     const { token } = useContext(AppContext)
+    const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)  // add, edit, or view
     const { consultation, setConsultation } = useContext(PhysicianContext)
     const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
     const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
@@ -77,23 +78,22 @@ const PatientPage = (patientId) => {
                     <div  className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
                         <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
                             <div className='flex gap-4'>
-                                {(consultation || editConsultation || addConsultation) && 
-                                    <button onClick={() => {setConsultation(null); setAddConsultation(false);}}>
+                                {(consultationStatus) && 
+                                    <button onClick={() => {consultationStatus == "edit" ? setConsultationStatus("view") : setConsultationStatus(null)}}>
                                         <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
                                     </button>
                                 }
                                 <p className='font-semibold text-white text-lg'>Consultation Records</p>
                             </div>
                             <div className='flex gap-4'>
-                                {consultation && !editConsultation && <button onClick={() => {setEditConsultation(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
-                                {!consultation && !addConsultation && <button onClick={() => {setAddConsultation(true)}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
+                                {consultationStatus == "view" && <button onClick={() => {setConsultationStatus("edit")}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
+                                {!consultationStatus && <button onClick={() => {setConsultationStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
                             </div>
                         </div>
                         <div>
                             <div className='grid grid-cols-1 justify-center px-4 py-6'>
-                                { consultation && <Consultation /> }
-                                { addConsultation &&  <Consultation /> }
-                                {!consultation && !addConsultation && <ConsultationsTable consultations={consultations.data} />}
+                                { consultationStatus && <Consultation /> }
+                                {!consultationStatus && <ConsultationsTable consultations={consultations.data} />}
                             </div>
                         </div>
                     </div>

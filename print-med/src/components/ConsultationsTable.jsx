@@ -3,7 +3,7 @@ import { getFormattedDate } from '../utils/dateUtils'
 import PhysicianContext from '../context/PhysicianContext'
 
 const ConsultationsTable = ({consultations}) => {
-    const { setConsultation } = useContext(PhysicianContext)
+    const { setConsultation, setConsultationStatus } = useContext(PhysicianContext)
 
   return (
     <div>
@@ -18,7 +18,7 @@ const ConsultationsTable = ({consultations}) => {
             <tbody>
             { consultations ? (
                 consultations.map((item) => (
-                    <tr key={item.id} onClick={() => {(setConsultation(item))}} className='cursor-pointer'>
+                    <tr key={item.id} onClick={() => {setConsultation(item); setConsultationStatus("view");}} className='cursor-pointer'>
                         <td className="border p-2 border-[#828282] text-center">{item.chief_complaint}</td>
                         <td className="border p-2 border-[#828282] text-center">{item.primary_diagnosis}</td>
                         <td className="border p-2 border-[#828282] text-center">{getFormattedDate(item.created_at)}</td>

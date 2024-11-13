@@ -4,15 +4,16 @@ import { Outlet } from 'react-router-dom';
 const PhysicianContext = createContext();
 
 export const PhysicianProvider = () => {
+  const [consultationStatus, setConsultationStatus] = useState(null)
+  const [consultationId, setConsultationId] = useState(null)
   const [consultation, setConsultation] = useState(null)
-  const [addConsultation, setAddConsultation] = useState(null)
-  const [editConsultation, setEditConsultation] = useState(null)
+  const [consultationPayment, setConsultationPayment] = useState(null)
 
   return (
     <PhysicianContext.Provider value={{ 
+      consultationStatus, setConsultationStatus,
       consultation, setConsultation,
-      addConsultation, setAddConsultation,
-      editConsultation, setEditConsultation
+      consultationPayment, setConsultationPayment
      }}>
       <Outlet />
     </PhysicianContext.Provider>
