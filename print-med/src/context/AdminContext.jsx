@@ -1,6 +1,5 @@
-import React, { createContext, useEffect, useState, useContext } from 'react';
+import React, { createContext, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import AppContext from './AppContext';
 
 const AdminContext = createContext();
 

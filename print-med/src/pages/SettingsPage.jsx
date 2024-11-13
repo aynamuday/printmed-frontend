@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AppContext from '../context/AppContext'
 import Settings from '../components/Settings'
+import globalSwal from '../utils/globalSwal'
 
 const SettingsPage = () => {
   const { user, setUser, token, setToken } = useContext(AppContext);
@@ -10,12 +11,12 @@ const SettingsPage = () => {
 
   const handleLogout = async () => {
       const result = await globalSwal.fire({
-      title: 'Are you sure you want to log out?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, log me out!',
-      cancelButtonText: 'Cancel',
-      allowOutsideClick: false,
-    });
+        title: 'Are you sure you want to log out?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, log me out',
+        cancelButtonText: 'Cancel',
+        allowOutsideClick: false,
+      });
   
     if (result.isConfirmed) {
       try {
@@ -39,10 +40,9 @@ const SettingsPage = () => {
       } catch (error) {
         console.error('Logout Error:', error);
         globalSwal.fire({
-          title: 'Error',
-          text: 'There was an issue logging out. Please try again.',
+          title: 'There was an issue logging out.',
+          text: 'You may refresh or check your Internet connection.',
           icon: 'error',
-          confirmButtonText: 'Ok',
         });
       }
     }

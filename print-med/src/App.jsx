@@ -3,9 +3,10 @@ import { useContext } from 'react';
 import AppContext from './context/AppContext';
 import ProtectedRoute from './ProtectedRoute';
 import { AdminProvider } from './context/AdminContext';
-import { BounceLoader } from 'react-spinners';
-
 import { SecretaryPhysicianProvider } from './context/SecretaryPhysicianContext';
+import { PhysicianProvider } from './context/PhysicianContext';
+import { QueueManagerProvider } from './context/QueueManagerContext';
+
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
 import UpdateEmailPage from './pages/UpdateEmailPage';
@@ -17,13 +18,13 @@ import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
 import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretaryPage';
 import PatientsPage from './pages/PatientsPage';
+import PatientPage from './pages/PatientPage';
 import AddPatientPage from './pages/AddPatientPage';
 import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
 import Queue from './pages/Queue';
 import RegistrationPage from './pages/RegistrationPage';
 import Payment from './pages/Payment';
 import PaymentPage from './pages/PaymentPage';
-import { QueueManagerProvider } from './context/QueueManagerContext';
 
 
 const App = () => {
@@ -58,14 +59,15 @@ const App = () => {
       )
     } else if (user.role === "physician") {
       roleBasedRoutes = (
-        <Route element={<SecretaryPhysicianProvider />}>
-          <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-          {/* <Route path='update-patient' element={<UpdatePatientPage/>}/> */}
-          <Route path='patients' element={<PatientsPage/>}/>
-          <Route path='add-patient' element={<AddPatientPage/>}/>
-          <Route path='payments' element={<PaymentPage/>}/>
-          {/* <Route path='/payments' element={<Payment />}/> */}
-          { generalRoutes }
+        <Route element={<PhysicianProvider />}>
+          <Route element={<SecretaryPhysicianProvider />}>
+            <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
+            <Route path='patients' element={<PatientsPage/>}/>
+            <Route path='patient' element={<PatientPage/>}/>
+            <Route path='add-patient' element={<AddPatientPage/>}/>
+            <Route path='payments' element={<PaymentPage/>}/>
+            { generalRoutes }
+          </Route>
         </Route>
       )
     } else if (user.role === "secretary") {

@@ -11,6 +11,8 @@ const QueuePage = () => {
   useEffect(() => {
     const apiUrl = '/api/queue';
 
+    console.log("here")
+
     fetch(apiUrl, {
       method: 'GET',
       headers: {
@@ -29,7 +31,7 @@ const QueuePage = () => {
         console.log("API connected successfully and data fetched.");
       })
       .catch(error => console.error("Error fetching department queues:", error));
-  }, [token, setUpdateQueue]);
+  }, []);
 
   // Handle increment of queue
   const incrementQueue = (queueId) => {
