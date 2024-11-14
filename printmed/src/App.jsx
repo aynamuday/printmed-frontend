@@ -23,6 +23,7 @@ import PatientPage from './pages/PatientPage';
 import AddPatientPage from './pages/AddPatientPage';
 
 import RegistrationPage from './pages/RegistrationPage';
+import PatientTablePage from './pages/PatientTablePage';
 
 
 const App = () => {
@@ -68,10 +69,14 @@ const App = () => {
       )
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
-        <Route element={<SecretaryPhysicianProvider />}>
-          <Route path='/' element={<PatientsPage/>}/>
+        <Route element={<PhysicianProvider />}>
+          <Route element={<SecretaryPhysicianProvider />}>
+          <Route path='/' element={<PatientTablePage/>}/>
+          <Route path='patient' element={<PatientPage/>}/>
+          <Route path='patients/:id' element={<PatientPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
           { generalRoutes }
+        </Route>
         </Route>
       )
     }

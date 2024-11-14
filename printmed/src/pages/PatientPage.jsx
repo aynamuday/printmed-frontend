@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
@@ -11,8 +12,10 @@ import PhysicianContext from '../context/PhysicianContext'
 import globalSwal from '../utils/globalSwal'
 
 const PatientPage = (patientId) => {
+    const navigate = useNavigate(); // Initialize navigate
+
     const { token } = useContext(AppContext)
-    const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)  // add, edit, or view
+    const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)
     const { consultation, setConsultation } = useContext(PhysicianContext)
     const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
     const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
@@ -63,14 +66,18 @@ const PatientPage = (patientId) => {
         fetchConsultations()
     }, [])
 
-
     return (
         <div>
             <Sidebar />
             <Header />
 
             { patient && ( <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
-                <h2 className='font-bold text-2xl mb-4'>Patient No. {patient.patient_number}</h2>
+                <h2 className='font-bold text-2xl mb-4 flex items-center'>
+                    <button onClick={() => navigate("/patients")} className="mr-4">
+                        <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+                    </button>
+                    Patient No. {patient.patient_number}
+                </h2>
                 <div className='grid grid-cols-5 gap-4'>
                     <div  className='col-span-2'>
                         <PatientDetails patient={patient} />

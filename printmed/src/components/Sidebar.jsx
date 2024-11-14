@@ -1,15 +1,12 @@
 import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
-import "bootstrap-icons/font/bootstrap-icons.css"; 
-
+// import "bootstrap-icons/font/bootstrap-icons.css"; 
+import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 
-import logo from '../assets/images/logo.png';
-
 const Sidebar = () => {
-  const {user} = useContext(AppContext)
+  const {user, setUser, token, setToken} = useContext(AppContext)
   const navigate = useNavigate();
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -20,14 +17,25 @@ const Sidebar = () => {
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
+  const handleLogout = () => {
+    setUser(null); // Clear user data
+    setToken(null); // Clear token
+    navigate("/login"); // Redirect to login page
+  };
+
   return (
     <>
-      <span className="absolute text-white text-4xl top-5 left-4 cursor-pointer" onClick={toggleSidebar}>
+      <span
+        className="absolute text-white text-4xl top-5 left-4 cursor-pointer"
+        onClick={toggleSidebar}
+      >
         <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
       </span>
 
-      <div className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000 p-2 w-[300px] overflow-y-auto text-center 
-        bg-[#6CB6AD] shadow h-screen ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
+      <div
+        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000
+          p-2 w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
+          ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
       >
         <div className="text-white text-xl">
           <div className="p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
