@@ -1,35 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
+import { PulseLoader } from 'react-spinners';
 import { getCapitalizedEachWord } from '../utils/wordUtils'
 import { getFormattedDate } from '../utils/dateUtils'
+
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
-import { PulseLoader } from 'react-spinners';
-import { Link } from 'react-router-dom';
 
 const UsersTable = ({ users }) => {
   const { token, user } = useContext(AppContext)
   const { setUsers } = useContext(AdminContext)
 
-  const [ success, setSuccess ] = useState(false)
   const [ updatedUser, setUpdatedUser ] = useState(null)
   const [ loading, setLoading ] = useState(false)
 
-  const getUserStatus = (user) => {
-      let status = "Active"
-
-      if (user.is_locked) {
-          status = "Locked"
-      } else if (user.failed_login_attempts > 2) {
-          status = "Restricted"
-      } else if (!user.email_verified_at) {
-        status = "New"
-      }
-
-      return status
-  }
+  // remove the current user, so it's not displayed on table
+  users = users ? users.filter(item => item.id !== user.id) : users
 
   // toggle lock user account
-  const toggleLockUser = async (userId) => {
+  const handleToggleLockButton = async (userId) => {
     setLoading(true)
 
     const res = await fetch(`/api/users/${userId}/toggle-lock`, {
@@ -41,8 +30,6 @@ const UsersTable = ({ users }) => {
 
     const data = await res.json()
 
-    setSuccess(res.ok)
-
     if (res.ok) {
       setUpdatedUser(data)
     }
@@ -50,12 +37,8 @@ const UsersTable = ({ users }) => {
     setLoading(false)
   }
 
-  const handleToggleLockButton = (userId) => {
-    toggleLockUser(userId)
-  };
-
   // unrestrict user account
-  const unrestrictUser = async (userId) => {
+  const handleUnrestrictButton = async (userId) => {
     setLoading(true)
     
     const res = await fetch(`/api/users/${userId}/unrestrict`, {
@@ -67,18 +50,12 @@ const UsersTable = ({ users }) => {
 
     const data = await res.json()
 
-    setSuccess(res.ok)
-
     if (res.ok) {
       setUpdatedUser(data)
     }
     
     setLoading(false)
   }
-
-  const handleUnrestrictButton = (userId) => {
-    unrestrictUser(userId)
-  };
 
   useEffect(() => {
     if (users && updatedUser != null) {
@@ -97,13 +74,27 @@ const UsersTable = ({ users }) => {
     }
   }, [updatedUser])
 
+  const getUserStatus = (user) => {
+    let status = "Active"
+
+    if (user.is_locked) {
+        status = "Locked"
+    } else if (user.failed_login_attempts > 2) {
+        status = "Restricted"
+    } else if (!user.email_verified_at) {
+      status = "New"
+    }
+
+    return status
+  }
+
   return (
     <div className='relative'>
-        { loading ? (
+        { loading && (
           <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-10'>
             <PulseLoader color="#6CB6AD" loading={loading} size={15} />
           </div>
-        ) : <></>}
+        )}
         <table className="min-w-full border border-spacing-0 border-gray-300">
             <thead>
               <tr>
@@ -119,7 +110,6 @@ const UsersTable = ({ users }) => {
             <tbody>
               { users && users.length > 0 ? (
                 users.map((item) => (
-                  user.id !== item.id ? (
                     <tr key={item.id}>
                       <td className="border p-2 border-[#828282] text-center">{item.personnel_number}</td>
                       <td className="border p-2 border-[#828282] text-center">{getCapitalizedEachWord(item.role)}</td>
@@ -145,7 +135,6 @@ const UsersTable = ({ users }) => {
                         </div>
                       }</td>
                     </tr>
-                  ) : <tr key={item.id}></tr>
                 ))
               ) : (
                 <tr>

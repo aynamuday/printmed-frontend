@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AppContext from '../context/AppContext';
 import { ScaleLoader } from 'react-spinners';
+
+import AppContext from '../context/AppContext';
+
 import logo from '../assets/images/logo.png';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const { setToken } = useContext(AppContext);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const [credentials, setCredentials] = useState({
@@ -38,7 +40,7 @@ const LoginPage = () => {
       ...credentials,
       [name]: value,
     });
-    setErrors({ ...errors, [name]: '' }); // Clear specific error
+    setErrors({ ...errors, [name]: '' });
   };
 
   const handleOtpChange = (e) => {
@@ -49,15 +51,11 @@ const LoginPage = () => {
     setErrors({ ...errors, otp: '' });
   };
 
-  const handleRegister = () => {
-    navigate('/register'); // Redirects to RegistrationPage
-  }
-
   const handleLogin = async (e) => {
     setErrors('')
+
     e.preventDefault();
 
-    // Validation for each field
     const newErrors = {};
     if (!credentials.role) newErrors.role = 'Please select your role.';
     if (!credentials.personnel_number) newErrors.personnel_number = 'Personnel number is required.';
@@ -77,7 +75,6 @@ const LoginPage = () => {
     });
 
     const data = await res.json();
-    console.log('Login Response:', data); 
 
     setLoading(false);
 
@@ -94,8 +91,10 @@ const LoginPage = () => {
   };
 
   const handleVerifyOtp = async (e) => {
-    setErrors('')
+    setErrors([])
+
     e.preventDefault();
+
     if (!otp.code) {
       setErrors({ ...errors, otp: 'OTP is required.' });
       return;
@@ -109,7 +108,6 @@ const LoginPage = () => {
     });
 
     const data = await res.json();
-    console.log('Verify OTP Response:', data);
 
     setLoading(false);
 
@@ -130,7 +128,7 @@ const LoginPage = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
       <div>
         <div className="flex flex-col items-center">
-          <img src={logo} alt="Carmona Hospital and Medical Center" className="w-100 h-32" />
+          <img src={logo} alt="" className="w-100 h-28" />
           <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2>
         </div>
 
@@ -148,7 +146,6 @@ const LoginPage = () => {
                   <option value="">Select Role</option>
                   <option value="physician">Physician</option>
                   <option value="secretary">Secretary</option>
-                  <option value="queue manager">Queue Manager</option>
                   <option value="admin">Admin</option>
                 </select>
                 {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
@@ -226,12 +223,6 @@ const LoginPage = () => {
               Forgot Password
             </button>
           )}
-            <button
-              onClick={handleRegister}
-              className="text-sm text-blue-600 hover:text-blue-800 mt-4 w-full flex justify-center"
-            >
-              Register
-            </button>
         </form>
       </div>
     </div>

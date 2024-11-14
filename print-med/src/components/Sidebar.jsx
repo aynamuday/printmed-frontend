@@ -1,12 +1,15 @@
 import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
-// import "bootstrap-icons/font/bootstrap-icons.css"; 
-import logo from '../assets/images/logo.png';
+import "bootstrap-icons/font/bootstrap-icons.css"; 
+
 import AppContext from "../context/AppContext";
 
+import logo from '../assets/images/logo.png';
+
 const Sidebar = () => {
-  const {user, setUser, token, setToken} = useContext(AppContext)
+  const {user} = useContext(AppContext)
   const navigate = useNavigate();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -17,25 +20,14 @@ const Sidebar = () => {
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
-  const handleLogout = () => {
-    setUser(null); // Clear user data
-    setToken(null); // Clear token
-    navigate("/login"); // Redirect to login page
-  };
-
   return (
     <>
-      <span
-        className="absolute text-white text-4xl top-5 left-4 cursor-pointer"
-        onClick={toggleSidebar}
-      >
+      <span className="absolute text-white text-4xl top-5 left-4 cursor-pointer" onClick={toggleSidebar}>
         <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
       </span>
 
-      <div
-        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000
-          p-2 w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
-          ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
+      <div className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000 p-2 w-[300px] overflow-y-auto text-center 
+        bg-[#6CB6AD] shadow h-screen ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
       >
         <div className="text-white text-xl">
           <div className="p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
@@ -76,20 +68,12 @@ const Sidebar = () => {
             ) : ( user.role === "physician" ? (
               <>
                 <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
-                </NavLink>
-                <NavLink to="/patients" className={linkClass}>
                   <i className="bi bi-person-fill"></i>
                   <span className="text-[20px] ml-4 text-white">Patients</span>
                 </NavLink>
                 <NavLink to="/patient" className={linkClass}>
                   <i className="bi bi-search"></i>
                   <span className="text-[20px] ml-4 text-white">Patient Viewer</span>
-                </NavLink>
-                <NavLink to="/payments" className={linkClass}>
-                  <i className="bi bi-cash"></i>
-                  <span className="text-[20px] ml-4 text-white">Payments</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
@@ -99,10 +83,6 @@ const Sidebar = () => {
             ) : ( user.role === "secretary" ? (
               <>
                 <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
-                </NavLink>
-                <NavLink to="/patients" className={linkClass}>
                   <i className="bi bi-person-fill"></i>
                   <span className="text-[20px] ml-4 text-white">Patients</span>
                 </NavLink>
@@ -110,27 +90,12 @@ const Sidebar = () => {
                   <i className="bi bi-person-plus-fill"></i>
                   <span className="text-[20px] ml-4 text-white">Add Patient</span>
                 </NavLink>
-                <NavLink to="/payments" className={linkClass}>
-                  <i className="bi bi-cash"></i>
-                  <span className="text-[20px] ml-4 text-white">Payments</span>
-                </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
                   <span className="text-[20px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
-            ) : ( user.role === "queue manager" ? (
-              <>
-                <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
-                </NavLink>
-                <NavLink to="/settings" className={linkClass}>
-                  <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Settings</span>
-                </NavLink>
-              </>
-            ) : (<></>)))) }
+            ) : (<></>))) }
           </div>
         </div>
       </div>

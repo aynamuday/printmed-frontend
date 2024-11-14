@@ -1,7 +1,8 @@
 import React, { useEffect, useContext } from 'react';
+import { PulseLoader } from 'react-spinners';
+
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
-import { PulseLoader } from 'react-spinners';
 
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
@@ -13,6 +14,11 @@ const DashboardAdminPage = () => {
   const { token } = useContext(AppContext)
   const { usersCount, setUsersCount } = useContext(AdminContext)
 
+  // execute the fetches
+  useEffect(() => {
+    getUsersCount()
+  }, [])
+
   // fetch the users count
   const getUsersCount = async () => {
     const res = await fetch("/api/users-count", {
@@ -20,16 +26,13 @@ const DashboardAdminPage = () => {
         Authorization: `Bearer ${token}`
       }
     })
+
     const data = await res.json()
+
     if (res.ok) {
       setUsersCount(data)
     }
   }
-
-  // execute the fetches
-  useEffect(() => {
-    getUsersCount()
-  }, [])
   
   return (
     <>

@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import globalSwal from "../utils/globalSwal";
+import { BounceLoader } from "react-spinners";
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
-import AppContext from "../context/AppContext";
-import { BounceLoader } from "react-spinners";
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
+import AppContext from "../context/AppContext";
+
+// for viewing/updating a user, and adding a new user
 const UserPage = () => {
   const { departments, token } = useContext(AppContext)
   
@@ -37,8 +41,6 @@ const UserPage = () => {
     if (location.pathname.includes('/view-user') && userId) {
       fetchUser()
     } else {
-      setErrors([])
-      setLoading(false)
       setFormData({
         role: '',
         personnel_number: '',
@@ -52,6 +54,8 @@ const UserPage = () => {
         department_id: '',
       });
     }
+
+    setErrors([])
   }, [userId])
 
   //fetches the user if route is for update
@@ -69,21 +73,17 @@ const UserPage = () => {
     if (res.ok) {
       const data = await res.json()
 
-      const middleName = data.middleName ?? ''
-      const suffix = data.suffix ?? ''
-      const departmentId = data.department_id ?? ''
-
       setFormData({
         role: data.role,
         personnel_number: data.personnel_number,
         first_name: data.first_name,
-        middle_name: middleName,
+        middle_name: data.middleName ?? '',
         last_name: data.last_name,
-        suffix: suffix,
+        suffix: data.suffix ?? '',
         sex: data.sex,
         birthdate: data.birthdate,
         email: data.email,
-        department_id: departmentId
+        department_id: data.department_id ?? ''
       })
     } else {
       globalSwal.fire({
@@ -112,13 +112,14 @@ const UserPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setErrors([])
+
     globalSwal.fire({
       title: 'Are you sure?',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'Cancel'
     }).then(async (result) => {
-      setErrors([])
       setLoading(true)
 
       if (result.isConfirmed) {
@@ -163,7 +164,7 @@ const UserPage = () => {
               showCloseButton: true
             });
           } else {
-            setErrors(data)
+            console.log(data)
           }
         } catch (error) {
           console.error('Error:', error);
@@ -179,14 +180,13 @@ const UserPage = () => {
       <Sidebar />
       <Header />
       <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 grid grid-cols-1 place-items-center relative">
-        { loading ? (
+        { loading && (
             <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
                 <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
             </div>
-        ) : <></>}
+        )}
         
         <div className="w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
-
           <div className="flex justify-center items-center rounded-md">
             <img src={logo} className="h-20" alt="Logo" />
           </div>
@@ -210,7 +210,7 @@ const UserPage = () => {
                   <option value="secretary">Secretary</option>
                   <option value="queue_manager">Queue Manager</option>
                 </select>
-                {errors.errors && errors.role[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.role[0]}</p>}
+                {/* {errors.errors && errors.role[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.role[0]}</p>} */}
               </div>
 
               <div className="mb-2">
@@ -224,7 +224,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.personnel_number[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.personnel_number[0]}</p>}
+                {/* {errors.errors && errors.personnel_number[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.personnel_number[0]}</p>} */}
               </div>
 
               <div>
@@ -238,7 +238,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.first_name[0] && <p className="text-red-600 mt-1">{errors.errors.first_name[0]}</p>}
+                {/* {errors.errors && errors.first_name[0] && <p className="text-red-600 mt-1">{errors.errors.first_name[0]}</p>} */}
               </div>
 
               <div>
@@ -251,7 +251,7 @@ const UserPage = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                 />
-                {errors.errors && errors.middle_name[0] && <p className="text-red-600 mt-1">{errors.errors.middle_name[0]}</p>}
+                {/* {errors.errors && errors.middle_name[0] && <p className="text-red-600 mt-1">{errors.errors.middle_name[0]}</p>} */}
               </div>
 
               <div className="mb-2">
@@ -265,7 +265,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.last_name[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.last_name[0]}</p>}
+                {/* {errors.errors && errors.last_name[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.last_name[0]}</p>} */}
               </div>
 
               <div className="mb-2 w-1/2">
@@ -278,7 +278,7 @@ const UserPage = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                 />
-                {errors.errors && errors.suffix[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.suffix[0]}</p>}
+                {/* {errors.errors && errors.suffix[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.suffix[0]}</p>} */}
               </div>
 
               <div className="mb-2">
@@ -294,7 +294,7 @@ const UserPage = () => {
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>
-                {errors.errors && errors.sex[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.sex[0]}</p>}
+                {/* {errors.errors && errors.sex[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.sex[0]}</p>} */}
               </div>
 
               <div className="mb-2">
@@ -308,7 +308,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.birthdate[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.birthdate[0]}</p>}
+                {/* {errors.errors && errors.birthdate[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.birthdate[0]}</p>} */}
               </div>
 
               <div className="mb-2">
@@ -322,7 +322,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
                   required
                 />
-                {errors.errors && errors.email[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.email[0]}</p>}
+                {/* {errors.errors && errors.email[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.email[0]}</p>} */}
               </div>
 
               {(formData.role === 'physician' || formData.role === 'secretary') && (
@@ -342,13 +342,13 @@ const UserPage = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.errors && errors.department_id[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.department_id[0]}</p>}
+                  {/* {errors.errors && errors.department_id[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.department_id[0]}</p>} */}
                 </div>
               )}
             </div>
 
             <div className="mt-8 w-full">
-              {!errors.errors && errors.message && <p className="text-red-600 mb-1 text-center">{errors.message}</p>}
+              {/* {!errors.errors && errors.message && <p className="text-red-600 mb-1 text-center">{errors.message}</p>} */}
 
               <div className="flex justify-center items-center">
                 <button

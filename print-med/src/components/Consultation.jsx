@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import PhysicianContext from '../context/PhysicianContext'
 import { getFormattedDate } from '../utils/dateUtils'
-import AppContext from '../context/AppContext'
 import globalSwal from '../utils/globalSwal'
+
+import AppContext from '../context/AppContext'
+import PhysicianContext from '../context/PhysicianContext'
 
 const Consultation = () => {
     const { token } = useContext(AppContext)
@@ -91,6 +92,24 @@ const Consultation = () => {
         }
     }, [consultationStatus])
 
+    const addConsultation = async () => {
+        const res = await fetch("/api/consultations", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(addData)
+        })
+
+        const data = await res.json()
+
+        if (res.ok) {
+            globalSwal.fire(
+                // title: "New"
+            )
+        }
+    }
+
   return (
     <div>
         {consultationStatus == "view" && consultation && <div className='grid grid-cols-7 gap-4 py-1'>
@@ -99,7 +118,7 @@ const Consultation = () => {
         </div>}
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Height</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
                     type="text"
                     className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -110,7 +129,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Weight</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
                     type="text"
                     className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -121,7 +140,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Temperature</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
                     type="text"
                     className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -132,7 +151,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Blood Pressure</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
                     type="text"
                     className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -146,7 +165,7 @@ const Consultation = () => {
 
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Chief Complaint</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -157,7 +176,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">History of Present Illness</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -168,7 +187,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Family History</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -179,7 +198,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Medical History</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -206,7 +225,7 @@ const Consultation = () => {
             <>
                 <div className='grid grid-cols-7 gap-4 py-1'>
                     <p className="block font-semibold text-black col-span-2">{"(H) Home"}</p>
-                    { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                         <textarea
                             rows="3"
                             className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -217,7 +236,7 @@ const Consultation = () => {
                 </div>
                 <div className='grid grid-cols-7 gap-4 py-1'>
                     <p className="block font-semibold text-black col-span-2">{"(E) Education / Employment"}</p>
-                    { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                         <textarea
                             rows="3"
                             className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -228,7 +247,7 @@ const Consultation = () => {
                 </div>
                 <div className='grid grid-cols-7 gap-4 py-1'>
                     <p className="block font-semibold text-black col-span-2">{"(H) Home"}</p>
-                    { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                         <textarea
                             rows="3"
                             className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -239,7 +258,7 @@ const Consultation = () => {
                 </div>
                 <div className='grid grid-cols-7 gap-4 py-1'>
                     <p className="block font-semibold text-black col-span-2">{"(D) Drugs / Drinking"}</p>
-                    { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                         <textarea
                             rows="3"
                             className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -255,7 +274,7 @@ const Consultation = () => {
 
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Primary Diagnosis</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
                     type="text"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -266,7 +285,7 @@ const Consultation = () => {
         </div>
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Diagnosis</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
@@ -278,7 +297,7 @@ const Consultation = () => {
 
         <div className='grid grid-cols-7 gap-4 py-1'>
             <p className="block font-semibold text-black col-span-2">Prescription</p>
-            { consultation && (consultationStatus == "edit" || consultationStatus == "add") ? (
+            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <textarea
                     rows="3"
                     className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"

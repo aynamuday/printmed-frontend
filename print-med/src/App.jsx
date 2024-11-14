@@ -2,29 +2,27 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import AppContext from './context/AppContext';
 import ProtectedRoute from './ProtectedRoute';
+
 import { AdminProvider } from './context/AdminContext';
 import { SecretaryPhysicianProvider } from './context/SecretaryPhysicianContext';
 import { PhysicianProvider } from './context/PhysicianContext';
-import { QueueManagerProvider } from './context/QueueManagerContext';
 
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
 import UpdateEmailPage from './pages/UpdateEmailPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
-import DashboardAdminPage from './pages/DashboardAdminPage';
+
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import UsersPage from './pages/UsersPage';
 import UserPage from './pages/UserPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
-import DashboardPhysicianSecretaryPage from './pages/DashboardPhysicianSecretaryPage';
+
 import PatientsPage from './pages/PatientsPage';
 import PatientPage from './pages/PatientPage';
 import AddPatientPage from './pages/AddPatientPage';
-import DashboardQueueManagerPage from './pages/DashboardQueueManagerPage';
-import Queue from './pages/Queue';
+
 import RegistrationPage from './pages/RegistrationPage';
-import Payment from './pages/Payment';
-import PaymentPage from './pages/PaymentPage';
 
 
 const App = () => {
@@ -48,7 +46,7 @@ const App = () => {
     if (user.role === "admin") {
       roleBasedRoutes = (
         <Route element={<AdminProvider />}>
-          <Route path='/' element={<DashboardAdminPage/>}/>
+          <Route path='/' element={<AdminDashboardPage/>}/>
           <Route path='users' element={<UsersPage/>}/>
           <Route path='add-user' element={<UserPage/>}/>
           <Route path='view-user/:userId' element={<UserPage/>}/>
@@ -61,11 +59,9 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
           <Route element={<SecretaryPhysicianProvider />}>
-            <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-            <Route path='patients' element={<PatientsPage/>}/>
+            <Route path='/' element={<PatientsPage/>}/>
             <Route path='patient' element={<PatientPage/>}/>
             <Route path='add-patient' element={<AddPatientPage/>}/>
-            <Route path='payments' element={<PaymentPage/>}/>
             { generalRoutes }
           </Route>
         </Route>
@@ -73,23 +69,10 @@ const App = () => {
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
         <Route element={<SecretaryPhysicianProvider />}>
-          <Route path='/' element={<DashboardPhysicianSecretaryPage/>}/>
-          <Route path='patients' element={<PatientsPage/>}/>
+          <Route path='/' element={<PatientsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
-          <Route path='payments' element={<PaymentPage/>}/>
-          {/* <Route path='/payments' element={<Payment/>}/> */}
-          {/* <Route path='payments' element={<PaymentsPage/>}/> */}
           { generalRoutes }
         </Route>
-      )
-    } else if (user.role === "queue manager") {
-      roleBasedRoutes = (
-        <>
-          <Route element={<QueueManagerProvider />}>
-            <Route path='/' element={<Queue/>}/>
-            { generalRoutes }
-          </Route>
-        </>
       )
     }
   }
@@ -100,8 +83,8 @@ const App = () => {
         {/* if user is NOT logged in */}
         { !user ? (
           <>
-            <Route path='/' element={<Navigate to='login'/>}/>
-            <Route path='login' element={<LoginPage/>}/>
+            <Route path='/' element={<Navigate to='register'/>}/>
+            <Route path='login' element={<LoginPage />}/>
             <Route path='register' element={<RegistrationPage />} />
             {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
           </>

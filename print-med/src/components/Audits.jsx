@@ -79,6 +79,7 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user selects audit resource
     const handleAuditsResourceChange = (e) => {
         setLoadingAudits(true)
+
         if (forDashboard) {
             setAuditsTodayResource(e.target.value)
             getAudits(1, e.target.value, undefined, undefined)
@@ -96,6 +97,7 @@ const Audits = ({ forDashboard = false }) => {
     const handleAuditsDateFromChange = (e) => {
         if (!forDashboard) {
             setLoadingAudits(true)
+
             setAuditsAllFilters({
                 ...auditsAllFilters,
                 dateFrom: e.target.value
@@ -109,6 +111,7 @@ const Audits = ({ forDashboard = false }) => {
     const handleAuditsDateUntilChange = (e) => {
         if (!forDashboard) {
             setLoadingAudits(true)
+
             setAuditsAllFilters({
                 ...auditsAllFilters,
                 dateUntil: e.target.value
@@ -123,20 +126,22 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user click previous button for audits
     const handlePreviousAudits = () => {
         setLoadingAudits(true)
+
         if (forDashboard) {
             getAudits(auditsToday.current_page - 1, auditsTodayResource, undefined, undefined)
         } else {
-            getAudits(auditsToday.current_page - 1, {...auditsAllFilters, resource}, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
+            getAudits(auditsAll.current_page - 1, {...auditsAllFilters, resource}, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
         }
     };
 
     // executes when user click next button for audits
     const handleNextAudits = () => {
         setLoadingAudits(true)
+
         if (forDashboard) {
             getAudits(auditsToday.current_page + 1, auditsTodayResource, undefined, undefined)
         } else {
-            getAudits(auditsToday.current_page + 1, {...auditsAllFilters, resource}, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
+            getAudits(auditsAll.current_page + 1, auditsAllFilters.resource, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
         }
     };
 
@@ -190,56 +195,57 @@ const Audits = ({ forDashboard = false }) => {
         forDashboard ? setLoadingAuditsTodayDownload(false) : setLoadingAuditsAllDownload(false)
     }
 
-    const resourceValue = forDashboard ? auditsTodayResource : auditsAllFilters.resource
-
     return (
         <>  
-            { audits ? (
-                <>
-                    <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
-                        <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
-                        <div className={`flex justify-end gap-4 items-end`}>
-                            {/* select audit resource dropdown */}
-                            <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                    name="resource" id="resource" value={resourceValue} onChange={handleAuditsResourceChange}>
-                            <option value="">Select resource</option>
-                            <option value="user">User</option>
-                            <option value="patient">Patient</option>
-                            <option value="consultation record">Consultation Record</option>
-                            <option value="payment">Payment</option>
-                            </select>
+            <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+                <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
-                            {!forDashboard ? (
-                                <>
-                                    {/* date from */}
-                                    <div>
-                                        <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
-                                        <input
-                                            type="date"
-                                            name="dateFrom"
-                                            value={auditsAllFilters.dateFrom}
-                                            onChange={handleAuditsDateFromChange}
-                                            max={dateToday}
-                                            className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                        />
-                                    </div>
+                <div className={`flex justify-end gap-4 items-end`}>
+                    {/* select audit resource dropdown */}
+                    <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                            name="resource" id="resource" value={forDashboard ? auditsTodayResource : auditsAllFilters.resource} onChange={handleAuditsResourceChange}
+                    >
+                        <option value="">Select resource</option>
+                        <option value="user">User</option>
+                        <option value="patient">Patient</option>
+                        <option value="consultation record">Consultation Record</option>
+                        <option value="payment">Payment</option>
+                    </select>
 
-                                    {/* date until */}
-                                    <div>
-                                        <label htmlFor="dateUntil" className='text-xs block mb-1'>Date Until</label>
-                                        <input
-                                            type="date"
-                                            name="dateUntil"
-                                            value={auditsAllFilters.dateUntil}
-                                            onChange={handleAuditsDateUntilChange}
-                                            min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : ''}
-                                            max={dateToday}
-                                            className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                        />
-                                    </div>
-                                </>
-                            ) : (<></>)}
+                    {!forDashboard ? (
+                        <>
+                            {/* date from */}
+                            <div>
+                                <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
+                                <input
+                                    type="date"
+                                    name="dateFrom"
+                                    value={auditsAllFilters.dateFrom}
+                                    onChange={handleAuditsDateFromChange}
+                                    max={dateToday}
+                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                />
+                            </div>
 
+                            {/* date until */}
+                            <div>
+                                <label htmlFor="dateUntil" className='text-xs block mb-1'>Date Until</label>
+                                <input
+                                    type="date"
+                                    name="dateUntil"
+                                    value={auditsAllFilters.dateUntil}
+                                    onChange={handleAuditsDateUntilChange}
+                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : ''}
+                                    max={dateToday}
+                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                />
+                            </div>
+                        </>
+                    ) : (<></>)}
+
+                    {/* download audits button */}
+                    { audits.data && audits.data.length > 0 && ( 
+                        <>
                             {/* pagination buttons */}
                             <div>
                                 <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
@@ -255,28 +261,24 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
 
-                            {/* download audits button */}
-                            { audits.data && audits.data.length > 0 && ( 
-                                <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-black font-medium rounded-md hover:bg-[#37c9b8]' onClick={handleAuditsDownload} 
-                                        disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
-                                    { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
-                                        <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
-                                    ) : ( "Download" ) }
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    { loadingAudits ? (
-                        <div className='flex justify-center items-center mt-20'>
-                            <PulseLoader color="#6CB6AD" loading={loadingAudits} size={15} />
-                        </div>
-                    ) : (
-                        // audits table
-                        <AuditsTable forDashboard={ forDashboard } audits={ audits.data } />
+                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-black font-medium rounded-md hover:bg-[#37c9b8]' 
+                                onClick={handleAuditsDownload} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
+                                { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
+                                    <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
+                                ) : ( "Download" ) }
+                            </button>
+                        </>
                     )}
-                </>
-            ) : (<></>)}
+                </div>
+            </div>
+
+            { loadingAudits ? (
+                <div className='flex justify-center items-center mt-20'>
+                    <PulseLoader color="#6CB6AD" loading={loadingAudits} size={15} />
+                </div>
+            ) : (
+                <AuditsTable forDashboard={ forDashboard } audits={ audits.data } />
+            )}
         </>
     );
 };

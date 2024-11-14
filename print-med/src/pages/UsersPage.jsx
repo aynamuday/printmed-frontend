@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { PulseLoader } from 'react-spinners';
+
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
-import { PulseLoader } from 'react-spinners';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import UsersTable from '../components/UsersTable';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const UsersPage = () => {
     const { token, departments } = useContext(AppContext)
@@ -15,6 +17,18 @@ const UsersPage = () => {
         usersFilters, setUsersFilters
     } = useContext(AdminContext)
     const [ loading, setLoading ] = useState(false)
+
+    useEffect(() => {
+        if(users.length < 1) {
+            setLoading(true)
+        }
+
+        const role = usersFilters.role
+        const department_id = usersFilters.department_id
+        const status = usersFilters.status
+
+        getUsers(1, undefined, role, department_id, status)
+    }, [])
 
     // fetch the users
     const getUsers = async (page = 1, search='', role='', department_id='', status='') => {
@@ -39,25 +53,11 @@ const UsersPage = () => {
             }
         })
 
-        console.log(url)
-
         const data = await res.json()
         setUsers(data)
 
         setLoading(false)
     }
-
-    useEffect(() => {
-        if(users.length < 1) {
-            setLoading(true)
-        }
-
-        const role = usersFilters.role
-        const department_id = usersFilters.department_id
-        const status = usersFilters.status
-
-        getUsers(1, role, department_id, status)
-    }, [])
 
     // executes when user selects audit resource
     const handleRoleChange = (e) => {
@@ -110,7 +110,9 @@ const UsersPage = () => {
     };
 
     // executes when user click search
-    const handleSearch = () => {
+    const handleSearch = (e) => {
+        e.preventDefault()
+
         setLoading(true)
     
         setUsersFilters({
@@ -127,9 +129,9 @@ const UsersPage = () => {
             <Sidebar />
             <Header />  
             
-            { users ? (
-                <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-10">
-                    <div className={`flex justify-between items-end mb-6 mt-12`}>
+            { users && (
+                <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
+                    <div className={`flex justify-between items-end mb-6 mt-14`}>
                         <h2 className={`font-bold text-2xl`}>{ "Users" }</h2>
                         <div className={`flex justify-end gap-4 items-end`}>
                             {/* select role dropdown */}
@@ -163,7 +165,7 @@ const UsersPage = () => {
 
                             <div>
                                 <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Personnel No."}</label>
-                                <div className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
                                     <input
                                         type="text"
                                         name="search"
@@ -172,10 +174,10 @@ const UsersPage = () => {
                                         onChange={(e) => {setSearchUser(e.target.value)}}
                                         placeholder='Search'
                                     />
-                                    <button onClick={() => handleSearch()} className="btn btn-primary d-flex align-items-center">
+                                    <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
                                         <i className="bi bi-search me-2 text-[#374151]"></i>
                                     </button>
-                                </div>
+                                </form>
                             </div>
 
                             {/* pagination buttons */}
@@ -203,7 +205,7 @@ const UsersPage = () => {
                         <UsersTable users={users.data} />
                     )}
                 </div>
-            ) : (<></>)}
+            )}
         </>
     );
 };

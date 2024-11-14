@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap-icons/font/bootstrap-icons.css"; // Ensure you have Bootstrap Icons installed
 
 const Header = () => {
     const [dateTime, setDateTime] = useState(new Date());
@@ -8,6 +7,7 @@ const Header = () => {
       const timer = setInterval(() => {
         setDateTime(new Date());
       }, 1000); // Update every second
+      
       return () => clearInterval(timer); // Cleanup on unmount
     }, []);
   
