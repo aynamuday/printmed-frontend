@@ -5,9 +5,10 @@ import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
 import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';  // Don't forget to include the styles
+import 'react-phone-number-input/style.css';
+import { getFormattedDate } from '../utils/dateUtils'; 
 
 const Forms = () => {
   const { token } = useContext(AppContext);
@@ -16,11 +17,12 @@ const Forms = () => {
     middle_name: '',
     last_name: '',
     suffix: '',
-    birthdate: { day: '', month: '', year: '' },
+    birthdate: { getFormattedDate },
     sex: '',
     civil_status: '',
     religion: '',
     address: '',
+    email: '',
     phone_number: '',
     physician_id: '',
     photo: null
@@ -76,8 +78,11 @@ const Forms = () => {
     }
 
     // Civil status should only contain letters
-    if (name === 'civil_status' && /[^a-zA-Z\s]/.test(value)) {
-      setErrors({ ...errors, [name]: '' });
+    if (name === 'civil_status') {
+      setFormData({
+        ...formData,
+        civil_status: value,
+      });
       return;
     }
   
@@ -118,7 +123,7 @@ const Forms = () => {
       });
     }
   };
-  
+
   
   // handle submit
   const handleSubmit = async (e) => {
@@ -162,33 +167,6 @@ const Forms = () => {
     setLoading(false);
   };
 
-  // Generate year range from 1900 to current year
-  const generateYearOptions = () => {
-    const currentYear = new Date().getFullYear();
-    let years = [];
-    for (let i = currentYear; i >= 1900; i--) {
-      years.push(i);
-    }
-    return years;
-  };
-
-  // Generate month options
-  const generateMonthOptions = () => {
-    return [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ];
-  };
-
-  // Generate day options (1 to 31)
-  const generateDayOptions = () => {
-    let days = [];
-    for (let i = 1; i <= 31; i++) {
-      days.push(i);
-    }
-    return days;
-  };
-
   return (
     <>
       <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 grid grid-cols-1 place-items-center relative">
@@ -229,42 +207,16 @@ const Forms = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Birthdate</label>
-                <div className="flex gap-2">
-                  <select
-                    name="birthdate_day"
-                    value={formData.birthdate.day}
-                    onChange={handleChange}
-                    className="mt-1 block w-[30%] border p-2 rounded-md"
-                  >
-                    <option value="">Day</option>
-                    {generateDayOptions().map((day) => (
-                      <option key={day} value={day}>{day}</option>
-                    ))}
-                  </select>
-                  <select
-                    name="birthdate_month"
-                    value={formData.birthdate.month}
-                    onChange={handleChange}
-                    className="mt-1 block w-[40%] border p-2 rounded-md"
-                  >
-                    <option value="">Month</option>
-                    {generateMonthOptions().map((month, index) => (
-                      <option key={index} value={index + 1}>{month}</option>
-                    ))}
-                  </select>
-                  <select
-                    name="birthdate_year"
-                    value={formData.birthdate.year}
-                    onChange={handleChange}
-                    className="mt-1 block w-[30%] border p-2 rounded-md"
-                  >
-                    <option value="">Year</option>
-                    {generateYearOptions().map((year) => (
-                      <option key={year} value={year}>{year}</option>
-                    ))}
-                  </select>
-                </div>
-                {errors.birthdate && <p className="text-red-600 mt-1">{errors.birthdate}</p>}
+                <input
+                  type="date"
+                  name="birthdate"
+                  value={formData.birthdate}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border p-2 rounded-md"
+                  max={new Date().toISOString().split("T")[0]} // Max date is today
+                  min="1920-01-01" // Min date is 1920-01-01
+                  required
+                />
               </div>
 
               <div>
@@ -292,11 +244,13 @@ const Forms = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Civil Status</label>
-                <input type="text" name="civil_status" value={formData.civil_status} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
-                {errors.civil_status && <p className="text-red-600 mt-1">{errors.civil_status}</p>}
-
+                <select name="civil_status" value={formData.civil_status} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
+                  <option value="">Select Status</option>
+                  <option value="single">Single</option>
+                  <option value="married">Married</option>
+                  <option value="widowed">Widowed</option>
+                </select>
               </div>
-              
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Religion</label>
@@ -304,6 +258,18 @@ const Forms = () => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border p-2 rounded-md"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Address</label>
                 <input type="text" name="address" value={formData.address} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
               </div>

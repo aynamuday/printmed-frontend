@@ -222,6 +222,7 @@ const Audits = ({ forDashboard = false }) => {
                                     name="dateFrom"
                                     value={auditsAllFilters.dateFrom}
                                     onChange={handleAuditsDateFromChange}
+                                    min="2024-11-15"
                                     max={dateToday}
                                     className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
                                 />
@@ -235,7 +236,7 @@ const Audits = ({ forDashboard = false }) => {
                                     name="dateUntil"
                                     value={auditsAllFilters.dateUntil}
                                     onChange={handleAuditsDateUntilChange}
-                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : ''}
+                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-15"}
                                     max={dateToday}
                                     className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
                                 />
