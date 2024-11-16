@@ -103,9 +103,60 @@ const UserPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    console.log('Changed:', name, value);
+    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+  
+    if (name === 'birthdate_day' || name === 'birthdate_month' || name === 'birthdate_year') {
+      setFormData({
+        ...formData,
+        birthdate: {
+          ...formData.birthdate,
+          [name.split('_')[1]]: value // Updates day, month, or year
+        }
+      });
+      return;
+    }
+  
+    // Name fields should not accept numbers and capitalize first letter
+    if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
+      setErrors({ ...errors, [name]: '' });
+      return;
+    }
+  
+    // suffix validation and capitalize first letter
+    if (name === 'suffix') {
+      if (/[^a-zA-Z\s]/.test(value)) {
+        setErrors({ ...errors, [name]: '' });
+        return;
+      }
+  
+      if (value.length > 3) {
+        setErrors({ ...errors, [name]: '' });
+        return;
+      }
+      setErrors({ ...errors, [name]: '' });
+    }
+  
+    if (name === 'sex') {
+      setFormData({
+        ...formData,
+        sex: value,
+      });
+      return;
+    }
+
+    if (name === 'role') {
+      setFormData({
+        ...formData,
+        role: value,
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: capitalizedValue,
     });
   };
 
@@ -208,7 +259,6 @@ const UserPage = () => {
                   <option value="admin">Admin</option>
                   <option value="physician">Physician</option>
                   <option value="secretary">Secretary</option>
-                  <option value="queue_manager">Queue Manager</option>
                 </select>
                 {/* {errors.errors && errors.role[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.role[0]}</p>} */}
               </div>
@@ -298,18 +348,30 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Birthdate</label>
-                <input
-                  type="date"
-                  name="birthdate"
-                  placeholder="Birthdate"
-                  value={formData.birthdate}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
-                  required
-                />
-                {/* {errors.errors && errors.birthdate[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.birthdate[0]}</p>} */}
-              </div>
+  <label className="block text-sm font-medium text-gray-700">Birthdate</label>
+  <input
+    type="date"
+    name="birthdate"
+    placeholder="Birthdate"
+    value={formData.birthdate}
+    onChange={handleChange}
+    className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
+    max={new Date(new Date().setFullYear(new Date().getFullYear() - 25))
+      .toISOString()
+      .split("T")[0]} // Max date is today minus 25 years
+    min="1920-01-01" // Min date is 1920-01-01
+    required
+  />
+  {/* Optional validation message */}
+  {formData.birthdate &&
+    new Date(formData.birthdate) >
+      new Date(new Date().setFullYear(new Date().getFullYear() - 25)) && (
+      <p className="text-red-600 mt-1">
+        You must be at least 25 years old.
+      </p>
+    )}
+</div>
+
 
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">Email</label>

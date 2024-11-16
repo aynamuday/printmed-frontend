@@ -111,7 +111,6 @@ const Consultation = () => {
                     <p className="block text-black col-span-2">{getFormattedDate(consultation.created_at)}</p>
                 </div>
             )}
-
             {/* Height */}
             {(user.role === 'physician' || user.role === 'secretary') && (
                 <div className='grid grid-cols-7 gap-4 py-1'>
@@ -134,7 +133,6 @@ const Consultation = () => {
                     ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.height}</p>)}
                 </div>
             )}
-
             {/* Weight */}
             {(user.role === 'physician' || user.role === 'secretary') && (
                 <div className='grid grid-cols-7 gap-4 py-1'>
@@ -157,7 +155,6 @@ const Consultation = () => {
                     ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.weight}</p>)}
                 </div>
             )}
-
             {/* Temperature */}
             {(user.role === 'physician' || user.role === 'secretary') && (
                 <div className='grid grid-cols-7 gap-4 py-1'>
@@ -181,54 +178,51 @@ const Consultation = () => {
                     ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.temperature}</p>)}
                 </div>
             )}
-
             {/* Blood Pressure */}
-{(user.role === 'physician' || user.role === 'secretary') && (
-    <div className='grid grid-cols-7 gap-4 py-1'>
-        <p className="block font-semibold text-black col-span-2">Blood Pressure</p>
-        {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
-            <div className="col-span-2 flex items-center gap-2">
-                <input
-                    type="number"
-                    placeholder="Systolic"
-                    className="border border-gray-800 w-full py-1 px-2 rounded text-right"
-                    value={consultationStatus === "edit" ? editData.systolic_pressure : addData.systolic_pressure}
-                    min="30"
-                    max="250"
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === '' || (value >= 30 && value <= 250)) {
-                            consultationStatus === "edit"
-                                ? setEditData({ ...editData, systolic_pressure: value })
-                                : setAddData({ ...addData, systolic_pressure: value });
-                        }
-                    }}
-                    required
-                />
-                <span>/</span>
-                <input
-                    type="number"
-                    placeholder="Diastolic"
-                    className="border border-gray-800 w-full py-1 px-2 rounded text-right"
-                    value={consultationStatus === "edit" ? editData.diastolic_pressure : addData.diastolic_pressure}
-                    min="10"
-                    max="150"
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === '' || (value >= 10 && value <= 150)) {
-                            consultationStatus === "edit"
-                                ? setEditData({ ...editData, diastolic_pressure: value })
-                                : setAddData({ ...addData, diastolic_pressure: value });
-                        }
-                    }}
-                    required
-                />
-            </div>
-        ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.blood_pressure}</p>)}
-    </div>
-)}
-
-
+            {(user.role === 'physician' || user.role === 'secretary') && (
+                <div className='grid grid-cols-7 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-2">Blood Pressure</p>
+                    {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
+                        <div className="col-span-2 flex items-center gap-2">
+                            <input
+                                type="number"
+                                placeholder="Systolic"
+                                className="border border-gray-800 w-full py-1 px-2 rounded text-right"
+                                value={consultationStatus === "edit" ? editData.systolic_pressure : addData.systolic_pressure}
+                                min="30"
+                                max="250"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || (value >= 30 && value <= 250)) {
+                                        consultationStatus === "edit"
+                                            ? setEditData({ ...editData, systolic_pressure: value })
+                                            : setAddData({ ...addData, systolic_pressure: value });
+                                    }
+                                }}
+                                required
+                            />
+                            <span>/</span>
+                            <input
+                                type="number"
+                                placeholder="Diastolic"
+                                className="border border-gray-800 w-full py-1 px-2 rounded text-right"
+                                value={consultationStatus === "edit" ? editData.diastolic_pressure : addData.diastolic_pressure}
+                                min="10"
+                                max="150"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || (value >= 10 && value <= 150)) {
+                                        consultationStatus === "edit"
+                                            ? setEditData({ ...editData, diastolic_pressure: value })
+                                            : setAddData({ ...addData, diastolic_pressure: value });
+                                    }
+                                }}
+                                required
+                            />
+                        </div>
+                    ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.blood_pressure}</p>)}
+                </div>
+            )}
             {/* Fields for Chief Complaint, Present Illness, etc. (Accessible only for Physicians) */}
             {user.role === 'physician' && (
                 <>

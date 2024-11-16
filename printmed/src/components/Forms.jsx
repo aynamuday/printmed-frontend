@@ -34,27 +34,23 @@ const Forms = () => {
   // Handle changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
     // Capitalize the first letter and make the rest lowercase
-    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-  
+    const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
     if (name === 'birthdate_day' || name === 'birthdate_month' || name === 'birthdate_year') {
       setFormData({
         ...formData,
         birthdate: {
           ...formData.birthdate,
-          [name.split('_')[1]]: value // Updates day, month, or year
+          [name.split('_')[1]]: value
         }
       });
       return;
     }
-  
     // Name fields should not accept numbers and capitalize first letter
     if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
       setErrors({ ...errors, [name]: '' });
       return;
     }
-  
     // suffix validation and capitalize first letter
     if (name === 'suffix') {
       if (/[^a-zA-Z\s]/.test(value)) {
@@ -68,7 +64,6 @@ const Forms = () => {
       }
       setErrors({ ...errors, [name]: '' });
     }
-  
     if (name === 'sex') {
       setFormData({
         ...formData,
@@ -76,28 +71,24 @@ const Forms = () => {
       });
       return;
     }
-
     // Civil status should only contain letters
-    if (name === 'civil_status') {
-      setFormData({
-        ...formData,
-        civil_status: value,
-      });
-      return;
-    }
-  
+    // if (name === 'civil_status') {
+    //   setFormData({
+    //     ...formData,
+    //     civil_status: value,
+    //   });
+    //   return;
+    // }
     // Update form data with the capitalized value
     setFormData({
       ...formData,
       [name]: capitalizedValue,
     });
   };
-  
   // handles for image profile
   const handleFileChange = (e) => {
     setFormData({ ...formData, photo: e.target.files[0] });
   };
-
   // handle phone number
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
@@ -123,8 +114,6 @@ const Forms = () => {
       });
     }
   };
-
-  
   // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();

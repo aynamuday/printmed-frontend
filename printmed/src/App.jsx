@@ -26,6 +26,7 @@ import RegistrationPage from './pages/RegistrationPage';
 import PatientTablePage from './pages/PatientTablePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PatientRegistrationPage from './pages/PatientRegistrationPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 
 const App = () => {
@@ -92,11 +93,13 @@ const App = () => {
         {/* if user is NOT logged in */}
         { !user ? (
           <>
+          {/* <Route path='/' element={<Navigate to='reset-password'/>}/> */}
             <Route path='/' element={<Navigate to='register'/>}/>
             <Route path='login' element={<LoginPage />}/>
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path='register' element={<RegistrationPage />} />
             <Route path='/register' element={<RegistrationPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
           </>
         ) : (
