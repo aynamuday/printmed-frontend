@@ -24,6 +24,8 @@ import AddPatientPage from './pages/AddPatientPage';
 
 import RegistrationPage from './pages/RegistrationPage';
 import PatientTablePage from './pages/PatientTablePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PatientRegistrationPage from './pages/PatientRegistrationPage';
 
 
 const App = () => {
@@ -60,8 +62,9 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
           <Route element={<SecretaryPhysicianProvider />}>
-            <Route path='/' element={<PatientsPage/>}/>
+            <Route path='/' element={<PatientTablePage/>}/>
             <Route path='patient' element={<PatientPage/>}/>
+            <Route path='patients/:id' element={<PatientPage/>}/>
             <Route path='add-patient' element={<AddPatientPage/>}/>
             { generalRoutes }
           </Route>
@@ -71,12 +74,13 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
           <Route element={<SecretaryPhysicianProvider />}>
-          <Route path='/' element={<PatientTablePage/>}/>
-          <Route path='patient' element={<PatientPage/>}/>
-          <Route path='patients/:id' element={<PatientPage/>}/>
-          <Route path='add-patient' element={<AddPatientPage/>}/>
-          { generalRoutes }
-        </Route>
+            <Route path='/' element={<PatientTablePage/>}/>
+            <Route path='patient' element={<PatientPage/>}/>
+            <Route path='patients/:id' element={<PatientPage/>}/>
+            <Route path='patient-registration' element={<PatientRegistrationPage/>}/>
+            <Route path='add-patient' element={<AddPatientPage/>}/>
+            { generalRoutes }
+          </Route>
         </Route>
       )
     }
@@ -90,7 +94,9 @@ const App = () => {
           <>
             <Route path='/' element={<Navigate to='register'/>}/>
             <Route path='login' element={<LoginPage />}/>
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path='register' element={<RegistrationPage />} />
+            <Route path='/register' element={<RegistrationPage />} />
             {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
           </>
         ) : (

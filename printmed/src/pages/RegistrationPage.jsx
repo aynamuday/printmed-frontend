@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import bgNurse from '../assets/images/bg-nurse.png';
 import logo from '../assets/images/logo.png';
 import { FaSmile } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 function RegistrationPage() {
+    const navigate = useNavigate();
     const [showTooltip, setShowTooltip] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
     const [formData, setFormData] = useState({
@@ -277,6 +279,13 @@ function RegistrationPage() {
                             className="w-full bg-[#B43C3A] hover:bg-red-600 text-white font-bold py-2 rounded-md"
                         >
                             Register
+                        </button>
+                        <button
+                            type="button"
+                            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded-md"
+                            onClick={() => navigate('/login')}
+                        >
+                            Login
                         </button>
                     </form>
                 </div>

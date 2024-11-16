@@ -34,7 +34,7 @@ const Sidebar = () => {
 
       <div
         className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000
-          p-2 w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
+          p-2 w-[250px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
           ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
       >
         <div className="text-white text-xl">
@@ -50,57 +50,65 @@ const Sidebar = () => {
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Dashboard</span>
+                  <span className="text-[15px] ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/users" className={linkClass}>
                   <i className="bi bi-people"></i>
-                  <span className="text-[20px] ml-4 text-white">Users</span>
+                  <span className="text-[15px] ml-4 text-white">Users</span>
                 </NavLink>
                 <NavLink to="/add-user" className={linkClass}>
                   <i className="bi bi-plus-circle"></i>
-                  <span className="text-[20px] ml-4 text-white">Add User</span>
+                  <span className="text-[15px] ml-4 text-white">Add User</span>
                 </NavLink> 
                 <NavLink to="/departments" className={linkClass}>
                   <i className="bi bi-building"></i>
-                  <span className="text-[20px] ml-4 text-white">Departments</span>
+                  <span className="text-[15px] ml-4 text-white">Departments</span>
                 </NavLink>
                 <NavLink to="/audits" className={linkClass}>
                   <i className="bi bi-file-earmark-bar-graph"></i>
-                  <span className="text-[20px] ml-4 text-white">Audits</span>
+                  <span className="text-[15px] ml-4 text-white">Audits</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Settings</span>
+                  <span className="text-[15px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "physician" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-person-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Patients</span>
+                  <span className="text-[15px] ml-4 text-white">Patients</span>
                 </NavLink>
-                <NavLink to="/patient" className={linkClass}>
+                <NavLink to="/add-patient" className={linkClass}>
+                  <i className="bi bi-person-plus-fill"></i>
+                  <span className="text-[15px] ml-4 text-white">Add Patient</span>
+                </NavLink>
+                {/* <NavLink to="/patient" className={linkClass}>
                   <i className="bi bi-search"></i>
-                  <span className="text-[20px] ml-4 text-white">Patient Viewer</span>
-                </NavLink>
+                  <span className="text-[15px] ml-4 text-white">Patient Viewer</span>
+                </NavLink> */}
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Settings</span>
+                  <span className="text-[15px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "secretary" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-person-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Patients</span>
+                  <span className="text-[15px] ml-4 text-white">Patients</span>
                 </NavLink>
                 <NavLink to="/add-patient" className={linkClass}>
                   <i className="bi bi-person-plus-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Add Patient</span>
+                  <span className="text-[15px] ml-4 text-white">Add Patient</span>
+                </NavLink>
+                <NavLink to="/patient-registration" className={linkClass}>
+                  <i className="bi bi-clipboard-check"></i>
+                  <span className="text-[15px] ml-4 text-white">Patient Registration</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <i className="bi bi-gear-fill"></i>
-                  <span className="text-[20px] ml-4 text-white">Settings</span>
+                  <span className="text-[15px] ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : (<></>))) }

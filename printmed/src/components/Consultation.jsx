@@ -6,12 +6,11 @@ import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 
 const Consultation = () => {
-    const { token } = useContext(AppContext)
-    const { consultationStatus, consultation, setConsultation, consultationPayment, setConsultationPayment } = useContext(PhysicianContext)
+    const { user, token } = useContext(AppContext)
+    const { consultationStatus, consultation, setConsultation } = useContext(PhysicianContext)
     const [pediatrics, setPediatrics] = useState(false)
 
     const [editData, setEditData] = useState({})
-
     const [addData, setAddData] = useState({})
 
     const fetchConsultation = async () => {
@@ -26,9 +25,7 @@ const Consultation = () => {
         const data = await res.json()
 
         if (res.ok) {
-            console.log(data)
             setConsultation(data.consultation)
-            setConsultationPayment(data.payment)
         } else {
             console.log(data)
         }
@@ -56,7 +53,7 @@ const Consultation = () => {
             'prescription': '',
         })
 
-        if ((consultationStatus == "view") && consultation) {
+        if ((consultationStatus === "view") && consultation) {
             fetchConsultation()
         }
 
@@ -64,7 +61,8 @@ const Consultation = () => {
             setEditData({
                 'height': consultation.height ?? '',
                 'weight': consultation.weight ?? '',
-                'blood_pressure': consultation.blood_pressure ?? '',
+                'systolic_pressure': consultation.systolic_pressure ?? '',
+                'diastolic_pressure': consultation.diastolic_pressure ?? '',
                 'temperature': consultation.temperature ?? '',
                 'chief_complaint': consultation.chief_complaint ?? '',
                 'present_illness_hx': consultation.present_illness_hx ?? '',
@@ -99,290 +97,264 @@ const Consultation = () => {
         const data = await res.json()
 
         if (res.ok) {
-            globalSwal.fire(
-                // title: "New"
-            )
+            globalSwal.fire('Success', 'Consultation added successfully!', 'success')
+        } else {
+            globalSwal.fire('Error', 'There was an error adding the consultation.', 'error')
         }
     }
 
-  return (
-    <div>
-        {consultationStatus == "view" && consultation && <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Date</p>
-            <p className="block text-black col-span-2">{getFormattedDate(consultation.created_at)}</p>
-        </div>}
-        <div className='grid grid-cols-7 gap-4 py-1'>
-        <p className="block font-semibold text-black col-span-2">Height</p>
-        { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-            <input
-                placeholder="cm"
-                type="number"
-                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
-                value={consultationStatus == "edit" ? editData.height : addData.height}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    // Only allow numeric input and prevent value over 250
-                    if (/^\d*$/.test(value) && (value === '' || parseFloat(value) <= 250)) {
-                        consultationStatus == "edit"
-                            ? setEditData({...editData, height: value})
-                            : setAddData({...addData, height: value});
-                    }
-                }}
-            />
-        ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.height}</p> ) }
-    </div>
+    return (
+        <form onSubmit={addConsultation}>
+            {consultationStatus === "view" && consultation && (
+                <div className='grid grid-cols-7 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-2">Date</p>
+                    <p className="block text-black col-span-2">{getFormattedDate(consultation.created_at)}</p>
+                </div>
+            )}
 
-    <div className='grid grid-cols-7 gap-4 py-1'>
-        <p className="block font-semibold text-black col-span-2">Weight</p>
-        { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-            <input
-                placeholder="kg"
-                type="number"
-                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
-                value={consultationStatus == "edit" ? editData.weight : addData.weight}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    // Only allow numeric input and prevent value over 150
-                    if (/^\d*$/.test(value) && (value === '' || parseFloat(value) <= 150)) {
-                        consultationStatus == "edit"
-                            ? setEditData({...editData, weight: value})
-                            : setAddData({...addData, weight: value});
-                    }
-                }}
-            />
-        ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.weight}</p> ) }
-    </div>
+            {/* Height */}
+            {(user.role === 'physician' || user.role === 'secretary') && (
+                <div className='grid grid-cols-7 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-2">Height</p>
+                    {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
+                        <input
+                            placeholder="cm"
+                            type="number"
+                            className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
+                            value={consultationStatus === "edit" ? editData.height : addData.height}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*$/.test(value) && (value === '' || parseFloat(value) <= 250)) {
+                                    consultationStatus === "edit"
+                                        ? setEditData({ ...editData, height: value })
+                                        : setAddData({ ...addData, height: value });
+                                }
+                            }}
+                        />
+                    ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.height}</p>)}
+                </div>
+            )}
 
-    <div className='grid grid-cols-7 gap-4 py-1'>
-        <p className="block font-semibold text-black col-span-2">Temperature</p>
-        { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-            <input
-                placeholder="celcius"
-                type="number"
-                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
-                value={consultationStatus == "edit" ? editData.temperature : addData.temperature}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    // Only allow numeric input and prevent value over 45
-                    if (/^\d*$/.test(value) && (value === '' || parseFloat(value) <= 45)) {
-                        consultationStatus == "edit"
-                            ? setEditData({...editData, temperature: value})
-                            : setAddData({...addData, temperature: value});
-                    }
-                }}
-            />
-        ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.temperature}</p> ) }
-    </div>
+            {/* Weight */}
+            {(user.role === 'physician' || user.role === 'secretary') && (
+                <div className='grid grid-cols-7 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-2">Weight</p>
+                    {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
+                        <input
+                            placeholder="kg"
+                            type="number"
+                            className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
+                            value={consultationStatus === "edit" ? editData.weight : addData.weight}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*$/.test(value) && (value === '' || parseFloat(value) <= 150)) {
+                                    consultationStatus === "edit"
+                                        ? setEditData({ ...editData, weight: value })
+                                        : setAddData({ ...addData, weight: value });
+                                }
+                            }}
+                        />
+                    ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.weight}</p>)}
+                </div>
+            )}
 
+            {/* Temperature */}
+            {(user.role === 'physician' || user.role === 'secretary') && (
+                <div className='grid grid-cols-7 gap-4 py-1'>
+                    <p className="block font-semibold text-black col-span-2">Temperature</p>
+                    {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
+                        <input
+                            placeholder="celsius"
+                            type="number"
+                            step="0.1"  // Allow decimal
+                            className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded text-right"
+                            value={consultationStatus === "edit" ? editData.temperature : addData.temperature}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (/^\d*(\.\d{0,1})?$/.test(value) && (value === '' || parseFloat(value) <= 45)) {
+                                    consultationStatus === "edit"
+                                        ? setEditData({ ...editData, temperature: value })
+                                        : setAddData({ ...addData, temperature: value });
+                                }
+                            }}
+                        />
+                    ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.temperature}</p>)}
+                </div>
+            )}
+
+            {/* Blood Pressure */}
+{(user.role === 'physician' || user.role === 'secretary') && (
     <div className='grid grid-cols-7 gap-4 py-1'>
         <p className="block font-semibold text-black col-span-2">Blood Pressure</p>
-        { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
+        {((consultation && consultationStatus === "edit") || consultationStatus === "add") ? (
             <div className="col-span-2 flex items-center gap-2">
-            {/* Systolic Pressure Input */}
-            <input
-                type="number"
-                placeholder="Systolic (30-250)"
-                className="border border-gray-800 w-full py-1 px-2 rounded text-right"
-                value={consultationStatus === "edit" ? editData.systolic_pressure : addData.systolic_pressure}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '' || (Number(value) >= 30 && Number(value) <= 250)) {
-                        consultationStatus === "edit"
-                            ? setEditData({ ...editData, systolic_pressure: value })
-                            : setAddData({ ...addData, systolic_pressure: value });
-                    }
-                }}
-                required
-            />
-
-            <span>/</span>
-
-            {/* Diastolic Pressure Input */}
-            <input
-                type="number"
-                placeholder="Diastolic (10-150)"
-                className="border border-gray-800 w-full py-1 px-2 rounded text-right"
-                value={consultationStatus === "edit" ? editData.diastolic_pressure : addData.diastolic_pressure}
-                onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '' || (Number(value) >= 10 && Number(value) <= 150)) {
-                        consultationStatus === "edit"
-                            ? setEditData({ ...editData, diastolic_pressure: value })
-                            : setAddData({ ...addData, diastolic_pressure: value });
-                    }
-                }}
-                required
-            />
-        </div>
-        ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.blood_pressure}</p> ) }
-    </div>
-
-        <div className='h-6'></div>
-
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Chief Complaint</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.chief_complaint : addData.chief_complaint}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, chief_complaint: e.target.value}) : setAddData({...addData, chief_complaint: e.target.value}) }}
-                />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.chief_complaint}</p> ) }
-        </div>
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">History of Present Illness</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.present_illness_hx : addData.present_illness_hx}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, present_illness_hx: e.target.value}) : setAddData({...addData, present_illness_hx: e.target.value}) }}
-                />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.present_illness_hx}</p> ) }
-        </div>
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Family History</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.family_hx : addData.family_hx}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, family_hx: e.target.value}) : setAddData({...addData, family_hx: e.target.value}) }}
-                />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.family_hx}</p> ) }
-        </div>
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Medical History</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.medical_hx : addData.medical_hx}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, medical_hx: e.target.value}) : setAddData({...addData, medical_hx: e.target.value}) }}
-                />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.medical_hx}</p> ) }
-        </div>
-        { consultationStatus == "add" || (consultationStatus == "edit" && consultation) && (
-            <div className='grid grid-cols-1 py-1'>
-                <div className='h-6'></div>
-                    <div className='cols-span-3 flex items-center gap-4'>
-                        <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-black"
-                            value={pediatrics}
-                            onChange={(e) => {setPediatrics(!pediatrics)}}
-                        />
-                        <p className="font-semibold text-black">Is Pediatrics?</p>
-                    </div>
-            </div>
-        )}
-        { pediatrics && (
-            <>
-                <div className='grid grid-cols-7 gap-4 py-1'>
-                    <p className="block font-semibold text-black col-span-2">{"(H) Home"}</p>
-                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                        <textarea
-                            rows="3"
-                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                            value={consultationStatus == "edit" ? editData.pediatrics_h : addData.pediatrics_h}
-                            onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, pediatrics_h: e.target.value}) : setAddData({...addData, pediatrics_h: e.target.value}) }}
-                        />
-                    ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.pediatrics_h}</p> ) }
-                </div>
-                <div className='grid grid-cols-7 gap-4 py-1'>
-                    <p className="block font-semibold text-black col-span-2">{"(E) Education / Employment"}</p>
-                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                        <textarea
-                            rows="3"
-                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                            value={consultationStatus == "edit" ? editData.pediatrics_e : addData.pediatrics_e}
-                            onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, pediatrics_e: e.target.value}) : setAddData({...addData, pediatrics_e: e.target.value}) }}
-                        />
-                    ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.pediatrics_e}</p> ) }
-                </div>
-                <div className='grid grid-cols-7 gap-4 py-1'>
-                    <p className="block font-semibold text-black col-span-2">{"(H) Home"}</p>
-                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                        <textarea
-                            rows="3"
-                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                            value={consultationStatus == "edit" ? editData.pediatrics_h : addData.pediatrics_h}
-                            onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, pediatrics_h: e.target.value}) : setAddData({...addData, pediatrics_h: e.target.value}) }}
-                        />
-                    ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.pediatrics_h}</p> ) }
-                </div>
-                <div className='grid grid-cols-7 gap-4 py-1'>
-                    <p className="block font-semibold text-black col-span-2">{"(D) Drugs / Drinking"}</p>
-                    { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                        <textarea
-                            rows="3"
-                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                            value={consultationStatus == "edit" ? editData.pediatrics_d : addData.pediatrics_d}
-                            onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, pediatrics_d: e.target.value}) : setAddData({...addData, pediatrics_d: e.target.value}) }}
-                        />
-                    ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.pediatrics_d}</p> ) }
-                </div>
-            </>
-        )}
-
-        <div className='h-6'></div>
-
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Primary Diagnosis</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
                 <input
-                    type="text"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.primary_diagnosis : addData.primary_diagnosis}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, primary_diagnosis: e.target.value}) : setAddData({...addData, primary_diagnosis: e.target.value}) }}
+                    type="number"
+                    placeholder="Systolic"
+                    className="border border-gray-800 w-full py-1 px-2 rounded text-right"
+                    value={consultationStatus === "edit" ? editData.systolic_pressure : addData.systolic_pressure}
+                    min="30"
+                    max="250"
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || (value >= 30 && value <= 250)) {
+                            consultationStatus === "edit"
+                                ? setEditData({ ...editData, systolic_pressure: value })
+                                : setAddData({ ...addData, systolic_pressure: value });
+                        }
+                    }}
+                    required
                 />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.primary_diagnosis}</p> ) }
-        </div>
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Diagnosis</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.diagnosis : addData.diagnosis}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, diagnosis: e.target.value}) : setAddData({...addData, diagnosis: e.target.value}) }}
+                <span>/</span>
+                <input
+                    type="number"
+                    placeholder="Diastolic"
+                    className="border border-gray-800 w-full py-1 px-2 rounded text-right"
+                    value={consultationStatus === "edit" ? editData.diastolic_pressure : addData.diastolic_pressure}
+                    min="10"
+                    max="150"
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || (value >= 10 && value <= 150)) {
+                            consultationStatus === "edit"
+                                ? setEditData({ ...editData, diastolic_pressure: value })
+                                : setAddData({ ...addData, diastolic_pressure: value });
+                        }
+                    }}
+                    required
                 />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.diagnosis}</p> ) }
-        </div>
+            </div>
+        ) : (consultationStatus === "view" && <p className="block text-black col-span-2">{consultation.blood_pressure}</p>)}
+    </div>
+)}
 
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            <p className="block font-semibold text-black col-span-2">Prescription</p>
-            { (consultation && consultationStatus == "edit") || consultationStatus == "add" ? (
-                <textarea
-                    rows="3"
-                    className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                    value={consultationStatus == "edit" ? editData.prescription : addData.prescription}
-                    onChange={(e) => {consultationStatus == "edit" ? setEditData({...editData, prescription: e.target.value}) : setAddData({...addData, prescription: e.target.value}) }}
-                />
-            ) : ( consultationStatus == "view" && <p className="block text-black col-span-2">{consultation.prescription}</p> ) }
-        </div>
-        <div className='grid grid-cols-7 gap-4 py-1'>
-            { consultationStatus == "view" && 
+
+            {/* Fields for Chief Complaint, Present Illness, etc. (Accessible only for Physicians) */}
+            {user.role === 'physician' && (
                 <>
-                    <p className="block font-semibold text-black col-span-2">Follow-Up Date</p>
-                    <p className="block text-black col-span-2">{consultation.primary_diagnosis}</p>
+                    {/* Chief Complaint */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Chief Complaint</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.chief_complaint : addData.chief_complaint}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, chief_complaint: e.target.value })
+                                    : setAddData({ ...addData, chief_complaint: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* History of Present Illness */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Present Illness</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.present_illness_hx : addData.present_illness_hx}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, present_illness_hx: e.target.value })
+                                    : setAddData({ ...addData, present_illness_hx: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* Family History */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Family History</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.family_hx : addData.family_hx}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, family_hx: e.target.value })
+                                    : setAddData({ ...addData, family_hx: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* Medical History */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Medical History</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.medical_hx : addData.medical_hx}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, medical_hx: e.target.value })
+                                    : setAddData({ ...addData, medical_hx: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* Primary Diagnosis */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Primary Diagnosis</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.primary_diagnosis : addData.primary_diagnosis}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, primary_diagnosis: e.target.value })
+                                    : setAddData({ ...addData, primary_diagnosis: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* Diagnosis */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Diagnosis</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.diagnosis : addData.diagnosis}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, diagnosis: e.target.value })
+                                    : setAddData({ ...addData, diagnosis: e.target.value });
+                            }}
+                        />
+                    </div>
+
+                    {/* Prescription */}
+                    <div className='grid grid-cols-7 gap-4 py-1'>
+                        <p className="block font-semibold text-black col-span-2">Prescription</p>
+                        <textarea
+                            rows="3"
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
+                            value={consultationStatus === "edit" ? editData.prescription : addData.prescription}
+                            onChange={(e) => {
+                                consultationStatus === "edit"
+                                    ? setEditData({ ...editData, prescription: e.target.value })
+                                    : setAddData({ ...addData, prescription: e.target.value });
+                            }}
+                        />
+                    </div>
                 </>
-            }
-        </div>
-        { (consultationStatus == "edit" || consultationStatus == "add") && (
+            )}
+            { (consultationStatus == "edit" || consultationStatus == "add") && (
             <div className="mt-8 w-full">
                 {/* {!errors.errors && errors.message && <p className="text-red-600 mb-1 text-center">{errors.message}</p>} */}
 
                 <div className="flex justify-center items-center">
-                    <button onClick={() => {}} className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                    {/* <button onClick={() => {}} className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
                         Save
+                    </button> */}
+                    <button type="submit" className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                        Submit Consultation
                     </button>
+
                 </div>
             </div>
-        )}
-    </div>
-  )
+            )}
+        </form>
+    )
 }
 
-export default Consultation
+export default Consultation;

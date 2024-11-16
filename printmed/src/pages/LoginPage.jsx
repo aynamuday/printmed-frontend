@@ -121,9 +121,12 @@ const LoginPage = () => {
   };
 
   const handleForgotPassword = () => {
-    alert("Please contact the administrator.");
+    navigate('/forgot-password');
   };
 
+  const hanldeRegister = () => {
+    navigate('/register');
+  }
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
       <div>
@@ -218,11 +221,20 @@ const LoginPage = () => {
           {!isOtpSent && (
             <button
               onClick={handleForgotPassword}
+              type="button"
               className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
             >
-              Forgot Password
+              Forgot Password?
             </button>
           )}
+
+            <button
+              onClick={hanldeRegister}
+              type="button"
+              className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
+            >
+              Register
+            </button>
         </form>
       </div>
     </div>
