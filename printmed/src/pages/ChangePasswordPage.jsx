@@ -63,7 +63,12 @@ const ChangePasswordPage = () => {
       <>
         <div className="w-80">
           <form onSubmit={handleChangePassword} className='flex flex-col items-center'>
-            <h2 className="text-xl font-bold mb-4">Change Password</h2>
+            <h2 className="text-xl font-bold mb-4">
+                <button onClick={() => navigate("/settings")} className="mr-4">
+                    <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+                </button>
+                Change Password
+            </h2>
 
             {error && <p className="text-red-500 mb-4">{error}</p>}
             

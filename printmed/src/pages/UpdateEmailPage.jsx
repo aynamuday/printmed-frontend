@@ -51,7 +51,12 @@ const UpdateEmailPage = () => {
     <Settings children={
         <>
             <div className="flex flex-col items-center min-w-96">
-                <h2 className="text-xl font-bold mb-6">Update Email</h2>
+                <h2 className="text-xl font-bold mb-6">
+                    <button onClick={() => navigate("/settings")} className="mr-4">
+                    <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+                </button>
+                    Update Email
+                </h2>
                 
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 
