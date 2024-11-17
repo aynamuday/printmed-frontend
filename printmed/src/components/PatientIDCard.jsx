@@ -95,7 +95,7 @@ const PatientIDCard = () => {
           PATIENT IDENTIFICATION CARD
         </div>
         {/* Information Section */}
-        <div className="grid grid-cols-3 gap-2 px-2 py-2 rounded-md mt-1 bg-white w-[95%] h-[65%] mx-auto">
+        <div className="grid grid-cols-3 gap-2 px-2 py-3 rounded-md mt-1 bg-white w-[95%] h-[65%] mx-auto">
           {/* Left Section (Photo) */}
           <div className="flex flex-col items-center gap-1">
             <div className="w-[1in] h-[1in]">
@@ -157,7 +157,7 @@ const PatientIDCard = () => {
           IN CASE OF LOSS
         </div>
         {/* Information Section */}
-        <div className="flex flex-col items-center text-center text-[7px] px-3 py-3 gap-3 rounded-md mt-1 bg-white w-[95%] h-[65%] mx-auto">
+        <div className="flex flex-col items-center text-center text-[7px] px-3 py-4 gap-3 rounded-md mt-1 bg-white w-[95%] h-[65%] mx-auto">
           <p>
             If this ID is lost or stolen, please immediately report it to the
             hospital's registration desk or contact our support team to

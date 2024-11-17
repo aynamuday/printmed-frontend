@@ -5,7 +5,7 @@ import { getFormattedDate } from '../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
 
 const PatientDetails = ({patient}) => {
-    const { token } = useContext(AppContext)
+    const { user, token } = useContext(AppContext)
     const navigate = useNavigate()
 
     const [update, setUpdate] = useState(false)
@@ -392,7 +392,7 @@ const PatientDetails = ({patient}) => {
                     )
                 }
                 {/* Generate ID Button */}
-                {update && (
+                {update && user.role === 'secretary' && (
                     <div className="mt-4 flex justify-center">
                         <button
                             type="button"

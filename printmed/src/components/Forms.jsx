@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { getFormattedDate } from '../utils/dateUtils'; 
+import Autocomplete from "react-google-autocomplete";
 
 const Forms = () => {
   const { token } = useContext(AppContext);
@@ -21,7 +22,13 @@ const Forms = () => {
     sex: '',
     civil_status: '',
     religion: '',
-    address: '',
+    // address: '',
+    house_number: '',
+    street: '',
+    city: '',
+    province: '',
+    postal_code: '',
+    barangay: '',
     email: '',
     phone_number: '',
     physician_id: '',
@@ -64,6 +71,36 @@ const Forms = () => {
       }
       setErrors({ ...errors, [name]: '' });
     }
+
+    // Address validations (house_number, street, barangay, etc.)
+    if (name === 'house_number' || name === 'street' || name === 'barangay') {
+      // No symbols allowed
+      if (/[^a-zA-Z0-9\s]/.test(value)) {
+        setErrors({ ...errors, [name]: 'No symbols allowed' });
+        return;
+      }
+    }
+
+    if (name === 'city' || name === 'province') {
+      // No numbers allowed
+      if (/[^a-zA-Z\s]/.test(value)) {
+        setErrors({ ...errors, [name]: 'Numbers are not allowed' });
+        return;
+      }
+    }
+
+    if (name === 'postal_code') {
+      // Only numbers allowed and ensure length is 6
+      if (/[^0-9]/.test(value)) {
+        setErrors({ ...errors, [name]: 'Only numbers are allowed' });
+        return;
+      }
+      if (value.length > 6) {
+        setErrors({ ...errors, [name]: 'Postal code must be at most 6 digits' });
+        return;
+      }
+    }
+
     if (name === 'sex') {
       setFormData({
         ...formData,
@@ -258,9 +295,31 @@ const Forms = () => {
                 />
               </div>
 
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Address</label>
-                <input type="text" name="address" value={formData.address} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+              <div className="grid grid-cols-3 gap-4 col-span-2">
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">House No.</label>
+                  <input type="text" name="house_number" value={formData.house_number} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">Barangay</label>
+                  <input type="text" name="barangay" value={formData.barangay} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">Street</label>
+                  <input type="text" name="street" value={formData.street} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">City</label>
+                  <input type="text" name="city" value={formData.city} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">Province</label>
+                  <input type="text" name="province" value={formData.province} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+                  <input type="number" name="postal_code" value={formData.postal_code} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                </div>
               </div>
 
               <div>

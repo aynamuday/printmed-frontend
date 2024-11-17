@@ -11,8 +11,24 @@ const Consultation = () => {
     const [pediatrics, setPediatrics] = useState(false)
 
     const [editData, setEditData] = useState({})
-    const [addData, setAddData] = useState({})
-
+    const [addData, setAddData] = useState({
+            height: '',
+            weight: '',
+            systolic_pressure: '',
+            diastolic_pressure: '',
+            temperature: '',
+            chief_complaint: '',
+            present_illness_hx: '',
+            family_hx: '',
+            medical_hx: '',
+            pediatrics_h: '',
+            pediatrics_e: '',
+            pediatrics_a: '',
+            pediatrics_d: '',
+            primary_diagnosis: '',
+            diagnosis: '',
+            prescriptions: [], // Ensure it's initialized as an empty array
+    })
     const fetchConsultation = async () => {
         globalSwal.showLoading()
 
@@ -50,7 +66,7 @@ const Consultation = () => {
             'pediatrics_d': '',
             'primary_diagnosis': '',
             'diagnosis': '',
-            'prescription': '',
+            'prescription': [],
         })
 
         if ((consultationStatus === "view") && consultation) {
@@ -74,7 +90,7 @@ const Consultation = () => {
                 'pediatrics_d': consultation.pediatrics_d ?? '',
                 'primary_diagnosis': consultation.primary_diagnosis ?? '',
                 'diagnosis': consultation.diagnosis ?? '',
-                'prescription': consultation.prescription ?? '',
+                'prescription': Array.isArray(consultation.prescriptions) ? consultation.prescriptions : [],
             })
         }
 
@@ -101,6 +117,36 @@ const Consultation = () => {
         } else {
             globalSwal.fire('Error', 'There was an error adding the consultation.', 'error')
         }
+    }
+
+    const handlePrescriptionChange = (index, field, value) => {
+        const newPrescriptions = [...addData.prescriptions]
+        newPrescriptions[index][field] = value
+        setAddData({ ...addData, prescriptions: newPrescriptions })
+    }
+
+    const addPrescription = () => {
+        // Ensure prescriptions is an array
+        if (Array.isArray(addData.prescriptions)) {
+            setAddData({
+                ...addData,
+                prescriptions: [
+                    ...addData.prescriptions,
+                    { name: '', dosage: '', instruction: '' }
+                ]
+            })
+        } else {
+            // Fallback if it's not an array
+            setAddData({
+                ...addData,
+                prescriptions: [{ name: '', dosage: '', instruction: '' }]
+            })
+        }
+    }
+
+    const removePrescription = (index) => {
+        const newPrescriptions = addData.prescriptions.filter((_, i) => i !== index)
+        setAddData({ ...addData, prescriptions: newPrescriptions })
     }
 
     return (
@@ -318,17 +364,44 @@ const Consultation = () => {
 
                     {/* Prescription */}
                     <div className='grid grid-cols-7 gap-4 py-1'>
-                        <p className="block font-semibold text-black col-span-2">Prescription</p>
-                        <textarea
-                            rows="3"
-                            className="col-span-5 border border-gray-800 block w-full py-1 px-4 rounded"
-                            value={consultationStatus === "edit" ? editData.prescription : addData.prescription}
-                            onChange={(e) => {
-                                consultationStatus === "edit"
-                                    ? setEditData({ ...editData, prescription: e.target.value })
-                                    : setAddData({ ...addData, prescription: e.target.value });
-                            }}
-                        />
+                        <p className="block font-semibold text-black col-span-2">Prescriptions</p>
+                        <div className="col-span-5">
+                            {Array.isArray(addData.prescriptions) && addData.prescriptions.length > 0 && addData.prescriptions.map((prescription, index) => (
+                                <div key={index} className="mb-4 grid grid-cols-7 gap-4">
+                                <div className="col-span-3">
+                                    <textarea
+                                        rows="3"
+                                        className="border border-gray-800 w-full py-1 px-2 rounded"
+                                        placeholder="Name"
+                                        value={prescription.name}
+                                        onChange={(e) => handlePrescriptionChange(index, 'name', e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-span-3">
+                                    <textarea
+                                        rows="3"
+                                        className="border border-gray-800 w-full py-1 px-2 rounded"
+                                        placeholder="Dosage"
+                                        value={prescription.dosage}
+                                        onChange={(e) => handlePrescriptionChange(index, 'dosage', e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-span-6">
+                                    <textarea
+                                        rows="3"
+                                        className="border border-gray-800 w-full py-1 px-2 rounded"
+                                        placeholder="Instruction"
+                                        value={prescription.instruction}
+                                        onChange={(e) => handlePrescriptionChange(index, 'instruction', e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <button type="button" onClick={() => removePrescription(index)} className="text-red-600">X</button>
+                                </div>
+                            </div>
+                            ))}
+                            <button type="button" onClick={addPrescription} className="text-blue-600 mt-2">Add Prescription</button>
+                        </div>
                     </div>
                 </>
             )}
