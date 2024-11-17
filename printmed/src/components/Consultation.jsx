@@ -369,8 +369,8 @@ const Consultation = () => {
                             {Array.isArray(addData.prescriptions) && addData.prescriptions.length > 0 && addData.prescriptions.map((prescription, index) => (
                                 <div key={index} className="mb-4 grid grid-cols-7 gap-4">
                                 <div className="col-span-3">
-                                    <textarea
-                                        rows="3"
+                                    <input
+                                        type="text"
                                         className="border border-gray-800 w-full py-1 px-2 rounded"
                                         placeholder="Name"
                                         value={prescription.name}
@@ -378,8 +378,8 @@ const Consultation = () => {
                                     />
                                 </div>
                                 <div className="col-span-3">
-                                    <textarea
-                                        rows="3"
+                                    <input
+                                        type="text"
                                         className="border border-gray-800 w-full py-1 px-2 rounded"
                                         placeholder="Dosage"
                                         value={prescription.dosage}
@@ -387,8 +387,8 @@ const Consultation = () => {
                                     />
                                 </div>
                                 <div className="col-span-6">
-                                    <textarea
-                                        rows="3"
+                                    <input
+                                        type="text"
                                         className="border border-gray-800 w-full py-1 px-2 rounded"
                                         placeholder="Instruction"
                                         value={prescription.instruction}
