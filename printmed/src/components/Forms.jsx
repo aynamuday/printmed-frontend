@@ -108,14 +108,13 @@ const Forms = () => {
       });
       return;
     }
-    // Civil status should only contain letters
-    // if (name === 'civil_status') {
-    //   setFormData({
-    //     ...formData,
-    //     civil_status: value,
-    //   });
-    //   return;
-    // }
+    if (name === 'civil_status') {
+      setFormData({
+        ...formData,
+        civil_status: value,
+      });
+      return;
+    }
     // Update form data with the capitalized value
     setFormData({
       ...formData,
