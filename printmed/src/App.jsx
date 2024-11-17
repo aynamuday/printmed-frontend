@@ -27,6 +27,7 @@ import PatientTablePage from './pages/PatientTablePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PatientRegistrationPage from './pages/PatientRegistrationPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import PatientIDCard from './components/PatientIDCard';
 
 
 const App = () => {
@@ -78,6 +79,7 @@ const App = () => {
             <Route path='/' element={<PatientTablePage/>}/>
             <Route path='patient' element={<PatientPage/>}/>
             <Route path='patients/:id' element={<PatientPage/>}/>
+            <Route path="/patient-id-card/:id" element={<PatientIDCard />} />
             <Route path='patient-registration' element={<PatientRegistrationPage/>}/>
             <Route path='add-patient' element={<AddPatientPage/>}/>
             { generalRoutes }
@@ -94,6 +96,7 @@ const App = () => {
         { !user ? (
           <>
           {/* <Route path='/' element={<Navigate to='reset-password'/>}/> */}
+          {/* <Route path='/' element={<PatientIDCard />}/> */}
             <Route path='/' element={<Navigate to='register'/>}/>
             <Route path='login' element={<LoginPage />}/>
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />

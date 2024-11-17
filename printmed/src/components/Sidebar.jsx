@@ -37,7 +37,7 @@ const Sidebar = () => {
           p-2 w-[250px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
           ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
       >
-        <div className="text-white text-xl">
+        <div className="text-white text-3xl">
           <div className="p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
             <img src={logo} className="h-100" alt="Logo" />
             <i className="bi bi-x ml-20 cursor-pointer lg:hidden" onClick={toggleSidebar}></i>

@@ -81,6 +81,7 @@ const PatientPage = (patientId) => {
                 <div className='grid grid-cols-5 gap-4'>
                     <div  className='col-span-2'>
                         <PatientDetails patient={patient} />
+                        
                     </div>
                     <div  className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
                         <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>

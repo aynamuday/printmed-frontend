@@ -2,9 +2,11 @@ import React, { useContext, useState } from 'react'
 import AppContext from '../context/AppContext'
 import globalSwal from '../utils/globalSwal'
 import { getFormattedDate } from '../utils/dateUtils'; 
+import { useNavigate } from 'react-router-dom';
 
 const PatientDetails = ({patient}) => {
     const { token } = useContext(AppContext)
+    const navigate = useNavigate()
 
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState({
@@ -389,6 +391,19 @@ const PatientDetails = ({patient}) => {
                     </div>
                     )
                 }
+                {/* Generate ID Button */}
+                {update && (
+                    <div className="mt-4 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                navigate(`/patient-id-card/${patient.id}`);
+                            }}
+                            className="w-[50%] h-10 bg-[#4CAF50] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
+                            Generate ID
+                        </button>
+                    </div>
+                )}
             </form>
         </div>
     </>
