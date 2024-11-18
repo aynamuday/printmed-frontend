@@ -92,114 +92,113 @@ const PatientDetails = ({patient}) => {
             <form className='pt-4 pb-6 px-4' onSubmit={handleSubmit}>
                 { update ? (
                     <>
-                            <div className="grid grid-cols-3 gap-4 py-1">
-                                <div className="col-span-1">
-                                    {updateData.photo ? (
-                                        <div className="relative">
-                                            <img src={updateData.photo} alt="Patient" className="w-20 h-20 object-cover rounded-full" />
-                                            <button
-                                                type="button"
-                                                onClick={handleRemovePhoto}
-                                                className="absolute top-0 right-0 p-1 text-black hover:bg-red-500 hover:text-white"
-                                            >
-                                                <i className="bi bi-x"></i>
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                                            <span>Null</span>
-                                        </div>
-                                    )}
-                                </div>
-                                {update && (
-                                    <div className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded">
-                                        <label htmlFor="photo" className="font-semibold text-black">Choose Photo</label>
-                                        <input
-                                            type="file"
-                                            id="photo"
-                                            onChange={handleFileChange}
-                                            accept="image/*"
-                                            className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
-                                        />
+                        <div className="grid grid-cols-3 gap-4 py-1">
+                            <div className="col-span-1">
+                                {updateData.photo ? (
+                                    <div className="relative">
+                                        <img src={updateData.photo} alt="Patient" className="w-20 h-20 object-cover rounded-full" />
+                                        <button
+                                            type="button"
+                                            onClick={handleRemovePhoto}
+                                            className="absolute top-0 right-0 p-1 text-black hover:bg-red-500 hover:text-white"
+                                        >
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <span>Null</span>
                                     </div>
                                 )}
                             </div>
-                            <div className='grid grid-cols-3 gap-4 py-1'>
-                                <p className="block font-semibold text-black col-span-1">First Name</p>
+                            {update && (
+                            <div className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded">
+                                <label htmlFor="photo" className="font-semibold text-black">Choose Photo</label>
                                 <input
-                                    type="text"
+                                    type="file"
+                                    id="photo"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
                                     className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
-                                    value={updateData.first_name}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
-                                            setUpdateData({ ...updateData, first_name: value });
-                                        }
-                                    }}
-                                    onKeyPress={(e) => {
-                                        // Prevent number input by checking if the key is a number
-                                        if (/\d/.test(e.key)) {
-                                            e.preventDefault(); // Prevent the default action (i.e., typing a number)
-                                        }
-                                    }}
-                                    required
                                 />
                             </div>
-                            <div className='grid grid-cols-3 gap-4 py-1'>
-                                <p className="block font-semibold text-black col-span-1">Middle Name</p>
-                                <input
-                                    type="text"
-                                    className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
-                                    value={updateData.middle_name}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
-                                            setUpdateData({ ...updateData, middle_name: value });
-                                        }
-                                    }}
-                                    onKeyPress={(e) => {
-                                        // Prevent number input by checking if the key is a number
-                                        if (/\d/.test(e.key)) {
-                                            e.preventDefault(); // Prevent the default action (i.e., typing a number)
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className='grid grid-cols-3 gap-4 py-1'>
-                                <p className="block font-semibold text-black col-span-1">Last Name</p>
-                                <input
-                                    type="text"
-                                    className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
-                                    value={updateData.last_name}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
-                                            setUpdateData({ ...updateData, last_name: value });
-                                        }
-                                    }}
-                                    onKeyPress={(e) => {
-                                        // Prevent number input by checking if the key is a number
-                                        if (/\d/.test(e.key)) {
-                                            e.preventDefault(); // Prevent the default action (i.e., typing a number)
-                                        }
-                                    }}
-                                    required
-                                />
-                            </div>
-                            <div className='grid grid-cols-3 gap-4 py-1'>
-                                <p className="block font-semibold text-black col-span-1">Suffix</p>
-                                <input
-                                    type="text"
-                                    className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
-                                    value={updateData.suffix}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        if (/^[a-zA-Z]*$/.test(value) && value.length <= 3) {
-                                            setUpdateData({...updateData, suffix: value});
-                                        }
-                                    }}
-                                />
-                            </div>
+                            )}
+                        </div>
+                        <div className='grid grid-cols-3 gap-4 py-1'>
+                            <p className="block font-semibold text-black col-span-1">First Name</p>
+                            <input
+                                type="text"
+                                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
+                                value={updateData.first_name}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
+                                        setUpdateData({ ...updateData, first_name: value });
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    // Prevent number input by checking if the key is a number
+                                    if (/\d/.test(e.key)) {
+                                        e.preventDefault(); // Prevent the default action (i.e., typing a number)
+                                    }
+                                }}
+                                required
+                            />
+                        </div>
+                        <div className='grid grid-cols-3 gap-4 py-1'>
+                            <p className="block font-semibold text-black col-span-1">Middle Name</p>
+                            <input
+                                type="text"
+                                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
+                                value={updateData.middle_name}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
+                                        setUpdateData({ ...updateData, middle_name: value });
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    // Prevent number input by checking if the key is a number
+                                    if (/\d/.test(e.key)) {
+                                        e.preventDefault(); // Prevent the default action (i.e., typing a number)
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div className='grid grid-cols-3 gap-4 py-1'>
+                            <p className="block font-semibold text-black col-span-1">Last Name</p>                                <input
+                                type="text"
+                                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
+                                value={updateData.last_name}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[a-zA-Z]*$/.test(value)) { // Ensure only letters are allowed
+                                        setUpdateData({ ...updateData, last_name: value });
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    // Prevent number input by checking if the key is a number
+                                    if (/\d/.test(e.key)) {
+                                        e.preventDefault(); // Prevent the default action (i.e., typing a number)
+                                    }
+                                }}
+                                required
+                            />
+                        </div>
+                        <div className='grid grid-cols-3 gap-4 py-1'>
+                            <p className="block font-semibold text-black col-span-1">Suffix</p>
+                            <input
+                                type="text"
+                                className="col-span-2 border border-gray-800 block w-full py-1 px-4 rounded"
+                                value={updateData.suffix}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^[a-zA-Z]*$/.test(value) && value.length <= 3) {
+                                        setUpdateData({...updateData, suffix: value});
+                                    }
+                                }}
+                            />
+                        </div>
                     </>
                 ) : (
                     <div className="grid grid-cols-3 gap-4 py-1">
@@ -396,10 +395,11 @@ const PatientDetails = ({patient}) => {
                     <div className="mt-4 flex justify-center">
                         <button
                             type="button"
+                            className="w-[50%] h-10 bg-[#4CAF50] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200"
                             onClick={() => {
                                 navigate(`/patient-id-card/${patient.id}`);
                             }}
-                            className="w-[50%] h-10 bg-[#4CAF50] text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
+                            >
                             Generate ID
                         </button>
                     </div>

@@ -13,7 +13,7 @@ const LoginPage = () => {
 
   const [credentials, setCredentials] = useState({
     role: '',
-    personnel_number: '',
+    //personnel_number: '',
     email: '',
     password: '',
   });
@@ -28,7 +28,7 @@ const LoginPage = () => {
   // Error states for each field
   const [errors, setErrors] = useState({
     role: '',
-    personnel_number: '',
+    //personnel_number: '',
     email: '',
     password: '',
     otp: ''
@@ -58,7 +58,7 @@ const LoginPage = () => {
 
     const newErrors = {};
     if (!credentials.role) newErrors.role = 'Please select your role.';
-    if (!credentials.personnel_number) newErrors.personnel_number = 'Personnel number is required.';
+    //if (!credentials.personnel_number) newErrors.personnel_number = 'Personnel number is required.';
     if (!credentials.email) newErrors.email = 'Email is required.';
     if (!credentials.password) newErrors.password = 'Password is required.';
 
@@ -154,18 +154,7 @@ const LoginPage = () => {
                 {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
               </div>
 
-              <div>
-                <input
-                  name="personnel_number"
-                  type="text"
-                  className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Personnel Number"
-                  value={credentials.personnel_number}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.personnel_number && <p className="text-red-500 text-sm">{errors.personnel_number}</p>}
-              </div>
+              
 
               <div>
                 <input

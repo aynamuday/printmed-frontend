@@ -25,17 +25,18 @@ export const AdminProvider = () => {
   })
 
   return (
-    <AdminContext.Provider value={{ fetchedForDashboard, setFetchedForDashboard,
-                                  usersCount, setUsersCount, 
-                                  auditsToday, setAuditsToday,
-                                  auditsTodayResource, setAuditsTodayResource,
-                                  loadingAuditsTodayDownload, setLoadingAuditsTodayDownload,
-                                  auditsAll, setAuditsAll,
-                                  auditsAllFilters, setAuditsAllFilters,
-                                  loadingAuditsAllDownload, setLoadingAuditsAllDownload,
-                                  users, setUsers,
-                                  searchUser, setSearchUser,
-                                  usersFilters, setUsersFilters
+    <AdminContext.Provider value={{ 
+      fetchedForDashboard, setFetchedForDashboard,
+      usersCount, setUsersCount, 
+      auditsToday, setAuditsToday,
+      auditsTodayResource, setAuditsTodayResource,
+      loadingAuditsTodayDownload, setLoadingAuditsTodayDownload,
+      auditsAll, setAuditsAll,
+      auditsAllFilters, setAuditsAllFilters,
+      loadingAuditsAllDownload, setLoadingAuditsAllDownload,
+      users, setUsers,
+      searchUser, setSearchUser,
+      usersFilters, setUsersFilters
     }}>
       <Outlet />
     </AdminContext.Provider>
