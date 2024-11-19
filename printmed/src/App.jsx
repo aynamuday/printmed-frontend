@@ -19,7 +19,7 @@ import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
 
 import PatientsPage from './pages/PatientsPage';
-import PatientPage from './pages/PatientPage';
+import PatientPage from './pages/PatientPagePhysician';
 import AddPatientPage from './pages/AddPatientPage';
 
 import RegistrationPage from './pages/RegistrationPage';
@@ -27,7 +27,6 @@ import PatientTablePage from './pages/PatientTablePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PatientRegistrationPage from './pages/PatientRegistrationPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import PatientIDCard from './components/PatientIDCard';
 
 
 const App = () => {
@@ -64,10 +63,7 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
           <Route element={<SecretaryPhysicianProvider />}>
-            <Route path='/' element={<PatientTablePage/>}/>
-            <Route path='patient' element={<PatientPage/>}/>
-            <Route path='patients/:id' element={<PatientPage/>}/>
-            <Route path='add-patient' element={<AddPatientPage/>}/>
+            <Route path='/' element={<PatientPage/>}/>
             { generalRoutes }
           </Route>
         </Route>
@@ -79,7 +75,6 @@ const App = () => {
             <Route path='/' element={<PatientTablePage/>}/>
             <Route path='patient' element={<PatientPage/>}/>
             <Route path='patients/:id' element={<PatientPage/>}/>
-            <Route path="/patient-id-card/:id" element={<PatientIDCard />} />
             <Route path='patient-registration' element={<PatientRegistrationPage/>}/>
             <Route path='add-patient' element={<AddPatientPage/>}/>
             { generalRoutes }

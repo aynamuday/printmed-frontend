@@ -12,9 +12,14 @@ import PhysicianContext from '../context/PhysicianContext'
 import globalSwal from '../utils/globalSwal'
 
 const PatientPage = (patientId) => {
-    const navigate = useNavigate(); // Initialize navigate
-
     const { token } = useContext(AppContext)
+    const navigate = useNavigate();
+
+    const [qrCode, setQrCode] = useState("")
+    const [ patient, setPatient ] = useState(null)
+    
+    const [error, setError] = useState("")
+    
     const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)
     const { consultation, setConsultation } = useContext(PhysicianContext)
     const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
@@ -22,9 +27,59 @@ const PatientPage = (patientId) => {
 
     patientId = 1
 
-    const [ patient, setPatient ] = useState(null)
     const [ consultations, setConsultations ] = useState([])
     const [loading, setLoading] = useState(false)
+
+    const handleQrCodeSubmit = () => {
+        setLoading(true)
+
+        const fetchPatient = async () => {
+            try {
+                const res = await fetch('/api/patient-using-qr', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        'qr_code': qrCode
+                    })
+                })
+    
+                if(!res.ok) {
+                    if (res.status === 500) {
+                        throw new Error("Something went wrong. Please try again later.")
+                    } else if (res.status === 404) {
+                        throw new Error("The QR code is either deactivated or expired.")
+                    } else if (res.status === 403) {
+                        throw new Error("You don't have permission to access this patient.")
+                    } else if (res.status === 400) {
+                        throw new Error("Something went wrong with your request. Please check your input and try again later.")
+                    } else {
+                        throw new Error("Something went wrong. Please try again later.")
+                    }
+                }
+
+                const data = res.json()
+
+                setPatient(data)
+            }
+            catch (err) {
+                if (err.name === "TypeError") {
+                    setError("Network error.")
+                } else {
+                    setError(err.message || "Something went wrong. Please try again later.")
+                }
+            }
+            finally {
+                setLoading(false)
+            }
+        }
+    }
+
+
+
+
+
+
 
     const fetchPatient = async () => {
         globalSwal.showLoading()
@@ -37,8 +92,11 @@ const PatientPage = (patientId) => {
 
         const data = await res.json()
 
+        console.log(data);
+
         if(res.ok) {
             setPatient(data)
+            fetchConsultations()
         }
     }
 
@@ -50,6 +108,8 @@ const PatientPage = (patientId) => {
         })
 
         const data = await res.json()
+
+        console.log(data)
 
         if(res.ok) {
             setConsultations(data)
@@ -63,13 +123,31 @@ const PatientPage = (patientId) => {
     useEffect(() => {
         setLoading(true)
         fetchPatient()
-        fetchConsultations()
     }, [])
 
     return (
+        // if loading
+        // if error
+
         <div>
             <Sidebar />
             <Header />
+
+            {/* <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
+                <div className='w-full min-h-96 flex flex-col items-center justify-center'>
+                    <h1 className='font-bold text-3xl mb-5'>Scan Patient QR Code</h1>
+                    <form action="handleQrCodeSubmit" className='flex items-center justify-center w-full'>
+                        <input 
+                            type="text" 
+                            className='border-2 border-[#6cb6ad] w-[50%] h-12 rounded-lg text-lg p-2 placeholder:italic placeholder:text-base'
+                            placeholder='Scan Patient QR Code'
+                            value={qrCode}
+                            onChange={(e) => setQrCode(e.target.value)}
+                            required
+                        />
+                    </form>
+                </div>
+            </div> */}
 
             { patient && ( <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
                 <h2 className='font-bold text-2xl mb-4 flex items-center'>
