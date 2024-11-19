@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-//import { Tooltip } from 'bootstrap';
+import { useNavigate } from 'react-router-dom';
 import bgNurse from '../assets/images/bg-nurse.png';
 import logo from '../assets/images/logo.png';
 import { FaSmile } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import globalSwal from '../utils/globalSwal';
 
 function RegistrationPage() {
     const navigate = useNavigate();
@@ -15,6 +15,7 @@ function RegistrationPage() {
         last_name: '',
         suffix: '',
         birthdate: '',
+        birthplace: '',
         phone_number: '',
         sex: '',
         civil_status: '',
@@ -34,6 +35,7 @@ function RegistrationPage() {
         last_name: '',
         suffix: '',
         birthdate: '',
+        birthplace: '',
         phone_number: '',
         sex: '',
         civil_status: '',
@@ -47,10 +49,14 @@ function RegistrationPage() {
         postal_code: '',
         termsAccepted: '',
     });
+    const [loading, setLoading] = useState(false);
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    
     const toggleTooltip = () => {
         setShowTooltip(!showTooltip);
     };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         const capitalizedValue = value
@@ -139,6 +145,14 @@ function RegistrationPage() {
             [name]: capitalizedValue, 
         });
     };
+
+    const handleCheckboxChange = (e) => {
+        setFormData({
+            ...formData,
+            termsAccepted: e.target.checked, // Set termsAccepted to true if checked, false otherwise
+        });
+    };
+
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value;
         // If the value is already starting with +63, allow only numbers after it
@@ -165,12 +179,17 @@ function RegistrationPage() {
           });
         }
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
         let newErrors = {};
         let formIsValid = true;
-
+    
+        setErrors({});
+        setLoading(true);
+    
+        // Validate email
         if (!formData.email) {
             newErrors.email = 'Email is required';
             formIsValid = false;
@@ -178,50 +197,103 @@ function RegistrationPage() {
             newErrors.email = 'Please enter a valid email address';
             formIsValid = false;
         }
-
-        if (!formData.name) {
-            newErrors.name = 'Name is required';
-            formIsValid = false;
-        }
-
-        if (!formData.age) {
-            newErrors.age = 'Age is required';
-            formIsValid = false;
-        }
-
-        if (!formData.address) {
-            newErrors.address = 'Address is required';
-            formIsValid = false;
-        }
-
-        if (!formData.contact) {
-            newErrors.contact = 'Contact Number is required';
-            formIsValid = false;
-        } else if (isNaN(formData.contact) || formData.contact.length !== 11) {
-            newErrors.contact = 'Please enter a valid contact number (exactly 11 digits)';
-            formIsValid = false;
-        }        
-
-        if (!formData.idType) {
-            newErrors.idType = 'ID Type is required';
-            formIsValid = false;
-        }
-
+    
+        // Validate terms acceptance
         if (!formData.termsAccepted) {
             newErrors.termsAccepted = 'You must accept the terms and conditions';
             formIsValid = false;
         }
-
+    
         setErrors(newErrors);
-
+    
+        // If form is valid, show confirmation dialog
         if (formIsValid) {
-            console.log('Form submitted');
-            setConfirmationId('ABC123456'); // Example confirmation ID
-            setRegistrationSuccess(true); // Show success message
+            globalSwal.fire({
+                title: 'Are you sure?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel'
+            }).then(async (result) => {
+                setLoading(true);
+    
+                // If user confirms, proceed with the registration
+                if (result.isConfirmed) {
+                    try {
+                        // Remove empty values from form data
+                        const filteredFormData = Object.fromEntries(
+                            Object.entries(formData).filter(([key, value]) => value !== '' && key !== 'termsAccepted')
+                        );
+                        
+    
+                        const res = await fetch('/api/registrations', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(filteredFormData),
+                        });
 
-            resetForm();
+                        const data = await res.json();
+
+                        console.log(data);
+    
+                        if (res.ok) {
+                            // Reset form data on success
+                            setFormData({
+                                first_name: '',
+                                middle_name: '',
+                                last_name: '',
+                                suffix: '',
+                                birthdate: '',
+                                birthplace: '',
+                                phone_number: '',
+                                sex: '',
+                                civil_status: '',
+                                religion: '',
+                                email: '',
+                                house_number: '',
+                                barangay: '',
+                                street: '',
+                                city: '',
+                                province: '',
+                                postal_code: '',
+                                termsAccepted: false, // Reset the checkbox
+                            });
+    
+                            globalSwal.fire({
+                                icon: 'success',
+                                title: 'Registration successful!',
+                                showConfirmButton: false,
+                                showCloseButton: true
+                            });
+                        } else {
+                            const errorData = await res.json();
+                            setErrors(errorData.errors || { message: 'Registration failed' });
+                            globalSwal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Registration failed. Please try again.',
+                                showConfirmButton: true,
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        setErrors({ message: 'An error occurred while registering' });
+                        globalSwal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'An error occurred while registering. Please try again.',
+                            showConfirmButton: true,
+                        });
+                    }
+                }
+    
+                setLoading(false);
+            });
+        } else {
+            setLoading(false); // If form is invalid, stop loading
         }
-    };
+    };        
 
     const resetForm = () => {
         setFormData({
@@ -230,6 +302,7 @@ function RegistrationPage() {
             last_name: '',
             suffix: '',
             birthdate: '',
+            birthplace: '',
             phone_number: '',
             sex: '',
             civil_status: '',
@@ -241,7 +314,7 @@ function RegistrationPage() {
             city: '',
             province: '',
             postal_code: '',
-            termsAccepted: false,
+            termsAccepted: '',
         });
         setErrors({
             first_name: '',
@@ -249,6 +322,7 @@ function RegistrationPage() {
             last_name: '',
             suffix: '',
             birthdate: '',
+            birthplace: '',
             phone_number: '',
             sex: '',
             civil_status: '',
@@ -276,8 +350,16 @@ function RegistrationPage() {
         setRegistrationSuccess(false);
     };
 
+    const handleConfirm = () => {
+        setShowConfirmation(false); // Close confirmation modal
+        setRegistrationSuccess(true); // Show success message
+        console.log('Form submitted');
+
+        resetForm();
+    };
+
     return (
-        <div className="min-h-screen bg-teal-200 relative grid place-items-center">
+        <div className="min-h-screen bg-teal-200 grid place-items-center p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl mx-auto">
                 {/* Left section with image */}
                 <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${bgNurse})` }}>
@@ -287,56 +369,60 @@ function RegistrationPage() {
                 {/* Right section with form */}
                 <div className="p-8 bg-gray-100">
                     <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">Registration</h2>
+                    {registrationSuccess && (
+                        <div className="bg-green-100 text-green-700 p-4 rounded-md mb-6">
+                            Registration successful!
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-6 gap-4">
-                        
-                            <div className="col-span-3 gap-4">
+                            <div className="col-span-3">
                                 <label className="block text-sm font-medium text-gray-700">First Name</label>
                                 <input
                                     type="text"
                                     name="first_name"
-                                    className="mt-1 block w-full border p-2 rounded-md"
                                     value={formData.first_name}
                                     onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
                                     required
                                 />
                                 {errors.first_name && <p className="text-red-500 text-sm">{errors.first_name}</p>}
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Middle Name (optional)</label>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-gray-700">Middle Name</label>
                                 <input
                                     type="text"
                                     name="middle_name"
-                                    className="mt-1 block w-full border p-2 rounded-md"
                                     value={formData.middle_name}
                                     onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
                                 />
                                 {errors.middle_name && <p className="text-red-500 text-sm">{errors.middle_name}</p>}
                             </div>
-                            <div className="col-span-3 gap-4">
+                            <div className="col-span-3">
                                 <label className="block text-sm font-medium text-gray-700">Last Name</label>
                                 <input
                                     type="text"
                                     name="last_name"
-                                    className="mt-1 block w-full border p-2 rounded-md"
                                     value={formData.last_name}
                                     onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
                                     required
                                 />
                                 {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name}</p>}
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
+                            <div className="col-span-3">
+                                <label className="block text-sm font-medium text-gray-700">Suffix</label>
                                 <input
                                     type="text"
                                     name="suffix"
-                                    className="mt-1 block w-full border p-2 rounded-md"
                                     value={formData.suffix}
                                     onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
                                 />
                                 {errors.suffix && <p className="text-red-500 text-sm">{errors.suffix}</p>}
                             </div>
-                            <div className="col-span-3 gap-4">
+                            <div className="col-span-3">
                                 <label className="block text-sm font-medium text-gray-700">Birthdate</label>
                                 <input
                                     type="date"
@@ -350,7 +436,7 @@ function RegistrationPage() {
                                 />
                                 {errors.birthdate && <p className="text-red-500 text-sm">{errors.birthdate}</p>}
                             </div>
-                            <div className="col-span-3 gap-4">
+                            <div className="col-span-3">
                                 <label className="block text-sm font-medium text-gray-700">Phone Number</label>
                                 <input
                                     type="tel"
@@ -468,6 +554,17 @@ function RegistrationPage() {
                                     required 
                                 />
                             </div>
+                            <div className="col-span-6 gap-4">
+                                <label className="block text-sm font-medium text-gray-700">Birthplace</label>
+                                <input 
+                                    type="text" 
+                                    name="birthplace" 
+                                    className="mt-1 block w-full border p-2 rounded-md" 
+                                    value={formData.birthplace} 
+                                    onChange={handleChange} 
+                                    required 
+                                />
+                            </div>
                             <div className="col-span-6 gap-4 flex items-center">
                                 <input
                                     type="checkbox"
@@ -487,9 +584,12 @@ function RegistrationPage() {
                             </div>
                             <button
                                 type="submit"
-                                className="col-span-6 gap-4w-full bg-[#B43C3A] hover:bg-red-600 text-white font-bold py-2 rounded-md"
+                                className={`col-span-6 w-full bg-[#B43C3A] hover:bg-red-600 text-white font-bold py-2 rounded-md ${
+                                    loading ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                disabled={loading}
                             >
-                                Register
+                                {loading ? 'Registering...' : 'Register'}
                             </button>
                         </div>
                     </form>
@@ -515,7 +615,47 @@ function RegistrationPage() {
                             <p>8. Contact Information. For any questions or concerns regarding these Terms and Conditions or our privacy practices, please contact our patient support team at 123-456-789</p>
                         </div>
                     </div>
-                </div>)}
+                </div>
+            )}
+
+            {/* Confirmation Modal */}
+            {showConfirmation && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+                        <h3 className="text-lg font-bold mb-4">Confirm Your Details</h3>
+                        <p>Please review your information. Do you wish to proceed?</p>
+                        <div className="flex justify-end mt-4 space-x-2">
+                            <button
+                                className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                                onClick={() => setShowConfirmation(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                                onClick={handleConfirm}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Message */}
+            {registrationSuccess && (
+                <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white p-6 rounded-lg shadow-xl w-80 text-center">
+                    <div className="flex justify-center items-center mb-4">
+                        <FaSmile className="text-4xl" />
+                    </div>
+                    <h3 className="text-xl font-bold">Registration Successful!</h3>
+                    <p>Thank you for registering! Your registration is now complete.</p>
+                    <p className="mt-4">Please visit Carmona Hospital and Medical Center for verification.</p>
+                    <button onClick={handleCloseSuccessMessage} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                        Close
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

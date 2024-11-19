@@ -348,30 +348,29 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-  <label className="block text-sm font-medium text-gray-700">Birthdate</label>
-  <input
-    type="date"
-    name="birthdate"
-    placeholder="Birthdate"
-    value={formData.birthdate}
-    onChange={handleChange}
-    className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
-    max={new Date(new Date().setFullYear(new Date().getFullYear() - 25))
-      .toISOString()
-      .split("T")[0]} // Max date is today minus 25 years
-    min="1920-01-01" // Min date is 1920-01-01
-    required
-  />
-  {/* Optional validation message */}
-  {formData.birthdate &&
-    new Date(formData.birthdate) >
-      new Date(new Date().setFullYear(new Date().getFullYear() - 25)) && (
-      <p className="text-red-600 mt-1">
-        You must be at least 25 years old.
-      </p>
-    )}
-</div>
-
+                <label className="block text-sm font-medium text-gray-700">Birthdate</label>
+                <input
+                  type="date"
+                  name="birthdate"
+                  placeholder="Birthdate"
+                  value={formData.birthdate}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
+                  max={new Date(new Date().setFullYear(new Date().getFullYear() - 25))
+                    .toISOString()
+                    .split("T")[0]} // Max date is today minus 25 years
+                  min="1920-01-01" // Min date is 1920-01-01
+                  required
+                />
+                {/* Optional validation message */}
+                {formData.birthdate &&
+                  new Date(formData.birthdate) >
+                    new Date(new Date().setFullYear(new Date().getFullYear() - 25)) && (
+                    <p className="text-red-600 mt-1">
+                      You must be at least 25 years old.
+                    </p>
+                  )}
+              </div>
 
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">Email</label>
