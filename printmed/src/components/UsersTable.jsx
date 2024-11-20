@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
-import { getCapitalizedEachWord } from '../utils/wordUtils'
-import { getFormattedDate } from '../utils/dateUtils'
+import { capitalizedWords } from '../utils/wordUtils'
+import { getFormattedNumericDate } from '../utils/dateUtils'
 
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
@@ -112,10 +112,10 @@ const UsersTable = ({ users }) => {
                 users.map((item) => (
                     <tr key={item.id}>
                       <td className="border p-2 border-[#828282] text-center">{item.personnel_number}</td>
-                      <td className="border p-2 border-[#828282] text-center">{getCapitalizedEachWord(item.role)}</td>
+                      <td className="border p-2 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
                       <td className="border p-2 border-[#828282] text-center">{item.full_name}</td>
                       <td className="border p-2 border-[#828282] text-center">{item.department_name}</td>
-                      <td className="border p-2 border-[#828282] text-center">{getFormattedDate(item.created_at)}</td>
+                      <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
                       <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                       <td className="border p-2 border-[#828282] text-center">{
                         <div className='flex flex-row w-100 items-center justify-center gap-4'>
