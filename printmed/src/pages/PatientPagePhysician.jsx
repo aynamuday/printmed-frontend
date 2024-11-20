@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import Header from "../components/Header"
@@ -15,20 +15,21 @@ const PatientPage = (patientId) => {
     const { token } = useContext(AppContext)
     const navigate = useNavigate();
 
+    const qrInputRef = useRef(null)
+    const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
     const [ patient, setPatient ] = useState(null)
     
     const [error, setError] = useState("")
-    
-    const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)
-    const { consultation, setConsultation } = useContext(PhysicianContext)
-    const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
-    const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
-
-    patientId = 1
-
-    const [ consultations, setConsultations ] = useState([])
     const [loading, setLoading] = useState(false)
+
+
+    const handleScanButtonClick = () => {
+        if (qrInputRef.current) {
+            qrInputRef.current.focus(); // Focus the input field when button is clicked
+          }
+        // qrInputRef.current.focus()
+    }
 
     const handleQrCodeSubmit = () => {
         setLoading(true)
@@ -79,7 +80,14 @@ const PatientPage = (patientId) => {
 
 
 
+    const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)
+    const { consultation, setConsultation } = useContext(PhysicianContext)
+    const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
+    const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
 
+    patientId = 1
+
+    const [ consultations, setConsultations ] = useState([])
 
     const fetchPatient = async () => {
         globalSwal.showLoading()
@@ -92,7 +100,7 @@ const PatientPage = (patientId) => {
 
         const data = await res.json()
 
-        console.log(data);
+        console.log(data.photo_url)
 
         if(res.ok) {
             setPatient(data)
@@ -109,8 +117,6 @@ const PatientPage = (patientId) => {
 
         const data = await res.json()
 
-        console.log(data)
-
         if(res.ok) {
             setConsultations(data)
         }
@@ -119,6 +125,16 @@ const PatientPage = (patientId) => {
 
         globalSwal.close()
     }
+
+    const handleQrInputFocus = () => {
+        console.log("focused")
+        setIsQrInputFocused(true);
+      };
+    
+    const handleQrInputBlur = () => {
+        console.log("blurred")
+        setIsQrInputFocused(false);
+    };
 
     useEffect(() => {
         setLoading(true)
@@ -136,55 +152,54 @@ const PatientPage = (patientId) => {
             {/* <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
                 <div className='w-full min-h-96 flex flex-col items-center justify-center'>
                     <h1 className='font-bold text-3xl mb-5'>Scan Patient QR Code</h1>
+                    <button onClick={handleScanButtonClick}>Scan</button>
                     <form action="handleQrCodeSubmit" className='flex items-center justify-center w-full'>
                         <input 
+                            ref={qrInputRef} 
                             type="text" 
                             className='border-2 border-[#6cb6ad] w-[50%] h-12 rounded-lg text-lg p-2 placeholder:italic placeholder:text-base'
-                            placeholder='Scan Patient QR Code'
                             value={qrCode}
                             onChange={(e) => setQrCode(e.target.value)}
+                            onFocus={handleQrInputFocus}
+                            onBlur={handleQrInputBlur}
                             required
                         />
                     </form>
                 </div>
             </div> */}
 
-            { patient && ( <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
-                <h2 className='font-bold text-2xl mb-4 flex items-center'>
-                    <button onClick={() => navigate("/patients")} className="mr-4">
-                        <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
-                    </button>
-                    Patient No. {patient.patient_number}
-                </h2>
-                <div className='grid grid-cols-5 gap-4'>
-                    <div  className='col-span-2'>
-                        <PatientDetails patient={patient} />
-                        
-                    </div>
-                    <div  className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
-                        <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
-                            <div className='flex gap-4'>
-                                {(consultationStatus) && 
-                                    <button onClick={() => {consultationStatus == "edit" ? setConsultationStatus("view") : setConsultationStatus(null)}}>
-                                        <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
-                                    </button>
-                                }
-                                <p className='font-semibold text-white text-lg'>Consultation Records</p>
-                            </div>
-                            <div className='flex gap-4'>
-                                {consultationStatus == "view" && <button onClick={() => {setConsultationStatus("edit")}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
-                                {!consultationStatus && <button onClick={() => {setConsultationStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
-                            </div>
+            { patient && ( 
+                <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
+                    <h2 className='font-bold text-2xl mb-4'>Patient No. {patient.patient_number}</h2>
+                    <div className='grid grid-cols-5 gap-4'>
+                        <div className='col-span-2'>
+                            <PatientDetails patient={ patient } />
                         </div>
-                        <div>
-                            <div className='grid grid-cols-1 justify-center px-4 py-6'>
-                                { consultationStatus && <Consultation /> }
-                                {!consultationStatus && <ConsultationsTable consultations={consultations.data} />}
+                        <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
+                            <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
+                                <div className='flex gap-4'>
+                                    {(consultationStatus) && 
+                                        <button onClick={() => {consultationStatus == "edit" ? setConsultationStatus("view") : setConsultationStatus(null)}}>
+                                            <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
+                                        </button>
+                                    }
+                                    <p className='font-semibold text-white text-lg'>Consultation Records</p>
+                                </div>
+                                <div className='flex gap-4'>
+                                    {consultationStatus == "view" && <button onClick={() => {setConsultationStatus("edit")}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
+                                    {!consultationStatus && <button onClick={() => {setConsultationStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
+                                </div>
+                            </div>
+                            <div>
+                                <div className='grid grid-cols-1 justify-center px-4 py-6'>
+                                    { consultationStatus && <Consultation /> }
+                                    {!consultationStatus && <ConsultationsTable consultations={consultations.data} />}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> )}
+            )}
         </div>
     )
 }

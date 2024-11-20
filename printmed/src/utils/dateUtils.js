@@ -1,4 +1,4 @@
-export const getFormattedDate = (dateStamp) => {
+export const getFormattedNumericDate = (dateStamp) => {
     const date = dateStamp ? new Date(dateStamp) : new Date();
 
     const year = date.getFullYear();
@@ -6,4 +6,10 @@ export const getFormattedDate = (dateStamp) => {
     const day = date.getDate().toString().padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+};
+
+export const getFormattedStringDate = (dateStamp) => {
+    const date = dateStamp ? new Date(dateStamp).toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) : new Date()
+
+    return date
 };
