@@ -9,7 +9,8 @@ export const getFormattedNumericDate = (dateStamp) => {
 };
 
 export const getFormattedStringDate = (dateStamp) => {
-    const date = dateStamp ? new Date(dateStamp).toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) : new Date()
+    const date = dateStamp ? new Date(dateStamp).toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) 
+                            : new Date().toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})
 
     return date
 };
