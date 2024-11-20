@@ -52,6 +52,7 @@ function RegistrationPage() {
     const [loading, setLoading] = useState(false);
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [confirmationId, setConfirmationId] = useState('');
     
     const toggleTooltip = () => {
         setShowTooltip(!showTooltip);
@@ -155,14 +156,6 @@ function RegistrationPage() {
 
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value;
-        // If the value is already starting with +63, allow only numbers after it
-        if (value.startsWith('+63')) {
-          // Remove any non-digit characters after +63 and ensure we only get the next 10 digits
-          value = '+63' + value.slice(3).replace(/\D/g, '').slice(0, 10);
-        } else {
-          // If for some reason the value doesn't start with +63, keep it as is (or handle error)
-          value = '+63' + value.slice(3).replace(/\D/g, '').slice(0, 10);
-        }
       
         setFormData({
           ...formData,
@@ -170,15 +163,15 @@ function RegistrationPage() {
         });
       
         // Error handling for phone number length
-        if (value.length === 13) { // 11 digits + +63 makes it 13 characters
-          setErrors({ ...errors, phone_number: '' });
+        if (value.length === 12) { // 11 digits + +63 makes it 13 characters
+          setErrors({ ...errors, phone_number: 'Use a valid phone number' });
         } else {
           setErrors({
             ...errors,
-            phone_number: 'Use a valid phone number',
+            phone_number: '',
           });
         }
-    };
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -198,6 +191,15 @@ function RegistrationPage() {
             formIsValid = false;
         }
     
+        // Validate phone number
+        if (!formData.phone_number) {
+            newErrors.phone_number = 'Phone number is required';
+            formIsValid = false;
+        } else if (formData.phone_number.length !== 10) {
+            newErrors.phone_number = 'Please enter a valid phone number';
+            formIsValid = false;
+        }
+    
         // Validate terms acceptance
         if (!formData.termsAccepted) {
             newErrors.termsAccepted = 'You must accept the terms and conditions';
@@ -208,11 +210,24 @@ function RegistrationPage() {
     
         // If form is valid, show confirmation dialog
         if (formIsValid) {
+            // Build the confirmation message
+            const confirmationMessage = `
+                First Name: ${formData.first_name}<br>
+                Middle Name: ${formData.middle_name}<br>
+                Last Name: ${formData.last_name}<br>
+                Email: ${formData.email}<br>
+                Phone Number: ${formData.phone_number}<br>
+                Address: ${formData.house_number}, ${formData.street}, ${formData.barangay}, ${formData.city}, ${formData.province}, ${formData.postal_code}<br>
+                Terms Accepted: ${formData.termsAccepted ? 'Yes' : 'No'}
+            `;
+    
+            // Display confirmation dialog with form data
             globalSwal.fire({
-                title: 'Are you sure?',
+                title: 'Please confirm your details',
+                html: confirmationMessage,
                 showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: 'Yes, submit',
+                cancelButtonText: 'Cancel',
             }).then(async (result) => {
                 setLoading(true);
     
@@ -223,7 +238,6 @@ function RegistrationPage() {
                         const filteredFormData = Object.fromEntries(
                             Object.entries(formData).filter(([key, value]) => value !== '' && key !== 'termsAccepted')
                         );
-                        
     
                         const res = await fetch('/api/registrations', {
                             method: 'POST',
@@ -232,12 +246,13 @@ function RegistrationPage() {
                             },
                             body: JSON.stringify(filteredFormData),
                         });
-
+    
                         const data = await res.json();
-
-                        console.log(data);
     
                         if (res.ok) {
+                            // Set confirmationId after the API response is successful
+                            setConfirmationId(data.registration_id);
+    
                             // Reset form data on success
                             setFormData({
                                 first_name: '',
@@ -260,20 +275,20 @@ function RegistrationPage() {
                                 termsAccepted: false, // Reset the checkbox
                             });
     
+                            // Show success message along with the confirmation ID
                             globalSwal.fire({
                                 icon: 'success',
-                                title: 'Registration successful!',
+                                html: `
+                                    <div class="text-center">
+                                        <h3 class="text-xl font-bold">Registration Successful!</h3>
+                                        <p>Thank you for registering! Your registration is now complete.</p>
+                                        <p class="mt-4">Next Steps: Please visit Carmona Hospital and Medical Center (3rd Floor) for in-person verification. Be sure to bring a valid government-issued ID and your confirmation slip to complete the process.</p>
+                                        <p class="mt-4 text-lg font-bold">Your Confirmation ID: ${data.registration_id}</p>
+                                        <p class="mt-4">Please visit Carmona Hospital and Medical Center for verification.</p>
+                                    </div>
+                                `,
                                 showConfirmButton: false,
-                                showCloseButton: true
-                            });
-                        } else {
-                            const errorData = await res.json();
-                            setErrors(errorData.errors || { message: 'Registration failed' });
-                            globalSwal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Registration failed. Please try again.',
-                                showConfirmButton: true,
+                                showCloseButton: true,
                             });
                         }
                     } catch (error) {
@@ -293,8 +308,9 @@ function RegistrationPage() {
         } else {
             setLoading(false); // If form is invalid, stop loading
         }
-    };        
-
+    };
+    
+           
     const resetForm = () => {
         setFormData({
             first_name: '',
@@ -348,6 +364,7 @@ function RegistrationPage() {
 
     const handleCloseSuccessMessage = () => {
         setRegistrationSuccess(false);
+        setConfirmationId('');
     };
 
     const handleConfirm = () => {
@@ -377,7 +394,14 @@ function RegistrationPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-6 gap-4">
                             <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                                <label className="block text-sm font-medium text-gray-700">First Name
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input
                                     type="text"
                                     name="first_name"
@@ -400,7 +424,14 @@ function RegistrationPage() {
                                 {errors.middle_name && <p className="text-red-500 text-sm">{errors.middle_name}</p>}
                             </div>
                             <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                                <label className="block text-sm font-medium text-gray-700">Last Name
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input
                                     type="text"
                                     name="last_name"
@@ -423,7 +454,14 @@ function RegistrationPage() {
                                 {errors.suffix && <p className="text-red-500 text-sm">{errors.suffix}</p>}
                             </div>
                             <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Birthdate</label>
+                                <label className="block text-sm font-medium text-gray-700">Birthdate
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input
                                     type="date"
                                     name="birthdate"
@@ -436,29 +474,50 @@ function RegistrationPage() {
                                 />
                                 {errors.birthdate && <p className="text-red-500 text-sm">{errors.birthdate}</p>}
                             </div>
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <div className='col-span-3'>
+                                <label className="block text-sm font-medium text-gray-700">Phone Number
+                                <span className="text-red-600 cursor-help" title="Required field">
+                                    *
+                                </span>
+                                </label>
+                                <div className="relative">
                                 <input
-                                    type="tel"
+                                    type="text"
                                     name="phone_number"
-                                    className="mt-1 block w-full border p-2 rounded-md"
-                                    maxLength="13"
                                     value={formData.phone_number}
                                     onChange={handlePhoneNumberChange}
-                                    placeholder="Enter phone number"
+                                    className="mt-1 block w-full border p-2 rounded-md pl-12" // Add padding-left for the + sign
+                                    maxLength="10" // Allow the + to be included
+                                    required
                                 />
-                                {errors.phone_number && <p className="text-red-500 text-sm">{errors.phone_number}</p>}
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">+63</span> {/* The +63 prefix inside the input */}
+                                </div>
+                                {errors.phone_number && <p className="text-red-600 mt-1">{errors.phone_number}</p>}
                             </div>
                             <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Sex</label>
+                                <label className="block text-sm font-medium text-gray-700">Sex
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <select name="sex" value={formData.sex} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
                                     <option value="">Select Sex</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
                                 </select>
                             </div>
                             <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Civil Status</label>
+                                <label className="block text-sm font-medium text-gray-700">Civil Status
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <select name="civil_status" value={formData.civil_status} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
                                     <option value="">Select Status</option>
                                     <option value="single">Single</option>
@@ -489,7 +548,14 @@ function RegistrationPage() {
                                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                             </div>
                             <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">House No.</label>
+                                <label className="block text-sm font-medium text-gray-700">House No.
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="text" 
                                     name="house_number"
@@ -500,7 +566,14 @@ function RegistrationPage() {
                                 />
                             </div>
                             <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Barangay</label>
+                                <label className="block text-sm font-medium text-gray-700">Barangay
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="text" 
                                     name="barangay" 
@@ -518,11 +591,17 @@ function RegistrationPage() {
                                     className="mt-1 block w-full border p-2 rounded-md" 
                                     value={formData.street} 
                                     onChange={handleChange} 
-                                    required 
                                 />
                             </div>
                             <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">City</label>
+                                <label className="block text-sm font-medium text-gray-700">City
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="text" 
                                     name="city" 
@@ -533,7 +612,14 @@ function RegistrationPage() {
                                 />
                             </div>
                             <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Province</label>
+                                <label className="block text-sm font-medium text-gray-700">Province
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="text" 
                                     name="province" 
@@ -544,7 +630,14 @@ function RegistrationPage() {
                                 />
                             </div>
                             <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+                                <label className="block text-sm font-medium text-gray-700">Postal Code
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="number" 
                                     name="postal_code" 
@@ -555,7 +648,14 @@ function RegistrationPage() {
                                 />
                             </div>
                             <div className="col-span-6 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Birthplace</label>
+                                <label className="block text-sm font-medium text-gray-700">Birthplace
+                                <span 
+      className="text-red-600 cursor-help" 
+      title="Required field"
+    >
+      *
+    </span>
+                                </label>
                                 <input 
                                     type="text" 
                                     name="birthplace" 
@@ -599,7 +699,7 @@ function RegistrationPage() {
             {/* Terms and Conditions Message */}
             {showTerms && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-8 max-w-[90%] max-h-[90vh] w-full rounded-lg shadow-lg overflow-y-auto">
+                    <div className="bg-white p-8 max-w-[50%] max-h-[90vh] w-full rounded-lg shadow-lg overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold">Terms and Conditions</h3>
                             <button onClick={closeTermsModal} className="text-gray-600 text-xl">&times;</button>
@@ -645,11 +745,13 @@ function RegistrationPage() {
             {/* Success Message */}
             {registrationSuccess && (
                 <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 bg-white p-6 rounded-lg shadow-xl w-80 text-center">
-                    <div className="flex justify-center items-center mb-4">
-                        <FaSmile className="text-4xl" />
-                    </div>
                     <h3 className="text-xl font-bold">Registration Successful!</h3>
                     <p>Thank you for registering! Your registration is now complete.</p>
+                    <p className="mt-4">
+                        Next Steps: Please visit Carmona Hospital and Medical Center (3rd Floor) for in-person verification.
+                        Be sure to bring a valid government-issued ID and your confirmation slip to complete the process.
+                    </p>
+                    <p className="mt-4 text-lg font-bold">Your Confirmation ID: {confirmationId}</p>
                     <p className="mt-4">Please visit Carmona Hospital and Medical Center for verification.</p>
                     <button onClick={handleCloseSuccessMessage} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
                         Close

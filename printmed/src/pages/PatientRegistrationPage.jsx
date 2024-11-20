@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';  
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import AppContext from '../context/AppContext';
@@ -11,9 +11,9 @@ const PatientRegistrationPage = () => {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null); // Track selected patient
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); // To manage pagination
+  const location = useLocation();
   
   // Fetch registrations from the API
   const getRegistrations = async (page = 1, searchTerm = '') => {
@@ -41,11 +41,22 @@ const PatientRegistrationPage = () => {
     }
   };
 
-  // Fetch data when the component mounts or when searchTerm or page changes
   useEffect(() => {
     getRegistrations(page, searchTerm);
-  }, [page, searchTerm]);
-
+  
+    // Check if we have removedId and log to see what's happening
+    if (location.state?.removedId) {
+      console.log('Removed patient ID:', location.state.removedId);
+      setPatients((prevPatients) => {
+        const updatedPatients = prevPatients.filter(
+          (patient) => patient.registration_id !== location.state.removedId
+        );
+        console.log('Updated Patients List:', updatedPatients);
+        return updatedPatients;
+      });
+    }
+  }, [page, searchTerm, location.state]);
+  
   // Handle search term change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -66,12 +77,6 @@ const PatientRegistrationPage = () => {
   // Function to handle viewing patient details
   const handleViewDetails = (patient) => {
     navigate('/add-patient', { state: { patient } }); // Redirect with patient data
-  };
-  
-
-  // Function to handle closing patient details view
-  const handleCloseDetails = () => {
-    setSelectedPatient(null); // Clear selected patient
   };
 
   return (
@@ -120,8 +125,7 @@ const PatientRegistrationPage = () => {
             <table className="w-full border border-gray-300">
                 <thead>
                 <tr className="bg-gray-200">
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[5%]">ID</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
+                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Registration No.</th>
                     <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">First Name</th>
                     <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Last Name</th>
                     <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Birthdate</th>
@@ -133,7 +137,6 @@ const PatientRegistrationPage = () => {
                   {filteredPatients.length > 0 ? (
                     filteredPatients.map((patient, index) => (
                       <tr key={index}>
-                        <td className="p-2 border text-center border-[#828282]">{patient.id}</td>
                         <td className="p-2 border text-center border-[#828282]">{patient.registration_id}</td>
                         <td className="p-2 border text-center border-[#828282]">{patient.first_name}</td>
                         <td className="p-2 border text-center border-[#828282]">{patient.last_name}</td>
@@ -151,7 +154,7 @@ const PatientRegistrationPage = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="border p-2 border-[#828282] text-center">
+                      <td colSpan="6" className="border p-2 border-[#828282] text-center">
                         No patients
                       </td>
                     </tr>

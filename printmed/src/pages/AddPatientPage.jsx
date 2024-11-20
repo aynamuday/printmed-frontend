@@ -1,13 +1,13 @@
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
-import Forms from "../components/Forms"
+import AddPatientForms from "../components/AddPatientForms"
 
 const AddPatientPage = () => {
   return (
     <>
         <Sidebar />
         <Header />
-        <Forms />
+        <AddPatientForms />
     </>
   )
 }
