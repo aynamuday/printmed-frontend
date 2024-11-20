@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { getFormattedDate } from '../utils/dateUtils'
+import { getFormattedNumericDate } from '../utils/dateUtils'
 
 import PhysicianContext from '../context/PhysicianContext'
 
@@ -22,7 +22,7 @@ const ConsultationsTable = ({consultations}) => {
                         <tr key={item.id} onClick={() => {setConsultation(item); setConsultationStatus("view");}} className='cursor-pointer'>
                             <td className="border p-2 border-[#828282] text-center">{item.chief_complaint}</td>
                             <td className="border p-2 border-[#828282] text-center">{item.primary_diagnosis}</td>
-                            <td className="border p-2 border-[#828282] text-center">{getFormattedDate(item.created_at)}</td>
+                            <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
                         </tr>
                     ))) : (
                         <tr>

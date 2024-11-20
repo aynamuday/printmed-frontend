@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { getFormattedDate } from '../utils/dateUtils'
+import { getFormattedNumericDate } from '../utils/dateUtils'
 import globalSwal from '../utils/globalSwal'
 
 import AppContext from '../context/AppContext'
@@ -154,7 +154,7 @@ const Consultation = () => {
             {consultationStatus === "view" && consultation && (
                 <div className='grid grid-cols-7 gap-4 py-1'>
                     <p className="block font-semibold text-black col-span-2">Date</p>
-                    <p className="block text-black col-span-2">{getFormattedDate(consultation.created_at)}</p>
+                    <p className="block text-black col-span-2">{getFormattedNumericDate(consultation.created_at)}</p>
                 </div>
             )}
             {/* Height */}
