@@ -9,11 +9,12 @@ import PhysicianContext from "../context/PhysicianContext";
 const Forms = () => {
   const { token } = useContext(AppContext);
   const { state } = useLocation();
-  const { setSelectedPatient, duplicatePatients, setDuplicatePatients } = useContext(PhysicianContext);
+  const { setSelectedPatient, duplicatePatients, setDuplicatePatients, physicians, setPhysicians } = useContext(PhysicianContext);
   
   
   const patientData = state?.patient || {};
   const [formData, setFormData] = useState({
+    physician_id: patientData.full_name || '',
     registration_id: patientData.id,
     first_name: patientData.first_name || '',
     middle_name: patientData.middle_name || '',
@@ -180,6 +181,36 @@ const Forms = () => {
     navigate(`/patients/${patientId}`, { state: { duplicatePatients } });
   };
 
+  //fetch physicians
+  useEffect(() => {
+    const fetchPhysicians = async () => {
+      try {
+        const response = await fetch('/api/physicians', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          console.log(data);
+          
+          setPhysicians(data); // Set physicians in state
+        } else {
+          console.error('Error fetching physicians:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching physicians:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhysicians();
+  }, []);
+
   // Add logic to display Swal when there are duplicates
   useEffect(() => {
     if (duplicatePatients && duplicatePatients.length > 0) {
@@ -192,7 +223,6 @@ const Forms = () => {
     setDuplicatePatients([]);
   }, []); // Empty dependency array ensures this runs only on mount
   
-
   const showDuplicatePatientsSwal = () => {
     const safeDuplicatePatients = duplicatePatients || [];
 
@@ -240,7 +270,6 @@ const Forms = () => {
       },
     });
   };
-  
   
   // handle submit
   const handleSubmit = async (e) => {
@@ -560,9 +589,22 @@ const Forms = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Physician</label>
-                <select name="physician_id" value={formData.physician_id} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md">
+                <select
+                  name="physician_id"
+                  value={formData.physician_id}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border p-2 rounded-md"
+                >
                   <option value="">Assign Physician</option>
-                  {/* Map physicians */}
+                  {loading ? (
+                    <option>Loading physicians...</option>
+                  ) : (
+                    physicians.map((physician) => (
+                      <option key={physician.id} value={physician.id}>
+                        {physician.department_name} - {physician.full_name}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
               {/* <div>

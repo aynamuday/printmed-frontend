@@ -7,6 +7,7 @@ export const PhysicianProvider = () => {
   const [consultationStatus, setConsultationStatus] = useState(null);
   const [consultationId, setConsultationId] = useState(null);
   const [consultation, setConsultation] = useState(null);
+  const [physicians, setPhysicians] = useState([]);
   const [consultationPayment, setConsultationPayment] = useState(null);
   const [patientsAll, setPatientsAll] = useState([]);
   const [patientsAllFilters, setPatientsAllFilters] = useState({
@@ -29,7 +30,8 @@ export const PhysicianProvider = () => {
       patientsAllFilters, setPatientsAllFilters,
       searchPatients, setSearchPatients,
       selectedPatient, setSelectedPatient,
-      duplicatePatients, setDuplicatePatients
+      duplicatePatients, setDuplicatePatients,
+      physicians, setPhysicians
     }}>
       <Outlet />
     </PhysicianContext.Provider>
