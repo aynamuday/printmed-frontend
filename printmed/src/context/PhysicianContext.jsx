@@ -1,9 +1,12 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 const PhysicianContext = createContext();
 
 export const PhysicianProvider = () => {
+  const [patient, setPatient] = useState(null)
+
+
   const [consultationStatus, setConsultationStatus] = useState(null);
   const [consultationId, setConsultationId] = useState(null);
   const [consultation, setConsultation] = useState(null);
@@ -23,6 +26,9 @@ export const PhysicianProvider = () => {
 
   return (
     <PhysicianContext.Provider value={{
+      patient, setPatient,
+
+
       consultationStatus, setConsultationStatus,
       consultation, setConsultation,
       consultationPayment, setConsultationPayment,

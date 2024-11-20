@@ -3,9 +3,11 @@ import AppContext from '../context/AppContext'
 import globalSwal from '../utils/globalSwal'
 import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
+import PhysicianContext from '../context/PhysicianContext';
 
-const PatientDetails = ({ patient }) => {
+const PatientDetails = () => {
     const { token } = useContext(AppContext)
+    const { patient, setPatient } = useContext(PhysicianContext)
 
     const [errors, setErrors] = useState([])
 
@@ -14,6 +16,7 @@ const PatientDetails = ({ patient }) => {
 
     useEffect(() => {
         resetUpdateData()
+        resetErrors()
     }, [])
 
     const resetUpdateData = () => {
@@ -33,27 +36,81 @@ const PatientDetails = ({ patient }) => {
             'postal_code': patient.postal_code ?? '',
             'civil_status': patient.civil_status ?? '',
             'religion': patient.religion ?? '',
-            'phone_number': '',
+            'phone_number': patient.phone_number ? patient.phone_number.slice(2) : '',
             'email': patient.email ?? ''
         })
     }
 
+    const resetErrors = () => {
+        setErrors({
+            'first_name': '',
+            'middle_name': '',
+            'last_name': '',
+            'suffix': '',
+            'birthdate': '',
+            'birthplace': '',
+            'sex': '',
+            'house_number': '',
+            'street': '',
+            'barangay': '',
+            'city': '',
+            'province': '',
+            'postal_code': '',
+            'civil_status': '',
+            'religion': '',
+            'phone_number': '',
+            'email': ''
+        })
+    }
+
+    const handleBack = () => {
+        setUpdate(false)
+        resetUpdateData()
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        if (Object.values(errors).some(error => error !== '')) {
+            return
+        }
+
+        let isFormValid = true
+
+        if (Number(updateData.postal_code) < 1000 || Number(updateData.postal_code) > 9999) {
+            setErrors(prevData => ({ ...prevData, postal_code: "Postal codes must range from 1000-9999."}))
+            isFormValid = false
+        } else {
+            setUpdateData(prevData => ({ ...prevData, postal_code: Number(updateData.postal_code)})) 
+        }
+
+        if (isFormValid) {
+            updatePatient();
+        }
+    }
+
     const updatePatient = async () => {
-
-        // suffix if male
-
         globalSwal.showLoading()
 
-        const filteredUpdateData = Object.fromEntries(
-            Object.entries(updateData).filter(([key, value]) => value !== '')
-        );
+        if (updateData.sex == "Male") {
+            setUpdateData(prevData => ({ ...prevData, suffix: null})) 
+        }
+
+        const updateDataToSubmit = Object.keys(updateData).reduce((acc, key) => {
+            if (key === "phone_number") {
+                acc[key] = updateData[key] !== "" ? "09" + updateData[key] : null
+            } else {
+                acc[key] = updateData[key] === "" ? null : updateData[key]
+            }
+            return acc;
+        }, {});
 
         const res = await fetch(`/api/patients/${patient.id}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(filteredUpdateData)
+            body: JSON.stringify(updateDataToSubmit)
         })
 
         const data = await res.json()
@@ -61,28 +118,18 @@ const PatientDetails = ({ patient }) => {
         console.log(data)
 
         if(res.ok) {
-            patient = data
+            setPatient(data)
+            handleBack()
         } else {
             setErrors(data)
-        }
-
-        setUpdate(false)
+        } 
 
         globalSwal.close()
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        updatePatient();
-    }
-
-    const handleBackButtonClick = () => {
-        setUpdate(false)
-        resetUpdateData()
-    }
-
-
     const handleLettersOnlyInputChange = (key, value) => {
+        setErrors(prevData => ({ ...prevData, [key]: ""}))
+
         // allows only one trailing space
         let trimmedValue = value.trim()
         if (value.endsWith(' ')) {
@@ -97,6 +144,8 @@ const PatientDetails = ({ patient }) => {
     }
 
     const handleNoSpecialCharactersInputChange = (key, value) => {
+        setErrors(prevData => ({ ...prevData, [key]: ""}))
+
         // allows only one trailing space
         let trimmedValue = value.trim()
         if (value.endsWith(' ')) {
@@ -112,6 +161,8 @@ const PatientDetails = ({ patient }) => {
     }
 
     const handleNumbersOnlyInputChange = (key, value) => {
+        setErrors(prevData => ({ ...prevData, [key]: ""}))
+        
         const postalCodeRegex = /^\d*$/
         if (postalCodeRegex.test(value)) {
             setUpdateData(prevData => ({ ...prevData, [key]: value}))
@@ -127,7 +178,7 @@ const PatientDetails = ({ patient }) => {
                             <p className='font-semibold text-white text-lg'>Details</p>
                         ) : (
                             <>
-                                <button onClick={handleBackButtonClick}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
+                                <button onClick={handleBack}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
                                 <p className='font-semibold text-white text-lg'>Edit Details</p>
                             </>
                         )}
@@ -135,7 +186,7 @@ const PatientDetails = ({ patient }) => {
                     {!update && <button onClick={() => {setUpdate(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
                 </div>
 
-                <form className='flex flex-col items-center justify-center px-6 py-4 pb-6 w-full'>
+                <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col items-center justify-center px-6 py-4 pb-6 w-full'>
                     { patient.photo_url ? (
                         <img src={ patient.photo_url } alt="" className="w-40 h-40 object-cover rounded-md mb-4" />
                     ) : (
@@ -232,7 +283,7 @@ const PatientDetails = ({ patient }) => {
                                             className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
                                             value={updateData.birthdate}
                                             min={"1904-01-01"}
-                                            max={getFormattedNumericDate}
+                                            max={getFormattedNumericDate()}
                                             onChange={(e) => setUpdateData(prevData => ({...prevData, birthdate: e.target.value}))}
                                             required
                                         />
@@ -370,6 +421,7 @@ const PatientDetails = ({ patient }) => {
                                                 minLength={4}
                                                 onChange={(e) => handleNumbersOnlyInputChange("postal_code", e.target.value)}
                                             />
+                                            <p className='text-red-600 text-xs'>{errors.postal_code}</p>
                                         </td>
                                     </tr>
                                 </>
@@ -424,7 +476,7 @@ const PatientDetails = ({ patient }) => {
                                                 type="text"
                                                 className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
                                                 value={updateData.phone_number}
-                                                placeholder='Phone Number'
+                                                placeholder='Phone No.'
                                                 maxLength={9}
                                                 minLength={9}
                                                 onChange={(e) => handleNumbersOnlyInputChange("phone_number", e.target.value)}
