@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
@@ -9,7 +9,8 @@ import PhysicianContext from "../context/PhysicianContext";
 const Forms = () => {
   const { token } = useContext(AppContext);
   const { state } = useLocation();
-  const { setSelectedPatient, setDuplicatePatients } = useContext(PhysicianContext);
+  const { setSelectedPatient, duplicatePatients, setDuplicatePatients } = useContext(PhysicianContext);
+  
   
   const patientData = state?.patient || {};
   const [formData, setFormData] = useState({
@@ -175,11 +176,72 @@ const Forms = () => {
     }
   };
   
-  const handleViewPatient = (patient) => {
-    setSelectedPatient(patient); // Save the selected patient in context
-    navigate(`/patients/${patient.id}`); // Navigate to the patient's profile page
-  };  
+  const handleViewPatient = (patientId) => {
+    navigate(`/patients/${patientId}`, { state: { duplicatePatients } });
+  };
 
+  // Add logic to display Swal when there are duplicates
+  useEffect(() => {
+    if (duplicatePatients && duplicatePatients.length > 0) {
+      showDuplicatePatientsSwal();
+    }
+  }, [duplicatePatients]);
+
+  useEffect(() => {
+    // Clear duplicatePatients state when the Add Patient page loads
+    setDuplicatePatients([]);
+  }, []); // Empty dependency array ensures this runs only on mount
+  
+
+  const showDuplicatePatientsSwal = () => {
+    const safeDuplicatePatients = duplicatePatients || [];
+
+    globalSwal.fire({
+      icon: 'warning',
+      title: 'Duplicate Patient Found',
+      html: `
+        <table style="width: 100%; border-collapse: collapse; text-align: left;" id="duplicateTable">
+          <thead>
+            <tr>
+              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Patient Number</th>
+              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Name</th>
+              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${duplicatePatients.map(patient => `
+              <tr>
+                <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.patient_number}</td>
+                <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.full_name}</td>
+                <td style="border-bottom: 1px solid #ddd; padding: 8px;">
+                  <button 
+                    style="padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;"
+                    class="view-patient-btn"
+                    data-id="${patient.id}"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `,
+      showConfirmButton: true,
+      showCancelButton: true,
+      didOpen: () => {
+        // Attach React event handlers after Swal renders
+        document.querySelectorAll('.view-patient-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const patientId = e.target.getAttribute('data-id');
+            navigate(`/patients/${patientId}`);
+          });
+        });
+      },
+    });
+  };
+  
+  
   // handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -229,53 +291,21 @@ const Forms = () => {
             const duplicateCheckResponse = await fetch(`/api/duplicate-patients?${queryParams}`, {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
 
             const duplicateData = await duplicateCheckResponse.json();
 
             if (duplicateCheckResponse.ok && duplicateData.length > 0) {
-                // Prepare the table for Swal
-                setDuplicatePatients(duplicateData);
-
-                const duplicateTable = `
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr>
-                                <th style="border-bottom: 1px solid #ddd; padding: 8px;">Patient Number</th>
-                                <th style="border-bottom: 1px solid #ddd; padding: 8px;">Name</th>
-                                <th style="border-bottom: 1px solid #ddd; padding: 8px;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${duplicateData.map(patient => `
-                                <tr>
-                                    <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.patient_number}</td>
-                                    <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.full_name}</td>
-                                    <td style="border-bottom: 1px solid #ddd; padding: 8px;">
-                                        <button 
-                                            style="padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;"
-                                            onclick="window.location.href='/patients/${patient.id}'"
-                                        >
-                                            View
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-
-                globalSwal.fire({
-                    icon: 'warning',
-                    title: 'Duplicate Patient Found',
-                    html: duplicateTable,
-                    showConfirmButton: true,
-                });
-                setLoading(false);
-                return;
+              setDuplicatePatients(duplicateData);
+              setLoading(false);
+              showDuplicatePatientsSwal();
+              return;
+            } else {
+              setDuplicatePatients([]);
             }
+            
         } catch (error) {
             console.error('Error checking duplicates:', error);
             setErrors({ message: 'An error occurred while checking for duplicates.' });

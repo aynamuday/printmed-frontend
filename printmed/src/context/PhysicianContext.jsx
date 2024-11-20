@@ -18,7 +18,7 @@ export const PhysicianProvider = () => {
   
   // Add selectedPatient state
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [duplicatePatients, setDuplicatePatients] = useState(null);
+  const [duplicatePatients, setDuplicatePatients] = useState([]);
 
   return (
     <PhysicianContext.Provider value={{

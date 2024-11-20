@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
 import { ClipLoader, PulseLoader } from 'react-spinners';
-import { getFormattedDate } from '../utils/dateUtils';
+import { getFormattedNumericDate } from '../utils/dateUtils';
 
 import AuditsTable from './AuditsTable';
 
@@ -24,7 +24,7 @@ const Audits = ({ forDashboard = false }) => {
     } = useContext(AdminContext)
     const [ loadingAudits, setLoadingAudits ] = useState(false)
     const audits = forDashboard ? auditsToday : auditsAll
-    const dateToday = getFormattedDate()
+    const dateToday = getFormattedNumericDate()
 
     // fetch the audits
     const getAudits = async (page = 1, resource='', dateFrom='', dateUntil='') => {
