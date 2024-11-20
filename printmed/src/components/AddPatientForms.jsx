@@ -588,12 +588,17 @@ const Forms = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Physician</label>
+                <label className="block text-sm font-medium text-gray-700">Physician
+                  <span className="text-red-600 cursor-help" title="Required field">
+                    *
+                  </span>
+                </label>
                 <select
                   name="physician_id"
                   value={formData.physician_id}
                   onChange={handleChange}
                   className="mt-1 block w-full border p-2 rounded-md"
+                  required
                 >
                   <option value="">Assign Physician</option>
                   {loading ? (
