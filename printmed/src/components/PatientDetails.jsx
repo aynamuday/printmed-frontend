@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
 import globalSwal from '../utils/globalSwal'
-import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils';
+import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
 import PhysicianContext from '../context/PhysicianContext';
 
@@ -176,8 +176,8 @@ const PatientDetails = () => {
     const handleNumbersOnlyInputChange = (key, value) => {
         setErrors(prevData => ({ ...prevData, [key]: ""}))
         
-        const postalCodeRegex = /^\d*$/
-        if (postalCodeRegex.test(value)) {
+        const numbersOnlyRegex = /^\d*$/
+        if (numbersOnlyRegex.test(value)) {
             setUpdateData(prevData => ({ ...prevData, [key]: value}))
         }
     }
@@ -515,7 +515,7 @@ const PatientDetails = () => {
                                     )}
                                 </td>
                             </tr>
-                            { !update && (
+                            { !update && patient.consultations.length > 0 && (
                                 <>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Last Visit</th>
@@ -523,7 +523,13 @@ const PatientDetails = () => {
                                     </tr>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Follow-up Date</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{patient.follow_up_date ? getFormattedStringDate(patient.follow_up_date) : ""}</td>
+                                        <td className='border p-2 border-[#828282] w-[65%]'>
+                                            { patient.follow_up_date ? (
+                                                hasDatePassed(patient.follow_up_date) ? patient.follow_up_date + <span className='text-red-500'>Missed</span> : patient.follow_up_date
+                                            ) : (
+                                                "N/A"
+                                            )}
+                                        </td>
                                     </tr>
                                 </>
                             )}

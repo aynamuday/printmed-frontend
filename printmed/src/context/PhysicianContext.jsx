@@ -10,10 +10,11 @@ export const PhysicianProvider = () => {
   const [viewConsultationId, setViewConsultationId] = useState([])
   const [addConsultationData, setAddConsultationData] = useState({
     height: '',
+    height_unit: '',
     weight: '',
-    systolic_pressure: '',
-    diastolic_pressure: '',
+    weight_unit: '',
     temperature: '',
+    blood_pressure: '',
     chief_complaint: '',
     present_illness_hx: '',
     family_hx: '',
@@ -31,6 +32,7 @@ export const PhysicianProvider = () => {
     follow_up_date: ''
   })
   const [isPediatrics, setIsPediatrics] = useState(false)
+  const [isNext, setIsNext] = useState(false)
 
   return (
     <PhysicianContext.Provider value={{
@@ -39,7 +41,8 @@ export const PhysicianProvider = () => {
       consultations, setConsultations,
       viewConsultationId, setViewConsultationId,
       addConsultationData, setAddConsultationData,
-      isPediatrics, setIsPediatrics
+      isPediatrics, setIsPediatrics,
+      isNext, setIsNext
     }}>
       <Outlet />
     </PhysicianContext.Provider>

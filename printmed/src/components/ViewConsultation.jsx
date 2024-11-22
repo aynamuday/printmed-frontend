@@ -43,54 +43,6 @@ const ViewConsultation = () => {
         }
     }, [])
 
-    const addConsultation = async () => {
-        const res = await fetch("/api/consultations", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(addData)
-        })
-
-        const data = await res.json()
-
-        if (res.ok) {
-            globalSwal.fire('Success', 'Consultation added successfully!', 'success')
-        } else {
-            globalSwal.fire('Error', 'There was an error adding the consultation.', 'error')
-        }
-    }
-
-    const handlePrescriptionChange = (index, field, value) => {
-        const newPrescriptions = [...addData.prescriptions]
-        newPrescriptions[index][field] = value
-        setAddData({ ...addData, prescriptions: newPrescriptions })
-    }
-
-    const addPrescription = () => {
-        // Ensure prescriptions is an array
-        if (Array.isArray(addData.prescriptions)) {
-            setAddData({
-                ...addData,
-                prescriptions: [
-                    ...addData.prescriptions,
-                    { name: '', dosage: '', instruction: '' }
-                ]
-            })
-        } else {
-            // Fallback if it's not an array
-            setAddData({
-                ...addData,
-                prescriptions: [{ name: '', dosage: '', instruction: '' }]
-            })
-        }
-    }
-
-    const removePrescription = (index) => {
-        const newPrescriptions = addData.prescriptions.filter((_, i) => i !== index)
-        setAddData({ ...addData, prescriptions: newPrescriptions })
-    }
-
     return (
         <>
             { consultation && (
@@ -107,7 +59,7 @@ const ViewConsultation = () => {
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
                                 <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.temperature}</td>
-                                <th className='text-start border border-[#828282] p-2 w-[22%]'>Blood Pressure</th>
+                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
                                 <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.blood_pressure}</td>
                             </tr>
                         </tbody>
