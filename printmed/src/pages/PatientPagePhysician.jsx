@@ -10,13 +10,17 @@ import '../assets/styles/QrScanAnimation.css'
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import PatientDetails from '../components/PatientDetails'
-import ConsultationsTable from '../components/ConsultationsTable'
 import Consultation from '../components/Consultation'
 import QrScanning from '../components/QrScanning'
+import ConsultationsTable from '../components/ConsultationsTable'
+import ViewConsultation from '../components/ViewConsultation'
 
-const PatientPage = (patientId) => {
+const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
-    const { patient, setPatient } = useContext(PhysicianContext)
+    const { 
+        patient, setPatient,
+        consultationComponentStatus, setConsultationComponentStatus
+     } = useContext(PhysicianContext)
 
     const qrInputRef = useRef(null)
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
@@ -29,6 +33,7 @@ const PatientPage = (patientId) => {
     const handleQrInputFocus = () => {
         console.log("focused")
         setIsQrInputFocused(true);
+        
     };
     
     const handleQrInputBlur = () => {
@@ -48,10 +53,11 @@ const PatientPage = (patientId) => {
     }
 
     const fetchPatient = async () => {
-        setLoading(true)
+        globalSwal.showLoading()
 
         try {
-            const res = await fetch('/api/patient-using-qr', {
+            const res = await fetch(`/api/patient-using-qr/`, {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -74,7 +80,7 @@ const PatientPage = (patientId) => {
                 }
             }
 
-            const data = res.json()
+            const data = await res.json()
 
             setPatient(data)
         }
@@ -84,96 +90,46 @@ const PatientPage = (patientId) => {
             } else {
                 setError(err.message || "Something went wrong. Please try again later.")
             }
+            console.log(err)
         }
         finally {
             setLoading(false)
+            globalSwal.close()
+            setQrCode("")
         }
     }
 
-
-
-
-
-    // const { consultationStatus, setConsultationStatus } = useContext(PhysicianContext)
-    // const { consultation, setConsultation } = useContext(PhysicianContext)
-    // const { addConsultation, setAddConsultation } = useContext(PhysicianContext)
-    // const { editConsultation, setEditConsultation } = useContext(PhysicianContext)
-
-    // patientId = 1
-
-    // const [ consultations, setConsultations ] = useState([])
-
-    // const fetchPatient = async () => {
-    //     globalSwal.showLoading()
-        
-    //     const res = await fetch(`/api/patients/${patientId}`, {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         }
-    //     })
-
-    //     const data = await res.json()
-
-    //     if(res.ok) {
-    //         setPatient(data)
-    //         fetchConsultations()
-    //     }
-    // }
-
-    // const fetchConsultations = async () => {
-    //     const res = await fetch(`/api/patients/${patientId}/consultations`, {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         }
-    //     })
-
-    //     const data = await res.json()
-
-    //     if(res.ok) {
-    //         setConsultations(data)
-    //     }
-
-    //     setLoading(false)
-
-    //     globalSwal.close()
-    // }
-
-
-    // useEffect(() => {
-    //     setLoading(true)
-    //     fetchPatient()
-    // }, [])
-
     return (
-        <div>
-            <Sidebar />
-            <Header />
-
+        <div className={`${isQrInputFocused ? 'pointer-events-none' : 'pointer-events-auto'}`}>
             { !patient && isQrInputFocused && (
-                <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center absolute w-full h-full bg-black bg-opacity-50 z-10 pointer-events-none'>
                     <div className='p-4 bg-white shadow-lg w-[400px] rounded-md'>
                         <QrScanning />
-                        <p className='mt-4 italic font-semibold text-center'>Please ensure the QR is properly placed on the scanner for accurate reading</p>
-                        <button onClick={handleQrInputBlur} className='bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
+                        <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
+                        <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
+                        <button onClick={handleQrInputBlur} className='pointer-events-auto bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
                             Cancel
                         </button>
                     </div>
                 </div>
             )}
+            
+            <Sidebar />
+            <Header />
 
             { !patient ? (
-                <div className={`md:ml-[19%] min-h-[calc(100vh-120px)]`}>
+                <div className={`md:ml-[300px] min-h-[calc(100vh-120px)]`}>
                     <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover min-h-[calc(100vh-120px)] pt-28">
                         <div className='w-[250px] mx-auto flex flex-col items-center bg-white p-4'>
                             <img src={qr} alt="" className='w-[220px] p-3 border border-black' />
                             <p className='text-center my-2 font-semibold'>Scan the patient's QR code to access their medical records.</p>
                             <button onClick={handleScanButtonClick} className='bg-[#499e94] text-xl text-white font-medium hover:bg-[#4fb5a9] p-1.5 w-full rounded-md'>Scan</button>
                         </div>
-                        <form onSubmit={(e) => handleQrCodeSubmit(e)}>
+                        <form onSubmit={(e) => handleQrCodeSubmit(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
                             <input 
+                                className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'
                                 ref={qrInputRef} 
-                                type="text" 
-                                className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect'
+                                type="text"
                                 value={qrCode}
                                 onChange={(e) => setQrCode(e.target.value)}
                                 onFocus={handleQrInputFocus}
@@ -192,23 +148,29 @@ const PatientPage = (patientId) => {
                         </div>
                         <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
                             <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
-                                <div className='flex gap-4'>
-                                    {(consultationStatus) && 
-                                        <button onClick={() => {consultationStatus == "edit" ? setConsultationStatus("view") : setConsultationStatus(null)}}>
+                                <div className='flex gap-4 w-full'>
+                                    { consultationComponentStatus != null && 
+                                        <button onClick={() => setConsultationComponentStatus(null)}>
                                             <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
                                         </button>
                                     }
-                                    <p className='font-semibold text-white text-lg'>Consultation Records</p>
-                                </div>
-                                <div className='flex gap-4'>
-                                    {consultationStatus == "view" && <button onClick={() => {setConsultationStatus("edit")}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
-                                    {!consultationStatus && <button onClick={() => {setConsultationStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-white`}></i></button>}
+                                    { consultationComponentStatus === null && 
+                                        <div className='flex justify-between items-center w-full'>
+                                            <p className='font-semibold text-white text-lg'>Consultations</p>
+                                            <button onClick={() => {setConsultationComponentStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-xl text-white`}></i></button>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div>
-                                <div className='grid grid-cols-1 justify-center px-4 py-6'>
-                                    { consultationStatus && <Consultation /> }
-                                    {!consultationStatus && <ConsultationsTable consultations={consultations.data} />}
+                                <div className='grid grid-cols-1 justify-center p-6'>
+                                    { consultationComponentStatus === null ? (
+                                        <ConsultationsTable consultations={patient.consultations} />
+                                    ) : consultationComponentStatus === "view" ? (
+                                        <ViewConsultation /> 
+                                    ) : (
+                                        <Consultation /> 
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -219,4 +181,4 @@ const PatientPage = (patientId) => {
     )
 }
 
-export default PatientPage
+export default PatientPagePhysician

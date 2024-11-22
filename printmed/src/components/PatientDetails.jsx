@@ -25,7 +25,7 @@ const PatientDetails = () => {
             'middle_name': patient.middle_name ?? '',
             'last_name': patient.last_name,
             'suffix': patient.suffix ?? '',
-            'birthdate': patient.birthdate ?? { getFormattedNumericDate },
+            'birthdate': patient.birthdate ?? '',
             'birthplace': patient.birthplace ?? '',
             'sex': patient.sex ?? '',
             'house_number': patient.house_number ?? '',
@@ -90,7 +90,6 @@ const PatientDetails = () => {
     }
 
     const updatePatient = async () => {
-        globalSwal.showLoading()
 
         if (updateData.sex == "Male") {
             setUpdateData(prevData => ({ ...prevData, suffix: null})) 
@@ -98,12 +97,26 @@ const PatientDetails = () => {
 
         const updateDataToSubmit = Object.keys(updateData).reduce((acc, key) => {
             if (key === "phone_number") {
-                acc[key] = updateData[key] !== "" ? "09" + updateData[key] : null
-            } else {
-                acc[key] = updateData[key] === "" ? null : updateData[key]
+                updateData[key] = updateData[key] !== "" ? "09" + updateData[key] : null
             }
+                
+            updateData[key] = updateData[key] === "" ? null : updateData[key]
+
+            if (updateData[key] !== patient[key]) {
+                acc[key] = updateData[key]
+            }
+
             return acc;
         }, {});
+
+        if (!Object.keys(updateDataToSubmit).length > 0) {
+            handleBack()
+            setErrors([])
+            globalSwal.close()
+            return
+        }
+
+        globalSwal.showLoading()
 
         const res = await fetch(`/api/patients/${patient.id}`, {
             method: "PUT",

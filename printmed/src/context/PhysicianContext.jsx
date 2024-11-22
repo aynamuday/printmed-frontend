@@ -5,39 +5,18 @@ const PhysicianContext = createContext();
 
 export const PhysicianProvider = () => {
   const [patient, setPatient] = useState(null)
-
-
-  const [consultationStatus, setConsultationStatus] = useState(null);
-  const [consultationId, setConsultationId] = useState(null);
-  const [consultation, setConsultation] = useState(null);
-  const [physicians, setPhysicians] = useState([]);
-  const [consultationPayment, setConsultationPayment] = useState(null);
-  const [patientsAll, setPatientsAll] = useState([]);
-  const [patientsAllFilters, setPatientsAllFilters] = useState({
-    search: '',
-    sortField: '',
-    sortOrder: '',
-  });
-  const [searchPatients, setSearchPatients] = useState('');
-  
-  // Add selectedPatient state
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [duplicatePatients, setDuplicatePatients] = useState([]);
+  const [consultationComponentStatus, setConsultationComponentStatus] = useState(null);
+  const [consultations, setConsultations] = useState([])
+  const [viewConsultationId, setViewConsultationId] = useState([])
+  const [addConsultationData, setAddConsultationData] = useState([])
 
   return (
     <PhysicianContext.Provider value={{
       patient, setPatient,
-
-
-      consultationStatus, setConsultationStatus,
-      consultation, setConsultation,
-      consultationPayment, setConsultationPayment,
-      patientsAll, setPatientsAll,
-      patientsAllFilters, setPatientsAllFilters,
-      searchPatients, setSearchPatients,
-      selectedPatient, setSelectedPatient,
-      duplicatePatients, setDuplicatePatients,
-      physicians, setPhysicians
+      consultationComponentStatus, setConsultationComponentStatus,
+      consultations, setConsultations,
+      viewConsultationId, setViewConsultationId,
+      addConsultationData, setAddConsultationData
     }}>
       <Outlet />
     </PhysicianContext.Provider>
