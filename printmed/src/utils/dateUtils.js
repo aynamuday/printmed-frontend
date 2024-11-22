@@ -1,5 +1,10 @@
-export const getFormattedNumericDate = (dateStamp) => {
+export const getFormattedNumericDate = (dateStamp, addYears = 0) => {
     const date = dateStamp ? new Date(dateStamp) : new Date();
+
+    if (addYears > 0) {
+        date.setFullYear(date.getFullYear() + addYears);
+        console.log(date.getFullYear())
+    }
 
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');

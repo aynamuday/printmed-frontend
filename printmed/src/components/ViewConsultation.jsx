@@ -6,11 +6,10 @@ import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 
 const ViewConsultation = () => {
-    const { user, token } = useContext(AppContext)
+    const { token } = useContext(AppContext)
     const { 
-        setConsultationComponentStatus, 
         consultations, setConsultations,
-        viewConsultationId, setViewConsultationId 
+        viewConsultationId 
     } = useContext(PhysicianContext)
 
     const [consultation, setConsultation] = useState(null)

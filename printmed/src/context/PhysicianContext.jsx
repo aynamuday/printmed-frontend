@@ -8,7 +8,29 @@ export const PhysicianProvider = () => {
   const [consultationComponentStatus, setConsultationComponentStatus] = useState(null);
   const [consultations, setConsultations] = useState([])
   const [viewConsultationId, setViewConsultationId] = useState([])
-  const [addConsultationData, setAddConsultationData] = useState([])
+  const [addConsultationData, setAddConsultationData] = useState({
+    height: '',
+    weight: '',
+    systolic_pressure: '',
+    diastolic_pressure: '',
+    temperature: '',
+    chief_complaint: '',
+    present_illness_hx: '',
+    family_hx: '',
+    medical_hx: '',
+    pediatrics_h: '',
+    pediatrics_e: '',
+    pediatrics_a: '',
+    pediatrics_d: '',
+    primary_diagnosis: '',
+    diagnosis: '',
+    prescriptions: [
+      { name: '', dosage: '', instruction: '' },
+      { name: '', dosage: '', instruction: '' }
+    ],
+    follow_up_date: ''
+  })
+  const [isPediatrics, setIsPediatrics] = useState(false)
 
   return (
     <PhysicianContext.Provider value={{
@@ -16,7 +38,8 @@ export const PhysicianProvider = () => {
       consultationComponentStatus, setConsultationComponentStatus,
       consultations, setConsultations,
       viewConsultationId, setViewConsultationId,
-      addConsultationData, setAddConsultationData
+      addConsultationData, setAddConsultationData,
+      isPediatrics, setIsPediatrics
     }}>
       <Outlet />
     </PhysicianContext.Provider>

@@ -10,7 +10,7 @@ import '../assets/styles/QrScanAnimation.css'
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import PatientDetails from '../components/PatientDetails'
-import Consultation from '../components/Consultation'
+import AddConsultation from '../components/AddConsultation'
 import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
@@ -168,8 +168,8 @@ const PatientPagePhysician = () => {
                                         <ConsultationsTable consultations={patient.consultations} />
                                     ) : consultationComponentStatus === "view" ? (
                                         <ViewConsultation /> 
-                                    ) : (
-                                        <Consultation /> 
+                                    ) : consultationComponentStatus === "add" && (
+                                        <AddConsultation /> 
                                     )}
                                 </div>
                             </div>
