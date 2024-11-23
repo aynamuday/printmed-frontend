@@ -113,7 +113,20 @@ const SettingsPage = () => {
         <p className="text-black-500">{user.personnel_number}</p>
         <p className="text-black-500">{user.email}</p>
 
-        <div className="min-h-10"></div>
+        <div className='min-h-10'></div>
+
+        <div className='grid grid-cols-2 gap-x-4 gap-y-0'>
+          {user.role === "physician" || user.role === "secretary" && (
+            <>
+              <p>Department:</p>
+              <p><strong>{user.department_name}</strong></p>
+            </>
+          )}
+          <p>Sex:</p>
+          <p><strong>{user.sex}</strong></p>
+          <p>Birthdate:</p>
+          <p><strong>{user.birthdate}</strong></p>
+        </div>
 
         {/* Conditionally Render Edit Button */}
         {user.role === 'admin' && !isEditing && (
@@ -310,7 +323,7 @@ const SettingsPage = () => {
                 Change Password
               </Link>
             </div>
-            <div className='min-h-3'></div>
+            <div className='min-h-10'></div>
             <button
               onClick={handleLogout}
               className="w-48 px-4 py-2 bg-[#b43c39] text-white rounded-md hover:bg-[#a43331] focus:outline-none"
