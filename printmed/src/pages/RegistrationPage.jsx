@@ -376,7 +376,7 @@ function RegistrationPage() {
     };
 
     return (
-        <div className="min-h-screen bg-teal-200 grid place-items-center p-10">
+        <div className="min-h-screen bg-[#6CB6AD] grid place-items-center p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl mx-auto">
                 {/* Left section with image */}
                 <div
