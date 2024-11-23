@@ -169,24 +169,22 @@ const Forms = () => {
         Object.entries(formData).filter(([key, value]) => value !== '')
       );
 
-      // Mock submission - Replace with actual API request
       const formDataToSubmit = new FormData();
       Object.keys(filteredFormData).forEach((key) => {
         formDataToSubmit.append(key, filteredFormData[key]);
       });
 
-      // Placeholder API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       Swal.fire('Success!', 'Patient added successfully!', 'success');
       navigate('/patients');
-    } catch (error) {
-      console.error("Error:", error);
-      setErrors({ message: "An error occurred. Please try again." });
-      Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+    } 
+    catch (error) {
+      Swal.fire('Error', 'An error occurred while adding a new patient. Please check the information and try again.', 'error');
     }
-
-    setLoading(false);
+    finally {
+      setLoading(false);
+    }
   };
 
   return (

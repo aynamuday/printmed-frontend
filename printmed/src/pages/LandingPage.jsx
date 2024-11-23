@@ -11,7 +11,8 @@ const LandingPage = () => {
       className="flex items-center justify-center h-screen bg-cover bg-center"
       style={{ backgroundImage: `url(${bgBuilding})` }}
     >
-      <div className="bg-white rounded-lg shadow-lg p-8 w-96 text-center">
+      <div className="absolute inset-0 bg-black opacity-25"></div>
+      <div className="bg-white rounded-lg shadow-lg p-8 w-96 text-center z-10">
         <img src={logo} alt="Logo" className="mx-auto mb-6 w-30" />
         <h1 className="text-lg font-semibold italic mb-4">
           Please select your destination
@@ -27,7 +28,7 @@ const LandingPage = () => {
           {/* Button for Patient Registration */}
           <button
             onClick={() => navigate('/register')}
-            className="w-full bg-[#6CB6AD] text-white py-2 rounded-md hover:bg-green-700 transition"
+            className="w-full bg-[#6CB6AD] text-black py-2 rounded-md hover:bg-green-700 transition"
           >
             Patient Registration
           </button>

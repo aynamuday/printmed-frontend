@@ -326,18 +326,20 @@ const Forms = () => {
             });
 
             const duplicateData = await duplicateCheckResponse.json();
+            console.log(duplicateData);
 
             if (duplicateCheckResponse.ok && duplicateData.length > 0) {
               setDuplicatePatients(duplicateData);
               setLoading(false);
               showDuplicatePatientsSwal();
+              
               return;
             } else {
               setDuplicatePatients([]);
             }
             
-        } catch (error) {
-            console.error('Error checking duplicates:', error);
+        } 
+        catch (error) {
             setErrors({ message: 'An error occurred while checking for duplicates.' });
             setLoading(false);
             return;
@@ -367,6 +369,7 @@ const Forms = () => {
                     });
 
                     const data = await res.json();
+                    console.log(data);
 
                     if (res.ok) {
                         setFormData({
@@ -400,18 +403,19 @@ const Forms = () => {
                             state: { removedId: formData.registration_id },
                         });
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    setErrors({ message: 'An error occurred while submitting the form' });
+                } 
+                catch (error) {
                     globalSwal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'An error occurred while submitting the form. Please try again.',
+                        text: 'An error occurred while adding a new patient. Please check the information and try again.',
                         showConfirmButton: true,
-                    });
+                });
+                } 
+                finally {
+                  setLoading(false);
                 }
             }
-            setLoading(false);
         });
     }
   };
