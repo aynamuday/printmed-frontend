@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 const PhysicianContext = createContext();
 
 export const PhysicianProvider = () => {
+  const [patientPageLoading, setPatientPageLoading] = useState(false)
   const [patient, setPatient] = useState(null)
   const [consultationComponentStatus, setConsultationComponentStatus] = useState(null);
   const [consultations, setConsultations] = useState([])
@@ -68,6 +69,7 @@ export const PhysicianProvider = () => {
 
   return (
     <PhysicianContext.Provider value={{
+      patientPageLoading, setPatientPageLoading,
       resetPatientViewer,
       patient, setPatient,
       consultationComponentStatus, setConsultationComponentStatus,

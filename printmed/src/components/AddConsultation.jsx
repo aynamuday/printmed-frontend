@@ -4,18 +4,21 @@ import globalSwal from '../utils/globalSwal'
 
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
+import Swal from 'sweetalert2'
 
 const AddConsultation = () => {
     const { token } = useContext(AppContext)
     const { 
-        patient,
-        setConsultationComponentStatus,
+        setPatientPageLoading,
+        patient, setPatient,
         addConsultationData, setAddConsultationData,
         isPediatrics, setIsPediatrics,
         isNext, setIsNext,
         addConsultationErrors, setAddConsultationErrors,
-        setConsultations,
+        setConsultations
     } = useContext(PhysicianContext)
+
+    const [fetchError, setFetchError] = useState("")
 
     useEffect(() => {
         setAddConsultationData((prevData) => ({...prevData, patient_id: patient.id}))
@@ -49,7 +52,6 @@ const AddConsultation = () => {
         }
 
         if (hasError) {
-            console.log(addConsultationErrors)
             setAddConsultationErrors((prevData) => ({...prevData, general: "Please kindly check your inputs. Make sure required fields are not empty."}))
             return
         } else {
@@ -58,71 +60,70 @@ const AddConsultation = () => {
     }
 
     const createConsultation = async () => {
-        globalSwal.showLoading()
+        try {
+            setPatientPageLoading(true)
 
-        const res = await fetch("/api/consultations", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(addConsultationData, )
-        })
+            const res = await fetch("/api/consultations", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(addConsultationData, )
+            })
 
-        const data = await res.json()
+            if(!res.ok) {
+                if (res.status === 500) {
+                    throw new Error("Something went wrong. Please try again later.")
+                } else if (res.status === 404) {
+                    throw new Error("The QR code is either deactivated or expired.")
+                } else if (res.status === 403) {
+                    throw new Error("You are not authorized to access this patient. Make sure you are an assigned physician.")
+                } else if (res.status === 400) {
+                    throw new Error("Something went wrong with your request. Please check your input and try again later.")
+                } else {
+                    throw new Error("Something went wrong. Please try again later.")
+                }
+            }
 
-        console.log(data)
-
-        globalSwal.close()
-
-        if (res.ok) {
-            console.log(data)
-        } else {
-            globalSwal.fire('Error', 'There was an error adding the consultation.', 'error')
+            const data = await res.json()
+            setConsultations((prevData) => ({...prevData, [data.id]: data}))
+            setPatient(prevPatient => ({
+                ...prevPatient,
+                consultations: {
+                    ...prevPatient.consultations, 
+                    [data.id]: {chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at}
+                }
+            }));
+        }
+        catch (err) {
+            if (err.name === "TypeError") {
+                setFetchError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
+            } else {
+                setFetchError(err.message || "Something went wrong. Please try again later.")
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: `${fetchError}`,
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    title: 'text-xl font-bold text-black text-center',
+                    popup: 'border-2 rounded-xl px-4 py-8',
+                    icon: 'p-0 mx-auto my-0'
+                }
+            })
+        }
+        finally {
+            setPatientPageLoading(false)
         }
     }
 
-    // const handlePediatricsChange = () => {
-    //     setIsPediatrics(!isPediatrics)
-
-    //     if (isPediatrics === false) {
-    //         setAddConsultationData((prevData) => ({
-    //             ...prevData,
-    //             pediatrics_h: "",
-    //             pediatrics_e: "",
-    //             pediatrics_a: "",
-    //             pediatrics_d: "",
-    //         }))
-    //     }
-    // }
-
     const handleInputChange = (key, value) => {
-        // if (value.trim() === "" && (key === "chief_complaint" || key === "primary_diagnosis" || key === "diagnosis"
-        //     || key === "height" || key === "weight" || key === "temperature" || key === "blood_pressure"
-        // )) {
-        //     setAddConsultationErrors((prevData) => ({...prevData, [key]: "This field is required."}))
-        // } else {
-        //     setAddConsultationErrors((prevData) => ({...prevData, [key]: ""}))
-        // }
-
         setAddConsultationErrors((prevData) => ({...prevData, [key]: ""}))
         setAddConsultationErrors((prevData) => ({...prevData, general: ""}))
         setAddConsultationData(prevData => ({ ...prevData, [key]: value}))
     }
-
-    // const handleDecimalInputChange = (key, value) => {
-    //     if (value.trim() === "") {
-    //         setAddConsultationErrors((prevData) => ({...prevData, [key]: "This field is required."}))
-    //     } else {
-    //         setAddConsultationErrors((prevData) => ({...prevData, [key]: ""}))
-    //     }
-
-    //     setAddConsultationErrors((prevData) => ({...prevData, general: ""}))
-        
-    //     const numbersOnlyRegex = /^(?!\.)[0-9]*\.?[0-9]*$/
-    //     if (numbersOnlyRegex.test(value)) {
-    //         setAddConsultationData(prevData => ({ ...prevData, [key]: value}))
-    //     }
-    // }
 
     const addPrescription = (e) => {
         e.preventDefault()

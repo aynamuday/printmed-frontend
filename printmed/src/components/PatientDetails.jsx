@@ -7,9 +7,13 @@ import PhysicianContext from '../context/PhysicianContext';
 
 const PatientDetails = () => {
     const { token } = useContext(AppContext)
-    const { patient, setPatient } = useContext(PhysicianContext)
+    const { 
+        setPatientPageLoading,
+        patient, setPatient 
+    } = useContext(PhysicianContext)
 
     const [errors, setErrors] = useState([])
+    const [fetchError, setFetchError] = useState("")
 
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState([])
@@ -66,6 +70,7 @@ const PatientDetails = () => {
     const handleBack = () => {
         setUpdate(false)
         resetUpdateData()
+        resetErrors()
     }
 
     const handleSubmit = (e) => {
@@ -75,16 +80,16 @@ const PatientDetails = () => {
             return
         }
 
-        let isFormValid = true
+        let hasError = false
 
         if (Number(updateData.postal_code) < 1000 || Number(updateData.postal_code) > 9999) {
-            setErrors(prevData => ({ ...prevData, postal_code: "Postal codes must range from 1000-9999."}))
-            isFormValid = false
+            setErrors(prevData => ({ ...prevData, postal_code: "Postal code must range from 1000-9999."}))
+            hasError = true
         } else {
             setUpdateData(prevData => ({ ...prevData, postal_code: Number(updateData.postal_code)})) 
         }
 
-        if (isFormValid) {
+        if (!hasError) {
             updatePatient();
         }
     }
@@ -111,32 +116,59 @@ const PatientDetails = () => {
 
         if (!Object.keys(updateDataToSubmit).length > 0) {
             handleBack()
-            setErrors([])
             return
         }
 
-        globalSwal.showLoading()
+        try {
+            setPatientPageLoading(true)
 
-        const res = await fetch(`/api/patients/${patient.id}`, {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(updateDataToSubmit)
-        })
+            const res = await fetch(`/api/patients/${patient.id}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(updateDataToSubmit)
+            })            
 
-        const data = await res.json()
+            if(!res.ok) {
+                if (res.status === 404) {
+                    throw new Error("Patient not found.")
+                } else if (res.status === 403) {
+                    throw new Error("You are not authorized to perform this action.")
+                } else if (res.status === 400) {
+                    throw new Error("Something went wrong with your request. Please check your input and try again later.")
+                } else {
+                    throw new Error("Something went wrong. Please try again later.")
+                }
+            }
 
-        console.log(data)
-
-        if(res.ok) {
+            const data = await res.json()
             setPatient(data)
             handleBack()
-        } else {
-            setErrors(data)
-        } 
-
-        globalSwal.close()
+            
+        }
+        catch (err) {
+            if (err.name === "TypeError") {
+                setFetchError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
+            } else {
+                setFetchError(err.message || "Something went wrong. Please try again later.")
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: `${fetchError}`,
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    title: 'text-xl font-bold text-black text-center',
+                    popup: 'border-2 rounded-xl px-4 py-8',
+                    icon: 'p-0 mx-auto my-0'
+                }
+            })
+        }
+        finally {
+            setPatientPageLoading(false)
+        }
     }
 
     const handleLettersOnlyInputChange = (key, value) => {
