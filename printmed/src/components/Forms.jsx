@@ -55,19 +55,6 @@ const Forms = () => {
       setErrors({ ...errors, [name]: '' });
       return;
     }
-    // suffix validation and capitalize first letter
-    if (name === 'suffix') {
-      if (/[^a-zA-Z\s]/.test(value)) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-  
-      if (value.length > 3) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-      setErrors({ ...errors, [name]: '' });
-    }
 
     // Address validations (house_number, street, barangay, etc.)
     if (name === 'house_number' || name === 'street' || name === 'barangay') {
@@ -105,6 +92,15 @@ const Forms = () => {
       });
       return;
     }
+
+    if (name === 'suffix') {
+      setFormData({
+        ...formData,
+        suffix: value,
+      });
+      return;
+    }
+
     if (name === 'civil_status') {
       setFormData({
         ...formData,
@@ -221,8 +217,20 @@ const Forms = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
-                <input type="text" name="suffix" value={formData.suffix} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" />
+                  <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
+                  <select
+                    name="suffix"
+                    value={formData.suffix}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border p-2 rounded-md"
+                  >
+                    <option value="">Select Suffix</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </select>
               </div>
 
               <div>
@@ -285,7 +293,6 @@ const Forms = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="mt-1 block w-full border p-2 rounded-md"
-                  required
                 />
               </div>
 

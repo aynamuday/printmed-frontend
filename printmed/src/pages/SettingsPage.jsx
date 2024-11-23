@@ -241,14 +241,13 @@ const SettingsPage = () => {
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-medium test-gray-700">
-                    Email<span className="text-red-600 cursor-help" title="Required field">*</span>
+                    Email
                   </label>
                   <input 
                     type="email" 
                     name="email" value={formData.email} 
                     onChange={handleChange} 
                     className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
-                    required
                     readOnly
                   />
                 </div>

@@ -35,20 +35,20 @@ const Forms = () => {
     email: patientData.email || '',
     phone_number: patientData.phone_number || '',
     physician_id: patientData.physician_id || '',
-    //photo: '',
   });
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  //handle change
   const handleChange = (e) => {
     const { name, value } = e.target;
     const capitalizedValue = value
-        .toLowerCase() // Convert to lowercase
-        .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-        .split(' ') // Split into words
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
-        .join(' '); // Join words with a single space
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 
         if (name === 'birthdate_day' || name === 'birthdate_month' || name === 'birthdate_year') {
             setFormData({
@@ -62,36 +62,29 @@ const Forms = () => {
         }
           // Name fields should not accept numbers and capitalize first letter
         if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-            setErrors({ ...errors, [name]: '' });
+            setErrors({ ...errors, [name]: 'Enter a valid name' });
             return;
-        }
-          // suffix validation and capitalize first letter
-        if (name === 'suffix') {
-            if (/[^a-zA-Z\s]/.test(value)) {
-              setErrors({ ...errors, [name]: '' });
-              return;
-            }
-        
-            if (value.length > 3) {
-              setErrors({ ...errors, [name]: '' });
-              return;
-            }
-            setErrors({ ...errors, [name]: '' });
-        }
-      
+        } else {
+          // Clear the error if the value is valid
+          setErrors({ ...errors, [name]: '' });
+      }
+
           // Address validations (house_number, street, barangay, etc.)
         if (name === 'house_number' || name === 'street' || name === 'barangay') {
             // No symbols allowed
             if (/[^a-zA-Z0-9\s]/.test(value)) {
-              setErrors({ ...errors, [name]: '' });
+              setErrors({ ...errors, [name]: 'Enter a valid address' });
               return;
             }
-        }
+        } else {
+          // Clear the error if the value is valid
+          setErrors({ ...errors, [name]: '' });
+      }
       
         if (name === 'city' || name === 'province') {
             // No numbers allowed
             if (/[^a-zA-Z\s]/.test(value)) {
-              setErrors({ ...errors, [name]: '' });
+              setErrors({ ...errors, [name]: 'nter a valid address' });
               return;
             }
         }
@@ -116,6 +109,14 @@ const Forms = () => {
             return;
         }
         
+        if (name === 'suffix') {
+          setFormData({
+            ...formData,
+            suffix: value,
+          });
+          return;
+        }
+
         if (name === 'civil_status') {
             setFormData({
               ...formData,
@@ -129,57 +130,182 @@ const Forms = () => {
         [name]: capitalizedValue, 
     });
   };
-  // handles for image profile
-  const handleFileChange = (e) => {
-  const file = e.target.files[0];
 
-  // Check if file is an image
-  if (!file.type.startsWith('image/')) {
-    setErrors({ ...errors, photo: 'Please upload a valid image file.' });
-    return;
-  }
-
-  // Check if file is PNG
-  if (file.type !== 'image/png') {
-    setErrors({ ...errors, photo: 'The photo must be a PNG file.' });
-    return;
-  }
-
-  // Check image dimensions
-  const img = new Image();
-  img.onload = () => {
-    if (img.width < 200 || img.height < 200) {
-      setErrors({ ...errors, photo: 'The photo must have at least 200x200 dimensions.' });
-    } else {
-      setFormData({ ...formData, photo: file });
-      setErrors({});
-    }
-  };
-  img.src = URL.createObjectURL(file);
-  };
-  
-  // handle phone number
   const handlePhoneNumberChange = (e) => {
     let value = e.target.value;
+  
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+  
+    if (value.length === 1 && value !== '0') {
+      value = '09' + value;
+    }
+  
+    if (value.length < 3) {
+      value = '09';
+    }
+  
+    if (value.length > 11) {
+      return;
+    }
   
     setFormData({
       ...formData,
       phone_number: value,
     });
   
-    // Error handling for phone number length
-    if (value.length === 12) { // 11 digits + +63 makes it 13 characters
-      setErrors({ ...errors, phone_number: 'Use a valid phone number' });
-    } else {
-      setErrors({
-        ...errors,
-        phone_number: '',
-      });
-    }
+    setErrors({ ...errors, phone_number: '' });
   };
   
-  const handleViewPatient = (patientId) => {
-    navigate(`/patients/${patientId}`, { state: { duplicatePatients } });
+  // handle submit
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      let newErrors = {};
+      let formIsValid = true;
+    
+      setErrors({});
+      setLoading(true);
+    
+      // Validate required fields
+      if (!formData.first_name) {
+          newErrors.first_name = 'First name is required';
+          formIsValid = false;
+      }
+      if (!formData.last_name) {
+          newErrors.last_name = 'Last name is required';
+          formIsValid = false;
+      }
+      if (!formData.phone_number) {
+        newErrors.phone_number = 'Phone number is required';
+        formIsValid = false;
+      } else if (formData.phone_number.length !== 11) {
+        newErrors.phone_number = 'Phone number must be exactly 11 digits';
+        formIsValid = false;
+      }
+    
+      // Set errors and prevent submission if form is invalid
+      setErrors(newErrors);
+    
+      if (!formIsValid) {
+          // Show swal alert for validation errors
+          globalSwal.fire({
+              icon: 'error',
+              title: 'Invalid Form',
+              text: 'Please use a valid information in each fields.',
+              showConfirmButton: true,
+          });
+          setLoading(false);
+          return;
+      }
+    
+      try {
+          const queryParams = new URLSearchParams({
+              first_name: formData.first_name,
+              last_name: formData.last_name,
+              birthdate: formData.birthdate,
+              sex: formData.sex,
+          }).toString();
+    
+          const duplicateCheckResponse = await fetch(`/api/duplicate-patients?${queryParams}`, {
+              method: 'GET',
+              headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+          });
+    
+          const duplicateData = await duplicateCheckResponse.json();
+          console.log(duplicateData);
+    
+          if (duplicateCheckResponse.ok && duplicateData.length > 0) {
+              setDuplicatePatients(duplicateData);
+              setLoading(false);
+              showDuplicatePatientsSwal();
+              return;
+          } else {
+              setDuplicatePatients([]);
+          }
+    
+      } catch (error) {
+          setErrors({ message: 'An error occurred while checking for duplicates.' });
+          setLoading(false);
+          return;
+      }
+    
+      // Proceed with adding the patient if no duplicates are found
+      globalSwal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to add this patient?',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, add it!',
+          cancelButtonText: 'Cancel',
+      }).then(async (result) => {
+          if (result.isConfirmed) {
+              try {
+                  const filteredFormData = Object.fromEntries(
+                      Object.entries(formData).filter(([key, value]) => value !== '')
+                  );
+    
+                  const res = await fetch('/api/patients', {
+                      method: 'POST',
+                      headers: {
+                          Authorization: `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(filteredFormData),
+                  });
+    
+                  const data = await res.json();
+                  console.log(data);
+    
+                  if (res.ok) {
+                      setFormData({
+                          first_name: '',
+                          middle_name: '',
+                          last_name: '',
+                          suffix: '',
+                          birthdate: '',
+                          birthplace: '',
+                          phone_number: '',
+                          sex: '',
+                          civil_status: '',
+                          religion: '',
+                          email: '',
+                          house_number: '',
+                          barangay: '',
+                          street: '',
+                          city: '',
+                          province: '',
+                          postal_code: '',
+                      });
+    
+                      globalSwal.fire({
+                          icon: 'success',
+                          title: 'Patient added successfully!',
+                          showConfirmButton: false,
+                          showCloseButton: true,
+                      });
+    
+                      navigate('/patient-registration', {
+                          state: { removedId: formData.registration_id },
+                      });
+                  }
+              } catch (error) {
+                  globalSwal.fire({
+                      icon: 'error',
+                      title: 'Error!',
+                      text: 'An error occurred while adding a new patient. Please check the information and try again.',
+                      showConfirmButton: true,
+                  });
+              } finally {
+                  setLoading(false);
+              }
+          } else {
+              // This block runs if the user clicks the Cancel button
+              setLoading(false);  // Stop loading
+          }
+      });
   };
 
   //fetch physicians
@@ -271,154 +397,6 @@ const Forms = () => {
       },
     });
   };
-  
-  // handle submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    let newErrors = {};
-    let formIsValid = true;
-
-    setErrors({});
-    setLoading(true);
-
-    // Validate required fields
-    if (!formData.first_name) {
-        newErrors.first_name = 'First name is required';
-        formIsValid = false;
-    }
-    if (!formData.last_name) {
-        newErrors.last_name = 'Last name is required';
-        formIsValid = false;
-    }
-    if (!formData.email) {
-        newErrors.email = 'Email is required';
-        formIsValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address';
-        formIsValid = false;
-    }
-
-    if (!formData.phone_number) {
-        newErrors.phone_number = 'Phone number is required';
-        formIsValid = false;
-    } else if (formData.phone_number.length !== 10) {
-        newErrors.phone_number = 'Please enter a valid phone number';
-        formIsValid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (formIsValid) {
-        try {
-            const queryParams = new URLSearchParams({
-                first_name: formData.first_name,
-                last_name: formData.last_name,
-                birthdate: formData.birthdate,
-                sex: formData.sex,
-            }).toString();
-
-            const duplicateCheckResponse = await fetch(`/api/duplicate-patients?${queryParams}`, {
-                method: 'GET',
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-
-            const duplicateData = await duplicateCheckResponse.json();
-            console.log(duplicateData);
-
-            if (duplicateCheckResponse.ok && duplicateData.length > 0) {
-              setDuplicatePatients(duplicateData);
-              setLoading(false);
-              showDuplicatePatientsSwal();
-              
-              return;
-            } else {
-              setDuplicatePatients([]);
-            }
-            
-        } 
-        catch (error) {
-            setErrors({ message: 'An error occurred while checking for duplicates.' });
-            setLoading(false);
-            return;
-        }
-
-        // Proceed with adding the patient if no duplicates are found
-        globalSwal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to add this patient?',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, add it!',
-            cancelButtonText: 'Cancel',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const filteredFormData = Object.fromEntries(
-                        Object.entries(formData).filter(([key, value]) => value !== '')
-                    );
-
-                    const res = await fetch('/api/patients', {
-                        method: 'POST',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(filteredFormData),
-                    });
-
-                    const data = await res.json();
-                    console.log(data);
-
-                    if (res.ok) {
-                        setFormData({
-                            first_name: '',
-                            middle_name: '',
-                            last_name: '',
-                            suffix: '',
-                            birthdate: '',
-                            birthplace: '',
-                            phone_number: '',
-                            sex: '',
-                            civil_status: '',
-                            religion: '',
-                            email: '',
-                            house_number: '',
-                            barangay: '',
-                            street: '',
-                            city: '',
-                            province: '',
-                            postal_code: '',
-                        });
-
-                        globalSwal.fire({
-                            icon: 'success',
-                            title: 'Patient added successfully!',
-                            showConfirmButton: false,
-                            showCloseButton: true,
-                        });
-
-                        navigate('/patient-registration', {
-                            state: { removedId: formData.registration_id },
-                        });
-                    }
-                } 
-                catch (error) {
-                    globalSwal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'An error occurred while adding a new patient. Please check the information and try again.',
-                        showConfirmButton: true,
-                });
-                } 
-                finally {
-                  setLoading(false);
-                }
-            }
-        });
-    }
-  };
 
   return (
     <>
@@ -436,28 +414,48 @@ const Forms = () => {
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
             <div className="grid grid-cols-2 gap-4 w-[70%]">
+              {/* First Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name 
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
-                <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                <input 
+                  type="text" 
+                  name="first_name" 
+                  value={formData.first_name} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                  required 
+                />
                 {errors.first_name && <p className="text-red-600 mt-1">{errors.first_name}</p>}
               </div>
+              {/* Middle Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Middle Name (optional)</label>
-                <input type="text" name="middle_name" value={formData.middle_name} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" />
+                <input 
+                  type="text" 
+                  name="middle_name" 
+                  value={formData.middle_name} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                />
               </div>
+              {/* Last Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
-                <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                <input 
+                  type="text" 
+                  name="last_name" 
+                  value={formData.last_name} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                  required 
+                />
                 {errors.last_name && <p className="text-red-600 mt-1">{errors.last_name}</p>}
               </div>
+              {/* Suffix */}
               <div>
                   <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
                   <select
@@ -473,12 +471,11 @@ const Forms = () => {
                     <option value="III">III</option>
                     <option value="IV">IV</option>
                   </select>
-                </div>
+              </div>
+              {/* Birthdate */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Birthdate
-                <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Birthdate<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
                 <input
                   type="date"
@@ -486,60 +483,74 @@ const Forms = () => {
                   value={formData.birthdate}
                   onChange={handleChange}
                   className="mt-1 block w-full border p-2 rounded-md"
-                  max={new Date().toISOString().split("T")[0]} // Max date is today
-                  min="1920-01-01" // Min date is 1920-01-01
+                  max={new Date().toISOString().split("T")[0]}
+                  min="1920-01-01"
                   required
                 />
               </div>
+              {/* Phone Number */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Phone Number
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone Number<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="phone_number"
-                    value={formData.phone_number}
-                    onChange={handlePhoneNumberChange}
-                    className="mt-1 block w-full border p-2 rounded-md pl-12" // Add padding-left for the + sign
-                    maxLength="10" // Allow the + to be included
-                    required
-                  />
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">+63</span> {/* The +63 prefix inside the input */}
-                </div>
+                <input
+                  type="text"
+                  value={formData.phone_number || '09'}  // Ensure '09' is always visible
+                  onChange={handlePhoneNumberChange}
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                  maxLength="11"  // Limit input length to 11
+                  placeholder="Enter phone number"
+                  required
+                />
                 {errors.phone_number && <p className="text-red-600 mt-1">{errors.phone_number}</p>}
               </div>
+              {/* Sex */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Sex
-                <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Sex<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
-                <select name="sex" value={formData.sex} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
+                <select 
+                  name="sex" 
+                  value={formData.sex} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                  required
+                >
                   <option value="">Select Sex</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
               </div>
+              {/* Civil Status */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Civil Status
-                <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Civil Status<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
-                <select name="civil_status" value={formData.civil_status} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
+                <select 
+                  name="civil_status" 
+                  value={formData.civil_status} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                  required
+                >
                   <option value="">Select Status</option>
                   <option value="single">Single</option>
                   <option value="married">Married</option>
                   <option value="widowed">Widowed</option>
                 </select>
               </div>
+              {/* Religion */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Religion</label>
-                <input type="text" name="religion" value={formData.religion} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" />
+                <input 
+                  type="text" 
+                  name="religion" 
+                  value={formData.religion} 
+                  onChange={handleChange} 
+                  className="mt-1 block w-full border p-2 rounded-md" 
+                />
               </div>
+              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
                 <input
@@ -550,65 +561,108 @@ const Forms = () => {
                   className="mt-1 block w-full border p-2 rounded-md"
                 />
               </div>
+              {/* Address Fields */}
               <div className="grid grid-cols-3 gap-4 col-span-2">
+                {/* House No */}
                 <div className="col-span-1">
-                  <label className="block text-sm font-medium text-gray-700">House No.
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    House No.<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="text" name="house_number" value={formData.house_number} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="text" 
+                    name="house_number" 
+                    value={formData.house_number} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required 
+                  />
                 </div>
+                {/* Barangay */}
                 <div className="col-span-1">
-                  <label className="block text-sm font-medium text-gray-700">Barangay
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Barangay<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="text" name="barangay" value={formData.barangay} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="text" 
+                    name="barangay" 
+                    value={formData.barangay} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required 
+                  />
                 </div>
+                {/* Street */}
                 <div className="col-span-1">
                   <label className="block text-sm font-medium text-gray-700">Street</label>
-                  <input type="text" name="street" value={formData.street} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" />
+                  <input 
+                    type="text" 
+                    name="street" 
+                    value={formData.street} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                  />
                 </div>
+                {/* City */}
                 <div className="col-span-1">
-                  <label className="block text-sm font-medium text-gray-700">City
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    City<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="text" name="city" value={formData.city} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="text" 
+                    name="city" 
+                    value={formData.city} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required 
+                  />
                 </div>
+                {/* Province */}
                 <div className="col-span-1">
-                  <label className="block text-sm font-medium text-gray-700">Province
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Province<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="text" name="province" value={formData.province} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="text" 
+                    name="province" 
+                    value={formData.province} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required 
+                  />
                 </div>
+                {/* Postal Code */}
                 <div className="col-span-1">
-                  <label className="block text-sm font-medium text-gray-700">Postal Code
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Postal Code<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="number" name="postal_code" value={formData.postal_code} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="number" 
+                    name="postal_code" 
+                    value={formData.postal_code} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required
+                  />
                 </div>
+                {/* Birthplace */}
                 <div className="col-span-3 gap-4">
-                  <label className="block text-sm font-medium text-gray-700">Birthplace
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Birthplace<span className="text-red-600 cursor-help" title="Required field">*</span>
                   </label>
-                  <input type="text" name="birthplace" value={formData.birthplace} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required />
+                  <input 
+                    type="text" 
+                    name="birthplace" 
+                    value={formData.birthplace} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full border p-2 rounded-md" 
+                    required 
+                  />
                 </div>
               </div>
+              {/* Physician */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Physician
-                  <span className="text-red-600 cursor-help" title="Required field">
-                    *
-                  </span>
+                <label className="block text-sm font-medium text-gray-700">
+                  Physician<span className="text-red-600 cursor-help" title="Required field">*</span>
                 </label>
                 <select
                   name="physician_id"
@@ -629,10 +683,6 @@ const Forms = () => {
                   )}
                 </select>
               </div>
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">Photo</label>
-                <input type="file" name="photo" onChange={handleFileChange} className="mt-1 block w-full border p-2 rounded-md" accept="image/*" />
-              </div> */}
             </div>
             <button type="submit" className="mt-8 w-[50%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
           </form>
