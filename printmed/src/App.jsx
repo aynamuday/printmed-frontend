@@ -6,6 +6,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AdminProvider } from './context/AdminContext';
 import { SecretaryPhysicianProvider } from './context/SecretaryPhysicianContext';
 import { PhysicianProvider } from './context/PhysicianContext';
+import { SecretaryProvider } from './context/SecretaryContext';
 
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
@@ -70,7 +71,7 @@ const App = () => {
       )
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
-        <Route element={<PhysicianProvider />}>
+        <Route element={<SecretaryProvider />}>
           <Route element={<SecretaryPhysicianProvider />}>
             <Route path='/' element={<PatientTablePage/>}/>
             <Route path='patient' element={<PatientPage/>}/>

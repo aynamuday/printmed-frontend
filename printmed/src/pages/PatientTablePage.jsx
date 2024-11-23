@@ -6,6 +6,7 @@ import AppContext from '../context/AppContext';
 import { PulseLoader } from 'react-spinners';
 import PhysicianContext from '../context/PhysicianContext';
 import PatientsTable from '../components/PatientsTable';
+import SecretaryContext from '../context/SecretaryContext';
 
 const PatientTablePage = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const PatientTablePage = () => {
     setPatientsAll,
     patientsAllFilters,
     setPatientsAllFilters,
-  } = useContext(PhysicianContext);
+  } = useContext(SecretaryContext, PhysicianContext);
 
   const [loadingPatients, setLoadingPatients] = useState(false);
 

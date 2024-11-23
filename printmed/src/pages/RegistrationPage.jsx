@@ -379,28 +379,33 @@ function RegistrationPage() {
         <div className="min-h-screen bg-teal-200 grid place-items-center p-10">
             <div className="grid grid-cols-1 md:grid-cols-2 bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl mx-auto">
                 {/* Left section with image */}
-                <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${bgNurse})` }}>
-                    <img src={logo} alt="Carmona Hospital Logo" className="mt-4 ml-4 h-12" />
+                <div
+                    className="hidden md:block bg-cover bg-center"
+                    style={{ backgroundImage: `url(${bgNurse})` }}
+                >
+                    <img
+                    src={logo}
+                    alt="Carmona Hospital Logo"
+                    className="mt-4 ml-4 h-12"
+                    />
                 </div>
 
                 {/* Right section with form */}
-                <div className="p-8 bg-gray-100">
-                    <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">Registration</h2>
+                <div className="p-6 sm:p-8 bg-gray-100">
+                    <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-700 mb-6">
+                        Registration
+                    </h2>
                     {registrationSuccess && (
-                        <div className="bg-green-100 text-green-700 p-4 rounded-md mb-6">
-                            Registration successful!
-                        </div>
+                    <div className="bg-green-100 text-green-700 p-4 rounded-md mb-6">
+                        Registration successful!
+                    </div>
                     )}
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-6 gap-4">
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">First Name
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* First Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    First Name<span className="text-red-600" title="Required field">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -410,10 +415,16 @@ function RegistrationPage() {
                                     className="mt-1 block w-full border p-2 rounded-md"
                                     required
                                 />
-                                {errors.first_name && <p className="text-red-500 text-sm">{errors.first_name}</p>}
+                                {errors.first_name && (
+                                    <p className="text-red-500 text-sm">{errors.first_name}</p>
+                                )}
                             </div>
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+
+                            {/* Middle Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Middle Name
+                                </label>
                                 <input
                                     type="text"
                                     name="middle_name"
@@ -421,16 +432,15 @@ function RegistrationPage() {
                                     onChange={handleChange}
                                     className="mt-1 block w-full border p-2 rounded-md"
                                 />
-                                {errors.middle_name && <p className="text-red-500 text-sm">{errors.middle_name}</p>}
+                                {errors.middle_name && (
+                                    <p className="text-red-500 text-sm">{errors.middle_name}</p>
+                                )}
                             </div>
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Last Name
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+
+                            {/* Last Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Last Name<span className="text-red-600" title="Required field">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -440,10 +450,16 @@ function RegistrationPage() {
                                     className="mt-1 block w-full border p-2 rounded-md"
                                     required
                                 />
-                                {errors.last_name && <p className="text-red-500 text-sm">{errors.last_name}</p>}
+                                {errors.last_name && (
+                                    <p className="text-red-500 text-sm">{errors.last_name}</p>
+                                )}
                             </div>
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Suffix</label>
+
+                            {/* Suffix */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Suffix
+                                </label>
                                 <input
                                     type="text"
                                     name="suffix"
@@ -451,16 +467,15 @@ function RegistrationPage() {
                                     onChange={handleChange}
                                     className="mt-1 block w-full border p-2 rounded-md"
                                 />
-                                {errors.suffix && <p className="text-red-500 text-sm">{errors.suffix}</p>}
+                                {errors.suffix && (
+                                    <p className="text-red-500 text-sm">{errors.suffix}</p>
+                                )}
                             </div>
-                            <div className="col-span-3">
-                                <label className="block text-sm font-medium text-gray-700">Birthdate
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+
+                            {/* Birthdate */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Birthdate<span className="text-red-600" title="Required field">*</span>
                                 </label>
                                 <input
                                     type="date"
@@ -468,65 +483,81 @@ function RegistrationPage() {
                                     value={formData.birthdate}
                                     onChange={handleChange}
                                     className="mt-1 block w-full border p-2 rounded-md"
-                                    max={new Date().toISOString().split("T")[0]} // Max date is today
-                                    min="1920-01-01" // Min date is 1920-01-01
+                                    max={new Date().toISOString().split("T")[0]}
+                                    min="1920-01-01"
                                     required
                                 />
-                                {errors.birthdate && <p className="text-red-500 text-sm">{errors.birthdate}</p>}
+                                {errors.birthdate && (
+                                    <p className="text-red-500 text-sm">{errors.birthdate}</p>
+                                )}
                             </div>
-                            <div className='col-span-3'>
-                                <label className="block text-sm font-medium text-gray-700">Phone Number
-                                <span className="text-red-600 cursor-help" title="Required field">
-                                    *
-                                </span>
+
+                            {/* Phone Number */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Phone Number<span className="text-red-600" title="Required field">*</span>
                                 </label>
                                 <div className="relative">
-                                <input
+                                    <input
                                     type="text"
                                     name="phone_number"
                                     value={formData.phone_number}
                                     onChange={handlePhoneNumberChange}
-                                    className="mt-1 block w-full border p-2 rounded-md pl-12" // Add padding-left for the + sign
-                                    maxLength="10" // Allow the + to be included
+                                    className="mt-1 block w-full border p-2 rounded-md pl-12"
+                                    maxLength="10"
                                     required
-                                />
-                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">+63</span> {/* The +63 prefix inside the input */}
+                                    />
+                                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600">
+                                    +63
+                                    </span>
                                 </div>
-                                {errors.phone_number && <p className="text-red-600 mt-1">{errors.phone_number}</p>}
+                                {errors.phone_number && (
+                                    <p className="text-red-600 mt-1">{errors.phone_number}</p>
+                                )}
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Sex
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+
+                            {/* Sex */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Sex<span className="text-red-600" title="Required field">*</span>
                                 </label>
-                                <select name="sex" value={formData.sex} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
+                                <select
+                                    name="sex"
+                                    value={formData.sex}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
+                                    required
+                                >
                                     <option value="">Select Sex</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Civil Status
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+
+                            {/* Civil Status */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Civil Status<span className="text-red-600" title="Required field">*</span>
                                 </label>
-                                <select name="civil_status" value={formData.civil_status} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" required>
+                                <select
+                                    name="civil_status"
+                                    value={formData.civil_status}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full border p-2 rounded-md"
+                                    required
+                                >
                                     <option value="">Select Status</option>
                                     <option value="single">Single</option>
                                     <option value="married">Married</option>
                                     <option value="widowed">Widowed</option>
                                 </select>
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Religion</label>
+
+                            {/* Religion */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Religion
+                                </label>
                                 <input
                                     type="text"
                                     name="religion"
@@ -534,10 +565,16 @@ function RegistrationPage() {
                                     value={formData.religion}
                                     onChange={handleChange}
                                 />
-                                {errors.religion && <p className="text-red-500 text-sm">{errors.religion}</p>}
+                                {errors.religion && (
+                                    <p className="text-red-500 text-sm">{errors.religion}</p>
+                                )}
                             </div>
-                            <div className="col-span-3 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Email</label>
+
+                            {/* Email */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Email
+                                </label>
                                 <input
                                     type="email"
                                     name="email"
@@ -547,114 +584,101 @@ function RegistrationPage() {
                                 />
                                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                             </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">House No.
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="house_number"
-                                    className="mt-1 block w-full border p-2 rounded-md"
-                                    value={formData.house_number} 
-                                    onChange={handleChange} 
-                                    required 
-                                />
-                            </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Barangay
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="barangay" 
-                                    className="mt-1 block w-full border p-2 rounded-md" 
-                                    value={formData.barangay} 
-                                    onChange={handleChange} 
-                                    required 
-                                />
-                            </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Street</label>
-                                <input 
-                                    type="text" 
-                                    name="street" 
-                                    className="mt-1 block w-full border p-2 rounded-md" 
-                                    value={formData.street} 
-                                    onChange={handleChange} 
-                                />
-                            </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">City
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="city" 
-                                    className="mt-1 block w-full border p-2 rounded-md"
-                                    value={formData.city} 
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Province
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="province" 
-                                    className="mt-1 block w-full border p-2 rounded-md"
-                                    value={formData.province} 
-                                    onChange={handleChange} 
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-2 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Postal Code
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
-                                </label>
-                                <input 
-                                    type="number" 
-                                    name="postal_code" 
-                                    className="mt-1 block w-full border p-2 rounded-md" 
-                                    value={formData.postal_code} 
-                                    onChange={handleChange} 
-                                    required 
-                                />
-                            </div>
-                            <div className="col-span-6 gap-4">
-                                <label className="block text-sm font-medium text-gray-700">Birthplace
-                                <span 
-      className="text-red-600 cursor-help" 
-      title="Required field"
-    >
-      *
-    </span>
+
+                            {/* Address fields */}
+                                {/* House Number */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        House No.<span className="text-red-600" title="Required field">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="house_number"
+                                        className="mt-1 block w-full border p-2 rounded-md"
+                                        value={formData.house_number}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* Barangay */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Barangay<span className="text-red-600" title="Required field">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="barangay"
+                                        className="mt-1 block w-full border p-2 rounded-md"
+                                        value={formData.barangay}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* Street */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Street
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="street" 
+                                        className="mt-1 block w-full border p-2 rounded-md" 
+                                        value={formData.street} 
+                                        onChange={handleChange} 
+                                    />
+                                </div>
+
+                                {/* City */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        City<span className="text-red-600 cursor-help" title="Required field">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="city" 
+                                        className="mt-1 block w-full border p-2 rounded-md"
+                                        value={formData.city} 
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                {/* Province */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Province<span className="text-red-600 cursor-help" title="Required field">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="province" 
+                                        className="mt-1 block w-full border p-2 rounded-md"
+                                        value={formData.province} 
+                                        onChange={handleChange} 
+                                        required
+                                    />
+                                </div>
+
+                                {/* Postal Code */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Postal Code<span className="text-red-600 cursor-help" title="Required field">*</span>
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        name="postal_code" 
+                                        className="mt-1 block w-full border p-2 rounded-md" 
+                                        value={formData.postal_code} 
+                                        onChange={handleChange} 
+                                        required 
+                                    />
+                                </div>
+                            
+                            {/* Birthplace */}
+                            <div className="col-span-1 sm:col-span-2"> 
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Birthplace<span className="text-red-600 cursor-help" title="Required field">*</span>
                                 </label>
                                 <input 
                                     type="text" 
@@ -665,33 +689,52 @@ function RegistrationPage() {
                                     required 
                                 />
                             </div>
-                            <div className="col-span-6 gap-4 flex items-center">
-                                <input
-                                    type="checkbox"
-                                    name="termsAccepted"
-                                    className="mr-2"
-                                    checked={formData.termsAccepted}
-                                    onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-                                />
-                                <p className="text-sm text-gray-600">
-                                    I agree to the
-                                    <button type="button" className="underline text-blue-500 ml-1" onClick={openTermsModal}>
-                                        Terms and Conditions and Privacy Policy
-                                    </button>
-                                    . I understand that my information will be used for registration and verification purposes only, in accordance with data protection regulations
-                                </p>
-                                {errors.termsAccepted && <p className="text-red-500 text-sm">{errors.termsAccepted}</p>}
-                            </div>
-                            <button
-                                type="submit"
-                                className={`col-span-6 w-full bg-[#B43C3A] hover:bg-red-600 text-white font-bold py-2 rounded-md ${
-                                    loading ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                                disabled={loading}
-                            >
-                                {loading ? 'Registering...' : 'Register'}
-                            </button>
                         </div>
+
+                        {/* Terms and Submit */}
+                        <div className="flex flex-col sm:flex-row sm:items-center">
+                            {/* Checkbox */}
+                            <input
+                                type="checkbox"
+                                name="termsAccepted"
+                                className="mr-2 sm:mr-4"
+                                checked={formData.termsAccepted}
+                                onChange={(e) =>
+                                setFormData({ ...formData, termsAccepted: e.target.checked })
+                                }
+                            />
+
+                            {/* Text */}
+                            <p className="text-sm text-gray-600">
+                                I agree to the{" "}
+                                <button
+                                type="button"
+                                className="underline text-blue-500 ml-1"
+                                onClick={openTermsModal}
+                                >
+                                Terms and Conditions and Privacy Policy
+                                </button>
+                                . I understand that my information will be used for registration and
+                                verification purposes only, in accordance with data protection
+                                regulations.
+                            </p>
+
+                            {/* Error Message */}
+                            {errors.termsAccepted && (
+                                <p className="text-red-500 text-sm mt-2 sm:mt-0">{errors.termsAccepted}</p>
+                            )}
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            className={`col-span-6 w-full bg-[#B43C3A] hover:bg-red-600 text-white font-bold py-2 rounded-md ${
+                                loading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            disabled={loading}
+                            >
+                            {loading ? "Registering..." : "Register"}
+                        </button>
                     </form>
                 </div>
             </div>

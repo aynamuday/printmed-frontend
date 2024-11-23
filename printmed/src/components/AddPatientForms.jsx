@@ -5,11 +5,12 @@ import { BounceLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
 import globalSwal from "../utils/globalSwal";
 import PhysicianContext from "../context/PhysicianContext";
+import SecretaryContext from "../context/SecretaryContext";
 
 const Forms = () => {
   const { token } = useContext(AppContext);
   const { state } = useLocation();
-  const { setSelectedPatient, duplicatePatients, setDuplicatePatients, physicians, setPhysicians } = useContext(PhysicianContext);
+  const { setSelectedPatient, duplicatePatients, setDuplicatePatients, physicians, setPhysicians } = useContext(SecretaryContext);
   
   
   const patientData = state?.patient || {};
