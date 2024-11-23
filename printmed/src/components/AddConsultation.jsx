@@ -13,7 +13,8 @@ const AddConsultation = () => {
         addConsultationData, setAddConsultationData,
         isPediatrics, setIsPediatrics,
         isNext, setIsNext,
-        addConsultationErrors, setAddConsultationErrors
+        addConsultationErrors, setAddConsultationErrors,
+        setConsultations,
     } = useContext(PhysicianContext)
 
     useEffect(() => {

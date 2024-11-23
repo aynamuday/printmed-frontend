@@ -14,30 +14,29 @@ import AddConsultation from '../components/AddConsultation'
 import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
+import Swal from 'sweetalert2'
+import { BounceLoader, ClipLoader } from 'react-spinners'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
     const { 
+        resetPatientViewer,
         patient, setPatient,
-        consultationComponentStatus, setConsultationComponentStatus
+        consultationComponentStatus, setConsultationComponentStatus,
      } = useContext(PhysicianContext)
 
     const qrInputRef = useRef(null)
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
     
-    const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
 
     const handleQrInputFocus = () => {
-        console.log("focused")
-        setIsQrInputFocused(true);
-        
+        setIsQrInputFocused(true);   
     };
     
     const handleQrInputBlur = () => {
-        console.log("blurred")
         setIsQrInputFocused(false);
     };
 
@@ -53,7 +52,9 @@ const PatientPagePhysician = () => {
     }
 
     const fetchPatient = async () => {
-        globalSwal.showLoading()
+        setLoading(true)
+        setIsQrInputFocused(false)
+        setQrCode("")
 
         try {
             const res = await fetch(`/api/patient-using-qr/`, {
@@ -94,13 +95,35 @@ const PatientPagePhysician = () => {
         }
         finally {
             setLoading(false)
-            globalSwal.close()
-            setQrCode("")
         }
+    }
+
+    const handleClose = () => {
+        Swal.fire({
+            title: 'Are you sure you want to close this patient?',
+            confirmButtonText: "Yes",
+            showCancelButton: true,
+            customClass: {
+                title: 'text-xl font-bold text-black text-center',
+                confirmButton: 'bg-[#248176] text-white rounded-lg px-9 py-2 hover:bg-blue-700',
+                cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
+                popup: 'border-2 rounded-xl p-4'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                resetPatientViewer()
+            }
+        });
     }
 
     return (
         <div className={`${isQrInputFocused ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+            { loading && (
+                <div className='z-20 flex items-center justify-center absolute w-full h-full bg-white bg-opacity-30'>
+                    <ClipLoader className='' loading={loading} size={60} color='#6CB6AD' />
+                </div>
+            )}
+            
             { !patient && isQrInputFocused && (
                 <div className='flex items-center justify-center absolute w-full h-full bg-black bg-opacity-50 z-10 pointer-events-none'>
                     <div className='p-4 bg-white shadow-lg w-[400px] rounded-md'>
@@ -141,7 +164,10 @@ const PatientPagePhysician = () => {
                 </div>
             ) : (
                 <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
-                    <h2 className='font-bold text-2xl mb-4'>Patient No. {patient.patient_number}</h2>
+                    <div className='flex gap-6 items-center mb-4'>
+                        <button onClick={() => handleClose()} className='flex items-center h-full'><i className='bi bi-x-lg'></i></button>
+                        <h2 className='font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
+                    </div>
                     <div className='grid grid-cols-5 gap-4'>
                         <div className='col-span-2'>
                             <PatientDetails />

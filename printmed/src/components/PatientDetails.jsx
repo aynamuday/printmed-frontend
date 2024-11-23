@@ -15,7 +15,6 @@ const PatientDetails = () => {
     const [updateData, setUpdateData] = useState([])
 
     useEffect(() => {
-        console.log(patient)
         resetUpdateData()
         resetErrors()
     }, [])
@@ -113,7 +112,6 @@ const PatientDetails = () => {
         if (!Object.keys(updateDataToSubmit).length > 0) {
             handleBack()
             setErrors([])
-            globalSwal.close()
             return
         }
 

@@ -58,7 +58,7 @@ const ViewConsultation = () => {
                             </tr>
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
-                                <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.temperature}</td>
+                                <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.temperature} &#176;C</td>
                                 <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
                                 <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.blood_pressure}</td>
                             </tr>
@@ -88,7 +88,7 @@ const ViewConsultation = () => {
                                     <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.medical_hx}</td>
                                 </tr>
                             )}
-                            { consultation.pediatrics_h || consultation.pediatrics_e || consultation.pediatrics_a || consultation.pediatrics_d && (
+                            { (consultation.pediatrics_h || consultation.pediatrics_e || consultation.pediatrics_a || consultation.pediatrics_d) && (
                                 <>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[25%]'>{"(H)"} Home</th>
@@ -116,12 +116,19 @@ const ViewConsultation = () => {
                                 <th className='text-start border border-[#828282] p-2 w-[25%]'>Diagnosis</th>
                                 <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.diagnosis}</td>
                             </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Prescriptions</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>{ 
-                                    // consultation.prescriptions
-                                }</td>
-                            </tr>
+                            { consultation.prescriptions && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Prescriptions</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { consultation.prescriptions.map((item, index) => (
+                                            <div key={index} className='mb-2'>
+                                                <p className='underline'>{`${item.name} ${item.dosage}`}</p>
+                                                <p>{`${item.instruction}`}</p>
+                                            </div>
+                                        ))}
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
