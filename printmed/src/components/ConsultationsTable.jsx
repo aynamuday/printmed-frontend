@@ -4,6 +4,8 @@ import { getFormattedNumericDate } from '../utils/dateUtils'
 import PhysicianContext from '../context/PhysicianContext'
 
 const ConsultationsTable = ({consultations}) => {
+    console.log(consultations)
+    
     const { setConsultationComponentStatus, setViewConsultationId } = useContext(PhysicianContext)
 
     return (
@@ -18,8 +20,8 @@ const ConsultationsTable = ({consultations}) => {
                 </thead>
                 <tbody>
                 { consultations ? (
-                    consultations.map((item) => (
-                        <tr key={item.id} onClick={() => {setViewConsultationId(item.id); setConsultationComponentStatus("view");}} className='cursor-pointer bg-white hover:text-red-600'>
+                    consultations.map((item, index) => (
+                        <tr key={index} onClick={() => {setViewConsultationId(item.id); setConsultationComponentStatus("view");}} className='cursor-pointer bg-white hover:text-red-600'>
                             <td className="border p-2 border-[#828282] text-center">{item.chief_complaint}</td>
                             <td className="border p-2 border-[#828282] text-center">{item.primary_diagnosis}</td>
                             <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>

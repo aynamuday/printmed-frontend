@@ -15,7 +15,6 @@ const ViewConsultation = () => {
     } = useContext(PhysicianContext)
 
     const [consultation, setConsultation] = useState(null)
-    const [fetchError, setFetchError] = useState("")
 
     useEffect(() => {
         if (consultations[viewConsultationId] === null || consultations[viewConsultationId] === undefined) {
@@ -52,15 +51,14 @@ const ViewConsultation = () => {
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
         }
         catch (err) {
+            let error = err.message ?? "Something went wrong. Please try again later."
             if (err.name === "TypeError") {
-                setFetchError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
-            } else {
-                setFetchError(err.message || "Something went wrong. Please try again later.")
+                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
             }
             
             Swal.fire({
                 icon: 'error',
-                title: `${fetchError}`,
+                title: `${error}`,
                 showConfirmButton: false,
                 showCloseButton: true,
                 customClass: {

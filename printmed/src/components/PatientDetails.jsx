@@ -13,7 +13,6 @@ const PatientDetails = () => {
     } = useContext(PhysicianContext)
 
     const [errors, setErrors] = useState([])
-    const [fetchError, setFetchError] = useState("")
 
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState([])
@@ -148,15 +147,14 @@ const PatientDetails = () => {
             
         }
         catch (err) {
+            let error = err.message ?? "Something went wrong. Please try again later."
             if (err.name === "TypeError") {
-                setFetchError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
-            } else {
-                setFetchError(err.message || "Something went wrong. Please try again later.")
+                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
             }
             
             Swal.fire({
                 icon: 'error',
-                title: `${fetchError}`,
+                title: `${error}`,
                 showConfirmButton: false,
                 showCloseButton: true,
                 customClass: {

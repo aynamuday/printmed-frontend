@@ -29,8 +29,6 @@ const PatientPagePhysician = () => {
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
 
-    const [error, setError] = useState("")
-
     const fetchPatient = async () => {
         setPatientPageLoading(true)
         setIsQrInputFocused(false)
@@ -51,7 +49,7 @@ const PatientPagePhysician = () => {
                 if (res.status === 500) {
                     throw new Error("Something went wrong. Please try again later.")
                 } else if (res.status === 404) {
-                    throw new Error("The QR code is either deactivated or expired.")
+                    throw new Error("The QR code is either deactivated, expired, or does not exists.")
                 } else if (res.status === 403) {
                     throw new Error("You are not authorized to access this patient. Make sure you are an assigned physician.")
                 } else {
@@ -62,13 +60,12 @@ const PatientPagePhysician = () => {
             const data = await res.json()
 
             setPatient(data)
-            console.log(data)
         }
         catch (err) {
+            let error = err.message ?? "Something went wrong. Please try again later."
+
             if (err.name === "TypeError") {
-                setError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
-            } else {
-                setError(err.message || "Something went wrong. Please try again later.")
+                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
             }
             
             Swal.fire({

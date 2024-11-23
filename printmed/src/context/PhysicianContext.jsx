@@ -19,6 +19,10 @@ export const PhysicianProvider = () => {
     setConsultationComponentStatus(null)
     setConsultations([])
     setViewConsultationId(null)
+    resetAddConsultation()
+  }
+
+  const resetAddConsultation = () => {
     setAddConsultationData({
       height: '165',
       height_unit: 'cm',
@@ -78,7 +82,8 @@ export const PhysicianProvider = () => {
       addConsultationData, setAddConsultationData,
       isPediatrics, setIsPediatrics,
       isNext, setIsNext,
-      addConsultationErrors, setAddConsultationErrors
+      addConsultationErrors, setAddConsultationErrors,
+      resetAddConsultation
     }}>
       <Outlet />
     </PhysicianContext.Provider>

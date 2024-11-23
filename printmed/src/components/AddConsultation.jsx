@@ -15,10 +15,10 @@ const AddConsultation = () => {
         isPediatrics, setIsPediatrics,
         isNext, setIsNext,
         addConsultationErrors, setAddConsultationErrors,
-        setConsultations
+        setConsultations,
+        setConsultationComponentStatus, 
+        resetAddConsultation
     } = useContext(PhysicianContext)
-
-    const [fetchError, setFetchError] = useState("")
 
     useEffect(() => {
         setAddConsultationData((prevData) => ({...prevData, patient_id: patient.id}))
@@ -89,22 +89,24 @@ const AddConsultation = () => {
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
             setPatient(prevPatient => ({
                 ...prevPatient,
-                consultations: {
+                consultations: [
+                    {id: data.id, chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at},
                     ...prevPatient.consultations, 
-                    [data.id]: {chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at}
-                }
+                ]
             }));
+
+            setConsultationComponentStatus(null)
+            resetAddConsultation()
         }
         catch (err) {
+            let error = err.message ?? "Something went wrong. Please try again later."
             if (err.name === "TypeError") {
-                setFetchError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
-            } else {
-                setFetchError(err.message || "Something went wrong. Please try again later.")
+                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
             }
             
             Swal.fire({
                 icon: 'error',
-                title: `${fetchError}`,
+                title: `${error}`,
                 showConfirmButton: false,
                 showCloseButton: true,
                 customClass: {
