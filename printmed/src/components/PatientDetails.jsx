@@ -15,6 +15,7 @@ const PatientDetails = () => {
     const [updateData, setUpdateData] = useState([])
 
     useEffect(() => {
+        console.log(patient)
         resetUpdateData()
         resetErrors()
     }, [])
@@ -515,7 +516,7 @@ const PatientDetails = () => {
                                     )}
                                 </td>
                             </tr>
-                            { !update && patient.consultations.length > 0 && (
+                            { !update && patient.consultations && patient.consultations.length > 0 && (
                                 <>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Last Visit</th>

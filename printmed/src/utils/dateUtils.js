@@ -3,7 +3,6 @@ export const getFormattedNumericDate = (dateStamp, addYears = 0) => {
 
     if (addYears > 0) {
         date.setFullYear(date.getFullYear() + addYears);
-        console.log(date.getFullYear())
     }
 
     const year = date.getFullYear();
