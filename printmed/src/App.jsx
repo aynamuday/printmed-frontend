@@ -19,14 +19,14 @@ import UserPage from './pages/UserPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
 
-import PatientsPage from './pages/PatientsPage';
 import PatientPage from './pages/PatientPagePhysician';
 import AddPatientPage from './pages/AddPatientPage';
 
 import RegistrationPage from './pages/RegistrationPage';
+
 import PatientTablePage from './pages/PatientTablePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import PatientRegistrationPage from './pages/PatientRegistrationPage';
+import RegistrationsPage from './pages/RegistrationsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import LandingPage from './pages/LandingPage';
 
@@ -77,7 +77,7 @@ const App = () => {
             <Route path='/' element={<PatientTablePage/>}/>
             <Route path='patient' element={<PatientPage/>}/>
             <Route path='patients/:id' element={<PatientPage/>}/>
-            <Route path='patient-registration' element={<PatientRegistrationPage/>}/>
+            <Route path='registrations' element={<RegistrationsPage/>}/>
             <Route path='add-patient' element={<AddPatientPage/>}/>
             { generalRoutes }
           </Route>
@@ -93,13 +93,11 @@ const App = () => {
         { !user ? (
           <>
           {/* <Route path='/' element={<Navigate to='reset-password'/>}/> */}
-          {/* <Route path='/' element={<PatientIDCard />}/> */}
           {/* <Route path='/' element={<Navigate to='register'/>}/> */}
-            <Route path='/' element={<LandingPage/>}/>
+            <Route path='/' element={<LandingPage />}/>
             <Route path='login' element={<LoginPage />}/>
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path='register' element={<RegistrationPage />} />
-            <Route path='/register' element={<RegistrationPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
           </>

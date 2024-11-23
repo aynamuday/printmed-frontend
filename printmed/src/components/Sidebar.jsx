@@ -94,7 +94,7 @@ const Sidebar = () => {
                   <i className="bi bi-person-plus-fill"></i>
                   <span className="text-[15px] ml-4 text-white">Add Patient</span>
                 </NavLink>
-                <NavLink to="/patient-registration" className={linkClass}>
+                <NavLink to="/registrations" className={linkClass}>
                   <i className="bi bi-clipboard-check"></i>
                   <span className="text-[15px] ml-4 text-white">Patient Registration</span>
                 </NavLink>

@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar';
 import AppContext from '../context/AppContext';
 import { PulseLoader } from 'react-spinners'; // Import PulseLoader
 
-const PatientRegistrationPage = () => {
+const RegistrationsPage = () => {
   const navigate = useNavigate();
   const { token } = useContext(AppContext);  // Use the context to get the token
   const [patients, setPatients] = useState([]);
@@ -174,4 +174,4 @@ const PatientRegistrationPage = () => {
   );
 };
 
-export default PatientRegistrationPage;
+export default RegistrationsPage;
