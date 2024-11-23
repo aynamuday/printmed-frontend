@@ -455,9 +455,21 @@ const Forms = () => {
                 {errors.last_name && <p className="text-red-600 mt-1">{errors.last_name}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
-                <input type="text" name="suffix" value={formData.suffix} onChange={handleChange} className="mt-1 block w-full border p-2 rounded-md" />
-              </div>
+                  <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
+                  <select
+                    name="suffix"
+                    value={formData.suffix}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border p-2 rounded-md"
+                  >
+                    <option value="">Select Suffix</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </select>
+                </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Birthdate
                 <span className="text-red-600 cursor-help" title="Required field">

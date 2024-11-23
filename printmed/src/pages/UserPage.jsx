@@ -247,7 +247,9 @@ const UserPage = () => {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
             <div className="grid grid-cols-2 gap-4 w-[70%]">
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Role<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <select
                   name="role"
                   value={formData.role}
@@ -264,7 +266,9 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Personnel Number</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Personnel Number<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <input
                   type="text"
                   name="personnel_number"
@@ -278,7 +282,9 @@ const UserPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <input
                   type="text"
                   name="first_name"
@@ -305,7 +311,9 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <input
                   type="text"
                   name="last_name"
@@ -320,19 +328,26 @@ const UserPage = () => {
 
               <div className="mb-2 w-1/2">
                 <label className="block text-sm font-medium text-gray-700">Suffix (optional)</label>
-                <input
-                  type="text"
+                <select
                   name="suffix"
-                  placeholder="Suffix"
                   value={formData.suffix}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-500 rounded-md shadow-sm p-2"
-                />
-                {/* {errors.errors && errors.suffix[0] && <p className="text-red-600 mt-1 mb-1">{errors.errors.suffix[0]}</p>} */}
+                >
+                  <option value="">Select Suffix</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  {/* Add more options as needed */}
+                </select>
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Sex</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Sex<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <select
                   name="sex"
                   value={formData.sex}
@@ -348,7 +363,9 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Birthdate</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Birthdate<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <input
                   type="date"
                   name="birthdate"
@@ -373,7 +390,9 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email<span className="text-red-600 cursor-help" title="Required field">*</span>
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -388,7 +407,9 @@ const UserPage = () => {
 
               {(formData.role === 'physician' || formData.role === 'secretary') && (
                 <div className="mb-2">
-                  <label className="block text-sm font-medium text-gray-700">Department</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Department<span className="text-red-600 cursor-help" title="Required field">*</span>
+                  </label>
                   <select
                     name="department_id"
                     value={formData.department_id}
