@@ -3,51 +3,77 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import AppContext from '../context/AppContext';
-import { PulseLoader } from 'react-spinners'; // Import PulseLoader
+import { PulseLoader } from 'react-spinners';
+import SecretaryContext from '../context/SecretaryContext';
 
 const RegistrationsPage = () => {
   const navigate = useNavigate();
-  const { token } = useContext(AppContext);  // Use the context to get the token
-  const [patients, setPatients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); // To manage pagination
   const location = useLocation();
+  const { token } = useContext(AppContext);
+  const {  } = useContext(SecretaryContext)
+
+  const [registrations, setRegistrations] = useState([]);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [loading, setLoading] = useState(false);
   
-  // Fetch registrations from the API
-  const getRegistrations = async (page = 1, searchTerm = '') => {
+  const getRegistrations = async (page = 1, search = '') => {
     setLoading(true);
+    
     let url = `/api/registrations?page=${page}`;
     
-    if (searchTerm.trim() !== "") {
-      url += `&search=${searchTerm}`;
+    if (search.trim() !== "") {
+      url += `&search=${search}`;
     }
 
     try {
       const res = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`  // Using token from context
+          'Authorization': `Bearer ${token}`
         }
       });
 
-      const data = await res.json();
-      setPatients(data.data);  // Assuming the response has a 'data' property containing the patients
-      setTotalPages(data.last_page); // Assuming the response has pagination info like last_page
-    } catch (error) {
-      console.error('Error fetching registrations:', error);
-    } finally {
-      setLoading(false);
+      if(!res.ok) {
+          throw new Error("Something went wrong. Please try again later.")
+      }
+
+      const data = await res.json()
+
+      setRegistrations(data.data);
+      setTotalPages(data.last_page);
+    }
+    catch (err) {
+      let error = err.message ?? "Something went wrong. Please try again later."
+      if (err.name === "TypeError") {
+          setError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
+      } 
+      
+      Swal.fire({
+          icon: 'error',
+          title: `${error}`,
+          showConfirmButton: false,
+          showCloseButton: true,
+          customClass: {
+              title: 'text-xl font-bold text-black text-center',
+              popup: 'border-2 rounded-xl px-4 py-8',
+              icon: 'p-0 mx-auto my-0'
+          }
+      })
+    }
+    finally {
+        setLoading(false)
     }
   };
 
   useEffect(() => {
-    getRegistrations(page, searchTerm);
+    getRegistrations(page, search);
   
     // Check if we have removedId and log to see what's happening
     if (location.state?.removedId) {
       console.log('Removed patient ID:', location.state.removedId);
-      setPatients((prevPatients) => {
+      setRegistrations((prevPatients) => {
         const updatedPatients = prevPatients.filter(
           (patient) => patient.registration_id !== location.state.removedId
         );
@@ -55,28 +81,22 @@ const RegistrationsPage = () => {
         return updatedPatients;
       });
     }
-  }, [page, searchTerm, location.state]);
+  }, [page, location.state]);
   
-  // Handle search term change
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+
+    getRegistrations(page, search);
   };
 
-  // Handle page change for pagination
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setPage(newPage);
     }
   };
 
-  // Filter patients based on the search term
-  const filteredPatients = patients.filter((patient) =>
-    `${patient.first_name} ${patient.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Function to handle viewing patient details
   const handleViewDetails = (patient) => {
-    navigate('/add-patient', { state: { patient } }); // Redirect with patient data
+    navigate('/add-patient', { state: { patient } });
   };
 
   return (
@@ -85,67 +105,74 @@ const RegistrationsPage = () => {
       <Header />
 
       <div className="w-full md:w-[75%] md:ml-[22%] p-6">
-        <h1 className="text-2xl font-bold mb-4">Patient Registration</h1>
-
-        <div className="grid grid-cols-2 gap-4 items-center mb-4">
-            <div className="flex gap-4">
-                {/* Search Filter */}
-                <input
-                    type="text"
-                    placeholder="Search by Registration ID"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    className="p-2 border border-gray-300 rounded-md"
-                />
+        <div className={`flex justify-between items-end mb-6 mt-4`}>
+          <h2 className={`font-bold text-2xl`}>Registrations</h2>
+          <div className={`flex justify-end gap-4 items-end`}>
+            <div>
+                <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Registration No."}</label>
+                <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                    <input
+                        type="text"
+                        name="search"
+                        className="focus:outline-none focus:border-none"
+                        value={search}
+                        onChange={(e) => {setSearch(e.target.value)}}
+                        placeholder='Search'
+                    />
+                    <button type='submit' className="btn btn-primary d-flex align-items-center">
+                        <i className="bi bi-search me-2 text-[#374151]"></i>
+                    </button>
+                </form>
             </div>
 
             {/* Pagination Controls */}
             <div className="flex justify-end items-center">
-            <button 
-                onClick={() => handlePageChange(page - 1)} 
-                disabled={page <= 1} 
-                className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page <= 1 ? 'bg-opacity-70' : ''}`}>
-                &lt;
-            </button>
+              <button 
+                  onClick={() => handlePageChange(page - 1)} 
+                  disabled={page <= 1} 
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page <= 1 ? 'bg-opacity-70' : ''}`}>
+                  &lt;
+              </button>
 
-            <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
-                {page} OF {totalPages}
-            </button>
+              <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
+                  {page} OF {totalPages}
+              </button>
 
-            <button
-                onClick={() => handlePageChange(page + 1)} 
-                disabled={page >= totalPages} 
-                className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page >= totalPages ? 'bg-opacity-70' : ''}`}>
-                &gt;
-            </button>
+              <button
+                  onClick={() => handlePageChange(page + 1)} 
+                  disabled={page >= totalPages} 
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page >= totalPages ? 'bg-opacity-70' : ''}`}>
+                  &gt;
+              </button>
             </div>
+          </div>
         </div>
-        {/* Patient Registration Table */}
+
         {!loading && (
             <table className="w-full border border-gray-300">
                 <thead>
-                <tr className="bg-gray-200">
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Registration No.</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">First Name</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Last Name</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[20%]">Birthdate</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Sex</th>
-                    <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Action</th>
-                </tr>
+                  <tr className="bg-gray-200">
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration No.</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Sex</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
+                  </tr>
                 </thead>
                 <tbody>
-                  {filteredPatients.length > 0 ? (
-                    filteredPatients.map((patient, index) => (
+                  {registrations && registrations.length > 0 ? (
+                    registrations.map((registration, index) => (
                       <tr key={index}>
-                        <td className="p-2 border text-center border-[#828282]">{patient.registration_id}</td>
-                        <td className="p-2 border text-center border-[#828282]">{patient.first_name}</td>
-                        <td className="p-2 border text-center border-[#828282]">{patient.last_name}</td>
-                        <td className="p-2 border text-center border-[#828282]">{patient.birthdate}</td>
-                        <td className="p-2 border text-center border-[#828282]">{patient.sex}</td>
+                        <td className="p-2 border text-center border-[#828282]">{registration.registration_id}</td>
+                        <td className="p-2 border text-center border-[#828282]">{registration.last_name}</td>
+                        <td className="p-2 border text-center border-[#828282]">{registration.first_name}</td>
+                        <td className="p-2 border text-center border-[#828282]">{registration.age}</td>
+                        <td className="p-2 border text-center border-[#828282]">{registration.sex}</td>
                         <td className="p-2 border text-center border-[#828282]">
                           <button
-                            onClick={() => handleViewDetails(patient)}
-                            className="bg-[#6CB6AD] text-white px-4 py-2 rounded"
+                            onClick={() => handleViewDetails(registration)}
+                            className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
                           >
                             View
                           </button>
@@ -155,20 +182,19 @@ const RegistrationsPage = () => {
                   ) : (
                     <tr>
                       <td colSpan="6" className="border p-2 border-[#828282] text-center">
-                        No patients
+                        No registrations
                       </td>
                     </tr>
                   )}
                 </tbody>
             </table>
-            )}
+        )}
 
-            {/* Loading spinner (PulseLoader) */}
-            {loading && (
-            <div className="flex justify-center items-center py-6">
-                <PulseLoader color="#6CB6AD" loading={loading} size={15} />
-            </div>
-            )}
+        {loading && (
+          <div className="flex justify-center items-center py-6">
+              <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+          </div>
+        )}
       </div>
     </>
   );

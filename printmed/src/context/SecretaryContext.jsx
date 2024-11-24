@@ -4,6 +4,10 @@ import { Outlet } from 'react-router-dom';
 const SecretaryContext = createContext();
 
 export const SecretaryProvider = () => {
+  const [registrations, setRegistrations] = useState([])
+  const [searchRegistration, setSearchRegistration] = useState("")
+
+
   const [patient, setPatient] = useState(null)
 
   const [consultationStatus, setConsultationStatus] = useState(null);
