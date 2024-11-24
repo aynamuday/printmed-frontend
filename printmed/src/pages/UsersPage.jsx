@@ -132,7 +132,7 @@ const UsersPage = () => {
             { users && (
                 <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
                     <div className={`flex justify-between items-end mb-6 mt-14`}>
-                        <h2 className={`font-bold text-2xl`}>{ "Users" }</h2>
+                        <h2 className={`font-bold text-2xl`}>Users</h2>
                         <div className={`flex justify-end gap-4 items-end`}>
                             {/* select role dropdown */}
                             <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
@@ -141,7 +141,6 @@ const UsersPage = () => {
                             <option value="admin">Admin</option>
                             <option value="physician">Physician</option>
                             <option value="secretary">Secretary</option>
-                            <option value="queue manager">Queue Manager</option>
                             </select>
 
                             {/* select department id dropdown */}

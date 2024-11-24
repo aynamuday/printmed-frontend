@@ -87,20 +87,20 @@ const Sidebar = () => {
             ) : ( user.role === "secretary" ? (
               <>
                 <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-person-fill"></i>
-                  <span className="text-[15px] ml-4 text-white">Patients</span>
-                </NavLink>
-                <NavLink to="/add-patient" className={linkClass}>
-                  <i className="bi bi-person-plus-fill"></i>
-                  <span className="text-[15px] ml-4 text-white">Add Patient</span>
+                  <i className="bi bi-person-fill text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Patients</span>
                 </NavLink>
                 <NavLink to="/registrations" className={linkClass}>
-                  <i className="bi bi-clipboard-check"></i>
-                  <span className="text-[15px] ml-4 text-white">Patient Registration</span>
+                  <i className="bi bi-clipboard-check text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Registrations</span>
+                </NavLink>
+                <NavLink to="/add-patient" className={linkClass}>
+                  <i className="bi bi-person-plus-fill text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Add Patient</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
-                  <i className="bi bi-gear-fill"></i>
-                  <span className="text-[15px] ml-4 text-white">Settings</span>
+                  <i className="bi bi-gear-fill text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : (<></>))) }

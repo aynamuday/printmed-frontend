@@ -200,7 +200,7 @@ function RegistrationPage() {
     return (
         <>
             { loading && (
-                <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-black bg-opacity-30'>
+                <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
                     <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
                 </div>
             )}

@@ -4,7 +4,6 @@ import AppContext from './context/AppContext';
 import ProtectedRoute from './ProtectedRoute';
 
 import { AdminProvider } from './context/AdminContext';
-import { SecretaryPhysicianProvider } from './context/SecretaryPhysicianContext';
 import { PhysicianProvider } from './context/PhysicianContext';
 import { SecretaryProvider } from './context/SecretaryContext';
 
@@ -64,23 +63,19 @@ const App = () => {
     } else if (user.role === "physician") {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
-          <Route element={<SecretaryPhysicianProvider />}>
-            <Route path='/' element={<PatientPage/>}/>
-            { generalRoutes }
-          </Route>
+          <Route path='/' element={<PatientPage/>}/>
+          { generalRoutes }
         </Route>
       )
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
         <Route element={<SecretaryProvider />}>
-          <Route element={<SecretaryPhysicianProvider />}>
-            <Route path='/' element={<PatientTablePage/>}/>
-            <Route path='patient' element={<PatientPage/>}/>
-            <Route path='patients/:id' element={<PatientPage/>}/>
-            <Route path='registrations' element={<RegistrationsPage/>}/>
-            <Route path='add-patient' element={<AddPatientPage/>}/>
-            { generalRoutes }
-          </Route>
+          <Route path='/' element={<PatientTablePage/>}/>
+          <Route path='patient' element={<PatientPage/>}/>
+          <Route path='patients/:id' element={<PatientPage/>}/>
+          <Route path='registrations' element={<RegistrationsPage/>}/>
+          <Route path='add-patient' element={<AddPatientPage/>}/>
+          { generalRoutes }
         </Route>
       )
     }
@@ -92,17 +87,14 @@ const App = () => {
         {/* if user is NOT logged in */}
         { !user ? (
           <>
-          {/* <Route path='/' element={<Navigate to='reset-password'/>}/> */}
-          {/* <Route path='/' element={<Navigate to='register'/>}/> */}
             <Route path='/' element={<LandingPage />}/>
             <Route path='login' element={<LoginPage />}/>
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path='register' element={<RegistrationPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            {/* <Route path='reset-password' element={<ResetPasswordPage/>}/> */}
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </>
         ) : (
-          // routes if user IS logged in
+          // routes if user is logged in
           <Route element={<ProtectedRoute/>}>
             { roleBasedRoutes }
           </Route>

@@ -47,16 +47,10 @@ const DashboardAdminPage = () => {
         ) : (
           <>
             {/* dashboard cards */}
-            <div className="grid grid-cols-4 gap-4 mt-8">
-              <div className="col-span-2">
+            <div className="grid grid-cols-3 gap-4 mt-8">
                 <DashboardCard name={"Admins"} value={usersCount.admins} />
-              </div>
-              <div className="col-span-2">
-                <DashboardCard name={"Physicians"} value={usersCount.physicians} /> 
-              </div>
-              <div className="col-start-2 col-end-4">
+                <DashboardCard name={"Physicians"} value={usersCount.physicians} />
                 <DashboardCard name={"Secretaries"} value={usersCount.secretaries} />
-              </div>
             </div>
 
             <div className='h-12'></div>

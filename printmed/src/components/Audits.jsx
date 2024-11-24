@@ -55,6 +55,8 @@ const Audits = ({ forDashboard = false }) => {
         })
 
         const data = await res.json()
+        console.log(data)
+        console.log(url)
         forDashboard ? setAuditsToday(data) : setAuditsAll(data)
 
         setLoadingAudits(false)
@@ -130,7 +132,7 @@ const Audits = ({ forDashboard = false }) => {
         if (forDashboard) {
             getAudits(auditsToday.current_page - 1, auditsTodayResource, undefined, undefined)
         } else {
-            getAudits(auditsAll.current_page - 1, {...auditsAllFilters, resource}, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
+            getAudits(auditsAll.current_page - 1, auditsAllFilters.resource, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
         }
     };
 
@@ -212,7 +214,7 @@ const Audits = ({ forDashboard = false }) => {
                         <option value="payment">Payment</option>
                     </select>
 
-                    {!forDashboard ? (
+                    {!forDashboard && (
                         <>
                             {/* date from */}
                             <div>
@@ -242,7 +244,7 @@ const Audits = ({ forDashboard = false }) => {
                                 />
                             </div>
                         </>
-                    ) : (<></>)}
+                    )}
 
                     {/* download audits button */}
                     { audits.data && audits.data.length > 0 && ( 
