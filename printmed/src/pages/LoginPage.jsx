@@ -188,7 +188,7 @@ const LoginPage = () => {
               <input
                 name="otp"
                 type="text"
-                className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="appearance-none rounded-md w-full px-3 py-2 border focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Enter OTP"
                 value={otp.code}
                 onChange={handleOtpChange}
