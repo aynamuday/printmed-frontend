@@ -63,7 +63,7 @@ const RegistrationsPage = () => {
   };
 
   useEffect(() => {
-    if(!registrations && !registrations.data) {
+    if(!registrations.data) {
       setLoading(true)
     }
 

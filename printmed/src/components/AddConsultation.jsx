@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { getFormattedNumericDate } from '../utils/dateUtils'
-import globalSwal from '../utils/globalSwal'
 
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'

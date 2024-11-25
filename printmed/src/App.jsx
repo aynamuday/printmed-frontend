@@ -28,6 +28,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import RegistrationsPage from './pages/RegistrationsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import LandingPage from './pages/LandingPage';
+import WebcamCapture from './components/WebcamCapture';
 
 
 const App = () => {
@@ -84,12 +85,13 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='register' element={<RegistrationPage />} />
+        
         {/* if user is NOT logged in */}
         { !user ? (
           <>
             <Route path='/' element={<LandingPage />}/>
             <Route path='login' element={<LoginPage />}/>
-            <Route path='register' element={<RegistrationPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </>
