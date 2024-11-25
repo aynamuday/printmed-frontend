@@ -94,8 +94,9 @@ const RegistrationsPage = () => {
     }
   };
 
-  const handleViewDetails = (patient) => {
-    navigate('/add-patient', { state: { patient } });
+  const handleViewRegistration = (registration) => {
+    console.log(registration.phone_number)
+    navigate('/add-patient', { state: { registration } });
   };
 
   return (
@@ -128,8 +129,8 @@ const RegistrationsPage = () => {
             <div className="flex justify-end items-center">
               <button 
                   onClick={() => handlePageChange(registrations.current_page - 1)} 
-                  disabled={registrations.current_page <= 1} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page <= 1 ? 'bg-opacity-70' : ''}`}>
+                  disabled={registrations.current_page <= 1 || !registrations.current_page} 
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
                   &lt;
               </button>
 
@@ -138,9 +139,9 @@ const RegistrationsPage = () => {
               </button>
 
               <button
-                  onClick={() => handlePageChange(registrations.current_page + 1)} 
+                  onClick={() => handlePageChange(registrations.current_page + 1 || !registrations.current_page)} 
                   disabled={registrations.current_page >= registrations.last_page} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page >= registrations.last_page ? 'bg-opacity-70' : ''}`}>
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
                   &gt;
               </button>
             </div>
@@ -170,7 +171,7 @@ const RegistrationsPage = () => {
                         <td className="p-2 border text-center border-[#828282]">{registration.sex}</td>
                         <td className="p-2 border text-center border-[#828282]">
                           <button
-                            onClick={() => handleViewDetails(registration)}
+                            onClick={() => handleViewRegistration(registration)}
                             className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
                           >
                             View

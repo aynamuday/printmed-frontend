@@ -5,6 +5,7 @@ import logo from '../assets/images/logo.png';
 
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
+import Swal from 'sweetalert2';
 
 function RegistrationPage() {
     const [loading, setLoading] = useState(false);
@@ -28,20 +29,19 @@ function RegistrationPage() {
             middle_name: '',
             last_name: '',
             suffix: '',
+            sex: '',
             birthdate: '',
             birthplace: '',
-            phone_number: '',
-            sex: '',
             civil_status: '',
-            religion: '',
-            email: '',
             house_number: '',
-            barangay: '',
             street: '',
+            barangay: '',
             city: '',
             province: '',
             postal_code: '',
-            termsAccepted: '',
+            religion: '',
+            phone_number: '',
+            email: '',
         });
 
         setErrors({
@@ -49,20 +49,19 @@ function RegistrationPage() {
             middle_name: '',
             last_name: '',
             suffix: '',
+            sex: '',
             birthdate: '',
             birthplace: '',
-            phone_number: '',
-            sex: '',
             civil_status: '',
-            religion: '',
-            email: '',
             house_number: '',
-            barangay: '',
             street: '',
+            barangay: '',
             city: '',
             province: '',
             postal_code: '',
-            termsAccepted: '',
+            religion: '',
+            phone_number: '',
+            email: '',
         });
 
         setTermsAccepted(false)
@@ -115,6 +114,56 @@ function RegistrationPage() {
         let formIsValid = true;
     
         setErrors({});
+
+        if (formData.first_name.trim() === "") {
+            newErrors.first_name = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.last_name.trim() === "") {
+            newErrors.last_name = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.sex.trim() === "") {
+            newErrors.sex = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.birthdate.trim() === "") {
+            newErrors.birthdate = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.civil_status.trim() === "") {
+            newErrors.civil_status = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.house_number.trim() === "") {
+            newErrors.house_number = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.street.trim() === "") {
+            newErrors.street = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.barangay.trim() === "") {
+            newErrors.barangay = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.city.trim() === "") {
+            newErrors.city = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.province.trim() === "") {
+            newErrors.barangay = 'This field is required.';
+            formIsValid = false;
+        }
     
         if (formData.email.trim() !== "" && !/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Please enter a valid email address';
@@ -130,11 +179,12 @@ function RegistrationPage() {
             formIsValid = false;
         }
     
-        // Validate terms acceptance
         if (!termsAccepted) {
             newErrors.termsAccepted = 'You must accept the terms and conditions.';
             formIsValid = false;
         }
+
+        console.log(formData.sex)
     
         setErrors(newErrors);
 
@@ -303,6 +353,9 @@ function RegistrationPage() {
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>
+                                    {errors.sex && (
+                                        <p className="text-red-500 text-sm">{errors.sex}</p>
+                                    )}
                                 </div>
 
                                 {/* Birthdate */}
@@ -359,6 +412,9 @@ function RegistrationPage() {
                                         <option value="Married">Married</option>
                                         <option value="Widowed">Widowed</option>
                                     </select>
+                                    {errors.civil_status && (
+                                        <p className="text-red-500 text-sm">{errors.civil_status}</p>
+                                    )}
                                 </div>
 
                                 {/* House Number */}
@@ -553,7 +609,7 @@ function RegistrationPage() {
                             {/* Submit Button */}
                             <button
                                 onClick={(e) => handleConfirm(e)}
-                                className={`col-span-6 w-full bg-[#B43C3A] hover:bg-blue-700 text-white font-bold py-2 rounded-md ${loading ? "cursor-not-allowed" : ""}`}
+                                className={`col-span-6 w-full bg-[#B43C3A] hover:bg-blue-700 text-white font-bold py-2 rounded-md ${loading && "cursor-not-allowed"}`}
                                 disabled={loading}
                             >
                                 Register

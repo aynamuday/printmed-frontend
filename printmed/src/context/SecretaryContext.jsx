@@ -1,9 +1,13 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import AppContext from './AppContext';
 
 const SecretaryContext = createContext();
 
 export const SecretaryProvider = () => {
+  const { token } = useContext(AppContext)
+
+  const [physicians, setPhysicians] = useState([])
   const [registrations, setRegistrations] = useState([]);
   const [registrationsSearch, setRegistrationsSearch] = useState('');
 
@@ -13,7 +17,6 @@ export const SecretaryProvider = () => {
   const [consultationStatus, setConsultationStatus] = useState(null);
   const [consultationId, setConsultationId] = useState(null);
   const [consultation, setConsultation] = useState(null);
-  const [physicians, setPhysicians] = useState([]);
   const [loadingDuplicate, setLoading] = useState(false);
   const [patientsAll, setPatientsAll] = useState([]);
   const [patientsAllFilters, setPatientsAllFilters] = useState({
@@ -63,8 +66,38 @@ export const SecretaryProvider = () => {
     }
   };
 
+  useEffect(() => {
+    fetchPhysicians()
+  }, [])
+
+  const fetchPhysicians = async () => {
+    console.log("hi")
+    try {
+      const res = await fetch('/api/physicians', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        console.log(data);
+        
+        setPhysicians(data); // Set physicians in state
+      } else {
+        console.error('Error fetching physicians:', res.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching physicians:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <SecretaryContext.Provider value={{ 
+      physicians, setPhysicians,
       registrations, setRegistrations,
       registrationsSearch, setRegistrationsSearch,
 
@@ -78,7 +111,6 @@ export const SecretaryProvider = () => {
       searchPatients, setSearchPatients,
       selectedPatient, setSelectedPatient,
       duplicatePatients, setDuplicatePatients,
-      physicians, setPhysicians,
       loadingDuplicate, checkForDuplicatePatient
     }}>
       <Outlet />
