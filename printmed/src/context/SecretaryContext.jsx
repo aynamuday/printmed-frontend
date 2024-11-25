@@ -4,8 +4,8 @@ import { Outlet } from 'react-router-dom';
 const SecretaryContext = createContext();
 
 export const SecretaryProvider = () => {
-  const [registrations, setRegistrations] = useState([])
-  const [searchRegistration, setSearchRegistration] = useState("")
+  const [registrations, setRegistrations] = useState([]);
+  const [registrationsSearch, setRegistrationsSearch] = useState('');
 
 
   const [patient, setPatient] = useState(null)
@@ -65,6 +65,10 @@ export const SecretaryProvider = () => {
 
   return (
     <SecretaryContext.Provider value={{ 
+      registrations, setRegistrations,
+      registrationsSearch, setRegistrationsSearch,
+
+
       patient, setPatient,
 
       consultationStatus, setConsultationStatus,

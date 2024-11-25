@@ -10,18 +10,14 @@ const RegistrationsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useContext(AppContext);
-  const {  } = useContext(SecretaryContext)
-
-  const [registrations, setRegistrations] = useState([]);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { 
+    registrations, setRegistrations,
+    registrationsSearch, setRegistrationsSearch
+  } = useContext(SecretaryContext)
 
   const [loading, setLoading] = useState(false);
   
   const getRegistrations = async (page = 1, search = '') => {
-    setLoading(true);
-    
     let url = `/api/registrations?page=${page}`;
     
     if (search.trim() !== "") {
@@ -41,8 +37,7 @@ const RegistrationsPage = () => {
 
       const data = await res.json()
 
-      setRegistrations(data.data);
-      setTotalPages(data.last_page);
+      setRegistrations(data);
     }
     catch (err) {
       let error = err.message ?? "Something went wrong. Please try again later."
@@ -68,7 +63,11 @@ const RegistrationsPage = () => {
   };
 
   useEffect(() => {
-    getRegistrations(page, search);
+    if(!registrations && !registrations.data) {
+      setLoading(true)
+    }
+
+    getRegistrations(registrations.current_page, registrationsSearch);
   
     // Check if we have removedId and log to see what's happening
     if (location.state?.removedId) {
@@ -81,17 +80,17 @@ const RegistrationsPage = () => {
         return updatedPatients;
       });
     }
-  }, [page, location.state]);
+  }, [location.state]);
   
   const handleSearchSubmit = (e) => {
     e.preventDefault()
 
-    getRegistrations(page, search);
+    getRegistrations(registrations.current_page, registrationsSearch);
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setPage(newPage);
+    if (newPage > 0 && newPage <= registrations.last_page) {
+      getRegistrations(newPage, registrationsSearch);
     }
   };
 
@@ -115,8 +114,8 @@ const RegistrationsPage = () => {
                         type="text"
                         name="search"
                         className="focus:outline-none focus:border-none"
-                        value={search}
-                        onChange={(e) => {setSearch(e.target.value)}}
+                        value={registrationsSearch}
+                        onChange={(e) => {setRegistrationsSearch(e.target.value)}}
                         placeholder='Search'
                     />
                     <button type='submit' className="btn btn-primary d-flex align-items-center">
@@ -128,20 +127,20 @@ const RegistrationsPage = () => {
             {/* Pagination Controls */}
             <div className="flex justify-end items-center">
               <button 
-                  onClick={() => handlePageChange(page - 1)} 
-                  disabled={page <= 1} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page <= 1 ? 'bg-opacity-70' : ''}`}>
+                  onClick={() => handlePageChange(registrations.current_page - 1)} 
+                  disabled={registrations.current_page <= 1} 
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page <= 1 ? 'bg-opacity-70' : ''}`}>
                   &lt;
               </button>
 
               <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
-                  {page} OF {totalPages}
+                  {registrations.current_page} OF {registrations.last_page}
               </button>
 
               <button
-                  onClick={() => handlePageChange(page + 1)} 
-                  disabled={page >= totalPages} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${page >= totalPages ? 'bg-opacity-70' : ''}`}>
+                  onClick={() => handlePageChange(registrations.current_page + 1)} 
+                  disabled={registrations.current_page >= registrations.last_page} 
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page >= registrations.last_page ? 'bg-opacity-70' : ''}`}>
                   &gt;
               </button>
             </div>
@@ -161,8 +160,8 @@ const RegistrationsPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {registrations && registrations.length > 0 ? (
-                    registrations.map((registration, index) => (
+                  {registrations && registrations.data && registrations.data.length > 0 ? (
+                    registrations.data.map((registration, index) => (
                       <tr key={index}>
                         <td className="p-2 border text-center border-[#828282]">{registration.registration_id}</td>
                         <td className="p-2 border text-center border-[#828282]">{registration.last_name}</td>
