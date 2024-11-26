@@ -1,23 +1,30 @@
 import React, { useRef, useState } from 'react'
 import Webcam from 'react-webcam';
 
-const WebcamCapture = ({image, setImage, setShow}) => {
+const WebcamCapture = ({setImage, setShow}) => {
   const webcamRef = useRef(null)
+
+  const [capturedImage, setCapturedImage] = useState(null)
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot()
-    setImage(imageSrc)
+    setCapturedImage(imageSrc)
+  }
+
+  const handleApprove = () => {
+    setImage(capturedImage)
+    setShow(false)
   }
 
   return (
     <div className='flex justify-center items-center h-svh'>
         <div className=' relative'>
-          { !image ? (
+          { !capturedImage ? (
             <>
               <Webcam 
                 ref={webcamRef}
                 audio={false}
-                className='w-[600px] h-[600px] object-cover rounded-2xl'
+                className='w-[600px] h-[600px] object-cover rounded-2xl bg-black'
                 screenshotFormat='image/png'
                 videoConstraints={{
                   facingMode: "user",
@@ -31,13 +38,13 @@ const WebcamCapture = ({image, setImage, setShow}) => {
             </>
           ) : (
             <>
-              <img src={image} className='w-[500px] h-[500px] object-cover rounded-2xl shadow-sm shadow-gray-500' />
+              <img src={capturedImage} className='w-[500px] h-[500px] object-cover rounded-2xl shadow-sm shadow-gray-500' />
 
               <div className='grid grid-cols-2 items-center justify-center mt-4'>
-                <div onClick={() => setImage(null)} className=' cursor-pointer flex justify-center items-center bg-white border border-[#B43C3A]'>
+                <div onClick={() => setCapturedImage(null)} className=' cursor-pointer flex justify-center items-center bg-white border border-[#B43C3A]'>
                   <i className='bi bi-arrow-clockwise text-[#B43C3A] text-[40px] font-extrabold p-0 m-0'></i>
                 </div>
-                <div onClick={() => setShow(false)} className='cursor-pointer flex justify-center items-center bg-white border border-green-500 '>
+                <div onClick={() => handleApprove()} className='cursor-pointer flex justify-center items-center bg-white border border-green-500 '>
                   <i className='bi bi-check2 text-green-500 text-[40px] font-extrabold p-0 m-0'></i>
                 </div>
               </div>

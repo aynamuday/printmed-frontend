@@ -7,9 +7,11 @@ import { BounceLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
 import globalSwal from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
+import { capitalizedWords } from "../utils/wordUtils";
 
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
+import WebcamCapture from "../components/WebcamCapture"
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
@@ -18,7 +20,7 @@ const AddPatientPage = () => {
   
   const { 
     physicians,
-    duplicatePatients, setDuplicatePatients, 
+    duplicatePatients, setDuplicatePatients,
   } = useContext(SecretaryContext);
   
   
@@ -43,94 +45,45 @@ const AddPatientPage = () => {
     phone_number: patientData.phone_number || '',
     registration_id: patientData.id || '',
   });
+  const [image, setImage] = useState(null)
+  const [takePhoto, setTakePhoto] = useState(false)
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  //handle change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const capitalizedValue = value
-        .toLowerCase()
-        .replace(/\s+/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+    const capitalizedValue = name !== "email" && name !== "suffix" ? capitalizedWords(value) : value
 
-        if (name === 'birthdate_day' || name === 'birthdate_month' || name === 'birthdate_year') {
-            setFormData({
-              ...formData,
-              birthdate: {
-                ...formData.birthdate,
-                [name.split('_')[1]]: value
-              }
-            });
-            return;
-        }
-          // Name fields should not accept numbers and capitalize first letter
-        if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-            setErrors({ ...errors, [name]: 'Enter a valid name' });
-            return;
-        } else {
-          // Clear the error if the value is valid
-          setErrors({ ...errors, [name]: '' });
-      }
+    setErrors({ ...errors, [name]: '' });
+      
+    // No numbers and symbols numbers
+    if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
+        return;
+    }
 
-          // Address validations (house_number, street, barangay, etc.)
-        if (name === 'house_number' || name === 'street' || name === 'barangay') {
-            // No symbols allowed
-            if (/[^a-zA-Z0-9\s]/.test(value)) {
-              setErrors({ ...errors, [name]: 'Enter a valid address' });
-              return;
-            }
-        } else {
-          // Clear the error if the value is valid
-          setErrors({ ...errors, [name]: '' });
-      }
-      
-        if (name === 'city' || name === 'province') {
-            // No numbers allowed
-            if (/[^a-zA-Z\s]/.test(value)) {
-              setErrors({ ...errors, [name]: 'nter a valid address' });
-              return;
-            }
-        }
-      
-        if (name === 'postal_code') {
-            // Only numbers allowed and ensure length is 6
-            if (/[^0-9]/.test(value)) {
-              setErrors({ ...errors, [name]: '' });
-              return;
-            }
-            if (value.length > 4) {
-              setErrors({ ...errors, [name]: '' });
-              return;
-            }
-        }
-      
-        if (name === 'sex') {
-            setFormData({
-              ...formData,
-              sex: value,
-            });
-            return;
-        }
-        
-        if (name === 'suffix') {
-          setFormData({
-            ...formData,
-            suffix: value,
-          });
+    // No symbols allowed
+    if (name === 'house_number' || name === 'street' || name === 'barangay') {
+        if (/[^a-zA-Z0-9\s]/.test(value)) {
           return;
         }
-
-        if (name === 'civil_status') {
-            setFormData({
-              ...formData,
-              civil_status: value,
-            });
-            return;
+    }
+    
+    // No numbers allowed
+    if (name === 'city' || name === 'province') {
+        if (/[^a-zA-Z\s]/.test(value)) {
+          return;
         }
+    }
+    
+    if (name === 'postal_code') {
+        if (/[^0-9]/.test(value)) {
+          return;
+        }
+        if (value.length > 4) {
+          return;
+        }
+    }
 
     setFormData({ 
         ...formData, 
@@ -140,6 +93,8 @@ const AddPatientPage = () => {
 
   const handlePhoneNumberChange = (e) => {
     let value = e.target.value;
+
+    setErrors({ ...errors, phone_number: '' });
   
     if (!/^\d*$/.test(value)) {
       return;
@@ -161,218 +116,180 @@ const AddPatientPage = () => {
       ...formData,
       phone_number: value,
     });
-  
-    setErrors({ ...errors, phone_number: '' });
   };
-  
-  // handle submit
+
   const handleSubmit = async (e) => {
-      e.preventDefault();
-    
-      let newErrors = {};
-      let formIsValid = true;
-    
-      setErrors({});
-      setLoading(true);
-    
-      // Validate required fields
-      if (!formData.first_name) {
-          newErrors.first_name = 'First name is required';
-          formIsValid = false;
-      }
-      if (!formData.last_name) {
-          newErrors.last_name = 'Last name is required';
-          formIsValid = false;
-      }
-      if (!formData.phone_number) {
-        newErrors.phone_number = 'Phone number is required';
-        formIsValid = false;
-      } else if (formData.phone_number.length !== 11) {
-        newErrors.phone_number = 'Phone number must be exactly 11 digits';
-        formIsValid = false;
-      }
-    
-      // Set errors and prevent submission if form is invalid
-      setErrors(newErrors);
-    
-      if (!formIsValid) {
-          // Show swal alert for validation errors
-          globalSwal.fire({
-              icon: 'error',
-              title: 'Invalid Form',
-              text: 'Please use a valid information in each fields.',
-              showConfirmButton: true,
-          });
-          setLoading(false);
-          return;
-      }
-    
-      try {
-          const queryParams = new URLSearchParams({
-              first_name: formData.first_name,
-              last_name: formData.last_name,
-              birthdate: formData.birthdate,
-              sex: formData.sex,
-          }).toString();
-    
-          const duplicateCheckResponse = await fetch(`/api/duplicate-patients?${queryParams}`, {
-              method: 'GET',
-              headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-          });
-    
-          const duplicateData = await duplicateCheckResponse.json();
-          console.log(duplicateData);
-    
-          if (duplicateCheckResponse.ok && duplicateData.length > 0) {
-              setDuplicatePatients(duplicateData);
-              setLoading(false);
-              showDuplicatePatientsSwal();
-              return;
-          } else {
-              setDuplicatePatients([]);
-          }
-    
-      } catch (error) {
-          setErrors({ message: 'An error occurred while checking for duplicates.' });
-          setLoading(false);
-          return;
-      }
-    
-      // Proceed with adding the patient if no duplicates are found
-      globalSwal.fire({
-          title: 'Are you sure?',
-          text: 'Do you want to add this patient?',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, add it!',
-          cancelButtonText: 'Cancel',
-      }).then(async (result) => {
-          if (result.isConfirmed) {
-              try {
-                  const filteredFormData = Object.fromEntries(
-                      Object.entries(formData).filter(([key, value]) => value !== '')
-                  );
-    
-                  const res = await fetch('/api/patients', {
-                      method: 'POST',
-                      headers: {
-                          Authorization: `Bearer ${token}`,
-                          'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify(filteredFormData),
-                  });
-    
-                  const data = await res.json();
-                  console.log(data);
-    
-                  if (res.ok) {
-                      setFormData({
-                          first_name: '',
-                          middle_name: '',
-                          last_name: '',
-                          suffix: '',
-                          birthdate: '',
-                          birthplace: '',
-                          phone_number: '',
-                          sex: '',
-                          civil_status: '',
-                          religion: '',
-                          email: '',
-                          house_number: '',
-                          barangay: '',
-                          street: '',
-                          city: '',
-                          province: '',
-                          postal_code: '',
-                      });
-    
-                      globalSwal.fire({
-                          icon: 'success',
-                          title: 'Patient added successfully!',
-                          showConfirmButton: false,
-                          showCloseButton: true,
-                      });
-    
-                      navigate('/patient-registration', {
-                          state: { removedId: formData.registration_id },
-                      });
-                  }
-              } catch (error) {
-                  globalSwal.fire({
-                      icon: 'error',
-                      title: 'Error!',
-                      text: 'An error occurred while adding a new patient. Please check the information and try again.',
-                      showConfirmButton: true,
-                  });
-              } finally {
-                  setLoading(false);
-              }
-          } else {
-              // This block runs if the user clicks the Cancel button
-              setLoading(false);  // Stop loading
-          }
-      });
-  };
+    e.preventDefault();
 
-  // Add logic to display Swal when there are duplicates
-  useEffect(() => {
-    if (duplicatePatients && duplicatePatients.length > 0) {
-      showDuplicatePatientsSwal();
+    let newErrors = {};
+    let formIsValid = true;
+
+    setErrors({});
+
+    if (formData.email.trim() !== "" && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+      formIsValid = false;
     }
-  }, [duplicatePatients]);
 
-  useEffect(() => {
-    // Clear duplicatePatients state when the Add Patient page loads
-    setDuplicatePatients([]);
-  }, []); // Empty dependency array ensures this runs only on mount
+    if (formData.postal_code.trim() !== "" && (Number (formData.postal_code) < 1000 || Number (formData.postal_code) > 9999)) {
+      newErrors.postal_code = 'Postal code must only range between 1000-9999';
+    }
+
+    if (formData.phone_number.length !== 11) {
+      newErrors.phone_number = 'Please enter a valid phone number.';
+      formIsValid = false;
+    }
+
+    if (!image) {
+        newErrors.photo = 'Photo is required.';
+        formIsValid = false;
+    }
+
+    if (!formIsValid) {
+      setErrors(newErrors);
+      return
+    }
+
+    try {
+      setLoading(true)
+
+      const queryParams = new URLSearchParams({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        birthdate: formData.birthdate,
+        sex: formData.sex,
+      }).toString();
+
+      const res = await fetch(`/api/duplicate-patients?${queryParams}`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      if(!res.ok) {
+        throw new Error("Something went wrong. Please try again later.")
+      }
+
+      const data = await res.json()
+
+      if (data.length > 0) {
+        setDuplicatePatients(data);
+        setLoading(false);
+        return;
+      }
+
+      addPatient(e)
+    }
+    catch (err) {
+      let error = err.message ?? "Something went wrong. Please try again later."
+      if (err.name === "TypeError") {
+          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
+      } 
+      
+      Swal.fire({
+          icon: 'error',
+          title: `${error}`,
+          showConfirmButton: false,
+          showCloseButton: true,
+          customClass: {
+              title: 'text-xl font-bold text-black text-center',
+              popup: 'border-2 rounded-xl px-4 py-8',
+              icon: 'p-0 mx-auto my-0'
+          }
+      })
+    }
+    finally {
+        setLoading(false)
+    }
+  };
   
-  const showDuplicatePatientsSwal = () => {
-    const safeDuplicatePatients = duplicatePatients || [];
+  const addPatient = async (e) => {
+    e.preventDefault()
+    
+    setDuplicatePatients([])
 
     globalSwal.fire({
-      icon: 'warning',
-      title: 'Duplicate Patient Found',
-      html: `
-        <table style="width: 100%; border-collapse: collapse; text-align: left;" id="duplicateTable">
-          <thead>
-            <tr>
-              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Patient Number</th>
-              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Name</th>
-              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${duplicatePatients.map(patient => `
-              <tr>
-                <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.patient_number}</td>
-                <td style="border-bottom: 1px solid #ddd; padding: 8px;">${patient.full_name}</td>
-                <td style="border-bottom: 1px solid #ddd; padding: 8px;">
-                  <button 
-                    style="padding: 5px 10px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;"
-                    class="view-patient-btn"
-                    data-id="${patient.id}"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `,
-      showConfirmButton: true,
+      title: 'Are you sure you want to add this patient?',
       showCancelButton: true,
-      didOpen: () => {
-        // Attach React event handlers after Swal renders
-        document.querySelectorAll('.view-patient-btn').forEach(button => {
-          button.addEventListener('click', (e) => {
-            const patientId = e.target.getAttribute('data-id');
-            navigate(`/patients/${patientId}`);
+      confirmButtonText: 'Yes, add patient',
+      cancelButtonText: 'Cancel',
+    }).then(async (result) => {
+      if(result.isConfirmed) {
+        try {
+          setLoading(true)
+
+          const filteredFormData = Object.fromEntries(
+            Object.entries(formData).filter(([key, value]) => value !== '')
+          );
+
+          const res = await fetch('/api/patients', {
+              method: 'POST',
+              headers: {
+                  Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(filteredFormData),
           });
-        });
-      },
-    });
+
+          if(!res.ok) {
+            throw new Error("Something went wrong. Please try again later.")
+          }
+    
+          const data = await res.json()
+
+          setFormData({
+            first_name: '',
+            middle_name: '',
+            last_name: '',
+            suffix: '',
+            birthdate: '',
+            birthplace: '',
+            phone_number: '',
+            sex: '',
+            civil_status: '',
+            religion: '',
+            email: '',
+            house_number: '',
+            barangay: '',
+            street: '',
+            city: '',
+            province: '',
+            postal_code: '',
+          });
+
+          globalSwal.fire({
+              icon: 'success',
+              title: 'Patient added successfully!',
+              showConfirmButton: false,
+              showCloseButton: true,
+          });
+
+          navigate('/registrations', {
+              state: { removedId: formData.registration_id },
+          });
+        }
+        catch (err) {
+          let error = err.message ?? "Something went wrong. Please try again later."
+          if (err.name === "TypeError") {
+              error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
+          } 
+          
+          Swal.fire({
+              icon: 'error',
+              title: `${error}`,
+              showConfirmButton: false,
+              showCloseButton: true,
+              customClass: {
+                  title: 'text-xl font-bold text-black text-center',
+                  popup: 'border-2 rounded-xl px-4 py-8',
+                  icon: 'p-0 mx-auto my-0'
+              }
+          })
+        }
+        finally {
+            setLoading(false)
+        }
+      }
+    }) 
   };
 
   return (
@@ -380,9 +297,58 @@ const AddPatientPage = () => {
         <Sidebar />
         <Header />
         <>
+          {/* loader */}
           {loading && (
             <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-40 z-10'>
               <BounceLoader color="#6CB6AD" loading={true} size={60} />
+            </div>
+          )}
+
+          {/* web cam */}
+          {takePhoto && (
+            <>
+              <button onClick={() => setTakePhoto(false)} className="fixed top-0 right-0 z-10 mt-8 mr-8 w-fit"><i className="bi bi-x-lg text-3xl text-white "></i></button>
+              <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-70'>
+                <WebcamCapture image={image} setImage={setImage} setShow={setTakePhoto} />
+              </div>
+            </>
+          )}
+
+          {/* pop up if there are duplicate patients */}
+          {duplicatePatients && duplicatePatients.length > 0 && (
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-10'>
+              <div className="bg-white rounded-md flex justify-items-center flex-col pt-4 pb-8 px-8 max-h-[70vh] overflow-y-auto">
+                <i className="bi bi-exclamation-circle block text-[60px] text-center text-orange-500"></i>
+                <p className="text-center font-bold text-xl text-black">Duplicate Patient/s Found</p>
+                <table className="w-[100%] border-collapse mt-4 break-words">
+                  <thead>
+                    <tr>
+                      <th className="border-b-[2px] border-[#696969] text-center p-2">Patient No.</th>
+                      <th className="border-b-[2px] border-[#696969] text-center p-2">Name</th>
+                      <th className="border-b-[2px] border-[#696969] text-center p-2">Photo</th>
+                      <th className="border-b-[2px] border-[#696969] text-center p-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">2021-00214</td>
+                      <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">Einha Muday</td>
+                      <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
+                        <div className="w-full flex justify-center items-center">
+                          <img src={image} className="max-w-[80%] max-h-[120px]"/>
+                        </div>
+                      </td>
+                      <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
+                        <button className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <button onClick={(e) => addPatient(e)} className="py-2 px-4 bg-[#248176] hover:bg-[#1b6a61] text-white rounded-md">Add anyway</button>
+                  <button onClick={() => setDuplicatePatients([])} className="py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md">Cancel</button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -408,7 +374,7 @@ const AddPatientPage = () => {
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
                     />
-                    {errors.first_name && <p className="text-red-600 mt-1">{errors.first_name}</p>}
+                    {errors.first_name && <p className="text-red-600 text-sm mt-1">{errors.first_name}</p>}
                   </div>
 
                   {/* Middle Name */}
@@ -436,7 +402,7 @@ const AddPatientPage = () => {
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
                     />
-                    {errors.last_name && <p className="text-red-600 mt-1">{errors.last_name}</p>}
+                    {errors.last_name && <p className="text-red-600 text-sm mt-1">{errors.last_name}</p>}
                   </div>
 
                   {/* Suffix */}
@@ -608,10 +574,13 @@ const AddPatientPage = () => {
                     <input 
                       type="number" 
                       name="postal_code" 
+                      maxLength="4"
+                      minLength="4"
                       value={formData.postal_code} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
+                    {errors.postal_code && <p className="text-red-600 text-sm mt-1">{errors.postal_code}</p>}
                   </div>
 
                   {/* Religion */}
@@ -636,7 +605,8 @@ const AddPatientPage = () => {
                       value={formData.phone_number || '09'}  // Ensure '09' is always visible
                       onChange={handlePhoneNumberChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
-                      maxLength="11"  // Limit input length to 11
+                      maxLength="11"
+                      minLength="11"
                       placeholder="Enter phone number"
                       required
                     />
@@ -668,18 +638,30 @@ const AddPatientPage = () => {
                       required
                     >
                       <option value="">Assign Physician</option>
-                      {loading ? (
-                        <option>Loading physicians...</option>
-                      ) : (
-                        physicians.map((physician) => (
+                      { physicians && physicians.map((physician) => (
                           <option key={physician.id} value={physician.id}>
-                            {physician.department_name} - {physician.full_name}
+                            Doc. {physician.full_name}
                           </option>
                         ))
-                      )}
+                      }
                     </select>
                   </div>
+
+                  {/* Photo */}
+                  <div>
+                    <label className="block text-sm font-medium">
+                      Photo <span className="text-red-600 cursor-help">*</span>
+                    </label>
+                    <div>
+                      { image && ( <img src={image} className="max-w-full h-[150px] mt-2 mb-2 rounded-lg" /> )}
+                      <button onClick={() => setTakePhoto(true)} className={`py-2 px-4 rounded-lg text-white font-semibold ${image ? "w-fit bg-red-700 hover:bg-red-500" : "w-full bg-orange-500 hover:bg-orange-600"}`}>
+                        <i className="bi bi-camera mr-1"></i> {image ? "Retake" : "Take"} Photo
+                      </button>
+                    </div>
+                    {errors.photo && <p className="text-red-600 text-sm mt-1">{errors.photo}</p>}
+                  </div>
                 </div>
+
                 <button type="submit" className="mt-8 w-[50%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
               </form>
             </div>
