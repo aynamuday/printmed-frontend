@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import AppContext from "../context/AppContext";
@@ -8,66 +8,90 @@ import globalSwal from "../utils/globalSwal";
 const DepartmentsPage = () => {
   const { token } = useContext(AppContext);
   const { departments, setDepartments } = useContext(AppContext);
-  const [newDepartment, setNewDepartment] = useState("")
-  const [editDepartment, setEditDepartment] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [newDepartment, setNewDepartment] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const availableDepartments = [
+    "Emergency Department (ER)",
+    "Intensive Care Unit (ICU)",
+    "Outpatient Department (OPD)",
+    "Inpatient Department (Ward)",
+    "Surgery Department",
+    "Pediatrics",
+    "Obstetrics and Gynecology (OB-GYN)",
+    "Cardiology",
+    "Oncology",
+    "Neurology",
+    "Orthopedics",
+    "Dermatology",
+    "Ophthalmology",
+    "Psychiatry",
+    "Nephrology",
+    "Pulmonology",
+    "Gastroenterology",
+    "Radiology",
+    "Anesthesiology",
+    "Rehabilitation/Physical Therapy"
+  ];
+
+  // Filter out departments already in the system
+  const departmentsList = availableDepartments.filter(
+    (department) => !departments.some((item) => item.name === department)
+  );
 
   const handleAddDepartment = async () => {
-    if(newDepartment.trim() === "") {
-      return
-    }
+    if (!newDepartment) return;
 
-    setLoading(true)
+    setLoading(true);
 
-    if (departments.some(item => item.name.toLowerCase() === newDepartment.toLowerCase())) {
-      setLoading(false)
-
+    // Check if the department is already in the list
+    if (departments.some((item) => item.name.toLowerCase() === newDepartment.toLowerCase())) {
+      setLoading(false);
       globalSwal.fire({
         showConfirmButton: false,
         title: 'Department already exists.',
         icon: 'error',
         showCloseButton: true
-      })
+      });
       return;
     }
-    
+
     try {
       const res = await fetch("/api/departments", {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({name: newDepartment}),
+        body: JSON.stringify({ name: newDepartment }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setDepartments(prevDepartments => [...prevDepartments, data]);
-        setNewDepartment("");
+        setDepartments((prevDepartments) => [...prevDepartments, data]);
+        setNewDepartment(""); // Clear the selection
 
         globalSwal.fire({
           showConfirmButton: false,
           title: 'Department added successfully!',
           icon: 'success',
           showCloseButton: true
-        })
+        });
       } else {
         globalSwal.fire({
           showConfirmButton: false,
           title: "Error adding the department.",
           icon: 'error',
           showCloseButton: true
-        })
+        });
       }
     } catch (error) {
       console.error("Error adding department:", error);
     }
 
-    setLoading(false)
+    setLoading(false);
   };
 
-  // Handle delete department
   const handleDeleteDepartment = (id) => {
     globalSwal.fire({
       title: 'Are you sure you want to delete this department?',
@@ -77,7 +101,7 @@ const DepartmentsPage = () => {
       cancelButtonText: 'Cancel'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        setLoading(true)
+        setLoading(true);
 
         try {
           const res = await fetch(`/api/departments/${id}`, {
@@ -88,14 +112,14 @@ const DepartmentsPage = () => {
           });
 
           if (res.ok) {
-            setDepartments(departments.filter(department => department.id !== id));
+            setDepartments(departments.filter((department) => department.id !== id));
 
             globalSwal.fire({
               showConfirmButton: false,
               title: 'Department deleted successfully!',
               icon: 'success',
               showCloseButton: true
-            })
+            });
           } else {
             globalSwal.fire({
               showConfirmButton: false,
@@ -103,13 +127,13 @@ const DepartmentsPage = () => {
               text: "This department is used to identify users and records.",
               icon: 'error',
               showCloseButton: true
-            })
+            });
           }
         } catch (error) {
           console.error("Error deleting department:", error);
         }
 
-        setLoading(false)
+        setLoading(false);
       }
     });
   };
@@ -119,24 +143,36 @@ const DepartmentsPage = () => {
       <Sidebar />
       <Header />
       <div className="w-full md:w-[75%] md:ml-[25%] mt-8 mb-8 p-4 relative">
-        { loading &&
-            <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
-                <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
-            </div>
-        }
+        {loading && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10">
+            <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
+          </div>
+        )}
 
         <h2 className="text-2xl mb-4 font-bold">Departments</h2>
 
-        {/* Add Department Form */}
-        <div className="mb-6">
-          <input
-            type="text"
-            className="border border-gray-600 p-2 rounded h-8"
-            placeholder="Name"
+        {/* Add Department Dropdown */}
+        <div className="mb-6 flex items-center">
+          <select
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
-          />
-          <button onClick={handleAddDepartment} className="bg-[#248176] text-white px-8 rounded ml-2 h-8">
+            className="border border-gray-600 p-2 rounded h-10 w-1/2 mr-5"
+          >
+            <option value="" disabled>Select Department</option>
+            {departmentsList.length > 0 ? (
+              departmentsList.map((department, index) => (
+                <option key={index} value={department}>
+                  {department}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>No departments available</option>
+            )}
+          </select>
+          <button
+            onClick={handleAddDepartment}
+            className="bg-[#248176] text-white px-8 rounded h-10"
+          >
             Add
           </button>
         </div>
@@ -151,13 +187,15 @@ const DepartmentsPage = () => {
             </tr>
           </thead>
           <tbody>
-            { departments && departments.map((item, index) => (
+            {departments && departments.map((item, index) => (
               <tr key={item.id}>
                 <td className="border p-2 border-[#828282] text-center">{index + 1}</td>
                 <td className="border p-2 border-[#828282] text-center">{item.name}</td>
                 <td className="border p-2 border-[#828282]">
-                  <div className='flex flex-row w-100 items-center justify-center gap-4'>
-                    <button onClick={() => {handleDeleteDepartment(item.id)}} className='py-1 w-20 rounded-lg bg-red-500 text-white'>Delete</button>
+                  <div className="flex flex-row w-100 items-center justify-center gap-4">
+                    <button onClick={() => handleDeleteDepartment(item.id)} className="py-1 w-20 rounded-lg bg-red-500 text-white">
+                      Delete
+                    </button>
                   </div>
                 </td>
               </tr>
