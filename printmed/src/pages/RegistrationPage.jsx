@@ -44,25 +44,7 @@ function RegistrationPage() {
             email: '',
         });
 
-        setErrors({
-            first_name: '',
-            middle_name: '',
-            last_name: '',
-            suffix: '',
-            sex: '',
-            birthdate: '',
-            birthplace: '',
-            civil_status: '',
-            house_number: '',
-            street: '',
-            barangay: '',
-            city: '',
-            province: '',
-            postal_code: '',
-            religion: '',
-            phone_number: '',
-            email: '',
-        });
+        setErrors({});
 
         setTermsAccepted(false)
     };
@@ -80,7 +62,7 @@ function RegistrationPage() {
           
         // no symbols allowed
         if (name === 'house_number' || name === 'street' || name === 'barangay') {
-            if (/[^a-zA-Z0-9\s-]/.test(value)) {
+            if (/[^a-zA-Z0-9\s]/.test(value)) {
                 return;
             }
         }
@@ -104,6 +86,33 @@ function RegistrationPage() {
         setFormData({ 
             ...formData, 
             [name]: capitalizedValue, 
+        });
+    };
+
+    const handlePhoneNumberChange = (e) => {
+        let value = e.target.value;
+    
+        setErrors({ ...errors, phone_number: '' });
+      
+        if (!/^\d*$/.test(value)) {
+          return;
+        }
+      
+        if (value.length === 1 && value !== '0') {
+          value = '09' + value;
+        }
+      
+        if (value.length < 3) {
+          value = '09';
+        }
+      
+        if (value.length > 11) {
+          return;
+        }
+      
+        setFormData({
+          ...formData,
+          phone_number: value,
         });
     };
 
@@ -174,7 +183,7 @@ function RegistrationPage() {
             newErrors.postal_code = 'Postal code must only range between 1000-9999';
         }
     
-        if (formData.phone_number.length !== 9) {
+        if (formData.phone_number.length !== 11) {
             newErrors.phone_number = 'Please enter a valid phone number.';
             formIsValid = false;
         }
@@ -184,11 +193,8 @@ function RegistrationPage() {
             formIsValid = false;
         }
 
-        console.log(formData.sex)
-    
-        setErrors(newErrors);
-
         if (!formIsValid) {
+            setErrors(newErrors);
             return
         }
 
@@ -199,8 +205,6 @@ function RegistrationPage() {
         e.preventDefault()
 
         setShowConfirmation(false)
-        
-        setFormData((prevData) => ({...prevData, phone_number: "09" + formData.phone_number}))
 
         setLoading(true);
 
@@ -517,7 +521,8 @@ function RegistrationPage() {
                                         name="postal_code" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.postal_code} 
-                                        maxLength={4}
+                                        maxLength="4"
+                                        minLength="4"
                                         onChange={handleChange}
                                     />
                                     {errors.postal_code && (
@@ -551,15 +556,16 @@ function RegistrationPage() {
                                         <input
                                             type="text"
                                             name="phone_number"
-                                            value={formData.phone_number}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full border p-2 rounded-md pl-14 border-black"
-                                            maxLength="9"
+                                            value={formData.phone_number  || '09'}
+                                            onChange={(e) => handlePhoneNumberChange(e)}
+                                            className="mt-1 block w-full border p-2 rounded-md border-black"
+                                            maxLength="11"
+                                            minLength="11"
                                             required
                                         />
-                                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
+                                        {/* <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
                                         +639
-                                        </span>
+                                        </span> */}
                                     </div>
                                     {errors.phone_number && (
                                         <p className="text-red-600 text-sm">{errors.phone_number}</p>

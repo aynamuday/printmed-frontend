@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
-import globalSwal from '../utils/globalSwal'
 import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
 import PhysicianContext from '../context/PhysicianContext';
@@ -45,25 +44,7 @@ const PatientDetails = () => {
     }
 
     const resetErrors = () => {
-        setErrors({
-            'first_name': '',
-            'middle_name': '',
-            'last_name': '',
-            'suffix': '',
-            'birthdate': '',
-            'birthplace': '',
-            'sex': '',
-            'house_number': '',
-            'street': '',
-            'barangay': '',
-            'city': '',
-            'province': '',
-            'postal_code': '',
-            'civil_status': '',
-            'religion': '',
-            'phone_number': '',
-            'email': ''
-        })
+        setErrors({})
     }
 
     const handleBack = () => {
