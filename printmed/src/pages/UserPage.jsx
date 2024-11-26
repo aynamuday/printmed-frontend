@@ -124,18 +124,12 @@ const UserPage = () => {
       return;
     }
   
-    // suffix validation and capitalize first letter
     if (name === 'suffix') {
-      if (/[^a-zA-Z\s]/.test(value)) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-  
-      if (value.length > 3) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-      setErrors({ ...errors, [name]: '' });
+      setFormData({
+        ...formData,
+        suffix: value,
+      });
+      return;
     }
   
     if (name === 'sex') {
