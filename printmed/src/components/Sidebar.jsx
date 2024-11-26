@@ -49,28 +49,28 @@ const Sidebar = () => {
             { user.role === "admin" ? (
               <>
                 <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-house-door-fill"></i>
-                  <span className="text-[15px] ml-4 text-white">Dashboard</span>
+                  <i className="bi bi-house-door-fill text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/users" className={linkClass}>
-                  <i className="bi bi-people"></i>
-                  <span className="text-[15px] ml-4 text-white">Users</span>
+                  <i className="bi bi-people text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Users</span>
                 </NavLink>
                 <NavLink to="/add-user" className={linkClass}>
-                  <i className="bi bi-plus-circle"></i>
-                  <span className="text-[15px] ml-4 text-white">Add User</span>
+                  <i className="bi bi-plus-circle text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Add User</span>
                 </NavLink> 
                 <NavLink to="/departments" className={linkClass}>
-                  <i className="bi bi-building"></i>
-                  <span className="text-[15px] ml-4 text-white">Departments</span>
+                  <i className="bi bi-building text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Departments</span>
                 </NavLink>
                 <NavLink to="/audits" className={linkClass}>
-                  <i className="bi bi-file-earmark-bar-graph"></i>
-                  <span className="text-[15px] ml-4 text-white">Audits</span>
+                  <i className="bi bi-file-earmark-bar-graph text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Audits</span>
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
-                  <i className="bi bi-gear-fill"></i>
-                  <span className="text-[15px] ml-4 text-white">Settings</span>
+                  <i className="bi bi-gear-fill text-2xl"></i>
+                  <span className="text-xl ml-4 text-white">Settings</span>
                 </NavLink>
               </>
             ) : ( user.role === "physician" ? (

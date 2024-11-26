@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import AppContext from '../context/AppContext';
@@ -8,7 +8,6 @@ import SecretaryContext from '../context/SecretaryContext';
 
 const RegistrationsPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { token } = useContext(AppContext);
   const { 
     registrations, setRegistrations,
@@ -44,8 +43,9 @@ const RegistrationsPage = () => {
       if (err.name === "TypeError") {
           setError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
       } 
-      
-      Swal.fire({
+
+      if (!registrations.data || registrations.data.length < 1) {
+        Swal.fire({
           icon: 'error',
           title: `${error}`,
           showConfirmButton: false,
@@ -55,7 +55,8 @@ const RegistrationsPage = () => {
               popup: 'border-2 rounded-xl px-4 py-8',
               icon: 'p-0 mx-auto my-0'
           }
-      })
+        })
+      }
     }
     finally {
         setLoading(false)
@@ -67,7 +68,8 @@ const RegistrationsPage = () => {
       setLoading(true)
     }
 
-    getRegistrations(registrations.current_page, registrationsSearch);
+    const page = registrations.data ? registrations.current_page : 1
+    getRegistrations(page, registrationsSearch);
   }, []);
   
   const handleSearchSubmit = (e) => {
@@ -76,9 +78,9 @@ const RegistrationsPage = () => {
     getRegistrations(registrations.current_page, registrationsSearch);
   };
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= registrations.last_page) {
-      getRegistrations(newPage, registrationsSearch);
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= registrations.last_page) {
+      getRegistrations(page, registrationsSearch);
     }
   };
 
@@ -86,12 +88,19 @@ const RegistrationsPage = () => {
     navigate('/add-patient', { state: { registration } });
   };
 
+  const handleClear = () => {
+    setLoading(true)
+
+    setRegistrationsSearch("")
+    getRegistrations(1, "");
+  };
+
   return (
     <>
       <Sidebar />
       <Header />
 
-      <div className="w-full md:w-[75%] md:ml-[22%] p-6">
+      <div className="w-full md:w-[75%] md:ml-[22%] p-6 pb-10">
         <div className={`flex justify-between items-end mb-6 mt-4`}>
           <h2 className={`font-bold text-2xl`}>Registrations</h2>
           <div className={`flex justify-end gap-4 items-end`}>
@@ -131,6 +140,17 @@ const RegistrationsPage = () => {
                   className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
                   &gt;
               </button>
+            </div>
+
+            {/* clear button */}
+            <div>
+                <label className='text-xs block mb-1'>Clear</label>
+                <button 
+                  onClick={() => {handleClear()}}
+                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm`}
+                >
+                  <i className='bi bi-arrow-clockwise text-xl'></i>  
+                </button>
             </div>
           </div>
         </div>

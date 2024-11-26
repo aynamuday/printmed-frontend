@@ -67,14 +67,15 @@ const Audits = ({ forDashboard = false }) => {
             setLoadingAudits(true)
         }
 
+        const page = audits.data ? audits.current_page : 1
         if (forDashboard) {
-            getAudits(1, auditsTodayResource, undefined, undefined)
+            getAudits(page, auditsTodayResource, undefined, undefined)
         }  else {
             const dateFrom = auditsAllFilters.dateFrom
             const dateUntil = auditsAllFilters.dateUntil
             const resource = auditsAllFilters.resource
 
-            getAudits(1, resource, dateFrom, dateUntil)
+            getAudits(page, resource, dateFrom, dateUntil)
         }
     }, [])
 
@@ -200,7 +201,7 @@ const Audits = ({ forDashboard = false }) => {
     return (
         <>  
             <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
-                <h2 className={`font-bold ${forDashboard ? `text-lg` : `text-2xl`}`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
+                <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
                 <div className={`flex justify-end gap-4 items-end`}>
                     {/* select audit resource dropdown */}
@@ -264,7 +265,7 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
 
-                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-black font-medium rounded-md hover:bg-[#37c9b8]' 
+                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white font-medium rounded-md hover:bg-[#37c9b8]' 
                                 onClick={handleAuditsDownload} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
                                 { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
                                     <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />

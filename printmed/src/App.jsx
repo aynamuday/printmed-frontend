@@ -23,7 +23,7 @@ import AddPatientPage from './pages/AddPatientPage';
 
 import RegistrationPage from './pages/RegistrationPage';
 
-import PatientTablePage from './pages/PatientTablePage';
+import PatientsPage from './pages/PatientsPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import RegistrationsPage from './pages/RegistrationsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
@@ -71,8 +71,7 @@ const App = () => {
     } else if (user.role === "secretary") {
       roleBasedRoutes = (
         <Route element={<SecretaryProvider />}>
-          <Route path='/' element={<PatientTablePage/>}/>
-          <Route path='patient' element={<PatientPage/>}/>
+          <Route path='/' element={<PatientsPage/>}/>
           <Route path='patients/:id' element={<PatientPage/>}/>
           <Route path='registrations' element={<RegistrationsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>

@@ -31,8 +31,8 @@ const WebcamCapture = ({setImage, setShow}) => {
               }}/>
 
               <div className='flex justify-center -mt-[100px]'>
-                <button onClick={() => capture()} className='bg-white p-3 rounded-full w-fit'>
-                  <div className='bg-red-500 w-[65px] h-[65px] rounded-full hover:bg-red-700'></div>
+                <button onClick={() => capture()} className='bg-white p-2 rounded-full w-fit'>
+                  <div className='bg-red-500 w-[50px] h-[50px] rounded-full hover:bg-red-700'></div>
                 </button>
               </div>
             </>
