@@ -14,6 +14,7 @@ const UsersTable = ({ users }) => {
   const [updatedUser, setUpdatedUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [openMenu, setOpenMenu] = useState(null); // State for open menu
+  const [errorMessage, setErrorMessage] = useState('');
 
   // remove the current user, so it's not displayed on table
   users = users ? users.filter(item => item.id !== user.id) : users;
@@ -57,6 +58,36 @@ const UsersTable = ({ users }) => {
 
     setLoading(false);
   };
+
+  // send reset link
+  const handleSendResetLink = async (email) => {
+    setLoading(true);
+  
+    try {
+      const res = await fetch('/reset-password', { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      const data = await res.json();
+      console.log(data);
+  
+      if (res.ok) {
+        alert('Reset link sent successfully!');
+      } else {
+        setErrorMessage(data.message || 'An error occurred.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while sending the reset link.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   useEffect(() => {
     if (users && updatedUser != null) {
@@ -158,7 +189,8 @@ const UsersTable = ({ users }) => {
                           </button>
                         )}
 
-                        <button className="block w-full text-left px-4 py-2 text-blue-600">
+                        <button className="block w-full text-left px-4 py-2 text-blue-600"
+                          onClick={() => handleSendResetLink(item.email)}>
                           Send Reset Link
                         </button>
                       </div>

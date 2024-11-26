@@ -174,7 +174,7 @@ const UserPage = () => {
             Object.entries(formData).filter(([key, value]) => value !== '')
           );
 
-          const url = userId ? '/api/users/' + userId + '/update-information' : '/api/register'
+          const url = userId ? '/api/users/' + userId + '/update-information' : '/api/users'
           const method = userId ? "PUT" : "POST"
 
           const res = await fetch(url, {
