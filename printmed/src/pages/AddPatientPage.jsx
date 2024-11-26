@@ -5,45 +5,43 @@ import SecretaryContext from "../context/SecretaryContext";
 
 import { BounceLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
-import globalSwal from "../utils/globalSwal";
+import globalSwalNoIcon from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
 import { capitalizedWords } from "../utils/wordUtils";
+import { base64ToPngFile } from "../utils/fileUtils";
 
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import WebcamCapture from "../components/WebcamCapture"
+import Swal from "sweetalert2";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
+  const { physicians } = useContext(SecretaryContext);
   const { state } = useLocation();
   const navigate = useNavigate();
-  
-  const { 
-    physicians,
-    duplicatePatients, setDuplicatePatients,
-  } = useContext(SecretaryContext);
-  
-  
-  const patientData = state?.registration || {};
-  const [formData, setFormData] = useState({
-    first_name: patientData.first_name || '',
-    middle_name: patientData.middle_name || '',
-    last_name: patientData.last_name || '',
-    suffix: patientData.suffix || '',
-    sex: patientData.sex || '',
-    birthdate: patientData.birthdate || '',
-    birthplace: patientData.birthplace || '',
-    civil_status: patientData.civil_status || '',
-    house_number: patientData.house_number || '',
-    street: patientData.street || '',
-    barangay: patientData.barangay || '',
-    city: patientData.city || '',
-    province: patientData.province || '',
-    postal_code: patientData.postal_code || '',
-    religion: patientData.religion || '',
-    email: patientData.email || '',
-    phone_number: patientData.phone_number || '',
-    registration_id: patientData.id || '',
+
+  const [duplicatePatients, setDuplicatePatients] = useState([])
+
+  const registration = state?.registration || {};
+  const [newPatientData, setNewPatientData] = useState({
+    first_name: registration.first_name || '',
+    middle_name: registration.middle_name || '',
+    last_name: registration.last_name || '',
+    suffix: registration.suffix || '',
+    sex: registration.sex || '',
+    birthdate: registration.birthdate || '',
+    birthplace: registration.birthplace || '',
+    civil_status: registration.civil_status || '',
+    house_number: registration.house_number || '',
+    street: registration.street || '',
+    barangay: registration.barangay || '',
+    city: registration.city || '',
+    province: registration.province || '',
+    postal_code: registration.postal_code || '',
+    religion: registration.religion || '',
+    email: registration.email || '',
+    phone_number: registration.phone_number || '',
   });
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
@@ -57,19 +55,19 @@ const AddPatientPage = () => {
 
     setErrors({ ...errors, [name]: '' });
       
-    // No numbers and symbols numbers
+    // no numbers and symbols numbers
     if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
         return;
     }
 
-    // No symbols allowed
+    // no symbols allowed
     if (name === 'house_number' || name === 'street' || name === 'barangay') {
         if (/[^a-zA-Z0-9\s]/.test(value)) {
           return;
         }
     }
     
-    // No numbers allowed
+    // no numbers allowed
     if (name === 'city' || name === 'province') {
         if (/[^a-zA-Z\s]/.test(value)) {
           return;
@@ -85,8 +83,8 @@ const AddPatientPage = () => {
         }
     }
 
-    setFormData({ 
-        ...formData, 
+    setNewPatientData({ 
+        ...newPatientData, 
         [name]: capitalizedValue, 
     });
   };
@@ -112,8 +110,8 @@ const AddPatientPage = () => {
       return;
     }
   
-    setFormData({
-      ...formData,
+    setNewPatientData({
+      ...newPatientData,
       phone_number: value,
     });
   };
@@ -126,16 +124,16 @@ const AddPatientPage = () => {
 
     setErrors({});
 
-    if (formData.email.trim() !== "" && !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (newPatientData.email.trim() !== "" && !/\S+@\S+\.\S+/.test(newPatientData.email)) {
       newErrors.email = 'Please enter a valid email address';
       formIsValid = false;
     }
 
-    if (formData.postal_code.trim() !== "" && (Number (formData.postal_code) < 1000 || Number (formData.postal_code) > 9999)) {
+    if (newPatientData.postal_code.trim() !== "" && (Number (newPatientData.postal_code) < 1000 || Number (newPatientData.postal_code) > 9999)) {
       newErrors.postal_code = 'Postal code must only range between 1000-9999';
     }
 
-    if (formData.phone_number.length !== 11) {
+    if (newPatientData.phone_number.length !== 11) {
       newErrors.phone_number = 'Please enter a valid phone number.';
       formIsValid = false;
     }
@@ -150,65 +148,7 @@ const AddPatientPage = () => {
       return
     }
 
-    try {
-      setLoading(true)
-
-      const queryParams = new URLSearchParams({
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        birthdate: formData.birthdate,
-        sex: formData.sex,
-      }).toString();
-
-      const res = await fetch(`/api/duplicate-patients?${queryParams}`, {
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-      });
-
-      if(!res.ok) {
-        throw new Error("Something went wrong. Please try again later.")
-      }
-
-      const data = await res.json()
-
-      if (data.length > 0) {
-        setDuplicatePatients(data);
-        setLoading(false);
-        return;
-      }
-
-      addPatient(e)
-    }
-    catch (err) {
-      let error = err.message ?? "Something went wrong. Please try again later."
-      if (err.name === "TypeError") {
-          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-      } 
-      
-      Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-      })
-    }
-    finally {
-        setLoading(false)
-    }
-  };
-  
-  const addPatient = async (e) => {
-    e.preventDefault()
-    
-    setDuplicatePatients([])
-
-    globalSwal.fire({
+    globalSwalNoIcon.fire({
       title: 'Are you sure you want to add this patient?',
       showCancelButton: true,
       confirmButtonText: 'Yes, add patient',
@@ -217,55 +157,33 @@ const AddPatientPage = () => {
       if(result.isConfirmed) {
         try {
           setLoading(true)
-
-          const filteredFormData = Object.fromEntries(
-            Object.entries(formData).filter(([key, value]) => value !== '')
-          );
-
-          const res = await fetch('/api/patients', {
-              method: 'POST',
+    
+          const queryParams = new URLSearchParams({
+            first_name: newPatientData.first_name,
+            last_name: newPatientData.last_name,
+            birthdate: newPatientData.birthdate,
+            sex: newPatientData.sex,
+          }).toString();
+    
+          const res = await fetch(`/api/duplicate-patients?${queryParams}`, {
               headers: {
                   Authorization: `Bearer ${token}`,
               },
-              body: JSON.stringify(filteredFormData),
           });
-
+    
           if(!res.ok) {
             throw new Error("Something went wrong. Please try again later.")
           }
     
           const data = await res.json()
-
-          setFormData({
-            first_name: '',
-            middle_name: '',
-            last_name: '',
-            suffix: '',
-            birthdate: '',
-            birthplace: '',
-            phone_number: '',
-            sex: '',
-            civil_status: '',
-            religion: '',
-            email: '',
-            house_number: '',
-            barangay: '',
-            street: '',
-            city: '',
-            province: '',
-            postal_code: '',
-          });
-
-          globalSwal.fire({
-              icon: 'success',
-              title: 'Patient added successfully!',
-              showConfirmButton: false,
-              showCloseButton: true,
-          });
-
-          navigate('/registrations', {
-              state: { removedId: formData.registration_id },
-          });
+    
+          if (data.length > 0) {
+            setDuplicatePatients(data);
+            setLoading(false);
+            return;
+          }
+    
+          addPatient(e)
         }
         catch (err) {
           let error = err.message ?? "Something went wrong. Please try again later."
@@ -288,9 +206,98 @@ const AddPatientPage = () => {
         finally {
             setLoading(false)
         }
-      }
-    }) 
+      } 
+    })
   };
+  
+  const addPatient = async (e) => {
+    e.preventDefault()
+    
+    setDuplicatePatients([])
+
+    try {
+      setLoading(true)
+
+      const filteredNewPatientData = Object.fromEntries(
+        Object.entries(newPatientData).filter(([key, value]) => value !== '')
+      );
+      const photo = base64ToPngFile(image)
+
+      const formData = new FormData();
+      formData.append('photo', photo);
+
+      for (const [key, value] of Object.entries(filteredNewPatientData)) {
+        formData.append(key, value);
+      }
+
+      const res = await fetch('http://127.0.0.1:8000/api/patients', {
+          method: 'POST',
+          headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+      });
+
+      if(!res.ok) {
+        throw new Error("Something went wrong. Please try again later.")
+      }
+
+      const data = await res.json()
+
+      setNewPatientData({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        suffix: '',
+        birthdate: '',
+        birthplace: '',
+        phone_number: '',
+        sex: '',
+        civil_status: '',
+        religion: '',
+        email: '',
+        house_number: '',
+        barangay: '',
+        street: '',
+        city: '',
+        province: '',
+        postal_code: '',
+      });
+
+      globalSwalNoIcon.fire({
+          icon: 'success',
+          title: 'Patient added successfully!',
+          showConfirmButton: false,
+          showCloseButton: true,
+      });
+
+      navigate('/registrations', {
+          state: { removedId: formData.registration_id },
+      });
+    }
+    catch (err) {
+      let error = err.message ?? "Something went wrong. Please try again later."
+      if (err.name === "TypeError") {
+          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
+      } 
+      
+      Swal.fire({
+          icon: 'error',
+          title: `${error}`,
+          showConfirmButton: false,
+          showCloseButton: true,
+          customClass: {
+              title: 'text-xl font-bold text-black text-center',
+              popup: 'border-2 rounded-xl px-4 py-8',
+              icon: 'p-0 mx-auto my-0'
+          }
+      })
+    }
+    finally {
+        setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -330,18 +337,20 @@ const AddPatientPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">2021-00214</td>
-                      <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">Einha Muday</td>
-                      <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
-                        <div className="w-full flex justify-center items-center">
-                          <img src={image} className="max-w-[80%] max-h-[120px]"/>
-                        </div>
-                      </td>
-                      <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
-                        <button className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
-                      </td>
-                    </tr>
+                    {(duplicatePatients.map((patient, index) => (
+                      <tr key={index}>
+                        <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">{patient.patient_number}</td>
+                        <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">{patient.full_name}</td>
+                        <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
+                          <div className="w-full flex justify-center items-center">
+                            <img src={patient.photo_url ?? ""} className="max-w-[80%] max-h-[120px]"/>
+                          </div>
+                        </td>
+                        <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
+                          <button className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
+                        </td>
+                      </tr>
+                    )))}
                   </tbody>
                 </table>
                 <div className="flex items-center justify-center gap-4 mt-6">
@@ -369,7 +378,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="first_name" 
-                      value={formData.first_name} 
+                      value={newPatientData.first_name} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -383,7 +392,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="middle_name" 
-                      value={formData.middle_name} 
+                      value={newPatientData.middle_name} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                     />
@@ -397,7 +406,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="last_name" 
-                      value={formData.last_name} 
+                      value={newPatientData.last_name} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -410,7 +419,7 @@ const AddPatientPage = () => {
                       <label className="block text-sm font-medium">Suffix</label>
                       <select
                         name="suffix"
-                        value={formData.suffix}
+                        value={newPatientData.suffix}
                         onChange={handleChange}
                         className="mt-1 block w-full border p-2 rounded-md border-black bg-white"
                       >
@@ -430,7 +439,7 @@ const AddPatientPage = () => {
                     </label>
                     <select 
                       name="sex" 
-                      value={formData.sex} 
+                      value={newPatientData.sex} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black bg-white" 
                       required
@@ -449,7 +458,7 @@ const AddPatientPage = () => {
                     <input
                       type="date"
                       name="birthdate"
-                      value={formData.birthdate}
+                      value={newPatientData.birthdate}
                       onChange={handleChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                       max={new Date().toISOString().split("T")[0]}
@@ -466,7 +475,7 @@ const AddPatientPage = () => {
                       <input 
                         type="text" 
                         name="birthplace" 
-                        value={formData.birthplace} 
+                        value={newPatientData.birthplace} 
                         onChange={handleChange} 
                         className="mt-1 block w-full border p-2 rounded-md border-black"
                       />
@@ -479,7 +488,7 @@ const AddPatientPage = () => {
                     </label>
                     <select 
                       name="civil_status" 
-                      value={formData.civil_status} 
+                      value={newPatientData.civil_status} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black bg-white" 
                       required
@@ -499,7 +508,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="house_number" 
-                      value={formData.house_number} 
+                      value={newPatientData.house_number} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -514,7 +523,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="street" 
-                      value={formData.street} 
+                      value={newPatientData.street} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required
@@ -529,7 +538,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="barangay" 
-                      value={formData.barangay} 
+                      value={newPatientData.barangay} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -544,7 +553,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="city" 
-                      value={formData.city} 
+                      value={newPatientData.city} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -559,7 +568,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="province" 
-                      value={formData.province} 
+                      value={newPatientData.province} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
@@ -576,7 +585,7 @@ const AddPatientPage = () => {
                       name="postal_code" 
                       maxLength="4"
                       minLength="4"
-                      value={formData.postal_code} 
+                      value={newPatientData.postal_code} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
@@ -589,7 +598,7 @@ const AddPatientPage = () => {
                     <input 
                       type="text" 
                       name="religion" 
-                      value={formData.religion} 
+                      value={newPatientData.religion} 
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                     />
@@ -602,7 +611,7 @@ const AddPatientPage = () => {
                     </label>
                     <input
                       type="text"
-                      value={formData.phone_number || '09'}  // Ensure '09' is always visible
+                      value={newPatientData.phone_number || '09'}  // Ensure '09' is always visible
                       onChange={handlePhoneNumberChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       maxLength="11"
@@ -619,7 +628,7 @@ const AddPatientPage = () => {
                     <input
                       type="email"
                       name="email"
-                      value={formData.email}
+                      value={newPatientData.email}
                       onChange={handleChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
@@ -632,7 +641,7 @@ const AddPatientPage = () => {
                     </label>
                     <select
                       name="physician_id"
-                      value={formData.physician_id}
+                      value={newPatientData.physician_id}
                       onChange={handleChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black bg-white"
                       required
@@ -654,8 +663,8 @@ const AddPatientPage = () => {
                     </label>
                     <div>
                       { image && ( <img src={image} className="max-w-full h-[150px] mt-2 mb-2 rounded-lg" /> )}
-                      <button onClick={() => setTakePhoto(true)} className={`py-2 px-4 rounded-lg text-white font-semibold ${image ? "w-fit bg-red-700 hover:bg-red-500" : "w-full bg-orange-500 hover:bg-orange-600"}`}>
-                        <i className="bi bi-camera mr-1"></i> {image ? "Retake" : "Take"} Photo
+                      <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`py-1 px-4 rounded-lg text-white ${image ? "w-fit bg-red-700 hover:bg-red-500" : "w-full bg-orange-500 hover:bg-orange-600"}`}>
+                        <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                       </button>
                     </div>
                     {errors.photo && <p className="text-red-600 text-sm mt-1">{errors.photo}</p>}
