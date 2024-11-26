@@ -68,19 +68,7 @@ const RegistrationsPage = () => {
     }
 
     getRegistrations(registrations.current_page, registrationsSearch);
-  
-    // Check if we have removedId and log to see what's happening
-    if (location.state?.removedId) {
-      console.log('Removed patient ID:', location.state.removedId);
-      setRegistrations((prevPatients) => {
-        const updatedPatients = prevPatients.filter(
-          (patient) => patient.registration_id !== location.state.removedId
-        );
-        console.log('Updated Patients List:', updatedPatients);
-        return updatedPatients;
-      });
-    }
-  }, [location.state]);
+  }, []);
   
   const handleSearchSubmit = (e) => {
     e.preventDefault()
@@ -95,7 +83,6 @@ const RegistrationsPage = () => {
   };
 
   const handleViewRegistration = (registration) => {
-    console.log(registration.phone_number)
     navigate('/add-patient', { state: { registration } });
   };
 
