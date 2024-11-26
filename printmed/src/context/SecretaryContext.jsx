@@ -11,23 +11,11 @@ export const SecretaryProvider = () => {
   const [registrations, setRegistrations] = useState([]);
   const [registrationsSearch, setRegistrationsSearch] = useState('');
   const [patients, setPatients] = useState('');
-
-
-  const [patient, setPatient] = useState(null)
-
-  const [consultationStatus, setConsultationStatus] = useState(null);
-  const [consultationId, setConsultationId] = useState(null);
-  const [consultation, setConsultation] = useState(null);
-  const [patientsAll, setPatientsAll] = useState([]);
-  const [patientsAllFilters, setPatientsAllFilters] = useState({
+  const [patientsFilters, setPatientsFilters] = useState({
     search: '',
-    sortField: '',
-    sortOrder: '',
+    sortBy: '',
+    orderBy: '',
   });
-  const [searchPatients, setSearchPatients] = useState('');
-
-  // Add selectedPatient state
-  const [selectedPatient, setSelectedPatient] = useState(null);
 
   useEffect(() => {
     fetchPhysicians()
@@ -59,16 +47,7 @@ export const SecretaryProvider = () => {
       registrations, setRegistrations,
       registrationsSearch, setRegistrationsSearch,
       patients, setPatients,
-
-
-      patient, setPatient,
-
-      consultationStatus, setConsultationStatus,
-      consultation, setConsultation,
-      patientsAll, setPatientsAll,
-      patientsAllFilters, setPatientsAllFilters,
-      searchPatients, setSearchPatients,
-      selectedPatient, setSelectedPatient
+      patientsFilters, setPatientsFilters
     }}>
       <Outlet />
     </SecretaryContext.Provider>

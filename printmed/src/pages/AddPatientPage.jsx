@@ -315,7 +315,7 @@ const AddPatientPage = () => {
           {takePhoto && (
             <>
               <button onClick={() => setTakePhoto(false)} className="fixed top-0 right-0 z-10 mt-8 mr-8 w-fit"><i className="bi bi-x-lg text-3xl text-white "></i></button>
-              <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-70'>
+              <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50'>
                 <WebcamCapture image={image} setImage={setImage} setShow={setTakePhoto} />
               </div>
             </>
