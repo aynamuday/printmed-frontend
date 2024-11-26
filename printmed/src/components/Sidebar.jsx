@@ -33,10 +33,10 @@ const Sidebar = () => {
       </span>
 
       <div
-        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000
-          p-2 w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
-          ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
-      >
+    className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-300
+        p-2 w-[250px] md:w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen z-20
+        ${isSidebarOpen ? "left-0" : "left-[-250px] md:left-[-300px]"}`}
+>
         <div className="text-white text-3xl">
           <div className="p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
             <img src={logo} className="h-100" alt="Logo" />

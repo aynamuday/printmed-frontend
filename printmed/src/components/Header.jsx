@@ -19,8 +19,8 @@ const Header = () => {
     };
   
     return (
-      <header className="bg-[#6CB6AD] text-white p-10 flex flex-row items-center justify-end gap-6">
-        <p className="text-4xl">{formatDateTime(dateTime)}</p>
+      <header className="bg-[#6CB6AD] text-white p-4 md:p-10 flex flex-row items-center justify-between md:justify-end gap-4 md:gap-6 fixed top-0 left-0 right-0 z-10">
+        <p className="text-sm md:text-2xl">{formatDateTime(dateTime)}</p>
       </header>
     );
   };
