@@ -9,7 +9,7 @@ const AuditsPage = () => {
     <>
       <Sidebar />
       <Header />       
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-10">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10">
         <Audits />
       </div>
     </>

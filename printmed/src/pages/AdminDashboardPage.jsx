@@ -39,7 +39,7 @@ const DashboardAdminPage = () => {
       <Sidebar />
       <Header />  
 
-      <div className="w-full md:w-[75%] md:ml-[22%] mb-8">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-8">
         { usersCount.length < 1 ? (
           <div className='flex justify-center items-center mt-40'>
             <PulseLoader color="#6CB6AD" loading={usersCount.length < 1} size={15} />

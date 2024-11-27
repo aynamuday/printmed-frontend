@@ -142,7 +142,7 @@ const DepartmentsPage = () => {
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[75%] md:ml-[25%] mt-8 mb-8 p-4 relative">
+      <div className="w-full md:w-[75%] md:ml-[25%] mt-[8%] mb-8 p-4 relative">
         {loading && (
           <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10">
             <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />

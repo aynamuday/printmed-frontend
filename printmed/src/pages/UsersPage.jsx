@@ -130,7 +130,7 @@ const UsersPage = () => {
             <Header />  
             
             { users && (
-                <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
+                <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
                     <div className={`flex justify-between items-end mb-6 mt-14`}>
                         <h2 className={`font-bold text-2xl`}>Users</h2>
                         <div className={`flex justify-end gap-4 items-end`}>

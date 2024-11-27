@@ -224,7 +224,7 @@ const UserPage = () => {
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 grid grid-cols-1 place-items-center relative">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 grid grid-cols-1 place-items-center relative">
         { loading && (
             <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
                 <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />
