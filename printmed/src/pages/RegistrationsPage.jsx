@@ -100,7 +100,7 @@ const RegistrationsPage = () => {
       <Sidebar />
       <Header />
 
-      <div className="w-full md:w-[75%] md:ml-[22%] p-6 pb-10">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] pb-10">
         <div className={`flex justify-between items-end mb-6 mt-4`}>
           <h2 className={`font-bold text-2xl`}>Registrations</h2>
           <div className={`flex justify-end gap-4 items-end`}>

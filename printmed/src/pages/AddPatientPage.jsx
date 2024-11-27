@@ -361,7 +361,7 @@ const AddPatientPage = () => {
             </div>
           )}
 
-          <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 flex justify-center items-center">
+          <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 flex justify-center items-center">
             <div className="w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
               <div className="flex justify-center items-center rounded-md">
                 <img src={logo} className="h-20" alt="Logo" />

@@ -11,8 +11,8 @@ export const SecretaryProvider = () => {
   const [registrations, setRegistrations] = useState([]);
   const [registrationsSearch, setRegistrationsSearch] = useState('');
   const [patients, setPatients] = useState('');
+  const [searchPatient, setSearchPatient] = useState("")
   const [patientsFilters, setPatientsFilters] = useState({
-    search: '',
     sortBy: '',
     orderBy: '',
   });
@@ -47,6 +47,7 @@ export const SecretaryProvider = () => {
       registrations, setRegistrations,
       registrationsSearch, setRegistrationsSearch,
       patients, setPatients,
+      searchPatient, setSearchPatient,
       patientsFilters, setPatientsFilters
     }}>
       <Outlet />

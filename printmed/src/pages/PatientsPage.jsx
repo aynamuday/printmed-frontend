@@ -13,10 +13,21 @@ const PatientsPage = () => {
   const { token } = useContext(AppContext);
   const {
     patients, setPatients,
+    searchPatient, setSearchPatient,
     patientsFilters, setPatientsFilters,
   } = useContext(SecretaryContext);
-
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (patients.length < 1) {
+      setLoading(true);
+    }
+  
+    const sortBy = patientsFilters.sortBy
+    const orderBy = patientsFilters.orderBy
+
+    getPatients(1, undefined, sortBy, orderBy);
+  }, []);
 
   const getPatients = async (page = 1, search = '', sortBy = '', orderBy = '') => {
     let url = `/api/patients?page=${page}`;
@@ -70,17 +81,6 @@ const PatientsPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (!patients.data || patients.data.length < 1) {
-      setLoading(true);
-    }
-  
-    const page = patients.data ? patients.current_page : 1
-    const { search, sortBy, orderBy } = patientsFilters;
-    getPatients(page, search, sortBy, orderBy);
-  }, []);
-  
-
   const handleSortByChange = (sortBy) => {
     setLoading(true);
 
@@ -97,26 +97,35 @@ const PatientsPage = () => {
     getPatients(1, search, sortBy, orderBy);
   };
   
-  const handleSearchSubmit = (e) => {
-    e.preventDefault()
+  const handlePrevious = () => {
     setLoading(true)
 
-    const { search, sortBy, orderBy } = patientsFilters;
-    getPatients(1, search, sortBy, orderBy);
+    getPatients(patients.current_page - 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
   };
 
-  const handlePageChange = (page) => {
+  const handleNext = () => {
     setLoading(true)
 
-    const { search, sortBy, orderBy } = patientsFilters;
-    if (page > 0 && page <= patients.last_page) {
-      getPatients(page, search, sortBy, orderBy);
-    }
+    getPatients(patients.current_page + 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+
+    setLoading(true)
+
+    setPatientsFilters({
+      sortBy: '',
+      orderBy: ''
+    })
+
+    getPatients(1, searchPatient, undefined, undefined)
   };
 
   const handleClear = () => {
     setLoading(true)
 
+    setSearchPatient('');
     setPatientsFilters({
       search: '',
       sortBy: '',
@@ -130,22 +139,25 @@ const PatientsPage = () => {
       <Sidebar />
       <Header />
 
-      <div className="w-full md:w-[75%] md:ml-[22%] p-6 pb-10">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] pb-10">
       <div className={`flex justify-between items-end mb-6 mt-4`}>
           <h2 className={`font-bold text-2xl`}>Patients</h2>
           <div className={`flex justify-end gap-4 items-end`}>
             <div>
-                <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Patient No."}</label>
-                <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Patient No."}</label>
+                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
                     <input
                         type="text"
                         name="search"
                         className="focus:outline-none focus:border-none"
-                        value={patientsFilters.search}
-                        onChange={(e) => {setPatientsFilters((prevFilters) => ({...prevFilters, search: e.target.value}))}}
+                        value={searchPatient}
+                        onChange={(e) => {
+                          const updatedSearch = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+                          setSearchPatient(updatedSearch);
+                        }}
                         placeholder='Search'
                     />
-                    <button type='submit' className="btn btn-primary d-flex align-items-center">
+                    <button onClick={(e) => handleSearch} className="btn btn-primary d-flex align-items-center">
                         <i className="bi bi-search me-2 text-[#374151]"></i>
                     </button>
                 </form>
@@ -155,7 +167,7 @@ const PatientsPage = () => {
             <div>
                 <label className='text-xs block mb-1'>Sort by</label>
                 <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                  name="resource" id="resource" value={patientsFilters.sortBy} onChange={(e) => handleSortByChange(e.target.value)}
+                  value={patientsFilters.sortBy} onChange={(e) => handleSortByChange(e.target.value)}
                 >
                     <option value="">Last updated</option>
                     <option value="patient_number">Patient No.</option>
@@ -167,7 +179,7 @@ const PatientsPage = () => {
             <div>
                 <label className='text-xs block mb-1'>Order by</label>
                 <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                  name="resource" id="resource" value={patientsFilters.orderBy} onChange={(e) => handleOrderByChange(e.target.value)}
+                  value={patientsFilters.orderBy} onChange={(e) => handleOrderByChange(e.target.value)}
                 >
                     <option value="">Descending</option>
                     <option value="asc">Ascending</option>
@@ -176,22 +188,16 @@ const PatientsPage = () => {
 
             {/* pagination controls */}
             <div className="flex justify-end items-center">
-              <button 
-                  onClick={() => {handlePageChange(patients.current_page - 1)}} 
-                  disabled={patients.current_page <= 1 || !patients.current_page} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${patients.current_page <= 1 || !patients.current_page ? 'bg-opacity-70' : ''}`}>
-                  &lt;
+              <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                  disabled={patients.current_page <= 1} onClick={handlePrevious}>
+                &lt;
               </button>
-
-              <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
-                  {patients.current_page} OF {patients.last_page}
+              <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                {patients.current_page} OF {patients.last_page}
               </button>
-
-              <button
-                  onClick={() => {handlePageChange(patients.current_page + 1)}} 
-                  disabled={patients.current_page >= patients.last_page} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${patients.current_page >= patients.last_page || !patients.current_page ? 'bg-opacity-70' : ''}`}>
-                  &gt;
+              <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                  disabled={patients.current_page === patients.last_page} onClick={handleNext}>
+                &gt;
               </button>
             </div>
 
