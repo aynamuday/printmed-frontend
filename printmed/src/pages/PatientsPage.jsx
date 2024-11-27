@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { PulseLoader } from 'react-spinners';
+import { PulseLoader, ClipLoader } from 'react-spinners';
+import Swal from 'sweetalert2';
 
 import AppContext from '../context/AppContext';
 import SecretaryContext from '../context/SecretaryContext';
@@ -7,7 +8,6 @@ import SecretaryContext from '../context/SecretaryContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import PatientsTable from '../components/PatientsTable';
-import Swal from 'sweetalert2';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -17,10 +17,11 @@ const PatientsPage = () => {
     patientsFilters, setPatientsFilters,
   } = useContext(SecretaryContext);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
 
   useEffect(() => {
     if (patients.length < 1) {
-      setLoading(true);
+      setTableLoading(true);
     }
   
     const sortBy = patientsFilters.sortBy
@@ -77,12 +78,12 @@ const PatientsPage = () => {
       }
     }
     finally {
-        setLoading(false)
+        setTableLoading(false)
     }
   };
 
   const handleSortByChange = (sortBy) => {
-    setLoading(true);
+    setTableLoading(true);
 
     setPatientsFilters((prevPatients) => ({ ...prevPatients, sortBy}));
     const { search, orderBy } = patientsFilters;
@@ -90,7 +91,7 @@ const PatientsPage = () => {
   };
 
   const handleOrderByChange = (orderBy) => {
-    setLoading(true);
+    setTableLoading(true);
 
     setPatientsFilters((prevPatients) => ({ ...prevPatients, orderBy }));
     const { search, sortBy } = patientsFilters;
@@ -98,13 +99,13 @@ const PatientsPage = () => {
   };
   
   const handlePrevious = () => {
-    setLoading(true)
+    setTableLoading(true)
 
     getPatients(patients.current_page - 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
   };
 
   const handleNext = () => {
-    setLoading(true)
+    setTableLoading(true)
 
     getPatients(patients.current_page + 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
   };
@@ -112,7 +113,7 @@ const PatientsPage = () => {
   const handleSearch = (e) => {
     e.preventDefault()
 
-    setLoading(true)
+    setTableLoading(true)
 
     setPatientsFilters({
       sortBy: '',
@@ -123,7 +124,7 @@ const PatientsPage = () => {
   };
 
   const handleClear = () => {
-    setLoading(true)
+    setTableLoading(true)
 
     setSearchPatient('');
     setPatientsFilters({
@@ -136,6 +137,12 @@ const PatientsPage = () => {
 
   return (
     <>
+      { loading && (
+        <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
+            <ClipLoader className='' loading={loading} size={60} color='#6CB6AD' />
+        </div>
+      )}
+
       <Sidebar />
       <Header />
 
@@ -214,12 +221,12 @@ const PatientsPage = () => {
           </div>
         </div>
 
-        {loading ? (
+        {tableLoading ? (
           <div className="flex justify-center items-center mt-20">
-            <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+            <PulseLoader color="#6CB6AD" loading={tableLoading} size={15} />
           </div>
         ) : (
-            <PatientsTable patients={patients.data} />
+            <PatientsTable patients={patients.data} setLoading={setLoading}/>
         )}
       </div>
     </>

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import AppContext from '../context/AppContext'
 
@@ -18,16 +18,19 @@ import VitalSignsForm from '../components/VitalSignsForm'
 const PatientPageSecretary = () => {
     const { token } = useContext(AppContext)
     const navigate = useNavigate()
+    const location = useLocation();
+    
+    if (location.state.patient == undefined) {
+        navigate('/')
+    }
 
-    const [patient, setPatient] = useState([])
+    const [patient, setPatient] = useState(location.state.patient)
     const [vitalSignsState, setVitalSignsState] = useState(patient.vital_signs == null ? null : "view")
     const [showPatientIdMenu, setShowPatientIdMenu] = useState(false)
     const patientIdMenuRef = useRef(null)
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        fetchPatient()
-
         document.addEventListener('click', handleClickOutside);
     
         return () => {
@@ -40,59 +43,6 @@ const PatientPageSecretary = () => {
             setShowPatientIdMenu(false);
         }
     };
-
-    const fetchPatient = async () => {
-        setLoading(true)
-
-        try {
-            const res = await fetch(`/api/patients/18`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-
-            if(!res.ok) {
-                if (res.status === 500) {
-                    throw new Error("Something went wrong. Please try again later.")
-                } else if (res.status === 404) {
-                    throw new Error("Patient not found.")
-                } else if (res.status === 403) {
-                    throw new Error("You are not authorized to perform this action.")
-                } else {
-                    throw new Error("Something went wrong. Please try again later.")
-                }
-            }
-
-            const data = await res.json()
-            
-            setPatient(data)
-            console.log(data)
-        }
-        catch (err) {
-            let error = err.message ?? "Something went wrong. Please try again later."
-
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
-                }
-            })
-
-            navigate('/')
-        }
-        finally {
-            setLoading(false)
-        }
-    }
 
     const deleteVitalSigns = async () => {
         if (!patient.vital_signs || (!patient.vital_signs)) {
@@ -322,7 +272,6 @@ const PatientPageSecretary = () => {
             )}
 
             <div>
-
                 <Sidebar />
                 <Header />
 

@@ -1,13 +1,67 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import AppContext from '../context/AppContext';
 
-const PatientsTable = ({ patients, handleViewClickProp }) => {
+const PatientsTable = ({ patients, setLoading }) => {
   const navigate = useNavigate();
+  const { token } = useContext(AppContext)
 
-  // Rename this function to avoid conflict
-  const handleViewPatient = (index) => {
-    navigate(`/patients/${index}`);
+  const handleViewPatient = (patientId) => {
+    fetchPatient(patientId)
   };
+
+  const fetchPatient = async (patientId) => {
+    setLoading(true)
+
+    try {
+        const res = await fetch(`/api/patients/${patientId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        if(!res.ok) {
+            if (res.status === 500) {
+                throw new Error("Something went wrong. Please try again later.")
+            } else if (res.status === 404) {
+                throw new Error("Patient not found.")
+            } else if (res.status === 403) {
+                throw new Error("You are not authorized to perform this action.")
+            } else {
+                throw new Error("Something went wrong. Please try again later.")
+            }
+        }
+
+        const patient = await res.json()
+
+        navigate(`/patients/${patientId}`, {
+          state: { patient }
+        });
+    }
+    catch (err) {
+        let error = err.message ?? "Something went wrong. Please try again later."
+
+        if (err.name === "TypeError") {
+            error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
+        }
+        
+        Swal.fire({
+            icon: 'error',
+            title: `${error}`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+                title: 'text-xl font-bold text-black text-center',
+                popup: 'border-2 rounded-xl px-4 py-8',
+                icon: 'p-0 mx-auto my-0'
+            }
+        })
+    }
+    finally {
+        setLoading(false)
+    }
+  }
 
   return (
     <>
