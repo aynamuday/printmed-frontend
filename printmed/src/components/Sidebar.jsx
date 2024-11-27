@@ -17,32 +17,31 @@ const Sidebar = () => {
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
   "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
 
-  const handleLogout = () => {
-    setUser(null); // Clear user data
-    setToken(null); // Clear token
-    navigate("/login"); // Redirect to login page
-  };
-
   return (
     <>
-      <span
-        className="absolute text-white text-4xl top-5 left-4 cursor-pointer"
-        onClick={toggleSidebar}
-      >
-        <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
-      </span>
+      {!isSidebarOpen && (
+        <span
+          className="absolute text-white text-4xl top-2.5 left-4 cursor-pointer z-20"
+          onClick={toggleSidebar}
+        >
+          <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
+        </span>
+      )}
 
       <div
-        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-1000
-          p-2 w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen
-          ${isSidebarOpen ? "left-0" : "left-[-300px]"}`}
+        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-300
+        p-2 w-[250px] md:w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen z-20
+        ${isSidebarOpen ? "left-0" : "left-[-250px] md:left-[-300px]"}`}
       >
-        <div className="text-white text-3xl">
-          <div className="p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
-            <img src={logo} className="h-100" alt="Logo" />
-            <i className="bi bi-x ml-20 cursor-pointer lg:hidden" onClick={toggleSidebar}></i>
-          </div>
 
+        <div className="text-white text-3xl">
+        <div className="relative p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
+          <img src={logo} className="h-100" alt="Logo" />
+          <i
+            className="bi bi-x text-black cursor-pointer absolute top-1 right-2 lg:hidden"
+            onClick={toggleSidebar}
+          ></i>
+        </div>
           <hr className="my-2 text-white" />
 
           <div>

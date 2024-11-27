@@ -124,18 +124,12 @@ const UserPage = () => {
       return;
     }
   
-    // suffix validation and capitalize first letter
     if (name === 'suffix') {
-      if (/[^a-zA-Z\s]/.test(value)) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-  
-      if (value.length > 3) {
-        setErrors({ ...errors, [name]: '' });
-        return;
-      }
-      setErrors({ ...errors, [name]: '' });
+      setFormData({
+        ...formData,
+        suffix: value,
+      });
+      return;
     }
   
     if (name === 'sex') {
@@ -180,7 +174,7 @@ const UserPage = () => {
             Object.entries(formData).filter(([key, value]) => value !== '')
           );
 
-          const url = userId ? '/api/users/' + userId + '/update-information' : '/api/register'
+          const url = userId ? '/api/users/' + userId + '/update-information' : '/api/users'
           const method = userId ? "PUT" : "POST"
 
           const res = await fetch(url, {
@@ -230,7 +224,7 @@ const UserPage = () => {
     <>
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-14 mb-10 grid grid-cols-1 place-items-center relative">
+      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 grid grid-cols-1 place-items-center relative">
         { loading && (
             <div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center bg-white bg-opacity-50 z-10'>
                 <BounceLoader color="#6CB6AD" loading={true} size={60} className="mt-60" />

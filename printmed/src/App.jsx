@@ -29,6 +29,7 @@ import RegistrationsPage from './pages/RegistrationsPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import LandingPage from './pages/LandingPage';
 import WebcamCapture from './components/WebcamCapture';
+import EditAdminInfoPage from './pages/EditAdminInfoPage';
 
 
 const App = () => {
@@ -56,6 +57,7 @@ const App = () => {
           <Route path='users' element={<UsersPage/>}/>
           <Route path='add-user' element={<UserPage/>}/>
           <Route path='view-user/:userId' element={<UserPage/>}/>
+          <Route path='/settings/edit-admin-info' element={<EditAdminInfoPage />}/>
           <Route path='departments' element={<DepartmentsPage/>}/>
           <Route path='audits' element={<AuditsPage/>}/>
           { generalRoutes }
