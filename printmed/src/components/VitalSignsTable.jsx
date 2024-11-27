@@ -1,15 +1,15 @@
 import React from 'react'
 
-const VitalSignsTable = (vitalSigns) => {
+const VitalSignsTable = ({vitalSigns}) => {
   return (
     <>
         <table className='text-start border-collapse border border-black bg-white w-full break-words'>
             <tbody>
                 <tr>
                     <th className='text-start border border-[#828282] p-2 w-[15%]'>Height</th>
-                    <td className='border p-2 border-[#828282] w-[20%]'>{ vitalSigns.height + vitalSigns.height_unit }</td>
+                    <td className='border p-2 border-[#828282] w-[20%]'>{ vitalSigns.height + " " + vitalSigns.height_unit }</td>
                     <th className='text-start border border-[#828282] p-2 w-[15%]'>Weight</th>
-                    <td className='border p-2 border-[#828282] w-[35%]'>{ vitalSigns.weight + vitalSigns.weight_unit }</td>
+                    <td className='border p-2 border-[#828282] w-[35%]'>{ vitalSigns.weight + " " + vitalSigns.weight_unit }</td>
                 </tr>
                 <tr>
                     <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>

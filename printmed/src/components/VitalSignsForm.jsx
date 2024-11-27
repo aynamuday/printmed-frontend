@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import AppContext from '../context/AppContext'
 import Swal from 'sweetalert2'
 
-const VitalSignsForm = ({ patientId, vitalSigns, setLoading }) => {
+const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns, setLoading }) => {
     const { token } = useContext(AppContext)
 
     const [vitalSignsData, setVitalSignsData] = useState({
@@ -62,7 +62,7 @@ const VitalSignsForm = ({ patientId, vitalSigns, setLoading }) => {
         }
 
         const url = vitalSigns ? `/api/vital-signs/${vitalSigns.id}` : `/api/vital-signs/${patientId}`
-        const method = vitalSigns ? "POST" : "PUT"
+        const method = vitalSigns ? "PUT" : "POST"
 
         try {  
             setLoading(true)
@@ -73,28 +73,25 @@ const VitalSignsForm = ({ patientId, vitalSigns, setLoading }) => {
                     Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(vitalSignsData)
-            })  
+            })
 
-            const data = await res.json()
-            console.log(data)
-     
-           if(!res.ok) {
+            if(!res.ok) {
                if (res.status === 404) {
                    throw new Error(vitalSigns ? "Vital signs record not found" : "Patient not found.")
                } else {
                    throw new Error("Something went wrong. Please try again later.")
                }
-           }
+            }
      
-        //    const data = await res.json()
-        //    console.log(data)
-     
-             
+           const data = await res.json()
+           setPatient((prevData) => ({...prevData, vital_signs: data}))
+           setVitalSignsState("view")
          }
          catch (err) {
+            console.log(err)
            let error = err.message ?? "Something went wrong. Please try again later."
            if (err.name === "TypeError") {
-               setError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
+               error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
            } 
            
            Swal.fire({
@@ -157,6 +154,7 @@ const VitalSignsForm = ({ patientId, vitalSigns, setLoading }) => {
                                 value={ vitalSignsData.height }
                                 onChange={(e) => {handleVitalSignsInputChange("height", e.target.value)}}
                                 maxLength={5}
+                                required
                             />
                             <select
                                 className="border border-gray-800 block px-2 py-1 rounded bg-white"
@@ -181,6 +179,7 @@ const VitalSignsForm = ({ patientId, vitalSigns, setLoading }) => {
                                 value={ vitalSignsData.weight }
                                 onChange={(e) => {handleVitalSignsInputChange("weight", e.target.value)}}
                                 maxLength={3}
+                                required
                             />
                             <select
                                 className="border border-gray-800 block px-2 py-1 rounded bg-white"
