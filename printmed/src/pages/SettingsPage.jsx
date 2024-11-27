@@ -1,16 +1,16 @@
 // src/pages/SettingsPage.jsx
 import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AppContext from '../context/AppContext';
 import Settings from '../components/Settings';
-import {globalSwalWithIcon} from '../utils/globalSwal';
+import {globalSwalNoIcon, globalSwalWithIcon} from '../utils/globalSwal';
 
 const SettingsPage = () => {
   const { user, setUser, token, setToken } = useContext(AppContext);
-  const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
-    const result = await globalSwal.fire({
+    const result = await globalSwalNoIcon.fire({
       title: 'Are you sure you want to log out?',
       showCancelButton: true,
       confirmButtonText: 'Yes, log me out',
@@ -56,7 +56,7 @@ const SettingsPage = () => {
       <div className="min-h-10"></div>
 
       {/* Edit Information Button */}
-      {user.role === 'admin' && !isEditing && (
+      {user.role === 'admin' && (
         <Link
           to="/settings/edit-admin-info"
           className="w-48 px-4 py-2 bg-[#248176] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
