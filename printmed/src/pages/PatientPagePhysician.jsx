@@ -15,6 +15,7 @@ import ConsultationForm from '../components/ConsultationForm'
 import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
+import { globalSwalNoIcon } from '../utils/globalSwal'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
@@ -35,30 +36,7 @@ const PatientPagePhysician = () => {
         setQrCode("")
 
         try {
-            const res = await fetch(`/api/patient-using-qr/`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    'qr_code': qrCode
-                })
-            })
-
-            if(!res.ok) {
-                if (res.status === 500) {
-                    throw new Error("Something went wrong. Please try again later.")
-                } else if (res.status === 404) {
-                    throw new Error("The QR code is either deactivated, expired, or does not exists.")
-                } else if (res.status === 403) {
-                    throw new Error("You are not authorized to access this patient. Make sure you are an assigned physician.")
-                } else {
-                    throw new Error("Something went wrong. Please try again later.")
-                }
-            }
-
-            const data = await res.json()
-
+            const data = await fetchPatientUsingQr(qrCode, token)
             setPatient(data)
         }
         catch (err) {
@@ -86,18 +64,10 @@ const PatientPagePhysician = () => {
     }
 
     const handleClose = () => {
-        Swal.fire({
+        globalSwalNoIcon.fire({
             title: 'Are you sure you want to close this patient?',
             confirmButtonText: "Yes",
-            showCancelButton: true,
-            customClass: {
-                title: 'text-xl font-bold text-black text-center',
-                confirmButton: 'bg-[#248176] text-white rounded-lg px-9 py-2 hover:bg-blue-700',
-                cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
-                popup: 'border-2 rounded-xl p-4'
-            },
-            confirmButtonColor: "#248176",
-            cancelButtonColor: "#b33c39",
+            showCancelButton: true
         }).then((result) => {
             if (result.isConfirmed) {
                 resetPatientViewer()
