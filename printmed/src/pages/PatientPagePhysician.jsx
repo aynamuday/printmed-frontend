@@ -11,7 +11,7 @@ import { ClipLoader } from 'react-spinners'
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import PatientDetails from '../components/PatientDetails'
-import AddConsultation from '../components/AddConsultation'
+import ConsultationForm from '../components/ConsultationForm'
 import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
@@ -95,7 +95,9 @@ const PatientPagePhysician = () => {
                 confirmButton: 'bg-[#248176] text-white rounded-lg px-9 py-2 hover:bg-blue-700',
                 cancelButton: 'bg-gray-700 border-2 rounded-lg px-6 py-2',
                 popup: 'border-2 rounded-xl p-4'
-            }
+            },
+            confirmButtonColor: "#248176",
+            cancelButtonColor: "#b33c39",
         }).then((result) => {
             if (result.isConfirmed) {
                 resetPatientViewer()
@@ -202,7 +204,7 @@ const PatientPagePhysician = () => {
                                         ) : consultationComponentStatus === "view" ? (
                                             <ViewConsultation /> 
                                         ) : consultationComponentStatus === "add" && (
-                                            <AddConsultation /> 
+                                            <ConsultationForm /> 
                                         )}
                                     </div>
                                 </div>

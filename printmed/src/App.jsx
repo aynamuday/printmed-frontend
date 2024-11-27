@@ -7,30 +7,28 @@ import { AdminProvider } from './context/AdminContext';
 import { PhysicianProvider } from './context/PhysicianContext';
 import { SecretaryProvider } from './context/SecretaryContext';
 
+import LandingPage from './pages/LandingPage';
+import RegistrationPage from './pages/RegistrationPage';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from './pages/SettingsPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import UpdateEmailPage from './pages/UpdateEmailPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 
+import EditAdminInfoPage from './pages/EditAdminInfoPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import UsersPage from './pages/UsersPage';
 import UserPage from './pages/UserPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import AuditsPage from './pages/AuditsPage';
 
-import PatientPage from './pages/PatientPagePhysician';
-import AddPatientPage from './pages/AddPatientPage';
-
-import RegistrationPage from './pages/RegistrationPage';
+import PatientPagePhysician from './pages/PatientPagePhysician';
 
 import PatientsPage from './pages/PatientsPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PatientPageSecretary from './pages/PatientPageSecretary';
+import AddPatientPage from './pages/AddPatientPage';
 import RegistrationsPage from './pages/RegistrationsPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import LandingPage from './pages/LandingPage';
-import WebcamCapture from './components/WebcamCapture';
-import EditAdminInfoPage from './pages/EditAdminInfoPage';
-
 
 const App = () => {
   const { user, loading } = useContext(AppContext);
@@ -66,7 +64,7 @@ const App = () => {
     } else if (user.role === "physician") {
       roleBasedRoutes = (
         <Route element={<PhysicianProvider />}>
-          <Route path='/' element={<PatientPage/>}/>
+          <Route path='/' element={<PatientPagePhysician/>}/>
           { generalRoutes }
         </Route>
       )
@@ -74,7 +72,7 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<SecretaryProvider />}>
           <Route path='/' element={<PatientsPage/>}/>
-          <Route path='patients/:id' element={<PatientPage/>}/>
+          <Route path='patients/:id' element={<PatientPageSecretary/>}/>
           <Route path='registrations' element={<RegistrationsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
           { generalRoutes }

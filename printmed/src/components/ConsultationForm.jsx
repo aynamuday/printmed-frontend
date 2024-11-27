@@ -5,7 +5,7 @@ import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 import Swal from 'sweetalert2'
 
-const AddConsultation = () => {
+const ConsultationForm = () => {
     const { token } = useContext(AppContext)
     const { 
         setPatientPageLoading,
@@ -381,4 +381,4 @@ const AddConsultation = () => {
     )
 }
 
-export default AddConsultation;
+export default ConsultationForm;
