@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import globalSwal from "../utils/globalSwal";
+import {globalSwalNoIcon, globalSwalWithIcon} from "../utils/globalSwal";
 import { BounceLoader } from "react-spinners";
 
 import Header from "../components/Header";
@@ -86,7 +86,7 @@ const UserPage = () => {
         department_id: data.department_id ?? ''
       })
     } else {
-      globalSwal.fire({
+      globalSwalWithIcon.fire({
         showConfirmButton: false,
         title: 'User not found.',
         icon: 'error',
@@ -159,7 +159,7 @@ const UserPage = () => {
 
     setErrors([])
 
-    globalSwal.fire({
+    globalSwalNoIcon.fire({
       title: 'Are you sure?',
       showCancelButton: true,
       confirmButtonText: 'Yes',
@@ -202,7 +202,7 @@ const UserPage = () => {
             });
 
             const dialogTitle = userId ? "User updated successfully!" : "User added successfully!"
-            globalSwal.fire({
+            globalSwalWithIcon.fire({
               icon: "success",
               title: dialogTitle,
               showConfirmButton: false,

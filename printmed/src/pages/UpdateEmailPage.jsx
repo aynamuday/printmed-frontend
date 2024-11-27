@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BounceLoader } from 'react-spinners'; // Import the loader
 import AppContext from '../context/AppContext';
 import Settings from '../components/Settings';
-import globalSwal from '../utils/globalSwal';
+import {globalSwalWithIcon} from '../utils/globalSwal';
 
 const UpdateEmailPage = () => {
     const { token, user, setUser } = useContext(AppContext);
@@ -39,7 +39,7 @@ const UpdateEmailPage = () => {
             const data = await res.json();
             if (res.ok && data.token) {
                 setOtpToken(data.token);
-                globalSwal.fire({
+                globalSwalWithIcon.fire({
                     title: 'OTP Sent',
                     text: 'An OTP has been sent to your current email. Please enter it below to confirm the new email.',
                     icon: 'info',
@@ -82,7 +82,7 @@ const UpdateEmailPage = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                globalSwal.fire({
+                globalSwalWithIcon.fire({
                     title: 'Success',
                     text: 'Your email has been updated successfully.',
                     icon: 'success',

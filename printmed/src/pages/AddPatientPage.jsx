@@ -5,7 +5,7 @@ import SecretaryContext from "../context/SecretaryContext";
 
 import { BounceLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
-import globalSwalNoIcon from "../utils/globalSwal";
+import {globalSwalNoIcon} from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
 import { capitalizedWords } from "../utils/wordUtils";
 import { base64ToPngFile } from "../utils/fileUtils";

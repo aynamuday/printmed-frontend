@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BounceLoader } from "react-spinners"; // Import the BounceLoader
 import AppContext from '../context/AppContext';
 import Settings from '../components/Settings';
-import globalSwal from '../utils/globalSwal';
+import {globalSwalWithIcon} from '../utils/globalSwal';
 
 const EditAdminInfoPage = () => {
   const { user, setUser, token } = useContext(AppContext);
@@ -53,7 +53,7 @@ const EditAdminInfoPage = () => {
         throw new Error('Update failed');
       }
 
-      globalSwal.fire({
+      globalSwalWithIcon.fire({
         title: 'User updated successfully!',
         icon: 'success',
       });
@@ -62,7 +62,7 @@ const EditAdminInfoPage = () => {
     } catch (error) {
       setLoading(false); // Set loading to false if there's an error
       console.error('Error updating user:', error);
-      globalSwal.fire({
+      globalSwalWithIcon.fire({
         title: 'There was an error updating the information.',
         text: 'Please try again later.',
         icon: 'error',

@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
-import globalSwal from "../utils/globalSwal";
+import {globalSwalWithIcon} from "../utils/globalSwal";
 
 const DepartmentsPage = () => {
   const { token } = useContext(AppContext);
@@ -12,11 +12,6 @@ const DepartmentsPage = () => {
   const [loading, setLoading] = useState(false);
 
   const availableDepartments = [
-    "Emergency Department (ER)",
-    "Intensive Care Unit (ICU)",
-    "Outpatient Department (OPD)",
-    "Inpatient Department (Ward)",
-    "Surgery Department",
     "Pediatrics",
     "Obstetrics and Gynecology (OB-GYN)",
     "Cardiology",
@@ -30,8 +25,6 @@ const DepartmentsPage = () => {
     "Pulmonology",
     "Gastroenterology",
     "Radiology",
-    "Anesthesiology",
-    "Rehabilitation/Physical Therapy"
   ];
 
   // Filter out departments already in the system
@@ -47,7 +40,7 @@ const DepartmentsPage = () => {
     // Check if the department is already in the list
     if (departments.some((item) => item.name.toLowerCase() === newDepartment.toLowerCase())) {
       setLoading(false);
-      globalSwal.fire({
+      globalSwalWithIcon.fire({
         showConfirmButton: false,
         title: 'Department already exists.',
         icon: 'error',
@@ -71,14 +64,14 @@ const DepartmentsPage = () => {
         setDepartments((prevDepartments) => [...prevDepartments, data]);
         setNewDepartment(""); // Clear the selection
 
-        globalSwal.fire({
+        globalSwalWithIcon.fire({
           showConfirmButton: false,
           title: 'Department added successfully!',
           icon: 'success',
           showCloseButton: true
         });
       } else {
-        globalSwal.fire({
+        globalSwalWithIcon.fire({
           showConfirmButton: false,
           title: "Error adding the department.",
           icon: 'error',
@@ -93,7 +86,7 @@ const DepartmentsPage = () => {
   };
 
   const handleDeleteDepartment = (id) => {
-    globalSwal.fire({
+    globalSwalWithIcon.fire({
       title: 'Are you sure you want to delete this department?',
       icon: 'warning',
       showCancelButton: true,
@@ -114,14 +107,14 @@ const DepartmentsPage = () => {
           if (res.ok) {
             setDepartments(departments.filter((department) => department.id !== id));
 
-            globalSwal.fire({
+            globalSwalWithIcon.fire({
               showConfirmButton: false,
               title: 'Department deleted successfully!',
               icon: 'success',
               showCloseButton: true
             });
           } else {
-            globalSwal.fire({
+            globalSwalWithIcon.fire({
               showConfirmButton: false,
               title: "Department cannot be deleted.",
               text: "This department is used to identify users and records.",
