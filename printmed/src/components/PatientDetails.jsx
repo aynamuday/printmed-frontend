@@ -2,14 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
 import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
-import PhysicianContext from '../context/PhysicianContext';
+import Swal from 'sweetalert2';
 
-const PatientDetails = () => {
+const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token } = useContext(AppContext)
-    const { 
-        setPatientPageLoading,
-        patient, setPatient 
-    } = useContext(PhysicianContext)
 
     const [errors, setErrors] = useState([])
 
@@ -100,7 +96,7 @@ const PatientDetails = () => {
         }
 
         try {
-            setPatientPageLoading(true)
+            setLoading(true)
 
             const res = await fetch(`/api/patients/${patient.id}`, {
                 method: "PUT",
@@ -142,11 +138,13 @@ const PatientDetails = () => {
                     title: 'text-xl font-bold text-black text-center',
                     popup: 'border-2 rounded-xl px-4 py-8',
                     icon: 'p-0 mx-auto my-0'
-                }
+                },
+                confirmButtonColor: "#248176",
+                cancelButtonColor: "#b33c39",
             })
         }
         finally {
-            setPatientPageLoading(false)
+            setLoading(false)
         }
     }
 
@@ -213,9 +211,7 @@ const PatientDetails = () => {
                     { patient.photo_url ? (
                         <img src={ patient.photo_url } alt="" className="w-40 h-40 object-cover rounded-md mb-4" />
                     ) : (
-                        <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                            <span>Null</span>
-                        </div>
+                        <div className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300 flex items-center justify-center"></div>
                     )}
                     <table className='text-start border-collapse border border-black bg-white w-full break-words'>
                         <tbody>
@@ -299,7 +295,7 @@ const PatientDetails = () => {
                                 <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthdate {update && <span className='text-red-600'>*</span>}</th>
                                 <td className='border p-2 border-[#828282] w-[65%]'>
                                     { !update ? (
-                                        getFormattedStringDate(patient.birthdate)
+                                        patient.birthdate ? getFormattedStringDate(patient.birthdate) : ""
                                     ) : (
                                         <input
                                             type="date"
@@ -313,24 +309,26 @@ const PatientDetails = () => {
                                     )}
                                 </td>
                             </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthplace</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>
-                                    { !update ? (
-                                        patient.birthplace
-                                    ) : (
-                                        <input
-                                            type="text"
-                                            className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={updateData.birthplace}
-                                            placeholder='Birthplace'
-                                            minLength={2}
-                                            maxLength={50}
-                                            onChange={(e) => handleLettersOnlyInputChange("birthplace", e.target.value)}
-                                        />
-                                    )}
-                                </td>
-                            </tr>
+                            { (patient.birthplace && !update) || update && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthplace</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { !update ? (
+                                            patient.birthplace
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                value={updateData.birthplace}
+                                                placeholder='Birthplace'
+                                                minLength={2}
+                                                maxLength={50}
+                                                onChange={(e) => handleLettersOnlyInputChange("birthplace", e.target.value)}
+                                            />
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[35%]'>Sex {update && <span className='text-red-600'>*</span>}</th>
                                 <td className='border p-2 border-[#828282] w-[65%]'>
@@ -469,24 +467,26 @@ const PatientDetails = () => {
                                     )}
                                 </td>
                             </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Religion</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>
-                                    { !update ? (
-                                        patient.religion
-                                    ) : (
-                                        <input
-                                            type="text"
-                                            className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={updateData.religion}
-                                            placeholder='Religion'
-                                            minLength={2}
-                                            maxLength={50}
-                                            onChange={(e) => handleLettersOnlyInputChange("religion", e.target.value)}
-                                        />
-                                    )}
-                                </td>
-                            </tr>
+                            { (patient.religion && !update) || update && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Religion</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { !update ? (
+                                            patient.religion
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                value={updateData.religion}
+                                                placeholder='Religion'
+                                                minLength={2}
+                                                maxLength={50}
+                                                onChange={(e) => handleLettersOnlyInputChange("religion", e.target.value)}
+                                            />
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[35%]'>Phone No. {update && <span className='text-red-600'>*</span>}</th>
                                 <td className='border p-2 border-[#828282] w-[65%]'>
@@ -509,22 +509,24 @@ const PatientDetails = () => {
                                     )}
                                 </td>
                             </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Email</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>
-                                    { !update ? (
-                                        patient.email
-                                    ) : (
-                                        <input
-                                            type="email"
-                                            className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={updateData.email}
-                                            onChange={(e) => setUpdateData(prevData => ({...prevData, email: e.target.value}))}
-                                            placeholder='Email'
-                                        />
-                                    )}
-                                </td>
-                            </tr>
+                            { (patient.religion && !update) || update && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Email</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { !update ? (
+                                            patient.email
+                                        ) : (
+                                            <input
+                                                type="email"
+                                                className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                value={updateData.email}
+                                                onChange={(e) => setUpdateData(prevData => ({...prevData, email: e.target.value}))}
+                                                placeholder='Email'
+                                            />
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
                             { !update && patient.consultations && patient.consultations.length > 0 && (
                                 <>
                                     <tr>
