@@ -93,8 +93,8 @@ const EditAdminInfoPage = () => {
         <h2 className="text-4xl font-semibold text-center mb-4">Edit Profile</h2>
         
         {loading ? (
-          <div className="flex justify-center items-center mt-6">
-            <BounceLoader color="#248176" size={60} />
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+            <BounceLoader color="#6CB6AD" size={60} />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center mt-6">
@@ -225,7 +225,7 @@ const EditAdminInfoPage = () => {
               <div className="flex justify-center items-center">
                 <button
                   type="submit"
-                  className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+                  className="mt-1 block w-[50%] h-10 bg-[#6CB6AD] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
                 >
                   Save
                 </button>

@@ -59,7 +59,7 @@ const SettingsPage = () => {
       {user.role === 'admin' && (
         <Link
           to="/settings/edit-admin-info"
-          className="w-48 px-4 py-2 bg-[#248176] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
+          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Edit Information
         </Link>
@@ -69,13 +69,13 @@ const SettingsPage = () => {
       <div className="mt-6 space-y-4 w-full flex flex-col items-center">
         <Link
           to="/settings/update-email"
-          className="w-48 px-4 py-2 bg-[#51918a] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
+          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Update Email
         </Link>
         <Link
           to="/settings/change-password"
-          className="w-48 px-4 py-2 bg-[#51918a] rounded-md hover:bg-[#41837b] focus:outline-none text-center text-white"
+          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Change Password
         </Link>

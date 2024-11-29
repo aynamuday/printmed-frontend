@@ -105,19 +105,24 @@ const UpdateEmailPage = () => {
     return (
         <Settings
             children={
-                <div className="flex flex-col items-center min-w-96">
-                    <h2 className="text-xl font-bold mb-6">
-                        <button onClick={() => navigate('/settings')} className="mr-4">
-                            <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+                <div className="relative flex flex-col items-center min-w-96">
+                    <div className="absolute top-[-30%] left-[-105%] p-4">
+                        <button
+                            onClick={() => navigate('/settings')}
+                            className="text-xl text-gray-700 hover:text-gray-900 focus:outline-none"
+                        >
+                            <i className="bi bi-arrow-left"></i> {/* Left arrow icon */}
                         </button>
+                    </div>
+                    <h2 className="text-xl font-bold mt-12 mb-6">
                         Update Email
                     </h2>
 
                     {error && <p className="text-red-500 mb-4">{error}</p>}
 
                     {loading ? (
-                        <div className="flex justify-center items-center h-20">
-                            <BounceLoader color="#3498db" size={50} /> {/* Loading spinner */}
+                        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                            <BounceLoader color="#6CB6AD" size={50} /> {/* Loading spinner */}
                         </div>
                     ) : (
                         <>
@@ -132,7 +137,7 @@ const UpdateEmailPage = () => {
                                     />
                                     <button
                                         onClick={handleSendOtp}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                        className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                                     >
                                         Send OTP
                                     </button>
@@ -150,7 +155,7 @@ const UpdateEmailPage = () => {
                                     />
                                     <button
                                         onClick={handleVerifyOtp}
-                                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                                        className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                                     >
                                         Verify OTP
                                     </button>

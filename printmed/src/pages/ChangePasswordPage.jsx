@@ -3,6 +3,8 @@ import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import Settings from '../components/Settings'
+import { BounceLoader } from "react-spinners";
+import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
 
 const ChangePasswordPage = () => {
   const { token } = useContext(AppContext)
@@ -32,29 +34,50 @@ const ChangePasswordPage = () => {
       return;
     }
 
+    const result = await globalSwalNoIcon.fire({
+      title: 'Are you sure want to change your password?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setLoading(true);
 
-    const res = await fetch('/api/change-password', {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ 
-        current_password: currentPassword,
-        new_password: newPassword,
-        new_password_confirmation: confirmPassword
+    try {
+      const res = await fetch('/api/change-password', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          current_password: currentPassword,
+          new_password: newPassword,
+          new_password_confirmation: confirmPassword
         }),
     });
 
     const data = await res.json();
+    console.log(data);
 
     if (res.ok) {
-      alert('Password changed successfully!');
-      navigate('/settings')
+      await globalSwalWithIcon.fire({
+        title: 'Password Changed',
+        text: 'Your password has been successfully changed.',
+        icon: 'success',
+    });
+    navigate('/settings')
     } else {
       setError(data.message || 'Failed to change password');
     }
-
+  } catch (err) {
+    setError('An error occurred while changing you password. Please try enter a valid password and try again.');
+  }
     setLoading(false);
   };
 
@@ -62,11 +85,18 @@ const ChangePasswordPage = () => {
     <Settings children={
       <>
         <div className="w-80">
-          <form onSubmit={handleChangePassword} className='flex flex-col items-center'>
-            <h2 className="text-xl font-bold mb-4">
-                <button onClick={() => navigate("/settings")} className="mr-4">
-                    <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
-                </button>
+          {loading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+              <BounceLoader color="#6CB6AD" size={60} />
+            </div>
+          )}
+          <form onSubmit={handleChangePassword} className='relative flex flex-col items-center'>
+            <div className="absolute top-[-15%] left-[-130%] p-4">      
+              <button onClick={() => navigate("/settings")} className="mr-4">
+                <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+              </button>
+            </div>
+            <h2 className="text-xl font-bold mt-12 mb-4">
                 Change Password
             </h2>
 
@@ -101,7 +131,7 @@ const ChangePasswordPage = () => {
               <button
                 disabled={loading}
                 type='submit'
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 {loading ? 'Changing...' : 'Change Password'}
               </button>
