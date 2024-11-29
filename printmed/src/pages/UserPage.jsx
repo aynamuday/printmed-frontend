@@ -170,9 +170,10 @@ const UserPage = () => {
       if (result.isConfirmed) {
         try {
           // removes empty values in form
-          const filteredFormData = Object.fromEntries(
-            Object.entries(formData).filter(([key, value]) => value !== '')
-          );
+          // const filteredFormData = Object.fromEntries(
+          //   Object.entries(formData).filter(([key, value]) => value !== '')
+          // );
+          // allow null?
 
           const url = userId ? '/api/users/' + userId + '/update-information' : '/api/users'
           const method = userId ? "PUT" : "POST"

@@ -19,6 +19,7 @@ const WebcamCapture = ({setImage, setShow}) => {
   return (
     <div className='flex justify-center items-center h-svh'>
         <div className=' relative'>
+          <button onClick={() => setShow(false)} className="absolute top-0 right-0 mt-6 mr-6 w-fit z-40"><i className="bi bi-x-lg text-3xl text-white "></i></button>
           { !capturedImage ? (
             <>
               <Webcam 

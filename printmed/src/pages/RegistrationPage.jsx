@@ -154,11 +154,6 @@ function RegistrationPage() {
             formIsValid = false;
         }
 
-        if (formData.street.trim() === "") {
-            newErrors.street = 'This field is required.';
-            formIsValid = false;
-        }
-
         if (formData.barangay.trim() === "") {
             newErrors.barangay = 'This field is required.';
             formIsValid = false;
@@ -442,15 +437,14 @@ function RegistrationPage() {
                                 {/* Street */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Street <span className="text-red-600">*</span>
+                                        Street
                                     </label>
                                     <input 
                                         type="text" 
                                         name="street" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.street} 
-                                        onChange={(e) => {handleChange(e)}} 
-                                        required
+                                        onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.street && (
                                         <p className="text-red-500 text-sm">{errors.street}</p>

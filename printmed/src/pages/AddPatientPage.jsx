@@ -14,10 +14,13 @@ import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import WebcamCapture from "../components/WebcamCapture"
 import Swal from "sweetalert2";
+import { showError } from "../utils/fetch/showError";
+import { fetchPatient } from "../utils/fetch/fetchPatient";
+import { handlePhoneNumberChange } from "../utils/handlePhoneNumberChange";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
-  const { physicians } = useContext(SecretaryContext);
+  const { fetchPhysicians, physicians } = useContext(SecretaryContext);
   const { state } = useLocation();
   const navigate = useNavigate();
 
@@ -42,13 +45,18 @@ const AddPatientPage = () => {
     religion: registration.religion || '',
     email: registration.email || '',
     phone_number: registration.phone_number || '',
-    physician_id: ''
+    physician_id: '',
+    registration_id: registration.id || '',
   });
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    fetchPhysicians()
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,33 +95,6 @@ const AddPatientPage = () => {
     setNewPatientData({ 
         ...newPatientData, 
         [name]: capitalizedValue, 
-    });
-  };
-
-  const handlePhoneNumberChange = (e) => {
-    let value = e.target.value;
-
-    setErrors({ ...errors, phone_number: '' });
-  
-    if (!/^\d*$/.test(value)) {
-      return;
-    }
-  
-    if (value.length === 1 && value !== '0') {
-      value = '09' + value;
-    }
-  
-    if (value.length < 3) {
-      value = '09';
-    }
-  
-    if (value.length > 11) {
-      return;
-    }
-  
-    setNewPatientData({
-      ...newPatientData,
-      phone_number: value,
     });
   };
 
@@ -187,29 +168,32 @@ const AddPatientPage = () => {
           addPatient(e)
         }
         catch (err) {
-          let error = err.message ?? "Something went wrong. Please try again later."
-          if (err.name === "TypeError") {
-              error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-          } 
-          
-          Swal.fire({
-              icon: 'error',
-              title: `${error}`,
-              showConfirmButton: false,
-              showCloseButton: true,
-              customClass: {
-                  title: 'text-xl font-bold text-black text-center',
-                  popup: 'border-2 rounded-xl px-4 py-8',
-                  icon: 'p-0 mx-auto my-0'
-              }
-          })
+          showError(err)
         }
         finally {
             setLoading(false)
         }
       } 
     })
-  };
+  }
+
+  const viewPatient = async (patientId) => {
+    setLoading(true)
+
+    try {
+        const patient = await fetchPatient(patientId, token)
+
+        navigate(`/patients/${patientId}`, {
+          state: { patient }
+        });
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+        setLoading(false)
+    }
+  }
   
   const addPatient = async (e) => {
     e.preventDefault()
@@ -222,7 +206,7 @@ const AddPatientPage = () => {
       const filteredNewPatientData = Object.fromEntries(
         Object.entries(newPatientData).filter(([key, value]) => value !== '')
       );
-      const photo = base64ToPngFile(image)
+      const photo = base64ToPngFile(image)  // util function for converting base64 to png
 
       const formData = new FormData();
       formData.append('photo', photo);
@@ -244,7 +228,18 @@ const AddPatientPage = () => {
         throw new Error("Something went wrong. Please try again later.")
       }
 
-      const data = await res.json()
+      const patient = await res.json()
+
+      navigate(`/patients/${patient.id}`, {
+        state: { patient }
+      });
+      
+      globalSwalNoIcon.fire({
+        icon: 'success',
+        title: 'Patient added successfully!',
+        showConfirmButton: false,
+        showCloseButton: true,
+      });
 
       setNewPatientData({
         first_name: '',
@@ -265,35 +260,9 @@ const AddPatientPage = () => {
         province: '',
         postal_code: '',
       });
-
-      globalSwalNoIcon.fire({
-          icon: 'success',
-          title: 'Patient added successfully!',
-          showConfirmButton: false,
-          showCloseButton: true,
-      });
-
-      navigate('/registrations', {
-          state: { removedId: formData.registration_id },
-      });
     }
     catch (err) {
-      let error = err.message ?? "Something went wrong. Please try again later."
-      if (err.name === "TypeError") {
-          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-      } 
-      
-      Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-      })
+      showError(err)
     }
     finally {
         setLoading(false)
@@ -307,7 +276,7 @@ const AddPatientPage = () => {
         <>
           {/* loader */}
           {loading && (
-            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-40 z-10'>
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-40 z-50'>
               <BounceLoader color="#6CB6AD" loading={true} size={60} />
             </div>
           )}
@@ -315,8 +284,7 @@ const AddPatientPage = () => {
           {/* web cam */}
           {takePhoto && (
             <>
-              <button onClick={() => setTakePhoto(false)} className="fixed top-0 right-0 z-10 mt-8 mr-8 w-fit"><i className="bi bi-x-lg text-3xl text-white "></i></button>
-              <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50'>
+              <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
                 <WebcamCapture image={image} setImage={setImage} setShow={setTakePhoto} />
               </div>
             </>
@@ -324,7 +292,7 @@ const AddPatientPage = () => {
 
           {/* pop up if there are duplicate patients */}
           {duplicatePatients && duplicatePatients.length > 0 && (
-            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-10'>
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-40'>
               <div className="bg-white rounded-md flex justify-items-center flex-col pt-4 pb-8 px-8 max-h-[70vh] overflow-y-auto">
                 <i className="bi bi-exclamation-circle block text-[60px] text-center text-orange-500"></i>
                 <p className="text-center font-bold text-xl text-black">Duplicate Patient/s Found</p>
@@ -348,7 +316,7 @@ const AddPatientPage = () => {
                           </div>
                         </td>
                         <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
-                          <button className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
+                          <button onClick={() => viewPatient(patient.id)} className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
                         </td>
                       </tr>
                     )))}
@@ -519,15 +487,14 @@ const AddPatientPage = () => {
                   {/* Street */}
                   <div>
                     <label className="block text-sm font-medium">
-                      Street <span className="text-red-600 cursor-help">*</span>
+                      Street
                     </label>
                     <input 
                       type="text" 
                       name="street" 
                       value={newPatientData.street} 
                       onChange={handleChange} 
-                      className="mt-1 block w-full border p-2 rounded-md border-black" 
-                      required
+                      className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
                   </div>
 
@@ -613,11 +580,10 @@ const AddPatientPage = () => {
                     <input
                       type="text"
                       value={newPatientData.phone_number || '09'}  // Ensure '09' is always visible
-                      onChange={handlePhoneNumberChange}
+                      onChange={(e) => handlePhoneNumberChange(e, setNewPatientData, setErrors)}
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       maxLength="11"
                       minLength="11"
-                      placeholder="Enter phone number"
                       required
                     />
                     {errors.phone_number && <p className="text-red-600 mt-1">{errors.phone_number}</p>}

@@ -16,7 +16,7 @@ import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
 import { globalSwalNoIcon } from '../utils/globalSwal'
-import { fetchPatientUsingQr } from '../utils/fetchPatientUsingQr'
+import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)

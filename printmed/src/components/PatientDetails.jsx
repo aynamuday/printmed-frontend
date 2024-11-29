@@ -3,25 +3,36 @@ import AppContext from '../context/AppContext'
 import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
 import Swal from 'sweetalert2';
+import { handlePhoneNumberChange } from '../utils/handlePhoneNumberChange';
+import SecretaryContext from '../context/SecretaryContext';
+import WebcamCapture from './WebcamCapture';
+import { showError } from '../utils/fetch/showError';
+import { globalSwalNoIcon } from '../utils/globalSwal';
+import { base64ToPngFile } from '../utils/fileUtils';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
+    const { fetchPhysicians, physicians } = useContext(SecretaryContext)
 
     const [errors, setErrors] = useState([])
 
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState([])
+    const [image, setImage] = useState(null)
+    const [takePhoto, setTakePhoto] = useState(false)
 
     useEffect(() => {
         resetUpdateData()
         resetErrors()
-    }, [])
+        fetchPhysicians()
+    }, [update])
 
     const resetUpdateData = () => {
+        setImage(patient.photo_url ?? null)
         setUpdateData({
-            'first_name': patient.first_name,
+            'first_name': patient.first_name ?? '',
             'middle_name': patient.middle_name ?? '',
-            'last_name': patient.last_name,
+            'last_name': patient.last_name ?? '',
             'suffix': patient.suffix ?? '',
             'birthdate': patient.birthdate ?? '',
             'birthplace': patient.birthplace ?? '',
@@ -34,19 +45,14 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             'postal_code': patient.postal_code ?? '',
             'civil_status': patient.civil_status ?? '',
             'religion': patient.religion ?? '',
-            'phone_number': patient.phone_number ? patient.phone_number.slice(2) : '',
-            'email': patient.email ?? ''
+            'phone_number': patient.phone_number ?? '',
+            'email': patient.email ?? '',
+            'physician_id': patient.physician ? patient.physician.id : '',
         })
     }
 
     const resetErrors = () => {
         setErrors({})
-    }
-
-    const handleBack = () => {
-        setUpdate(false)
-        resetUpdateData()
-        resetErrors()
     }
 
     const handleSubmit = (e) => {
@@ -58,11 +64,13 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
         let hasError = false
 
-        if (Number(updateData.postal_code) < 1000 || Number(updateData.postal_code) > 9999) {
-            setErrors(prevData => ({ ...prevData, postal_code: "Postal code must range from 1000-9999."}))
-            hasError = true
-        } else {
-            setUpdateData(prevData => ({ ...prevData, postal_code: Number(updateData.postal_code)})) 
+        if (updateData.postal_code && updateData.postal_code.trim() != "") {
+            if (Number(updateData.postal_code) < 1000 || Number(updateData.postal_code) > 9999) {
+                setErrors(prevData => ({ ...prevData, postal_code: "Postal code must range from 1000-9999."}))
+                hasError = true
+            } else {
+                setUpdateData(prevData => ({ ...prevData, postal_code: Number(updateData.postal_code)})) 
+            }
         }
 
         if (!hasError) {
@@ -71,77 +79,74 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     }
 
     const updatePatient = async () => {
-
         if (updateData.sex == "Male") {
             setUpdateData(prevData => ({ ...prevData, suffix: null})) 
         }
 
         const updateDataToSubmit = Object.keys(updateData).reduce((acc, key) => {
-            if (key === "phone_number") {
-                updateData[key] = updateData[key] !== "" ? "09" + updateData[key] : null
+            if (key == "physician_id" && patient.physician && updateData[key] == patient.physician.id) {
+                return acc
             }
-                
-            updateData[key] = updateData[key] === "" ? null : updateData[key]
 
-            if (updateData[key] !== patient[key]) {
+            if (updateData[key].trim() == "" && (patient[key] == null || patient[key].trim() == "")) {
+                return acc
+            }
+
+            if ((updateData[key] !== patient[key])) {
                 acc[key] = updateData[key]
             }
 
             return acc;
         }, {});
 
-        if (!Object.keys(updateDataToSubmit).length > 0) {
-            handleBack()
+        if (!Object.keys(updateDataToSubmit).length > 0 && image == patient.photo_url) {
+            setUpdate(false)
             return
         }
 
         try {
             setLoading(true)
 
-            const res = await fetch(`/api/patients/${patient.id}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(updateDataToSubmit)
-            })            
-
-            if(!res.ok) {
-                if (res.status === 404) {
-                    throw new Error("Patient not found.")
-                } else if (res.status === 403) {
-                    throw new Error("You are not authorized to perform this action.")
-                } else if (res.status === 400) {
-                    throw new Error("Something went wrong with your request. Please check your input and try again later.")
-                } else {
-                    throw new Error("Something went wrong. Please try again later.")
-                }
+            const formData = new FormData();
+            if (image != patient.photo_url) {
+                console.log(image)
+                console.log(patient.photo_url)
+                const photo = base64ToPngFile(image)  // util function for converting base64 to png
+                formData.append('photo', photo)
             }
+        
+            for (const [key, value] of Object.entries(updateDataToSubmit)) {
+                formData.append(key, value);
+            }
+
+            const res = await fetch(`http://127.0.0.1:8000/api/patients/${patient.id}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json"
+                },
+                body: formData
+            })
 
             const data = await res.json()
-            setPatient(data)
-            handleBack()
-            
-        }
-        catch (err) {
-            let error = err.message ?? "Something went wrong. Please try again later."
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
+            console.log(data)
+        
+            if(!res.ok) {
+                throw new Error("Something went wrong. Please try again later.")
             }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
+              
+            globalSwalNoIcon.fire({
+                icon: 'success',
+                title: 'Patient updated successfully!',
                 showConfirmButton: false,
                 showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
-                },
-                confirmButtonColor: "#248176",
-                cancelButtonColor: "#b33c39",
-            })
+            });
+        
+            setPatient(data)
+            setUpdate(false)
+        }
+        catch (err) {
+            showError(err)
         }
         finally {
             setLoading(false)
@@ -155,6 +160,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         let trimmedValue = value.trim()
         if (value.endsWith(' ')) {
             trimmedValue = trimmedValue + ' ';
+        }
+        
+        const lettersOneCommaRegex = /^[a-zA-ZñÑ]*(, ?[a-zA-ZñÑ]*)?$/
+        if (key == "birthplace" && lettersOneCommaRegex.test(value)) {
+            setUpdateData(prevData => ({ ...prevData, [key]: capitalizedWords(trimmedValue)})) 
+            return
         }
 
         // allows only letters and spaces
@@ -192,6 +203,15 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
    
     return (
         <>
+            {/* web cam */}
+            {takePhoto && (
+                <>
+                    <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
+                        <WebcamCapture image={image} setImage={setImage} setShow={setTakePhoto} />
+                    </div>
+                </>
+            )}
+
             <div className='bg-[#D9D9D9] bg-opacity-30'>
                 <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
                     <div className='flex gap-2'>
@@ -199,7 +219,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             <p className='font-semibold text-white text-lg'>Details</p>
                         ) : (
                             <>
-                                <button onClick={handleBack}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
+                                <button onClick={() => setUpdate(false)}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
                                 <p className='font-semibold text-white text-lg'>Edit Details</p>
                             </>
                         )}
@@ -208,11 +228,14 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                 </div>
 
                 <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col items-center justify-center px-6 py-4 pb-6 w-full'>
-                    { patient.photo_url ? (
-                        <img src={ patient.photo_url } alt="" className="w-40 h-40 object-cover rounded-md mb-4" />
-                    ) : (
-                        <div className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300 flex items-center justify-center"></div>
-                    )}
+                    <div className={`relative ${update && "mb-2"}`}>
+                        <img src={ !update ? patient.photo_url || '' : image } alt="" className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300" />
+                        { update && (
+                            <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#b43c3a] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-red-500'>
+                                <i className='bi bi-pen'></i>
+                            </button>
+                        )}
+                    </div>
                     <table className='text-start border-collapse border border-black bg-white w-full break-words'>
                         <tbody>
                             { !update ? (
@@ -266,23 +289,21 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             />
                                         </td>
                                     </tr>
-                                    { updateData.sex == "Male" && (
-                                        <tr>
-                                            <th className='text-start border border-[#828282] p-2 w-[35%]'>Suffix</th>
-                                            <td className='border p-2 border-[#828282] w-[65%]'>
-                                                <select
-                                                    value={updateData.suffix}
-                                                    className="col-span-2 border border-gray-800 block py-2 px-2 rounded bg-white w-[50%]"
-                                                    onChange={(e) => setUpdateData(prevData => ({...prevData, suffix: e.target.value}))}
-                                                >
-                                                    <option value="">Select Suffix</option>
-                                                    <option value="Jr">Jr</option>
-                                                    <option value="Sr">Sr</option>
-                                                    <option value="III">III</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    )}
+                                    <tr>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Suffix</th>
+                                        <td className='border p-2 border-[#828282] w-[65%]'>
+                                            <select
+                                                value={updateData.suffix}
+                                                className="col-span-2 border border-gray-800 block py-2 px-2 rounded bg-white w-[50%]"
+                                                onChange={(e) => setUpdateData(prevData => ({...prevData, suffix: e.target.value}))}
+                                            >
+                                                <option value="">Select Suffix</option>
+                                                <option value="Jr">Jr</option>
+                                                <option value="Sr">Sr</option>
+                                                <option value="III">III</option>
+                                            </select>
+                                        </td>
+                                    </tr>
                                 </>
                             )}
                             { !update && (
@@ -309,7 +330,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     )}
                                 </td>
                             </tr>
-                            { (patient.birthplace && !update) || update && (
+                            { ((patient.birthplace && !update) || update) && (
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthplace</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
@@ -371,7 +392,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Street {update && <span className='text-red-600'>*</span>}</th>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Street</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             <input
                                                 type="text"
@@ -381,7 +402,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                 minLength={2}
                                                 maxLength={20}
                                                 onChange={(e) => handleNoSpecialCharactersInputChange("street", e.target.value)}
-                                                required
                                             />
                                         </td>
                                     </tr>
@@ -467,7 +487,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     )}
                                 </td>
                             </tr>
-                            { (patient.religion && !update) || update && (
+                            { ((patient.religion && !update) || update) && (
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Religion</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
@@ -493,23 +513,19 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     { !update ? (
                                         patient.phone_number
                                     ) : (
-                                        <div className='flex items-center gap-2'>
-                                            <p>+639</p>
-                                            <input
-                                                type="text"
-                                                className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
-                                                value={updateData.phone_number}
-                                                placeholder='Phone No.'
-                                                maxLength={9}
-                                                minLength={9}
-                                                onChange={(e) => handleNumbersOnlyInputChange("phone_number", e.target.value)}
-                                                required
-                                            />
-                                        </div>
+                                        <input
+                                            type="text"
+                                            className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
+                                            value={updateData.phone_number || '09'}
+                                            onChange={(e) => handlePhoneNumberChange(e, setUpdateData, setErrors)}
+                                            maxLength="11"
+                                            minLength="11"
+                                            required
+                                        />
                                     )}
                                 </td>
                             </tr>
-                            { (patient.religion && !update) || update && (
+                            { ((patient.email && !update) || update) && (
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Email</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
@@ -527,11 +543,11 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     </td>
                                 </tr>
                             )}
-                            { !update && patient.consultations && patient.consultations.length > 0 && (
+                            { !update && (
                                 <>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Last Visit</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{patient.last_visit ? getFormattedStringDate(patient.last_visit) : ""}</td>
+                                        <td className='border p-2 border-[#828282] w-[65%]'>{patient.last_visit ? getFormattedStringDate(patient.last_visit) : "N/A"}</td>
                                     </tr>
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Follow-up Date</th>
@@ -545,6 +561,26 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     </tr>
                                 </>
                             )}
+                            <tr>
+                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Physician {update && <span className='text-red-600'>*</span>}</th>
+                                <td className='border p-2 border-[#828282] w-[65%]'>
+                                    { !update ? (
+                                        patient.physician ? "Doc. " + patient.physician.full_name : "N/A"
+                                    ) : (
+                                        <select
+                                            value={updateData.physician_id}
+                                            className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
+                                            onChange={(e) => setUpdateData(prevData => ({...prevData, physician_id: e.target.value}))}
+                                            required
+                                        >
+                                            <option value=''>Select Physician</option>
+                                            {physicians.map((physician, index) => (
+                                                <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     { update && (

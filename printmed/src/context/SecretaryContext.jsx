@@ -33,6 +33,7 @@ export const SecretaryProvider = () => {
         const data = await res.json();
         
         setPhysicians(data);
+        console.log(data)
       } else {
         console.error('Error fetching physicians:', res.statusText);
       }
@@ -43,12 +44,13 @@ export const SecretaryProvider = () => {
 
   return (
     <SecretaryContext.Provider value={{ 
+      fetchPhysicians,
       physicians, setPhysicians,
       registrations, setRegistrations,
       registrationsSearch, setRegistrationsSearch,
       patients, setPatients,
       searchPatient, setSearchPatient,
-      patientsFilters, setPatientsFilters
+      patientsFilters, setPatientsFilters,
     }}>
       <Outlet />
     </SecretaryContext.Provider>

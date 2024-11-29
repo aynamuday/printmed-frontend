@@ -10,8 +10,9 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import PatientsTable from '../components/PatientsTable';
 import QrScanning from '../components/QrScanning';
-import { fetchPatientUsingQr } from '../utils/fetchPatientUsingQr';
+import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr';
 import { useNavigate } from 'react-router-dom';
+import { showError } from '../utils/fetch/showError';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -176,23 +177,7 @@ const PatientsPage = () => {
       });
     }
     catch (err) {
-      let error = err.message ?? "Something went wrong. Please try again later."
-
-      if (err.name === "TypeError") {
-          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-      }
-      
-      Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-      })
+      showError(err)
     }
     finally {
       setLoading(false)
@@ -202,14 +187,14 @@ const PatientsPage = () => {
   return (
     <>
       { loading && (
-        <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
+        <div className='flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30 z-50'>
             <ClipLoader className='' loading={loading} size={60} color='#6CB6AD' />
         </div>
       )}
 
       {/* for QR scanning */}
       { isQrInputFocused && (
-        <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-50'>
+        <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
             <div className='px-4 py-6 bg-white shadow-lg w-[400px] rounded-md'>
                 <QrScanning />
                 <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>

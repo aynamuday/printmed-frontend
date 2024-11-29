@@ -2,62 +2,25 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import AppContext from '../context/AppContext';
+import { fetchPatient } from '../utils/fetch/fetchPatient';
+import { showError } from '../utils/fetch/showError';
 
 const PatientsTable = ({ patients, setLoading }) => {
   const navigate = useNavigate();
   const { token } = useContext(AppContext)
 
-  const handleViewPatient = (patientId) => {
-    fetchPatient(patientId)
-  };
-
-  const fetchPatient = async (patientId) => {
+  const viewPatient = async (patientId) => {
     setLoading(true)
 
     try {
-        const res = await fetch(`/api/patients/${patientId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        if(!res.ok) {
-            if (res.status === 500) {
-                throw new Error("Something went wrong. Please try again later.")
-            } else if (res.status === 404) {
-                throw new Error("Patient not found.")
-            } else if (res.status === 403) {
-                throw new Error("You are not authorized to perform this action.")
-            } else {
-                throw new Error("Something went wrong. Please try again later.")
-            }
-        }
-
-        const patient = await res.json()
+        const patient = await fetchPatient(patientId, token)
 
         navigate(`/patients/${patientId}`, {
           state: { patient }
         });
     }
     catch (err) {
-      console.log(err)
-      let error = err.message ?? "Something went wrong. Please try again later."
-
-      if (err.name === "TypeError") {
-          error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-      }
-      
-      Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-      })
+      showError(err)
     }
     finally {
         setLoading(false)
@@ -91,7 +54,7 @@ const PatientsTable = ({ patients, setLoading }) => {
                 <td className="p-2 border text-center border-[#828282]">
                   <div className="flex justify-center gap-2">
                     <button
-                      onClick={() => handleViewPatient(patient.id)}
+                      onClick={() => viewPatient(patient.id)}
                       className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
                     >
                       View

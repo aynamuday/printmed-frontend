@@ -1,12 +1,13 @@
 import React, { useContext, useState } from "react";
-import { NavLink, useNavigate } from 'react-router-dom';
-// import "bootstrap-icons/font/bootstrap-icons.css"; 
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import AppContext from "../context/AppContext";
 
 const Sidebar = () => {
-  const {user, setUser, token, setToken} = useContext(AppContext)
+  const {user} = useContext(AppContext)
   const navigate = useNavigate();
+  const location = useLocation()
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -14,8 +15,8 @@ const Sidebar = () => {
   };
 
   const linkClass = ({ isActive }) => isActive ? 
-  "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700" : 
-  "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600";
+  `p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold bg-gray-700` : 
+  "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold hover:bg-blue-600";
 
   return (
     <>
@@ -85,7 +86,7 @@ const Sidebar = () => {
               </>
             ) : ( user.role === "secretary" ? (
               <>
-                <NavLink to="/" className={linkClass}>
+                <NavLink to="/" className={({ isActive }) => `${linkClass({ isActive })} ${!isActive && location.pathname.includes('/patients') ? "bg-gray-700" : ""}`}>
                   <i className="bi bi-person-fill text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Patients</span>
                 </NavLink>
