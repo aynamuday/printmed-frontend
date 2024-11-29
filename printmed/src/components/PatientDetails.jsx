@@ -5,7 +5,7 @@ import { capitalizedWords } from '../utils/wordUtils';
 import Swal from 'sweetalert2';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
-    const { token } = useContext(AppContext)
+    const { token, user } = useContext(AppContext)
 
     const [errors, setErrors] = useState([])
 
@@ -204,7 +204,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             </>
                         )}
                     </div>
-                    {!update && <button onClick={() => {setUpdate(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
+                    {!update && user.role != "physician" && <button onClick={() => {setUpdate(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
                 </div>
 
                 <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col items-center justify-center px-6 py-4 pb-6 w-full'>

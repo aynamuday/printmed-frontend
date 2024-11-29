@@ -16,6 +16,7 @@ import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
 import { globalSwalNoIcon } from '../utils/globalSwal'
+import { fetchPatientUsingQr } from '../utils/fetchPatientUsingQr'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
@@ -38,6 +39,8 @@ const PatientPagePhysician = () => {
         try {
             const data = await fetchPatientUsingQr(qrCode, token)
             setPatient(data)
+
+            console.log(data)
         }
         catch (err) {
             let error = err.message ?? "Something went wrong. Please try again later."
@@ -104,7 +107,7 @@ const PatientPagePhysician = () => {
 
             <div>
                 { !patient && isQrInputFocused && (
-                    <div className='flex items-center justify-center absolute w-full h-full bg-black bg-opacity-50 z-10'>
+                    <div className='flex items-center justify-center absolute w-full h-full bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 z-40'>
                         <div className='px-4 py-6 bg-white shadow-lg w-[400px] rounded-md'>
                             <QrScanning />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
@@ -120,8 +123,8 @@ const PatientPagePhysician = () => {
                 <Header />
 
                 { !patient ? (
-                    <div className={`md:ml-[300px] min-h-[calc(100vh-120px)]`}>
-                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover min-h-[calc(100vh-120px)] pt-28">
+                    <div className={`md:ml-[300px] min-h-[calc(100vh-120px)] mt-[7%]`}>
+                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover min-h-[calc(100vh-105px)] pt-28">
                             <div className='w-[250px] mx-auto flex flex-col items-center bg-white p-4'>
                                 <img src={qr} alt="" className='w-[220px] p-3 border border-black' />
                                 <p className='text-center my-2 font-semibold'>Scan the patient's QR code to access their medical records.</p>
@@ -142,14 +145,14 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="w-full md:w-[75%] md:ml-[22%] mt-10 mb-12">
+                    <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
                         <div className='flex gap-6 items-center mb-4'>
                             <button onClick={() => handleClose()} className='flex items-center h-full'><i className='bi bi-x-lg'></i></button>
                             <h2 className='font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
                         </div>
                         <div className='grid grid-cols-5 gap-4'>
                             <div className='col-span-2'>
-                                <PatientDetails />
+                                <PatientDetails patient={patient} />
                             </div>
                             <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
                                 <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
@@ -174,7 +177,7 @@ const PatientPagePhysician = () => {
                                         ) : consultationComponentStatus === "view" ? (
                                             <ViewConsultation /> 
                                         ) : consultationComponentStatus === "add" && (
-                                            <ConsultationForm /> 
+                                            <ConsultationForm age={patient.age} vitalSigns={patient.vital_signs} /> 
                                         )}
                                     </div>
                                 </div>

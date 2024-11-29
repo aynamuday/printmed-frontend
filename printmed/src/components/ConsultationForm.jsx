@@ -5,13 +5,12 @@ import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 import Swal from 'sweetalert2'
 
-const ConsultationForm = () => {
+const ConsultationForm = ({age, vitalSigns}) => {
     const { token } = useContext(AppContext)
     const { 
         setPatientPageLoading,
         patient, setPatient,
         addConsultationData, setAddConsultationData,
-        isPediatrics, setIsPediatrics,
         isNext, setIsNext,
         addConsultationErrors, setAddConsultationErrors,
         setConsultations,
@@ -20,7 +19,17 @@ const ConsultationForm = () => {
     } = useContext(PhysicianContext)
 
     useEffect(() => {
-        setAddConsultationData((prevData) => ({...prevData, patient_id: patient.id}))
+        setAddConsultationData((prevData) => ({
+            ...prevData, 
+            patient_id: patient.id,
+            height: vitalSigns ? vitalSigns.height : "",
+            height_unit: vitalSigns ? vitalSigns.height_unit : "",
+            weight: vitalSigns ? vitalSigns.weight : "",
+            weight_unit: vitalSigns ? vitalSigns.weight_unit : "",
+            temperature: vitalSigns ? vitalSigns.temperature : "",
+            systolic: vitalSigns ? vitalSigns.systolic : "",
+            diastolic: vitalSigns ? vitalSigns.diastolic : ""
+        }))
     }, [])
 
     const handleSubmit = (e) => {
@@ -71,20 +80,11 @@ const ConsultationForm = () => {
             })
 
             if(!res.ok) {
-                if (res.status === 500) {
-                    throw new Error("Something went wrong. Please try again later.")
-                } else if (res.status === 404) {
-                    throw new Error("The QR code is either deactivated or expired.")
-                } else if (res.status === 403) {
-                    throw new Error("You are not authorized to access this patient. Make sure you are an assigned physician.")
-                } else if (res.status === 400) {
-                    throw new Error("Something went wrong with your request. Please check your input and try again later.")
-                } else {
-                    throw new Error("Something went wrong. Please try again later.")
-                }
+                throw new Error("Something went wrong. Please try again later.")
             }
 
             const data = await res.json()
+
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
             setPatient(prevPatient => ({
                 ...prevPatient,
@@ -98,6 +98,7 @@ const ConsultationForm = () => {
             resetAddConsultation()
         }
         catch (err) {
+            console.log(err)
             let error = err.message ?? "Something went wrong. Please try again later."
             if (err.name === "TypeError") {
                 error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
@@ -175,7 +176,7 @@ const ConsultationForm = () => {
                                 <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
                                 <td className='border p-2 border-[#828282] w-[20%]'>{ addConsultationData.temperature} &#176;C</td>
                                 <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
-                                <td className='border p-2 border-[#828282] w-[35%]'>{ addConsultationData.blood_pressure}</td>
+                                <td className='border p-2 border-[#828282] w-[35%]'>{ addConsultationData.systolic + "/" + addConsultationData.diastolic }</td>
                             </tr>
                         </tbody>
                     </table>
@@ -217,11 +218,7 @@ const ConsultationForm = () => {
                         />
                     </div>
                     <div className='mt-8'>
-                        <div>
-                            <input type="checkbox" value={isPediatrics} onChange={() => setIsPediatrics(!isPediatrics)} checked={isPediatrics} />
-                            <label className='font-bold ms-2'>Pediatrics</label>
-                        </div>
-                        { isPediatrics && (
+                        { age && Number(age) <= 18 && (
                             <>
                                 <div className='mt-4'>
                                     <div className='mb-4'>

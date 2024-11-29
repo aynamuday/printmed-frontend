@@ -117,19 +117,19 @@ const PatientPageSecretary = () => {
             title: `Are you sure you want to generate identification card for patient?`,
             html: `<p style="color: black; font-size: 16px; margin: 0;">The previous identication card, if active, will be <span style="text-decoration: underline;">deactivated</span>.</p>
                 <div style="height: 16px;"></div>
-                <input type="checkbox" id="send-email"> <span style="color: black; font-size: 16px; margin-left: 8px;">Send digital copy to patient thru email</span>
-                <p style="color: black; font-size: 16px; margin-left: 8px; font-style: italic;">Please confirm to patient that their email is active.</p>`,
+                ${patient.email != null ? `<input type="checkbox" id="send-email"> <span style="color: black; font-size: 16px; margin-left: 8px;">Send digital copy to patient thru email</span>
+                <p style="color: black; font-size: 16px; margin-left: 8px; font-style: italic;">Please confirm to patient that their email is active.</p>` : ""}`,
             showCancelButton: true,
             confirmButtonText: "Continue"
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const sendEmail = document.getElementById('send-email').checked;
+                const sendEmail = patient.email != null ? document.getElementById('send-email').checked : false;
                 
                 try {
                     setLoading(true)
 
                     let fetchUrl = `/api/generate-patient-id-card/${patient.id}?`
-                    if (sendEmail) {
+                    if (patient.email != null && sendEmail) {
                         fetchUrl += "send_email=1"
                     }
         
@@ -260,6 +260,8 @@ const PatientPageSecretary = () => {
             if (result.isConfirmed) {
                 navigate('/')
             }
+            setPatient(null)
+            setLoading(false)
         });
     }
 

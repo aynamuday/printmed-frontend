@@ -279,7 +279,7 @@ function RegistrationPage() {
                                         type="text"
                                         name="first_name"
                                         value={formData.first_name}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                         required
                                     />
@@ -297,7 +297,7 @@ function RegistrationPage() {
                                         type="text"
                                         name="middle_name"
                                         value={formData.middle_name}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                     />
                                     {errors.middle_name && (
@@ -314,7 +314,7 @@ function RegistrationPage() {
                                         type="text"
                                         name="last_name"
                                         value={formData.last_name}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                         required
                                     />
@@ -329,7 +329,7 @@ function RegistrationPage() {
                                     <select
                                         name="suffix"
                                         value={formData.suffix}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                     >
                                         <option value="">Select Suffix</option>
@@ -349,7 +349,7 @@ function RegistrationPage() {
                                     <select
                                         name="sex"
                                         value={formData.sex}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         required
                                     >
@@ -371,7 +371,7 @@ function RegistrationPage() {
                                         type="date"
                                         name="birthdate"
                                         value={formData.birthdate}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         max={new Date().toISOString().split("T")[0]}
                                         min="1920-01-01"
@@ -392,7 +392,7 @@ function RegistrationPage() {
                                         name="birthplace" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.birthplace} 
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.birthplace && (
                                         <p className="text-red-500 text-sm">{errors.birthplace}</p>
@@ -407,7 +407,7 @@ function RegistrationPage() {
                                     <select
                                         name="civil_status"
                                         value={formData.civil_status}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         required
                                     >
@@ -431,7 +431,7 @@ function RegistrationPage() {
                                         name="house_number"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.house_number}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         required
                                     />
                                     {errors.house_number && (
@@ -449,7 +449,7 @@ function RegistrationPage() {
                                         name="street" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.street} 
-                                        onChange={handleChange} 
+                                        onChange={(e) => {handleChange(e)}} 
                                         required
                                     />
                                     {errors.street && (
@@ -467,7 +467,7 @@ function RegistrationPage() {
                                         name="barangay"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.barangay}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         required
                                     />
                                     {errors.barangay && (
@@ -485,7 +485,7 @@ function RegistrationPage() {
                                         name="city" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.city} 
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                         required
                                     />
                                     {errors.city && (
@@ -503,7 +503,7 @@ function RegistrationPage() {
                                         name="province" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.province} 
-                                        onChange={handleChange} 
+                                        onChange={(e) => {handleChange(e)}} 
                                         required
                                     />
                                     {errors.province && (
@@ -523,7 +523,7 @@ function RegistrationPage() {
                                         value={formData.postal_code} 
                                         maxLength="4"
                                         minLength="4"
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.postal_code && (
                                         <p className="text-red-500 text-sm">{errors.postal_code}</p>
@@ -540,7 +540,7 @@ function RegistrationPage() {
                                         name="religion"
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         value={formData.religion}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.religion && (
                                         <p className="text-red-500 text-sm">{errors.religion}</p>
@@ -582,7 +582,7 @@ function RegistrationPage() {
                                         name="email"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.email}
-                                        onChange={handleChange}
+                                        onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                                 </div>

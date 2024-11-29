@@ -19,7 +19,7 @@ const ConsultationsTable = ({consultations}) => {
                     </tr>
                 </thead>
                 <tbody>
-                { consultations ? (
+                { consultations && consultations.length !== 0 ? (
                     consultations.map((item, index) => (
                         <tr key={index} onClick={() => {setViewConsultationId(item.id); setConsultationComponentStatus("view");}} className='cursor-pointer bg-white hover:text-red-600'>
                             <td className="border p-2 border-[#828282] text-center">{item.chief_complaint}</td>

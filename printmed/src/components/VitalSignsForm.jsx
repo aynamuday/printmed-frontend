@@ -10,9 +10,8 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
         'height_unit': vitalSigns ? vitalSigns.height_unit : 'cm',
         'weight': vitalSigns ? vitalSigns.weight : '',
         'weight_unit': vitalSigns ? vitalSigns.weight_unit : 'kg',
-        'systolic': vitalSigns ? vitalSigns.blood_pressure.split('/')[0] : '',
-        'diastolic': vitalSigns ? vitalSigns.blood_pressure.split('/')[1] : '',
-        'blood_pressure': vitalSigns ? vitalSigns.blood_pressure : '',
+        'systolic': vitalSigns ? vitalSigns.systolic : '',
+        'diastolic': vitalSigns ? vitalSigns.diastolic : '',
         'temperature': vitalSigns ? vitalSigns.temperature : '',
         'temperature_unit': 'C'
     })
@@ -76,6 +75,7 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
             })
 
             if(!res.ok) {
+                console.log(await res.json())
                if (res.status === 404) {
                    throw new Error(vitalSigns ? "Vital signs record not found" : "Patient not found.")
                } else {
@@ -118,25 +118,11 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
         const numbersDotOnlyRegex = /^\d*(\.\d*)?$/
         if (numbersDotOnlyRegex.test(value) && key != "systolic" && key != "diastolic") {
             setVitalSignsData(prevData => ({ ...prevData, [key]: value}))
-
-            if (key === "systolic") {
-                setVitalSignsData(prevData => ({ ...prevData, blood_pressure: value+"/"+vitalSignsData.diastolic}))
-            }
-            if (key === "diastolic") {
-                setVitalSignsData(prevData => ({ ...prevData, blood_pressure: vitalSignsData.systolic+"/"+value}))
-            }
         }
 
         const numbersOnlyRegex = /^\d*$/
-        if (numbersOnlyRegex.test(value) && (key != "systolic" && key || "diastolic")) {
+        if (numbersOnlyRegex.test(value) && (key == "systolic" || key == "diastolic")) {
             setVitalSignsData(prevData => ({ ...prevData, [key]: value}))
-
-            if (key === "systolic") {
-                setVitalSignsData(prevData => ({ ...prevData, blood_pressure: value+"/"+vitalSignsData.diastolic}))
-            }
-            if (key === "diastolic") {
-                setVitalSignsData(prevData => ({ ...prevData, blood_pressure: vitalSignsData.systolic+"/"+value}))
-            }
         }
     }
 

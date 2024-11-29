@@ -15,7 +15,7 @@ const VitalSignsTable = ({vitalSigns}) => {
                     <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
                     <td className='border p-2 border-[#828282] w-[20%]'>{ vitalSigns.temperature } &#176;C</td>
                     <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
-                    <td className='border p-2 border-[#828282] w-[35%]'>{ vitalSigns.blood_pressure }</td>
+                    <td className='border p-2 border-[#828282] w-[35%]'>{ vitalSigns.systolic + "/" + vitalSigns.diastolic }</td>
                 </tr>
             </tbody>
         </table>

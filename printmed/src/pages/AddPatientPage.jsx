@@ -42,6 +42,7 @@ const AddPatientPage = () => {
     religion: registration.religion || '',
     email: registration.email || '',
     phone_number: registration.phone_number || '',
+    physician_id: ''
   });
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
