@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
@@ -16,10 +16,11 @@ const UsersTable = ({ users }) => {
   const [openMenu, setOpenMenu] = useState(null); // State for open menu
   const [errorMessage, setErrorMessage] = useState('');
 
-  // remove the current user, so it's not displayed on table
-  users = users ? users.filter(item => item.id !== user.id) : users;
+  const menuRef = useRef(null);
 
-  // toggle lock user account
+  // Remove the current user, so it's not displayed on the table
+  users = users ? users.filter((item) => item.id !== user.id) : users;
+
   const handleToggleLockButton = async (userId) => {
     setLoading(true);
 
@@ -37,9 +38,9 @@ const UsersTable = ({ users }) => {
     }
 
     setLoading(false);
+    setOpenMenu(null); // Close menu after action
   };
 
-  // unrestrict user account
   const handleUnrestrictButton = async (userId) => {
     setLoading(true);
 
@@ -57,25 +58,24 @@ const UsersTable = ({ users }) => {
     }
 
     setLoading(false);
+    setOpenMenu(null); // Close menu after action
   };
 
-  // send reset link
   const handleSendResetLink = async (email) => {
     setLoading(true);
-  
+
     try {
-      const res = await fetch('/reset-password', { 
+      const res = await fetch('/reset-password', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
       });
-  
+
       const data = await res.json();
-      console.log(data);
-  
+
       if (res.ok) {
         alert('Reset link sent successfully!');
       } else {
@@ -85,9 +85,9 @@ const UsersTable = ({ users }) => {
       setErrorMessage('An error occurred while sending the reset link.');
     } finally {
       setLoading(false);
+      setOpenMenu(null); // Close menu after action
     }
   };
-  
 
   useEffect(() => {
     if (users && updatedUser != null) {
@@ -120,6 +120,20 @@ const UsersTable = ({ users }) => {
     return status;
   };
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="relative overflow-x-auto">
       {loading && (
@@ -151,7 +165,8 @@ const UsersTable = ({ users }) => {
                 <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                 <td className="border p-2 border-[#828282] text-center">
                   <div className="relative flex items-center justify-center gap-2">
-                    <Link to={`/view-user/${item.id}`} 
+                    <Link
+                      to={`/view-user/${item.id}`}
                       className="py-2 px-5 w-auto rounded-lg bg-[#248176] text-white hover:bg-[#6CB6AD] transition duration-300"
                     >
                       View
@@ -164,7 +179,10 @@ const UsersTable = ({ users }) => {
                     </button>
 
                     {openMenu === item.id && (
-                      <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md border border-gray-300 z-10">
+                      <div
+                        className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md border border-gray-300 z-10"
+                        ref={menuRef}
+                      >
                         {item.is_locked ? (
                           <button
                             onClick={() => handleToggleLockButton(item.id)}
@@ -190,8 +208,10 @@ const UsersTable = ({ users }) => {
                           </button>
                         )}
 
-                        <button className="block w-full text-left px-4 py-2 text-blue-600"
-                          onClick={() => handleSendResetLink(item.email)}>
+                        <button
+                          className="block w-full text-left px-4 py-2 text-blue-600"
+                          onClick={() => handleSendResetLink(item.email)}
+                        >
                           Send Reset Link
                         </button>
                       </div>
