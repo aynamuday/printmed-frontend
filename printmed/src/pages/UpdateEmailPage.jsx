@@ -4,6 +4,8 @@ import { BounceLoader } from 'react-spinners'; // Import the loader
 import AppContext from '../context/AppContext';
 import Settings from '../components/Settings';
 import {globalSwalWithIcon} from '../utils/globalSwal';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 
 const UpdateEmailPage = () => {
     const { token, user, setUser } = useContext(AppContext);
@@ -103,69 +105,74 @@ const UpdateEmailPage = () => {
     };
 
     return (
-        <Settings
-            children={
-                <div className="relative flex flex-col items-center min-w-96">
-                    <div className="absolute top-[-30%] left-[-105%] p-4">
-                        <button
-                            onClick={() => navigate('/settings')}
-                            className="text-xl text-gray-700 hover:text-gray-900 focus:outline-none"
-                        >
-                            <i className="bi bi-arrow-left"></i> {/* Left arrow icon */}
-                        </button>
-                    </div>
-                    <h2 className="text-xl font-bold mt-12 mb-6">
-                        Update Email
-                    </h2>
+        <>
+            <Sidebar />
+            <Header />
 
-                    {error && <p className="text-red-500 mb-4">{error}</p>}
-
-                    {loading ? (
-                        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-                            <BounceLoader color="#6CB6AD" size={50} /> {/* Loading spinner */}
+            <div className="w-full md:w-[70%] md:ml-[25%] mt-[10%] relative">
+                <div className="flex flex-col items-center justify-center mt-10 bg-[#98e6dd] bg-opacity-50 p-16 rounded-lg shadow-lg min-h-80">
+                    <div className="flex flex-col items-center min-w-96">
+                        <div className="absolute top-4 left-4 p-4">
+                            <button
+                                onClick={() => navigate('/settings')}
+                                className="focus:outline-none"
+                            >
+                                <i className="bi bi-arrow-left font-bold text-2xl"></i> {/* Left arrow icon */}
+                            </button>
                         </div>
-                    ) : (
-                        <>
-                            {step === 1 && (
-                                <>
-                                    <input
-                                        type="email"
-                                        placeholder="Enter new email"
-                                        value={newEmail}
-                                        onChange={(e) => setNewEmail(e.target.value)}
-                                        className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                    />
-                                    <button
-                                        onClick={handleSendOtp}
-                                        className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                                    >
-                                        Send OTP
-                                    </button>
-                                </>
-                            )}
+                        <h2 className="text-xl font-bold mt-12 mb-6">
+                            Update Email
+                        </h2>
 
-                            {step === 2 && (
-                                <>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter OTP"
-                                        value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
-                                        className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                    />
-                                    <button
-                                        onClick={handleVerifyOtp}
-                                        className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
-                                    >
-                                        Verify OTP
-                                    </button>
-                                </>
-                            )}
-                        </>
-                    )}
+                        {error && <p className="text-red-500 mb-4">{error}</p>}
+
+                        {loading ? (
+                            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                                <BounceLoader color="#6CB6AD" size={50} /> {/* Loading spinner */}
+                            </div>
+                        ) : (
+                            <>
+                                {step === 1 && (
+                                    <>
+                                        <input
+                                            type="email"
+                                            placeholder="Enter new email"
+                                            value={newEmail}
+                                            onChange={(e) => setNewEmail(e.target.value)}
+                                            className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                        />
+                                        <button
+                                            onClick={handleSendOtp}
+                                            className="px-4 py-2 bg-[#248176] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                        >
+                                            Send OTP
+                                        </button>
+                                    </>
+                                )}
+
+                                {step === 2 && (
+                                    <>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter OTP"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                        />
+                                        <button
+                                            onClick={handleVerifyOtp}
+                                            className="px-4 py-2 bg-[#248176] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                                        >
+                                            Verify OTP
+                                        </button>
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
-            }
-        />
+            </div>
+        </>
     );
 };
 
