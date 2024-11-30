@@ -50,16 +50,16 @@ const SettingsPage = () => {
 
   return (
     <Settings>
-      <h2 className="text-4xl font-bold">{user.full_name.toUpperCase()}</h2>
-      <p className="text-black-500">{user.personnel_number}</p>
-      <p className="text-black-500">{user.email}</p>
+      <h2 className="text-4xl font-bold text-center sm:text-left">{user.full_name.toUpperCase()}</h2>
+      <p className="text-black-500 text-center sm:text-left">{user.personnel_number}</p>
+      <p className="text-black-500 text-center sm:text-left">{user.email}</p>
       <div className="min-h-10"></div>
 
       {/* Edit Information Button */}
       {user.role === 'admin' && (
         <Link
           to="/settings/edit-admin-info"
-          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
+          className="w-48 sm:w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Edit Information
         </Link>
@@ -69,13 +69,13 @@ const SettingsPage = () => {
       <div className="mt-6 space-y-4 w-full flex flex-col items-center">
         <Link
           to="/settings/update-email"
-          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
+          className="w-48 sm:w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Update Email
         </Link>
         <Link
           to="/settings/change-password"
-          className="w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
+          className="w-48 sm:w-48 px-4 py-2 bg-[#6CB6AD] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Change Password
         </Link>
@@ -84,7 +84,7 @@ const SettingsPage = () => {
       <div className='min-h-10'></div>
       <button
         onClick={handleLogout}
-        className="w-48 px-4 py-2 bg-[#b43c39] text-white rounded-md hover:bg-[#a43331] focus:outline-none"
+        className="w-48 sm:w-48 px-4 py-2 bg-[#b43c39] text-white rounded-md hover:bg-[#a43331] focus:outline-none"
       >
         Logout
       </button>

@@ -97,8 +97,8 @@ const EditAdminInfoPage = () => {
             <BounceLoader color="#6CB6AD" size={60} />
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center mt-6">
-            <div className="grid grid-cols-2 gap-4 w-full">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center mt-6 px-4 sm:px-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               {/* Personnel Number */}
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -231,7 +231,7 @@ const EditAdminInfoPage = () => {
                 </button>
               </div>
             </div>
-            <div className="w-full">
+            <div className="mt-4 w-full">
               <div className="flex justify-center items-center">
                 <button
                   type="button"
