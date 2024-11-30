@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import AppContext from '../context/AppContext';
+import { BounceLoader } from "react-spinners";
 
 const ResetPasswordPage = () => {
   const { bearerToken } = useState(AppContext);
@@ -13,6 +14,7 @@ const ResetPasswordPage = () => {
 
   const [formData, setFormData] = useState({ password: '', passwordConfirmation: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -44,6 +46,8 @@ const ResetPasswordPage = () => {
       return;
     }
 
+    setLoading(true);
+
     const res = await fetch("/api/reset-password", {
       method: "POST",
       headers: {
@@ -51,6 +55,8 @@ const ResetPasswordPage = () => {
       },
       body: JSON.stringify({ token: token, email: email, password: password, password_confirmation: passwordConfirmation})
     });
+
+    setLoading(false);
 
     if (!res.ok) {
       console.log(await res.json())
@@ -62,6 +68,11 @@ const ResetPasswordPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
+      {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-75 z-50">
+          <BounceLoader color="#248176" size={100} />
+        </div>
+      )}
       <div className="bg-white p-8 rounded-lg">
         <div className="flex flex-col items-center">
           <img src={logo} alt="" className="w-100 h-28" />

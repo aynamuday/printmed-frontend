@@ -150,7 +150,12 @@ const UsersTable = ({ users }) => {
                 <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
                 <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                 <td className="border p-2 border-[#828282] text-center">
-                  <div className="relative">
+                  <div className="relative flex items-center justify-center gap-2">
+                    <Link to={`/view-user/${item.id}`} 
+                      className="py-2 px-5 w-auto rounded-lg bg-[#248176] text-white hover:bg-[#6CB6AD] transition duration-300"
+                    >
+                      View
+                    </Link>
                     <button
                       className="py-1 px-3 rounded-full bg-gray-300 text-black"
                       onClick={() => setOpenMenu(openMenu === item.id ? null : item.id)}
