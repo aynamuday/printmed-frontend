@@ -143,7 +143,7 @@ const UpdateEmailPage = () => {
                                         />
                                         <button
                                             onClick={handleSendOtp}
-                                            className="px-4 py-2 bg-[#248176] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                            className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
                                         >
                                             Send OTP
                                         </button>
@@ -161,7 +161,7 @@ const UpdateEmailPage = () => {
                                         />
                                         <button
                                             onClick={handleVerifyOtp}
-                                            className="px-4 py-2 bg-[#248176] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                                            className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
                                         >
                                             Verify OTP
                                         </button>

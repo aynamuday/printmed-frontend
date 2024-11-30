@@ -164,7 +164,7 @@ const DepartmentsPage = () => {
           </select>
           <button
             onClick={handleAddDepartment}
-            className="bg-[#248176] text-white px-8 rounded h-10"
+            className="bg-[#248176] hover:bg-[#37c9b8] text-white px-8 rounded h-10"
           >
             Add
           </button>
@@ -186,7 +186,7 @@ const DepartmentsPage = () => {
                 <td className="border p-2 border-[#828282] text-center">{item.name}</td>
                 <td className="border p-2 border-[#828282]">
                   <div className="flex flex-row w-100 items-center justify-center gap-4">
-                    <button onClick={() => handleDeleteDepartment(item.id)} className="py-1 w-20 rounded-lg bg-red-500 text-white">
+                    <button onClick={() => handleDeleteDepartment(item.id)} className="py-1 w-20 rounded-lg bg-red-500 hover:bg-[#a43331] text-white">
                       Delete
                     </button>
                   </div>

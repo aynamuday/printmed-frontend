@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/verify-otp', {
+      const res = await fetch('/api/forget-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

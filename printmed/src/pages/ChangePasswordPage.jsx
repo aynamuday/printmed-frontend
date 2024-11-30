@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Settings from '../components/Settings'
 import { BounceLoader } from "react-spinners";
 import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 
 const ChangePasswordPage = () => {
   const { token } = useContext(AppContext)
@@ -82,64 +84,68 @@ const ChangePasswordPage = () => {
   };
 
   return (
-    <Settings children={
-      <>
-        <div className="w-80">
-          {loading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-              <BounceLoader color="#6CB6AD" size={60} />
-            </div>
-          )}
-          <form onSubmit={handleChangePassword} className='relative flex flex-col items-center'>
-            <div className="absolute top-[-15%] left-[-130%] p-4">      
-              <button onClick={() => navigate("/settings")} className="mr-4">
-                <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
-              </button>
-            </div>
-            <h2 className="text-xl font-bold mt-12 mb-4">
-                Change Password
-            </h2>
+    <>
+      <Sidebar />
+      <Header />
+      <div className="w-full md:w-[70%] md:ml-[25%] mt-[10%] relative">
+        <div className="flex flex-col items-center justify-center mt-10 bg-[#98e6dd] bg-opacity-50 p-16 rounded-lg shadow-lg min-h-80">
+          <div className="flex flex-col items-center min-w-96">
+            <div className="absolute top-4 left-4 p-4">      
+                  <button onClick={() => navigate("/settings")} className="mr-4">
+                    <i className="bi bi-arrow-left text-xl"></i> {/* Left arrow icon */}
+                  </button>
+                </div>
+              {loading && (
+                <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                  <BounceLoader color="#6CB6AD" size={60} />
+                </div>
+              )}
+              <form onSubmit={handleChangePassword} className='relative flex flex-col items-center'>
+                <h2 className="text-xl font-bold mt-12 mb-4">
+                    Change Password
+                </h2>
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            
-            <input
-              type="password"
-              placeholder="Old Password"
-              required
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full p-2 mb-4 mt-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            />
-            <input
-              type="password"
-              placeholder="New Password"
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-            />
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                
+                <input
+                  type="password"
+                  placeholder="Old Password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-96 p-2 mb-4 mt-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <input
+                  type="password"
+                  placeholder="New Password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-96 p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-96 p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
 
-            <div className="flex space-x-4 mt-4">
-              <button
-                disabled={loading}
-                type='submit'
-                className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {loading ? 'Changing...' : 'Change Password'}
-              </button>
-            </div>
-          </form>
+                <div className="flex space-x-4 mt-4">
+                  <button
+                    disabled={loading}
+                    type='submit'
+                    className="px-4 py-2 bg-[#248176] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                  >
+                    {loading ? 'Changing...' : 'Change Password'}
+                  </button>
+                </div>
+              </form>
+          </div>
         </div>
-      </>
-    }/> 
+      </div>
+    </>
   );
 };
 

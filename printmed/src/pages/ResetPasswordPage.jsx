@@ -1,9 +1,17 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
+import AppContext from '../context/AppContext';
 
 const ResetPasswordPage = () => {
-  const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
+  const { bearerToken } = useState(AppContext);
+  const location = useLocation();
+  
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+  const email = queryParams.get('email');
+
+  const [formData, setFormData] = useState({ password: '', passwordConfirmation: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -12,16 +20,17 @@ const ResetPasswordPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { password, confirmPassword } = formData;
+    const { password, passwordConfirmation } = formData;
+    const symbolPattern = /[!@#$%^&*(),.?":{}|<>]/;
 
     // Validate passwords
-    if (!password || !confirmPassword) {
+    if (!password || !passwordConfirmation) {
       setError('Please fill in both fields.');
       return;
     }
-    if (password !== confirmPassword) {
+    if (password !== passwordConfirmation) {
       setError('Passwords do not match.');
       return;
     }
@@ -30,9 +39,25 @@ const ResetPasswordPage = () => {
       return;
     }
 
-    // Proceed to reset password (API call can be integrated here)
-    console.log('Password reset successful!');
-    navigate('/login'); // Redirect to the login page
+    if (!symbolPattern.test(password)) {
+      setError('Password must contain at least one special character.');
+      return;
+    }
+
+    const res = await fetch("/api/reset-password", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({ token: token, email: email, password: password, password_confirmation: passwordConfirmation})
+    });
+
+    if (!res.ok) {
+      console.log(await res.json())
+      return
+    }
+
+    navigate('/login');
   };
 
   return (
@@ -61,11 +86,11 @@ const ResetPasswordPage = () => {
 
             <div>
               <input
-                name="confirmPassword"
+                name="passwordConfirmation"
                 type="password"
                 className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Confirm Password"
-                value={formData.confirmPassword}
+                value={formData.passwordConfirmation}
                 onChange={handleChange}
                 required
               />
@@ -74,7 +99,7 @@ const ResetPasswordPage = () => {
 
           <button
             type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-[#6CB6AD] text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           >
             Reset Password
           </button>

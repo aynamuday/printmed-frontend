@@ -160,7 +160,7 @@ const UserPage = () => {
     setErrors([])
 
     globalSwalNoIcon.fire({
-      title: 'Are you sure?',
+      title: 'Are you sure you want to add this user?',
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'Cancel'
@@ -170,9 +170,12 @@ const UserPage = () => {
       if (result.isConfirmed) {
         try {
           // removes empty values in form
-          // const filteredFormData = Object.fromEntries(
-          //   Object.entries(formData).filter(([key, value]) => value !== '')
-          // );
+          let filteredFormData = formData
+          if (!userId) {
+            filteredFormData = Object.fromEntries(
+              Object.entries(formData).filter(([key, value]) => value !== '')
+            );
+          }
           // allow null?
 
           const url = userId ? '/api/users/' + userId + '/update-information' : '/api/users'

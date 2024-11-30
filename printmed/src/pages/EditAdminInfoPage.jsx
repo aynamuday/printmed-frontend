@@ -225,7 +225,7 @@ const EditAdminInfoPage = () => {
               <div className="flex justify-center items-center">
                 <button
                   type="submit"
-                  className="mt-1 block w-[50%] h-10 bg-[#6CB6AD] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+                  className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
                 >
                   Save
                 </button>
