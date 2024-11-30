@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { PulseLoader, ClipLoader } from 'react-spinners';
-import Swal from 'sweetalert2';
 import qr from '../assets/images/qr.png'
 
 import AppContext from '../context/AppContext';
@@ -13,6 +12,7 @@ import QrScanning from '../components/QrScanning';
 import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr';
 import { useNavigate } from 'react-router-dom';
 import { showError } from '../utils/fetch/showError';
+import { capitalizedWords } from '../utils/wordUtils';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -30,11 +30,11 @@ const PatientsPage = () => {
     if (patients.length < 1) {
       setTableLoading(true);
     }
-  
+
     const sortBy = patientsFilters.sortBy
     const orderBy = patientsFilters.orderBy
 
-    getPatients(1, undefined, sortBy, orderBy);
+    getPatients(1, searchPatient, sortBy, orderBy);
   }, []);
 
   const getPatients = async (page = 1, search = '', sortBy = '', orderBy = '') => {
@@ -61,60 +61,15 @@ const PatientsPage = () => {
         throw new Error("An error occured while fetching the patients. Please try again later.")
       }
 
-      const data = await res.json()  
-      setPatients(data); 
+      const data = await res.json()
+      setPatients(data);
     }
     catch (err) {
-      let error = err.message ?? "An error occured while fetching the patients. Please try again later."
-      if (err.name === "TypeError") {
-          setError("An error occured while fetching the patients. Please try again later. You may refresh or check your Internet connection.")
-      } 
-
-      if (!patients.data || patients.data.length < 1) {
-        Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-        })
-      }
+      showError(err)
     }
     finally {
         setTableLoading(false)
     }
-  };
-
-  const handleSortByChange = (sortBy) => {
-    setTableLoading(true);
-
-    setPatientsFilters((prevPatients) => ({ ...prevPatients, sortBy}));
-    const { search, orderBy } = patientsFilters;
-    getPatients(1, search, sortBy, orderBy);
-  };
-
-  const handleOrderByChange = (orderBy) => {
-    setTableLoading(true);
-
-    setPatientsFilters((prevPatients) => ({ ...prevPatients, orderBy }));
-    const { search, sortBy } = patientsFilters;
-    getPatients(1, search, sortBy, orderBy);
-  };
-  
-  const handlePrevious = () => {
-    setTableLoading(true)
-
-    getPatients(patients.current_page - 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
-  };
-
-  const handleNext = () => {
-    setTableLoading(true)
-
-    getPatients(patients.current_page + 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
   };
 
   const handleSearch = (e) => {
@@ -130,6 +85,29 @@ const PatientsPage = () => {
     getPatients(1, searchPatient, undefined, undefined)
   };
 
+  const handleSortByChange = (e) => {
+    setTableLoading(true);
+
+    const selectedOption = e.target.selectedOptions[0]
+    const sortBy = selectedOption.getAttribute('data-sort-by')
+    const orderBy = selectedOption.getAttribute('data-order-by')
+
+    setPatientsFilters((prevPatients) => ({ ...prevPatients, sortBy: sortBy, orderBy: orderBy}))
+    getPatients(1, searchPatient, sortBy, orderBy);
+  };
+
+  const handlePrevious = () => {
+    setTableLoading(true)
+
+    getPatients(patients.current_page - 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
+  };
+
+  const handleNext = () => {
+    setTableLoading(true)
+
+    getPatients(patients.current_page + 1, undefined, patientsFilters.sortBy, patientsFilters.orderBy)
+  };
+
   const handleClear = () => {
     setTableLoading(true)
 
@@ -139,6 +117,7 @@ const PatientsPage = () => {
       sortBy: '',
       orderBy: '',
     })
+
     getPatients(1, "", "", "");
   };
 
@@ -228,16 +207,15 @@ const PatientsPage = () => {
           <div className={`flex justify-end gap-4 items-end`}>
             {/* search */}
             <div>
-                <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Patient No."}</label>
-                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                <label htmlFor="search" className='text-xs block mb-1'>{"Patient No. or Name (FN LN or FN or LN)"}</label>
+                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-2'>
                     <input
                         type="text"
                         name="search"
                         className="focus:outline-none focus:border-none"
                         value={searchPatient}
                         onChange={(e) => {
-                          const updatedSearch = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
-                          setSearchPatient(updatedSearch);
+                          setSearchPatient(capitalizedWords(e.target.value));
                         }}
                         placeholder='Search'
                     />
@@ -247,26 +225,15 @@ const PatientsPage = () => {
                 </form>
             </div>
 
-            {/* sort by */}
+            {/* sort */}
             <div>
                 <label className='text-xs block mb-1'>Sort by</label>
                 <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                  value={patientsFilters.sortBy} onChange={(e) => handleSortByChange(e.target.value)}
+                  value={patientsFilters.sortBy + "_" + patientsFilters.orderBy} onChange={(e) => handleSortByChange(e)}
                 >
-                    <option value="">Last updated</option>
-                    <option value="patient_number">Patient No.</option>
-                    <option value="last_name">Last Name</option>
-                </select>
-            </div>
-
-            {/* sort direction */}
-            <div>
-                <label className='text-xs block mb-1'>Order by</label>
-                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                  value={patientsFilters.orderBy} onChange={(e) => handleOrderByChange(e.target.value)}
-                >
-                    <option value="">Descending</option>
-                    <option value="asc">Ascending</option>
+                    <option value="" data-sort-by="" data-order-by="">Last updated</option>
+                    <option value="name_asc" data-sort-by="name" data-order-by="asc">Last Name (A&rarr;Z)</option>
+                    <option value="name_desc" data-sort-by="name" data-order-by="desc">Last Name (Z&rarr;A)</option>
                 </select>
             </div>
 
@@ -274,19 +241,21 @@ const PatientsPage = () => {
             <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] rounded-md p-0.5 border border-[#6CB6AD]' /></button>
 
             {/* pagination controls */}
-            <div className="flex justify-end items-center">
-              <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                  disabled={patients.current_page <= 1} onClick={handlePrevious}>
-                &lt;
-              </button>
-              <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
-                {patients.current_page} OF {patients.last_page}
-              </button>
-              <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                  disabled={patients.current_page === patients.last_page} onClick={handleNext}>
-                &gt;
-              </button>
-            </div>
+            { patients.current_page &&
+              <div className="flex justify-end items-center">
+                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                    disabled={patients.current_page <= 1} onClick={handlePrevious}>
+                  &lt;
+                </button>
+                <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                  {patients.current_page} OF {patients.last_page}
+                </button>
+                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                    disabled={patients.current_page === patients.last_page} onClick={handleNext}>
+                  &gt;
+                </button>
+              </div>
+            }
 
             {/* clear button */}
             <div>

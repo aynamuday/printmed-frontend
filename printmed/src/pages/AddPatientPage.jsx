@@ -1,11 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 
 import AppContext from "../context/AppContext";
-import SecretaryContext from "../context/SecretaryContext";
 
 import { BounceLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
-import {globalSwalNoIcon} from "../utils/globalSwal";
+import {globalSwalNoIcon, globalSwalWithIcon} from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
 import { capitalizedWords } from "../utils/wordUtils";
 import { base64ToPngFile } from "../utils/fileUtils";
@@ -13,19 +12,18 @@ import { base64ToPngFile } from "../utils/fileUtils";
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import WebcamCapture from "../components/WebcamCapture"
-import Swal from "sweetalert2";
 import { showError } from "../utils/fetch/showError";
 import { fetchPatient } from "../utils/fetch/fetchPatient";
 import { handlePhoneNumberChange } from "../utils/handlePhoneNumberChange";
+import { fetchPhysicians } from "../utils/fetch/fetchPhysicians";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
-  const { fetchPhysicians, physicians } = useContext(SecretaryContext);
   const { state } = useLocation();
   const navigate = useNavigate();
 
+  const [physicians, setPhysicians] = useState([])
   const [duplicatePatients, setDuplicatePatients] = useState([])
-
   const registration = state?.registration || {};
   const [newPatientData, setNewPatientData] = useState({
     first_name: registration.first_name || '',
@@ -55,7 +53,15 @@ const AddPatientPage = () => {
   const [errors, setErrors] = useState([]);
 
   useEffect(() => {
-    fetchPhysicians()
+    const getPhysicians = async () => {
+      try {
+        setPhysicians(await fetchPhysicians(token))
+      } catch (err) {
+        showError(err)
+      }
+    };
+    
+    getPhysicians()
   }, [])
 
   const handleChange = (e) => {
@@ -133,7 +139,7 @@ const AddPatientPage = () => {
     globalSwalNoIcon.fire({
       title: 'Are you sure you want to add this patient?',
       showCancelButton: true,
-      confirmButtonText: 'Yes, add patient',
+      confirmButtonText: 'Yes',
       cancelButtonText: 'Cancel',
     }).then(async (result) => {
       if(result.isConfirmed) {
@@ -168,10 +174,8 @@ const AddPatientPage = () => {
           addPatient(e)
         }
         catch (err) {
+          setLoading(false)
           showError(err)
-        }
-        finally {
-            setLoading(false)
         }
       } 
     })
@@ -233,13 +237,6 @@ const AddPatientPage = () => {
       navigate(`/patients/${patient.id}`, {
         state: { patient }
       });
-      
-      globalSwalNoIcon.fire({
-        icon: 'success',
-        title: 'Patient added successfully!',
-        showConfirmButton: false,
-        showCloseButton: true,
-      });
 
       setNewPatientData({
         first_name: '',
@@ -260,12 +257,19 @@ const AddPatientPage = () => {
         province: '',
         postal_code: '',
       });
+
+      globalSwalWithIcon.fire({
+        icon: 'success',
+        title: 'Patient added successfully!',
+        showConfirmButton: false,
+        showCloseButton: true,
+      });
+
+      setLoading(false)
     }
     catch (err) {
+      setLoading(false)
       showError(err)
-    }
-    finally {
-        setLoading(false)
     }
   }
 
@@ -614,12 +618,11 @@ const AddPatientPage = () => {
                       required
                     >
                       <option value="">Assign Physician</option>
-                      { physicians && physicians.map((physician) => (
+                      { physicians && physicians.length != 0 && physicians.map((physician) => (
                           <option key={physician.id} value={physician.id}>
                             Doc. {physician.full_name}
                           </option>
-                        ))
-                      }
+                      ))}
                     </select>
                   </div>
 

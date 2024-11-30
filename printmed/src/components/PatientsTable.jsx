@@ -33,9 +33,8 @@ const PatientsTable = ({ patients, setLoading }) => {
         <thead>
           <tr>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Patient No.</th>
-            <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
-            <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
+            <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Birthdate</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Sex</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
@@ -46,9 +45,8 @@ const PatientsTable = ({ patients, setLoading }) => {
             patients.map((patient, index) => (
               <tr key={index}>
                 <td className="p-2 border text-center border-[#828282]">{patient.patient_number}</td>
-                <td className="p-2 border text-center border-[#828282]">{patient.first_name}</td>
                 <td className="p-2 border text-center border-[#828282]">{patient.last_name}</td>
-                <td className="p-2 border text-center border-[#828282]">{patient.age}</td>
+                <td className="p-2 border text-center border-[#828282]">{patient.first_name}</td>
                 <td className="p-2 border text-center border-[#828282]">{patient.birthdate}</td>
                 <td className="p-2 border text-center border-[#828282]">{patient.sex}</td>
                 <td className="p-2 border text-center border-[#828282]">

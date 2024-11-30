@@ -2,29 +2,38 @@ import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
 import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
-import Swal from 'sweetalert2';
 import { handlePhoneNumberChange } from '../utils/handlePhoneNumberChange';
-import SecretaryContext from '../context/SecretaryContext';
 import WebcamCapture from './WebcamCapture';
 import { showError } from '../utils/fetch/showError';
 import { globalSwalNoIcon } from '../utils/globalSwal';
 import { base64ToPngFile } from '../utils/fileUtils';
+import { fetchPhysicians } from '../utils/fetch/fetchPhysicians';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
-    const { fetchPhysicians, physicians } = useContext(SecretaryContext)
 
-    const [errors, setErrors] = useState([])
-
+    const [physicians, setPhysicians] = useState(null)
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState([])
     const [image, setImage] = useState(null)
     const [takePhoto, setTakePhoto] = useState(false)
+    const [errors, setErrors] = useState([])
 
     useEffect(() => {
         resetUpdateData()
         resetErrors()
-        fetchPhysicians()
+
+        const getPhysicians = async () => {
+            try {
+                setPhysicians(await fetchPhysicians(token))
+            } catch (err) {
+                showError(err)
+            }
+        };
+        
+        if (user.role === "secretary" && update && (!physicians || physicians.length == 0)) {
+            getPhysicians()
+        }
     }, [update])
 
     const resetUpdateData = () => {
@@ -561,26 +570,28 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     </tr>
                                 </>
                             )}
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Physician {update && <span className='text-red-600'>*</span>}</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>
-                                    { !update ? (
-                                        patient.physician ? "Doc. " + patient.physician.full_name : "N/A"
-                                    ) : (
-                                        <select
-                                            value={updateData.physician_id}
-                                            className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
-                                            onChange={(e) => setUpdateData(prevData => ({...prevData, physician_id: e.target.value}))}
-                                            required
-                                        >
-                                            <option value=''>Select Physician</option>
-                                            {physicians.map((physician, index) => (
-                                                <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
-                                            ))}
-                                        </select>
-                                    )}
-                                </td>
-                            </tr>
+                            { user.role === "secreatry" && 
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Physician {update && <span className='text-red-600'>*</span>}</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { !update ? (
+                                            patient.physician ? "Doc. " + patient.physician.full_name : "N/A"
+                                        ) : (
+                                            <select
+                                                value={updateData.physician_id}
+                                                className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
+                                                onChange={(e) => setUpdateData(prevData => ({...prevData, physician_id: e.target.value}))}
+                                                required
+                                            >
+                                                <option value=''>Select Physician</option>
+                                                {physicians.map((physician, index) => (
+                                                    <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                     { update && (

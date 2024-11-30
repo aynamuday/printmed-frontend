@@ -5,9 +5,6 @@ import AppContext from './AppContext';
 const SecretaryContext = createContext();
 
 export const SecretaryProvider = () => {
-  const { token } = useContext(AppContext)
-
-  const [physicians, setPhysicians] = useState([])
   const [registrations, setRegistrations] = useState([]);
   const [registrationsSearch, setRegistrationsSearch] = useState('');
   const [patients, setPatients] = useState('');
@@ -17,35 +14,8 @@ export const SecretaryProvider = () => {
     orderBy: '',
   });
 
-  useEffect(() => {
-    fetchPhysicians()
-  }, [])
-
-  const fetchPhysicians = async () => {
-    try {
-      const res = await fetch('/api/physicians', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        
-        setPhysicians(data);
-        console.log(data)
-      } else {
-        console.error('Error fetching physicians:', res.statusText);
-      }
-    } catch (error) {
-      console.error('Error fetching physicians:', error);
-    }
-  };
-
   return (
-    <SecretaryContext.Provider value={{ 
-      fetchPhysicians,
-      physicians, setPhysicians,
+    <SecretaryContext.Provider value={{
       registrations, setRegistrations,
       registrationsSearch, setRegistrationsSearch,
       patients, setPatients,
