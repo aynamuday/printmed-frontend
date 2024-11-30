@@ -100,7 +100,7 @@ const PatientPagePhysician = () => {
     return (
         <>
             { patientPageLoading && (
-                <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
+                <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
                     <ClipLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
                 </div>
             )}
@@ -128,7 +128,7 @@ const PatientPagePhysician = () => {
                             <div className='w-[250px] mx-auto flex flex-col items-center bg-white p-4'>
                                 <img src={qr} alt="" className='w-[220px] p-3 border border-black' />
                                 <p className='text-center my-2 font-semibold'>Scan the patient's QR code to access their medical records.</p>
-                                <button onClick={handleScanButtonClick} className='bg-[#499e94] text-xl text-white font-medium hover:bg-[#4fb5a9] p-1.5 w-full rounded-md'>Scan</button>
+                                <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan</button>
                             </div>
                             <form onSubmit={(e) => handleQrCodeSubmit(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
                                 <input 
@@ -146,9 +146,17 @@ const PatientPagePhysician = () => {
                     </div>
                 ) : (
                     <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
-                        <div className='flex gap-6 items-center mb-4'>
-                            <button onClick={() => handleClose()} className='flex items-center h-full'><i className='bi bi-x-lg'></i></button>
-                            <h2 className='font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
+                        <div className='flex items-center mb-4'>
+                            <button onClick={() => handleClose()} className='me-6 flex items-center h-full'><i className='bi bi-x-lg'></i></button>
+                            <h2 className='me-3 font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
+                            { patient.is_new_in_department && 
+                                <div className='me-2 h-full border border-green-500 border-1 px-2 py-1 rounded-lg'>
+                                    <p className='text-xs text-green-500 font-semibold'>New</p>
+                                </div> 
+                            }
+                            <div className={`h-full border ${patient.vital_signs == null ? "border-gray-500" : "border-orange-500"} border-1 px-2 py-1 rounded-lg`}>
+                                <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>{patient.vital_signs == null && "No"} Vital Signs Available</p>
+                            </div>
                         </div>
                         <div className='grid grid-cols-5 gap-4'>
                             <div className='col-span-2'>
@@ -175,7 +183,7 @@ const PatientPagePhysician = () => {
                                         { consultationComponentStatus === null ? (
                                             <ConsultationsTable consultations={patient.consultations} />
                                         ) : consultationComponentStatus === "view" ? (
-                                            <ViewConsultation /> 
+                                            <ViewConsultation setLoading={setPatientPageLoading} /> 
                                         ) : consultationComponentStatus === "add" && (
                                             <ConsultationForm age={patient.age} vitalSigns={patient.vital_signs} /> 
                                         )}

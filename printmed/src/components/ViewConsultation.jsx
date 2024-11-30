@@ -47,6 +47,7 @@ const ViewConsultation = () => {
 
             const data = await res.json()
             setConsultation(data)
+            console.log(data)
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
         }
         catch (err) {
@@ -184,6 +185,10 @@ const ViewConsultation = () => {
                                     </td>
                                 </tr>
                             )}
+                            <tr>
+                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Physician</th>
+                                <td className='border p-2 border-[#828282] w-[65%]'>Doc. { consultation.physician.full_name}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

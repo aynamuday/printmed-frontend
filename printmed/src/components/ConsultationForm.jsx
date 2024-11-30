@@ -4,6 +4,9 @@ import { getFormattedNumericDate } from '../utils/dateUtils'
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 import Swal from 'sweetalert2'
+import { capitalizedWords } from '../utils/wordUtils'
+import { showError } from '../utils/fetch/showError'
+import { globalSwalNoIcon } from '../utils/globalSwal'
 
 const ConsultationForm = ({age, vitalSigns}) => {
     const { token } = useContext(AppContext)
@@ -34,6 +37,8 @@ const ConsultationForm = ({age, vitalSigns}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        setAddConsultationErrors((prevData) => ({...prevData, general: ""}))
         
         let hasError = false
 
@@ -68,57 +73,50 @@ const ConsultationForm = ({age, vitalSigns}) => {
     }
 
     const createConsultation = async () => {
-        try {
-            setPatientPageLoading(true)
-
-            const res = await fetch("/api/consultations", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(addConsultationData, )
-            })
-
-            if(!res.ok) {
-                throw new Error("Something went wrong. Please try again later.")
-            }
-
-            const data = await res.json()
-
-            setConsultations((prevData) => ({...prevData, [data.id]: data}))
-            setPatient(prevPatient => ({
-                ...prevPatient,
-                consultations: [
-                    {id: data.id, chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at},
-                    ...prevPatient.consultations, 
-                ]
-            }));
-
-            setConsultationComponentStatus(null)
-            resetAddConsultation()
-        }
-        catch (err) {
-            console.log(err)
-            let error = err.message ?? "Something went wrong. Please try again later."
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
+        globalSwalNoIcon.fire({
+            title: "Submit consultation record?",
+            html: `<p style="color: black; font-size: 16px; margin: 0;">Once submitted, you can no longer edit this consultation record.</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Yes, submit"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    setPatientPageLoading(true)
+        
+                    const res = await fetch("/api/consultations", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify(addConsultationData, )
+                    })
+        
+                    if(!res.ok) {
+                        throw new Error("Something went wrong. Please try again later.")
+                    }
+        
+                    const data = await res.json()
+        
+                    setConsultations((prevData) => ({...prevData, [data.id]: data}))
+                    setPatient(prevPatient => ({
+                        ...prevPatient,
+                        consultations: [
+                            {id: data.id, chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at},
+                            ...prevPatient.consultations, 
+                        ]
+                    }));
+        
+                    setConsultationComponentStatus(null)
+                    resetAddConsultation()
                 }
-            })
-        }
-        finally {
-            setPatientPageLoading(false)
-        }
+                catch (err) {
+                    showError(err)
+                }
+                finally {
+                    setPatientPageLoading(false)
+                }
+            }
+        })
     }
 
     const handleInputChange = (key, value) => {
@@ -141,7 +139,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
 
     const handlePrescriptionChange = (index, field, value) => {
         const updatedPrescriptions = [...addConsultationData.prescriptions];
-        updatedPrescriptions[index][field] = value;
+        updatedPrescriptions[index][field] = field == "name" ? capitalizedWords(value) : value;
 
         setAddConsultationErrors((prevData) => ({...prevData, prescriptions: ""}))
 
@@ -307,7 +305,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                     <div className='mt-8 mb-8'>
                         <div className='flex gap-4'>
                             <p className="block font-semibold text-black col-span-2">Prescriptions</p>
-                            <button className='text-[#b43c3a] rounded-md -mt-2' onClick={(e) => {addPrescription(e)}}>
+                            <button className='text-[#b43c3a] rounded-md -mt-2' onClick={(e) => {e.preventDefault(); addPrescription(e)}}>
                                 <i className='bi bi-plus-circle-fill text-lg' />
                             </button>
                         </div>
@@ -346,7 +344,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                                             />
                                         </div>
                                     </div>
-                                    <button onClick={() => {removePrescription(index)}}>
+                                    <button onClick={(e) => {e.preventDefault(); removePrescription(index)}}>
                                         <i className={`bi bi-x text-2xl text-red-500 font-extrabold`}></i>
                                     </button>
                                 </div>
