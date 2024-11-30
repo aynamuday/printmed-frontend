@@ -1,5 +1,4 @@
 export const handlePhoneNumberChange = (e, setData, setErrors) => {
-    console.log("hello")
     let value = e.target.value;
 
     setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }));

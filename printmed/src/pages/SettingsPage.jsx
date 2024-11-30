@@ -55,6 +55,21 @@ const SettingsPage = () => {
       <p className="text-black-500 text-center sm:text-left">{user.email}</p>
 
       <div className='min-h-10'></div>
+
+      <div className='grid grid-cols-2 gap-x-4 gap-y-0'>
+        {(user.role == "physician" || user.role == "secretary") && (
+          <>
+            <p>Department:</p>
+            <p><strong>{user.department_name}</strong></p>
+          </>
+        )}
+        <p>Sex:</p>
+        <p><strong>{user.sex}</strong></p>
+        <p>Birthdate:</p>
+        <p><strong>{user.birthdate}</strong></p>
+      </div>
+
+      <div className='min-h-10'></div>
       <div className="mt-6 space-y-4 w-full flex flex-col items-center">
       {user.role === 'admin' && (
         <Link
