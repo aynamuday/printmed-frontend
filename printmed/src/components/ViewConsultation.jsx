@@ -3,14 +3,16 @@ import { getFormattedStringDate } from '../utils/dateUtils'
 
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
-import Swal from 'sweetalert2'
+import { showError } from '../utils/fetch/showError'
+import { printPdf } from '../utils/printPdf'
 
 const ViewConsultation = () => {
     const { token } = useContext(AppContext)
     const { 
         setPatientPageLoading,
+        setConsultationComponentStatus,
         consultations, setConsultations,
-        viewConsultationId 
+        viewConsultationId
     } = useContext(PhysicianContext)
 
     const [consultation, setConsultation] = useState(null)
@@ -38,10 +40,8 @@ const ViewConsultation = () => {
                     throw new Error("Consultation not found.")
                 } else if (res.status === 403) {
                     throw new Error("You are not authorized to perform this action.")
-                } else if (res.status === 400) {
-                    throw new Error("Something went wrong with your request. Please try again later.")
                 } else {
-                    throw new Error("Something went wrong. Please try again later.")
+                    throw new Error("Something went wrong with your request. Please try again later.")
                 }
             }
 
@@ -50,22 +50,35 @@ const ViewConsultation = () => {
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
         }
         catch (err) {
-            let error = err.message ?? "Something went wrong. Please try again later."
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
+            showError(err)
+            setConsultationComponentStatus(null)
+        }
+        finally {
+            setPatientPageLoading(false)
+        }
+    }
+
+    const printPrescription = async () => {
+        try {
+            setPatientPageLoading(true)
+
+            const res = await fetch(`/api/consultations/${viewConsultationId}/print-prescription`, {
+                'Content-Type': 'application/pdf',
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
             })
+    
+            if(!res.ok) {
+                throw new Error("An error occured while getting the printable prescription. Please try again later.")
+            }
+
+            const data = await res.blob()
+            const url = URL.createObjectURL(data)
+            printPdf(url)   
+        }
+        catch (err) {
+            showError(err)
         }
         finally {
             setPatientPageLoading(false)
@@ -147,14 +160,27 @@ const ViewConsultation = () => {
                             </tr>
                             { consultation.prescriptions && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Prescriptions</th>
+                                    <th className='align-top p-2 w-[25%]'>
+                                        <div className='flex items-center'>
+                                            Prescriptions
+                                            {consultation.prescriptions.length != 0 && 
+                                                <button onClick={() => {printPrescription()}} className='ms-2 px-2 py-1 hover:bg-[#f4f4f4] rounded-full'>
+                                                    <i className='text-[#b43c3a] text-xl bi bi-printer-fill'></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
-                                        { consultation.prescriptions.map((item, index) => (
-                                            <div key={index} className='mb-2'>
-                                                <p className='underline'>{`${item.name} ${item.dosage}`}</p>
-                                                <p>{`${item.instruction}`}</p>
-                                            </div>
-                                        ))}
+                                        {consultation.prescriptions.length != 0 ? (
+                                            <>
+                                                { consultation.prescriptions.map((item, index) => (
+                                                    <div key={index} className='mb-2'>
+                                                        <p className='underline'>{`${item.name} ${item.dosage}`}</p>
+                                                        <p>{`${item.instruction}`}</p>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        ) : "N/A"}
                                     </td>
                                 </tr>
                             )}
