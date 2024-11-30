@@ -145,11 +145,11 @@ const DepartmentsPage = () => {
         <h2 className="text-2xl mb-4 font-bold">Departments</h2>
 
         {/* Add Department Dropdown */}
-        <div className="mb-6 flex items-center">
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
           <select
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
-            className="border border-gray-600 p-2 rounded h-10 w-1/2 mr-5"
+            className="border border-gray-600 p-2 rounded h-10 w-full sm:w-1/2 mr-5"
           >
             <option value="" disabled>Select Department</option>
             {departmentsList.length > 0 ? (
@@ -171,7 +171,7 @@ const DepartmentsPage = () => {
         </div>
 
         {/* Departments List Table */}
-        <table className="w-[50%] border border-spacing-0 border-gray-300">
+        <table className="w-full sm:w-[80%] border border-spacing-0 border-gray-300">
           <thead>
             <tr>
               <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">ID</th>

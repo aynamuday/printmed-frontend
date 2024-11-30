@@ -121,7 +121,7 @@ const UsersTable = ({ users }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative overflow-x-auto">
       {loading && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-10">
           <PulseLoader color="#6CB6AD" loading={loading} size={15} />
@@ -130,17 +130,13 @@ const UsersTable = ({ users }) => {
       <table className="min-w-full border border-spacing-0 border-gray-300">
         <thead>
           <tr>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">
-              Personnel Number
-            </th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Role</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[15%]">Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Department</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">
-              Date Registered
-            </th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Status</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Action</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Personnel Number</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Role</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[20%] lg:w-[15%]">Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Department</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Date Registered</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Status</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Action</th>
           </tr>
         </thead>
         <tbody>

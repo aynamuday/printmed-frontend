@@ -22,7 +22,7 @@ const Sidebar = () => {
     <>
       {!isSidebarOpen && (
         <span
-          className="absolute text-white text-4xl top-2.5 left-4 cursor-pointer z-20"
+          className="absolute text-white text-4xl top-2.5 left-4 cursor-pointer z-20 lg:hidden"
           onClick={toggleSidebar}
         >
           <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>

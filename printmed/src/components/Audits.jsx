@@ -200,10 +200,10 @@ const Audits = ({ forDashboard = false }) => {
 
     return (
         <>  
-            <div className={`flex justify-between items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
-                <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
+            <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+                <h2 className={`font-bold text-2xl sm:text-3xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
-                <div className={`flex justify-end gap-4 items-end`}>
+                <div className={`flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 items-start sm:items-end w-full sm:w-auto`}>
                     {/* select audit resource dropdown */}
                     <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
                             name="resource" id="resource" value={forDashboard ? auditsTodayResource : auditsAllFilters.resource} onChange={handleAuditsResourceChange}
@@ -218,7 +218,7 @@ const Audits = ({ forDashboard = false }) => {
                     {!forDashboard && (
                         <>
                             {/* date from */}
-                            <div>
+                            <div className="w-full sm:w-auto">
                                 <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
                                 <input
                                     type="date"
@@ -227,12 +227,12 @@ const Audits = ({ forDashboard = false }) => {
                                     onChange={handleAuditsDateFromChange}
                                     min="2024-11-15"
                                     max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
                             </div>
 
                             {/* date until */}
-                            <div>
+                            <div className="w-full sm:w-auto">
                                 <label htmlFor="dateUntil" className='text-xs block mb-1'>Date Until</label>
                                 <input
                                     type="date"
@@ -241,7 +241,7 @@ const Audits = ({ forDashboard = false }) => {
                                     onChange={handleAuditsDateUntilChange}
                                     min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-15"}
                                     max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
                             </div>
                         </>
@@ -251,7 +251,7 @@ const Audits = ({ forDashboard = false }) => {
                     { audits.data && audits.data.length > 0 && ( 
                         <>
                             {/* pagination buttons */}
-                            <div>
+                            <div className="flex gap-2">
                                 <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
                                         disabled={audits.current_page <= 1} onClick={handlePreviousAudits}>
                                     &lt;
@@ -265,7 +265,7 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
 
-                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white font-medium rounded-md hover:bg-[#37c9b8]' 
+                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white font-medium rounded-md hover:bg-[#37c9b8] w-full sm:w-auto' 
                                 onClick={handleAuditsDownload} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
                                 { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
                                     <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />

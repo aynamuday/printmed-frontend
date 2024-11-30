@@ -127,84 +127,86 @@ const UsersPage = () => {
     return (
         <>  
             <Sidebar />
-            <Header />  
-            
-            { users && (
-                <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
-                    <div className={`flex justify-between items-end mb-6 mt-14`}>
-                        <h2 className={`font-bold text-2xl`}>Users</h2>
-                        <div className={`flex justify-end gap-4 items-end`}>
-                            {/* select role dropdown */}
-                            <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                    name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
-                            <option value="">Select role</option>
-                            <option value="admin">Admin</option>
-                            <option value="physician">Physician</option>
-                            <option value="secretary">Secretary</option>
-                            </select>
+            <div className="lg:ml-64">
+                <Header />  
+                
+                { users && (
+                    <div className="ml-20 mr-20 mt-20 mb-8 px-4 sm:px-6 md:px-8 pt-16 lg:pt-20">
+                        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 mt-14">
+                            <h2 className="font-bold text-2xl">Users</h2>
+                            <div className="flex flex-col sm:flex-row justify-end gap-4 items-center sm:items-end">
+                                {/* select role dropdown */}
+                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                        name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
+                                <option value="">Select role</option>
+                                <option value="admin">Admin</option>
+                                <option value="physician">Physician</option>
+                                <option value="secretary">Secretary</option>
+                                </select>
 
-                            {/* select department id dropdown */}
-                            <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                    name="resource" id="resource" value={usersFilters.department_id} onChange={handleDepartmentIdChange}>
-                                <option value="">Select department</option>
-                                {departments && departments.map((department) => (
-                                    <option key={department.id} value={department.id}>{department.name}</option>
-                                ))}
-                            </select>
+                                {/* select department id dropdown */}
+                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                        name="resource" id="resource" value={usersFilters.department_id} onChange={handleDepartmentIdChange}>
+                                    <option value="">Select department</option>
+                                    {departments && departments.map((department) => (
+                                        <option key={department.id} value={department.id}>{department.name}</option>
+                                    ))}
+                                </select>
 
-                            {/* select status dropdown */}
-                            <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                                    name="resource" id="resource" value={usersFilters.status} onChange={handleStatusChange}>
-                                <option value="">Select status</option>
-                                <option value="active">Active</option>
-                                <option value="restricted">Restricted</option>
-                                <option value="locked">Locked</option>
-                                <option value="new">New</option>
-                            </select>
+                                {/* select status dropdown */}
+                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                        name="resource" id="resource" value={usersFilters.status} onChange={handleStatusChange}>
+                                    <option value="">Select status</option>
+                                    <option value="active">Active</option>
+                                    <option value="restricted">Restricted</option>
+                                    <option value="locked">Locked</option>
+                                    <option value="new">New</option>
+                                </select>
 
-                            <div>
-                                <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Personnel No."}</label>
-                                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
-                                    <input
-                                        type="text"
-                                        name="search"
-                                        className="focus:outline-none focus:border-none"
-                                        value={searchUser}
-                                        onChange={(e) => {setSearchUser(e.target.value)}}
-                                        placeholder='Search'
-                                    />
-                                    <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
-                                        <i className="bi bi-search me-2 text-[#374151]"></i>
+                                <div className="mt-4 sm:mt-0">
+                                    <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Personnel No."}</label>
+                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                                        <input
+                                            type="text"
+                                            name="search"
+                                            className="focus:outline-none focus:border-none"
+                                            value={searchUser}
+                                            onChange={(e) => {setSearchUser(e.target.value)}}
+                                            placeholder='Search'
+                                        />
+                                        <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
+                                            <i className="bi bi-search me-2 text-[#374151]"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* pagination buttons */}
+                                <div className="flex justify-center items-center gap-4 mt-4">
+                                    <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                                            disabled={users.current_page <= 1} onClick={handlePrevious}>
+                                        &lt;
                                     </button>
-                                </form>
-                            </div>
-
-                            {/* pagination buttons */}
-                            <div>
-                                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                        disabled={users.current_page <= 1} onClick={handlePrevious}>
-                                    &lt;
-                                </button>
-                                <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
-                                    {users.current_page} OF {users.last_page}
-                                </button>
-                                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === users.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                        disabled={users.current_page === users.last_page} onClick={handleNext}>
-                                    &gt;
-                                </button>
+                                    <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                                        {users.current_page} OF {users.last_page}
+                                    </button>
+                                    <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === users.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                                            disabled={users.current_page === users.last_page} onClick={handleNext}>
+                                        &gt;
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
+                        { loading ? (
+                            <div className='flex justify-center items-center mt-20'>
+                                <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+                            </div>
+                        ) : (
+                            <UsersTable users={users.data} />
+                        )}
                     </div>
-
-                    { loading ? (
-                        <div className='flex justify-center items-center mt-20'>
-                            <PulseLoader color="#6CB6AD" loading={loading} size={15} />
-                        </div>
-                    ) : (
-                        <UsersTable users={users.data} />
-                    )}
-                </div>
-            )}
+                )}
+            </div>
         </>
     );
 };

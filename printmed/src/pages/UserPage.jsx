@@ -240,7 +240,7 @@ const UserPage = () => {
           <h2 className="text-xl text-center font-bold m-6">{userId ? "Update User Account" : "Create New Account"}</h2>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
-            <div className="grid grid-cols-2 gap-4 w-[70%]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-[90%] sm:w-[70%]">
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Role<span className="text-red-600 cursor-help" title="Required field">*</span>
