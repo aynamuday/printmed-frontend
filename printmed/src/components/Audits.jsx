@@ -200,10 +200,10 @@ const Audits = ({ forDashboard = false }) => {
 
     return (
         <>  
-            <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+            <div className={`flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
                 <h2 className={`font-bold text-2xl sm:text-3xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
-                <div className={`flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 items-start sm:items-end w-full sm:w-auto`}>
+                <div className={`flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 items-center sm:items-end w-full sm:w-auto`}>
                     {/* select audit resource dropdown */}
                     <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
                             name="resource" id="resource" value={forDashboard ? auditsTodayResource : auditsAllFilters.resource} onChange={handleAuditsResourceChange}
