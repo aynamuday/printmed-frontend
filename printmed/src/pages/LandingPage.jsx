@@ -28,7 +28,7 @@ const LandingPage = () => {
           {/* Button for Patient Registration */}
           <button
             onClick={() => navigate('/register')}
-            className="w-full bg-[#479990] text-white py-2 rounded-md hover:bg-[#3c877f] transition"
+            className="w-full bg-[#479990] text-white py-2 rounded-md hover:bg-[#248176] transition"
           >
             Patient Registration
           </button>

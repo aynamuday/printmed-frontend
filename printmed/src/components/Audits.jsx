@@ -186,7 +186,6 @@ const Audits = ({ forDashboard = false }) => {
         })
 
         const blob = await res.blob()
-        console.log(blob)
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
