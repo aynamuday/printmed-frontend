@@ -13,7 +13,7 @@ const SettingsPage = () => {
     const result = await globalSwalNoIcon.fire({
       title: 'Are you sure you want to log out?',
       showCancelButton: true,
-      confirmButtonText: 'Yes, log me out',
+      confirmButtonText: 'Yes',
       cancelButtonText: 'Cancel',
       allowOutsideClick: false,
     });

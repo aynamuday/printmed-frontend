@@ -38,13 +38,13 @@ const UserPage = () => {
       role: user ? user.role : '',
       personnel_number: user ? user.personnel_number : '',
       first_name: user ? user.first_name : '',
-      middle_name: user ? user.middleName || '' : '',
+      middle_name: user ? user.middleName ?? '' : '',
       last_name: user ? user.last_name : '',
-      suffix: user ? user.suffix || '' : '',
+      suffix: user ? user.suffix ?? '' : '',
       sex: user ? user.sex : '',
       birthdate: user ? user.birthdate : '',
       email: user ? user.email : '',
-      department_id: user ? user.department_id || '' : ''
+      department_id: user ? user.department_id ?? '' : ''
     })
 
     setErrors([])
@@ -278,7 +278,7 @@ const UserPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Middle Name (optional)</label>
+                <label className="block text-sm font-medium">Middle Name</label>
                 <input
                   type="text"
                   name="middle_name"
@@ -305,7 +305,7 @@ const UserPage = () => {
               </div>
 
               <div className="mb-2 w-1/2">
-                <label className="block text-sm font-medium">Suffix (optional)</label>
+                <label className="block text-sm font-medium">Suffix</label>
                 <select
                   name="suffix"
                   value={formData.suffix}

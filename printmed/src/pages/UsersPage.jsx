@@ -178,6 +178,24 @@ const UsersPage = () => {
                         <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6">
                             <h2 className="font-bold text-2xl">Users</h2>
                             <div className="flex flex-col sm:flex-row justify-end gap-4 items-center sm:items-end">
+                                {/* search */}
+                                <div className="mt-4 sm:mt-0">
+                                    <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Personnel No."}</label>
+                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
+                                        <input
+                                            type="text"
+                                            name="search"
+                                            className="focus:outline-none focus:border-none"
+                                            value={searchUser}
+                                            onChange={(e) => {setSearchUser(e.target.value)}}
+                                            placeholder='Search'
+                                        />
+                                        <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
+                                            <i className="bi bi-search me-2 text-[#374151]"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
                                 {/* select role dropdown */}
                                 <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                         name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
@@ -205,23 +223,6 @@ const UsersPage = () => {
                                     <option value="locked">Locked</option>
                                     <option value="new">New</option>
                                 </select>
-
-                                <div className="mt-4 sm:mt-0">
-                                    <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Personnel No."}</label>
-                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
-                                        <input
-                                            type="text"
-                                            name="search"
-                                            className="focus:outline-none focus:border-none"
-                                            value={searchUser}
-                                            onChange={(e) => {setSearchUser(e.target.value)}}
-                                            placeholder='Search'
-                                        />
-                                        <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
-                                            <i className="bi bi-search me-2 text-[#374151]"></i>
-                                        </button>
-                                    </form>
-                                </div>
 
                                 {/* sort */}
                                 <div>
@@ -256,8 +257,8 @@ const UsersPage = () => {
                                 <div>
                                     <label className='text-xs block mb-1'>Clear</label>
                                     <button 
-                                    onClick={() => {handleClear()}}
-                                    className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
+                                        onClick={() => {handleClear()}}
+                                        className={`px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm`}
                                     >
                                     <i className='bi bi-arrow-clockwise text-xl'></i>  
                                     </button>

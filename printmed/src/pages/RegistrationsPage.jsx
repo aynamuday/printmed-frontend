@@ -106,7 +106,7 @@ const RegistrationsPage = () => {
           <div className={`flex justify-end gap-4 items-end`}>
             <div>
                 <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Registration No."}</label>
-                <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#248176] py-1 rounded ps-4'>
                     <input
                         type="text"
                         name="search"
@@ -126,18 +126,18 @@ const RegistrationsPage = () => {
               <button 
                   onClick={() => handlePageChange(registrations.current_page - 1)} 
                   disabled={registrations.current_page <= 1 || !registrations.current_page} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
+                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
                   &lt;
               </button>
 
-              <button className="px-4 h-8 border border-[#6CB6AD] text-sm" disabled>
+              <button className="px-4 h-8 border border-[#248176] text-sm" disabled>
                   {registrations.current_page} OF {registrations.last_page}
               </button>
 
               <button
                   onClick={() => handlePageChange(registrations.current_page + 1 || !registrations.current_page)} 
                   disabled={registrations.current_page >= registrations.last_page} 
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
+                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
                   &gt;
               </button>
             </div>
@@ -147,7 +147,7 @@ const RegistrationsPage = () => {
                 <label className='text-xs block mb-1'>Clear</label>
                 <button 
                   onClick={() => {handleClear()}}
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm`}
+                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
                 >
                   <i className='bi bi-arrow-clockwise text-xl'></i>  
                 </button>

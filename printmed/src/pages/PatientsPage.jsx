@@ -113,7 +113,6 @@ const PatientsPage = () => {
 
     setSearchPatient('');
     setPatientsFilters({
-      search: '',
       sortBy: '',
       orderBy: '',
     })
@@ -197,7 +196,6 @@ const PatientsPage = () => {
         />
       </form>
 
-
       <Sidebar />
       <Header />
 
@@ -208,7 +206,7 @@ const PatientsPage = () => {
             {/* search */}
             <div>
                 <label htmlFor="search" className='text-xs block mb-1'>{"Patient No. or Name (FN LN or FN or LN)"}</label>
-                <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-2'>
+                <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
                     <input
                         type="text"
                         name="search"
@@ -228,7 +226,7 @@ const PatientsPage = () => {
             {/* sort */}
             <div>
                 <label className='text-xs block mb-1'>Sort by</label>
-                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                   value={patientsFilters.sortBy + "_" + patientsFilters.orderBy} onChange={(e) => handleSortByChange(e)}
                 >
                     <option value="" data-sort-by="" data-order-by="">Last updated</option>
@@ -238,19 +236,19 @@ const PatientsPage = () => {
             </div>
 
             {/* qr scanning */}
-            <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] rounded-md p-0.5 border border-[#6CB6AD]' /></button>
+            <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] rounded-md p-0.5 border border-[#248176]' /></button>
 
             {/* pagination controls */}
             { patients.current_page &&
               <div className="flex justify-end items-center">
-                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
                     disabled={patients.current_page <= 1} onClick={handlePrevious}>
                   &lt;
                 </button>
-                <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
                   {patients.current_page} OF {patients.last_page}
                 </button>
-                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
                     disabled={patients.current_page === patients.last_page} onClick={handleNext}>
                   &gt;
                 </button>
@@ -262,7 +260,7 @@ const PatientsPage = () => {
                 <label className='text-xs block mb-1'>Clear</label>
                 <button 
                   onClick={() => {handleClear()}}
-                  className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white text-sm`}
+                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
                 >
                   <i className='bi bi-arrow-clockwise text-xl'></i>  
                 </button>

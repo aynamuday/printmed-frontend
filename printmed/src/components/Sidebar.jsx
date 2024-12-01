@@ -52,7 +52,7 @@ const Sidebar = () => {
                   <i className="bi bi-house-door-fill text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Dashboard</span>
                 </NavLink>
-                <NavLink to="/users" className={linkClass}>
+                <NavLink to="/users" className={({ isActive }) => `${linkClass({ isActive })} ${!isActive && location.pathname.includes('/users') ? "bg-gray-700" : ""}`}>
                   <i className="bi bi-people text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Users</span>
                 </NavLink>
