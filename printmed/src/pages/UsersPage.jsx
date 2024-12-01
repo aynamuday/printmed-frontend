@@ -10,7 +10,7 @@ import Sidebar from '../components/Sidebar';
 import UsersTable from '../components/UsersTable';
 
 const UsersPage = () => {
-    const { token, departments } = useContext(AppContext)
+    const { token } = useContext(AppContext)
     const { 
         users, setUsers, 
         searchUser, setSearchUser, 
@@ -27,11 +27,11 @@ const UsersPage = () => {
         const department_id = usersFilters.department_id
         const status = usersFilters.status
 
-        getUsers(1, undefined, role, department_id, status)
+        getUsers(1, searchUser, role, department_id, status, usersFilters.sort_by, usersFilters.order_by)
     }, [])
 
     // fetch the users
-    const getUsers = async (page = 1, search='', role='', department_id='', status='') => {
+    const getUsers = async (page = 1, search='', role='', department_id='', status='', sort_by='', order_by ='') => {
         let url = `/api/users?page=${page}`
 
         if (!(search.trim() === "")) {
@@ -46,20 +46,36 @@ const UsersPage = () => {
         if (!(status.trim() === "")) {
             url += `&status=${status}`
         }
+        if (!(sort_by.trim() === "")) {
+            url += `&sort_by=${sort_by}`
+        }
+        if (!(order_by.trim() === "")) {
+            url += `&order_by=${order_by}`
+        }
 
-        const res = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+     
+            if(!res.ok) {
+                throw new Error("An error occured while fetching the users. Please try again later.")
             }
-        })
-
-        const data = await res.json()
-        setUsers(data)
-
-        setLoading(false)
+     
+            const data = await res.json()
+            setUsers(data)
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
-    // executes when user selects audit resource
+    // executes when user selects role
     const handleRoleChange = (e) => {
         setLoading(true)
         
@@ -68,22 +84,21 @@ const UsersPage = () => {
             role: e.target.value
         })
             
-        getUsers(1, undefined, e.target.value, usersFilters.department_id, usersFilters.status)
+        getUsers(1, undefined, e.target.value, usersFilters.department_id, usersFilters.status, usersFilters.sort_by, usersFilters.order_by)
     };
 
-    // executes when user selects audit resource
-    const handleDepartmentIdChange = (e) => {
-        setLoading(true)
+    // executes when user selects department
+    // const handleDepartmentIdChange = (e) => {
+    //     setLoading(true)
         
-        setUsersFilters({
-            ...usersFilters,
-            department_id: e.target.value
-        })
+    //     setUsersFilters({
+    //         ...usersFilters,
+    //         department_id: e.target.value
+    //     })
             
-        getUsers(1, undefined,  usersFilters.role, e.target.value, usersFilters.status)
-    };
+    //     getUsers(1, undefined,  usersFilters.role, e.target.value, usersFilters.status)
+    // };
 
-    // executes when user selects audit resource
     const handleStatusChange = (e) => {
         setLoading(true)
         
@@ -92,21 +107,33 @@ const UsersPage = () => {
             status: e.target.value
         })
             
-        getUsers(users.current_page, undefined, usersFilters.role, usersFilters.department_id, e.target.value)
+        getUsers(users.current_page, undefined, usersFilters.role, usersFilters.department_id, e.target.value, usersFilters.sort_by, usersFilters.order_by)
     };
 
-    // executes when user click previous button for audits
+    const handleSortByChange = (e) => {
+        setLoading(true);
+    
+        const selectedOption = e.target.selectedOptions[0]
+        const sortBy = selectedOption.getAttribute('data-sort-by')
+        const orderBy = selectedOption.getAttribute('data-order-by')
+    
+        setUsersFilters((prevUsersFilters) => ({ ...prevUsersFilters, sort_by: sortBy, order_by: orderBy}))
+
+        getUsers(1, searchUser, usersFilters.role, usersFilters.department_id, usersFilters.status, sortBy, orderBy)
+      };
+
+    // executes when user click previous button
     const handlePrevious = () => {
         setLoading(true)
         
-        getUsers(users.current_page - 1, undefined, usersFilters.role, usersFilters.department_id, usersFilters.status)
+        getUsers(users.current_page - 1, searchUser, usersFilters.role, usersFilters.department_id, usersFilters.status, usersFilters.status, usersFilters.sort_by, usersFilters.order_by)
     };
 
-    // executes when user click next button for audits
+    // executes when user click next button
     const handleNext = () => {
         setLoading(true)
         
-        getUsers(users.current_page + 1, undefined, usersFilters.role, usersFilters.department_id, usersFilters.status)
+        getUsers(users.current_page + 1, searchUser, usersFilters.role, usersFilters.department_id, usersFilters.status, usersFilters.status, usersFilters.sort_by, usersFilters.order_by)
     };
 
     // executes when user click search
@@ -116,12 +143,27 @@ const UsersPage = () => {
         setLoading(true)
     
         setUsersFilters({
+            ...usersFilters,
             role: '',
             department_id: '',
             status: ''
         })
             
-        getUsers(1, searchUser, undefined, undefined, undefined)
+        getUsers(1, searchUser, undefined, undefined, undefined, usersFilters.sort_by, usersFilters.order_by)
+    };
+
+    const handleClear = () => {
+        setLoading(true)
+    
+        setSearchUser('');
+        setUsersFilters({
+            ...usersFilters,
+            role: '',
+            department_id: '',
+            status: ''
+        })
+    
+        getUsers(1, undefined, undefined, undefined, undefined, undefined, usersFilters.sort_by, usersFilters.order_by)
     };
 
     return (
@@ -131,12 +173,12 @@ const UsersPage = () => {
                 <Header />  
                 
                 { users && (
-                    <div className="ml-20 mr-20 mt-20 mb-8 px-4 sm:px-6 md:px-8 pt-16 lg:pt-20">
+                    <div className="ml-20 mr-10 mt-20 mb-8 px-4 sm:px-6 md:px-8 pt-16 lg:pt-20">
                         <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6">
                             <h2 className="font-bold text-2xl">Users</h2>
                             <div className="flex flex-col sm:flex-row justify-end gap-4 items-center sm:items-end">
                                 {/* select role dropdown */}
-                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                         name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
                                 <option value="">Select role</option>
                                 <option value="admin">Admin</option>
@@ -145,16 +187,16 @@ const UsersPage = () => {
                                 </select>
 
                                 {/* select department id dropdown */}
-                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                {/* <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                         name="resource" id="resource" value={usersFilters.department_id} onChange={handleDepartmentIdChange}>
                                     <option value="">Select department</option>
                                     {departments && departments.map((department) => (
                                         <option key={department.id} value={department.id}>{department.name}</option>
                                     ))}
-                                </select>
+                                </select> */}
 
                                 {/* select status dropdown */}
-                                <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
+                                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                         name="resource" id="resource" value={usersFilters.status} onChange={handleStatusChange}>
                                     <option value="">Select status</option>
                                     <option value="active">Active</option>
@@ -164,8 +206,8 @@ const UsersPage = () => {
                                 </select>
 
                                 <div className="mt-4 sm:mt-0">
-                                    <label htmlFor="search" className='text-xs block mb-1'>{"Full Name (FN LN) or Personnel No."}</label>
-                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#6CB6AD] py-1 rounded ps-4'>
+                                    <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Personnel No."}</label>
+                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
                                         <input
                                             type="text"
                                             name="search"
@@ -180,18 +222,43 @@ const UsersPage = () => {
                                     </form>
                                 </div>
 
+                                {/* sort */}
+                                <div>
+                                    <label className='text-xs block mb-1'>Sort by</label>
+                                    <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
+                                    value={usersFilters.sort_by + "_" + usersFilters.order_by} onChange={(e) => handleSortByChange(e)}
+                                    >
+                                        <option value="" data-sort-by="" data-order-by="">Last updated</option>
+                                        <option value="personnel_number_asc" data-sort-by="personnel_number" data-order-by="asc">&uarr; &nbsp;Personnel No.</option>
+                                        <option value="personnel_number_desc" data-sort-by="personnel_number" data-order-by="desc">&darr; &nbsp;Personnel No.</option>
+                                    </select>
+                                </div>
+
                                 {/* pagination buttons */}
-                                <div className="flex justify-center items-center gap-4 mt-4">
-                                    <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                            disabled={users.current_page <= 1} onClick={handlePrevious}>
-                                        &lt;
-                                    </button>
-                                    <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
-                                        {users.current_page} OF {users.last_page}
-                                    </button>
-                                    <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${users.current_page === users.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                            disabled={users.current_page === users.last_page} onClick={handleNext}>
-                                        &gt;
+                                {users.data != null && 
+                                    <div className="flex justify-center items-center mt-4">
+                                        <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                                                disabled={users.current_page <= 1} onClick={handlePrevious}>
+                                            &lt;
+                                        </button>
+                                        <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
+                                            {users.current_page} OF {users.last_page}
+                                        </button>
+                                        <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                                                disabled={users.current_page === users.last_page} onClick={handleNext}>
+                                            &gt;
+                                        </button>
+                                    </div>
+                                }
+
+                                {/* clear button */}
+                                <div>
+                                    <label className='text-xs block mb-1'>Clear</label>
+                                    <button 
+                                    onClick={() => {handleClear()}}
+                                    className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
+                                    >
+                                    <i className='bi bi-arrow-clockwise text-xl'></i>  
                                     </button>
                                 </div>
                             </div>
@@ -199,7 +266,7 @@ const UsersPage = () => {
 
                         { loading ? (
                             <div className='flex justify-center items-center mt-20'>
-                                <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+                                <PulseLoader color="#6cb6ad" loading={loading} size={15} />
                             </div>
                         ) : (
                             <UsersTable users={users.data} />

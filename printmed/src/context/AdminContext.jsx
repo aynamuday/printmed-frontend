@@ -21,7 +21,9 @@ export const AdminProvider = () => {
   const [usersFilters, setUsersFilters] = useState({
     role: '',
     department_id: '',
-    status: ''
+    status: '',
+    sort_by: '',
+    order_by: ''
   })
 
   return (
