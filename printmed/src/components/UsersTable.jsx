@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
 import { getFormattedNumericDate } from '../utils/dateUtils';
-import { globalSwalWithIcon } from '../utils/globalSwal';
+import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
 import {showError} from "../utils/fetch/showError";
 
 import AppContext from '../context/AppContext';
@@ -66,11 +66,12 @@ const UsersTable = ({ users }) => {
     });
   }
 
-  const handleToggleLockButton = async (userId, isLocked) => {
+  const handleToggleLockButton = async (userId, isLocked, personnelNumber) => {
     setActionMenuOpen(null)
 
     globalSwalWithIcon.fire({
-      title: `Are you sure you want to <span style='color: red;'>${isLocked ? "unlock" : "lock"}</span> this account?`,
+      icon: 'warning',
+      title: `Are you sure you want to <span style='color: red;'>${isLocked ? "unlock" : "lock"}</span> user ${personnelNumber}?`,
       showCancelButton: true,
       confirmButtonText: "Yes"
     }).then(async (result) => {
@@ -143,7 +144,7 @@ const UsersTable = ({ users }) => {
   const handleSendResetLink = async (email, personnelNumber) => {
     setActionMenuOpen(null)
 
-    globalSwalWithIcon.fire({
+    globalSwalNoIcon.fire({
       title: `Send reset link to user ${personnelNumber}?`,
       showCancelButton: true,
       confirmButtonText: "Yes"
@@ -203,12 +204,13 @@ const UsersTable = ({ users }) => {
       <table className="min-w-full border border-spacing-0 border-gray-300">
         <thead>
           <tr>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Personnel No.</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Role</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[20%] lg:w-[15%]">Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Date Registered</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Status</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Action</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Personnel No.</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Role</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Last Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">First Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Date Registered</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Status</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[5%]">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -217,30 +219,26 @@ const UsersTable = ({ users }) => {
               <tr key={item.id}>
                 <td className="border p-2 border-[#828282] text-center">{item.personnel_number}</td>
                 <td className="border p-2 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
-                <td className="border p-2 border-[#828282] text-center">{item.full_name}</td>
+                <td className="border p-2 border-[#828282] text-center">{item.last_name}</td>
+                <td className="border p-2 border-[#828282] text-center">{item.first_name}</td>
                 <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
                 <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                 <td className="border p-2 border-[#828282] text-center">
-                  <div key={item.id} ref={(element) => setActionMenuRef(item.id, element)} className="relative flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => {viewUser(item)}}
-                      className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
-                    >
-                      View
-                    </button>
-                    <div className='ms-2'>
+                  <div key={item.id} ref={(element) => setActionMenuRef(item.id, element)} className="ms-2 relative flex items-center justify-center gap-2">
+                    <div>
                         <button onClick={() => {setActionMenuOpen(actionMenuOpen == item.id ? null : item.id)}}>
-                          <i className='bi bi-three-dots text-xl text-black hover:text-gray-700 relative'></i>
+                          <i className='bi bi-three-dots text-xl text-[#248176] hover:text-gray-700 relative'></i>
                         </button>
                         {actionMenuOpen === item.id && (
+                          <>
                           <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md border overflow-clip border-[#248176] z-10">
-                            <button onClick={() => handleToggleLockButton(item.id, item.is_locked)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-2">
-                              <i className={`me-2 bi ${item.is_locked ? "bi-unlock" : "bi-lock"}`}></i>{item.is_locked ? "Unlock" : "Lock"}
+                            <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-2">
+                              <i className={`me-2 bi bi-pencil`}></i>Edit
                             </button>
 
                             {item.failed_login_attempts > 2 && (
                               <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-2 text-green-600 bg-gray-200">
-                                Unrestrict
+                                <i className={`me-2 bi bi-unlock`}></i>Unrestrict
                               </button>
                             )}
 
@@ -249,7 +247,12 @@ const UsersTable = ({ users }) => {
                                 <i className={`me-2 bi bi-send`}></i>Send Reset Link
                               </button>
                             )}
+
+                            <button onClick={() => handleToggleLockButton(item.id, item.is_locked, item.personnel_number)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-2">
+                              <i className={`me-2 bi ${item.is_locked ? "bi-unlock" : "bi-lock"}`}></i>{item.is_locked ? "Unlock" : "Lock"}
+                            </button>
                           </div>
+                          </>
                         )}
                     </div>
                   </div>
