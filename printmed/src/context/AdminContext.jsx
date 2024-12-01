@@ -7,7 +7,7 @@ export const AdminProvider = () => {
   const [fetchedForDashboard, setFetchedForDashboard] = useState(false)
   const [usersCount, setUsersCount] = useState([])
   const [auditsToday, setAuditsToday] = useState([])
-  const [auditsTodayResource, setAuditsTodayResource] = useState('')
+  // const [auditsTodayResource, setAuditsTodayResource] = useState('')
   const [loadingAuditsTodayDownload, setLoadingAuditsTodayDownload] = useState(false)
   const [auditsAll, setAuditsAll] = useState([])
   const [auditsAllFilters, setAuditsAllFilters] = useState({
@@ -31,7 +31,7 @@ export const AdminProvider = () => {
       fetchedForDashboard, setFetchedForDashboard,
       usersCount, setUsersCount, 
       auditsToday, setAuditsToday,
-      auditsTodayResource, setAuditsTodayResource,
+      // auditsTodayResource, setAuditsTodayResource,
       loadingAuditsTodayDownload, setLoadingAuditsTodayDownload,
       auditsAll, setAuditsAll,
       auditsAllFilters, setAuditsAllFilters,

@@ -11,8 +11,6 @@ const Audits = ({ forDashboard = false }) => {
     const { 
         auditsToday, 
         setAuditsToday,
-        auditsTodayResource, 
-        setAuditsTodayResource, 
         loadingAuditsTodayDownload, 
         setLoadingAuditsTodayDownload, 
         auditsAll, 
@@ -33,9 +31,9 @@ const Audits = ({ forDashboard = false }) => {
         if (forDashboard) {
             url += `&date_from=${dateToday}`
     
-            if (!(resource.trim() === "")) {
-                url += `&resource=${resource}`
-            }
+            // if (!(resource.trim() === "")) {
+            //     url += `&resource=${resource}`
+            // }
         }  else {
             if (!(dateFrom.trim() === "")) {
                 url += `&date_from=${dateFrom}`
@@ -55,8 +53,6 @@ const Audits = ({ forDashboard = false }) => {
         })
 
         const data = await res.json()
-        console.log(data)
-        console.log(url)
         forDashboard ? setAuditsToday(data) : setAuditsAll(data)
 
         setLoadingAudits(false)
@@ -69,7 +65,7 @@ const Audits = ({ forDashboard = false }) => {
 
         const page = audits.data ? audits.current_page : 1
         if (forDashboard) {
-            getAudits(page, auditsTodayResource, undefined, undefined)
+            getAudits(page, undefined, undefined, undefined)
         }  else {
             const dateFrom = auditsAllFilters.dateFrom
             const dateUntil = auditsAllFilters.dateUntil
@@ -83,17 +79,17 @@ const Audits = ({ forDashboard = false }) => {
     const handleAuditsResourceChange = (e) => {
         setLoadingAudits(true)
 
-        if (forDashboard) {
-            setAuditsTodayResource(e.target.value)
-            getAudits(1, e.target.value, undefined, undefined)
-        } else {
-            setAuditsAllFilters({
-                ...auditsAllFilters,
-                resource: e.target.value
-            })
-            
-            getAudits(1, e.target.value, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
-        }
+        // if (forDashboard) {
+        //     setAuditsTodayResource(e.target.value)
+        //     getAudits(1, e.target.value, undefined, undefined)
+        // } else {
+        setAuditsAllFilters({
+            ...auditsAllFilters,
+            resource: e.target.value
+        })
+        
+        getAudits(1, e.target.value, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
+        // }
     };
 
     // executes when user selects date from
@@ -131,7 +127,7 @@ const Audits = ({ forDashboard = false }) => {
         setLoadingAudits(true)
 
         if (forDashboard) {
-            getAudits(auditsToday.current_page - 1, auditsTodayResource, undefined, undefined)
+            getAudits(auditsToday.current_page - 1, undefined, undefined, undefined)
         } else {
             getAudits(auditsAll.current_page - 1, auditsAllFilters.resource, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
         }
@@ -142,7 +138,7 @@ const Audits = ({ forDashboard = false }) => {
         setLoadingAudits(true)
 
         if (forDashboard) {
-            getAudits(auditsToday.current_page + 1, auditsTodayResource, undefined, undefined)
+            getAudits(auditsToday.current_page + 1, undefined, undefined, undefined)
         } else {
             getAudits(auditsAll.current_page + 1, auditsAllFilters.resource, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
         }
@@ -157,9 +153,9 @@ const Audits = ({ forDashboard = false }) => {
         if (forDashboard) {
             fetchUrl += `date_from=${dateToday}`
     
-            if (!(auditsTodayResource.trim() === "")) {
-                fetchUrl += `&resource=${resource}`
-            }
+            // if (!(auditsTodayResource.trim() === "")) {
+            //     fetchUrl += `&resource=${resource}`
+            // }
         }  else {
             const dateFrom = auditsAllFilters.dateFrom
             const dateUntil = auditsAllFilters.dateUntil
@@ -197,25 +193,41 @@ const Audits = ({ forDashboard = false }) => {
         forDashboard ? setLoadingAuditsTodayDownload(false) : setLoadingAuditsAllDownload(false)
     }
 
+    const handleClear = () => {
+        setLoadingAudits(true)
+    
+        if (forDashboard) {
+            getAudits(1, undefined, undefined, undefined)
+        } else {
+            setAuditsAllFilters({
+                ...auditsAllFilters,
+                resource: '',
+                dateFrom: '',
+                dateUntil: ''
+            })
+
+            getAudits(1, undefined, undefined, undefined)
+        }
+    };
+
     return (
+
         <>  
             <div className={`flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
-                <h2 className={`font-bold text-2xl sm:text-3xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
+                <h2 className={`font-bold text-2xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
-                <div className={`flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 items-center sm:items-end w-full sm:w-auto`}>
-                    {/* select audit resource dropdown */}
-                    <select className='px-4 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none' 
-                            name="resource" id="resource" value={forDashboard ? auditsTodayResource : auditsAllFilters.resource} onChange={handleAuditsResourceChange}
-                    >
-                        <option value="">Select resource</option>
-                        <option value="user">User</option>
-                        <option value="patient">Patient</option>
-                        <option value="consultation record">Consultation Record</option>
-                        <option value="payment">Payment</option>
-                    </select>
-
+                <div className={`flex flex-col sm:flex-row justify-between gap-4 items-center sm:items-end w-full sm:w-auto`}>
                     {!forDashboard && (
                         <>
+                            {/* select audit resources dropdown */}
+                            <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
+                                    name="resource" id="resource" value={auditsAllFilters.resource} onChange={handleAuditsResourceChange}
+                            >
+                                <option value="">Select resource</option>
+                                <option value="user">User</option>
+                                <option value="patient">Patient</option>
+                            </select>
+
                             {/* date from */}
                             <div className="w-full sm:w-auto">
                                 <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
@@ -226,7 +238,7 @@ const Audits = ({ forDashboard = false }) => {
                                     onChange={handleAuditsDateFromChange}
                                     min="2024-11-15"
                                     max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                                    className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
                             </div>
 
@@ -240,31 +252,30 @@ const Audits = ({ forDashboard = false }) => {
                                     onChange={handleAuditsDateUntilChange}
                                     min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-15"}
                                     max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#6CB6AD] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                                    className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
                             </div>
                         </>
                     )}
 
-                    {/* download audits button */}
                     { audits.data && audits.data.length > 0 && ( 
                         <>
                             {/* pagination buttons */}
-                            <div className="flex gap-2">
-                                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                            <div className="flex">
+                                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
                                         disabled={audits.current_page <= 1} onClick={handlePreviousAudits}>
                                     &lt;
                                 </button>
-                                <button className={`px-4 h-8 border border-[#6CB6AD] text-sm`} disabled={true}>
+                                <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
                                     {audits.current_page} OF {audits.last_page}
                                 </button>
-                                <button className={`px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
                                         disabled={audits.current_page === audits.last_page} onClick={handleNextAudits}>
                                     &gt;
                                 </button>
                             </div>
 
-                            <button className='px-4 h-8 border border-[#6CB6AD] bg-[#6CB6AD] text-white font-medium rounded-md hover:bg-[#37c9b8] w-full sm:w-auto' 
+                            <button className='px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto' 
                                 onClick={handleAuditsDownload} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
                                 { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
                                     <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
@@ -272,6 +283,17 @@ const Audits = ({ forDashboard = false }) => {
                             </button>
                         </>
                     )}
+
+                    {/* clear button */}
+                    <div>
+                        <label className='text-xs block mb-1'>Clear</label>
+                        <button 
+                            onClick={() => {handleClear()}}
+                            className={`px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm`}
+                        >
+                        <i className='bi bi-arrow-clockwise text-xl'></i>  
+                        </button>
+                    </div>
                 </div>
             </div>
 
