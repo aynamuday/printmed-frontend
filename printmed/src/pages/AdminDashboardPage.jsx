@@ -55,17 +55,17 @@ const DashboardAdminPage = () => {
         <Header />  
 
         <div className="ml-20 mr-10 mt-20 mb-8 px-4 sm:px-6 pt-16 lg:pt-10">
-          { loadingUsersCount ? (
+          {/* { loadingUsersCount ? (
             <div className='flex justify-center items-center mt-20'>
               <PulseLoader color="#6CB6AD" loading={loadingUsersCount} size={15} />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-              <DashboardCard name={"Admins"} value={usersCount ? usersCount.admins : 0} />
-              <DashboardCard name={"Physicians"} value={usersCount ? usersCount.physicians : 0} />
-              <DashboardCard name={"Secretaries"} value={usersCount ? usersCount.secretaries : 0} />
-            </div>
-          )}
+          ) : ( */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+            <DashboardCard name={"Admins"} value={usersCount ? usersCount.admins : 0} />
+            <DashboardCard name={"Physicians"} value={usersCount ? usersCount.physicians : 0} />
+            <DashboardCard name={"Secretaries"} value={usersCount ? usersCount.secretaries : 0} />
+          </div>
+          {/* )} */}
 
           <div className='h-12'></div>
 
