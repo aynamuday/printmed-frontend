@@ -19,7 +19,7 @@ const UserPage = () => {
   const navigate = useNavigate()
   const { userId } = useParams();
 
-  if (location.pathname.includes('/users') && !userId) {
+  if (location.pathname.includes('/users') && !userId && location.state.user == undefined) {
     navigate('/')
     return
   }
@@ -29,67 +29,68 @@ const UserPage = () => {
   const [errors, setErrors] = useState([])
 
   useEffect(() => {
-    if (location.pathname.includes('/users') && userId) {
-      fetchUser()
-    } else {
-      setFormData({
-        role: '',
-        personnel_number: 'PN-',
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        suffix: '',
-        sex: '',
-        birthdate: '',
-        email: '',
-        department_id: '',
-      });
+    let user;
+    if (location.pathname.includes('/users') && location.state.user != undefined) {
+      user = location.state.user
     }
+
+    setFormData({
+      role: user ? user.role : '',
+      personnel_number: user ? user.personnel_number : '',
+      first_name: user ? user.first_name : '',
+      middle_name: user ? user.middleName || '' : '',
+      last_name: user ? user.last_name : '',
+      suffix: user ? user.suffix || '' : '',
+      sex: user ? user.sex : '',
+      birthdate: user ? user.birthdate : '',
+      email: user ? user.email : '',
+      department_id: user ? user.department_id || '' : ''
+    })
 
     setErrors([])
   }, [userId])
 
   // fetches the user if route is for update
-  const fetchUser = async () => {
-    try {
-      setLoading(true)
+  // const fetchUser = async () => {
+  //   try {
+  //     setLoading(true)
 
-      const res = await fetch(`/api/users/${userId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-      })
+  //     const res = await fetch(`/api/users/${userId}`, {
+  //       headers: {
+  //           Authorization: `Bearer ${token}`
+  //       }
+  //     })
 
-     if(!res.ok) {
-        if (res.status === 404) {
-          throw new Error("Account not found.")
-        } else {
-          throw new Error("An error occured while finding the account. Please try again later.")
-        }
-     }
+  //    if(!res.ok) {
+  //       if (res.status === 404) {
+  //         throw new Error("Account not found.")
+  //       } else {
+  //         throw new Error("An error occured while finding the account. Please try again later.")
+  //       }
+  //    }
 
-      const data = await res.json()
+  //     const data = await res.json()
 
-      setFormData({
-        role: data.role,
-        personnel_number: data.personnel_number,
-        first_name: data.first_name,
-        middle_name: data.middleName ?? '',
-        last_name: data.last_name,
-        suffix: data.suffix ?? '',
-        sex: data.sex,
-        birthdate: data.birthdate,
-        email: data.email,
-        department_id: data.department_id ?? ''
-      })
-    }
-    catch (err) {
-      showError(err)  
-    }
-    finally {
-      setLoading(false)
-    }
-  }
+  //     setFormData({
+  //       role: data.role,
+  //       personnel_number: data.personnel_number,
+  //       first_name: data.first_name,
+  //       middle_name: data.middleName ?? '',
+  //       last_name: data.last_name,
+  //       suffix: data.suffix ?? '',
+  //       sex: data.sex,
+  //       birthdate: data.birthdate,
+  //       email: data.email,
+  //       department_id: data.department_id ?? ''
+  //     })
+  //   }
+  //   catch (err) {
+  //     showError(err)  
+  //   }
+  //   finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   const handleChange = (e) => {
     const { name, value } = e.target;

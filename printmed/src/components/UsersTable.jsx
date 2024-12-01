@@ -1,93 +1,44 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { PulseLoader } from 'react-spinners';
+import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
 import { getFormattedNumericDate } from '../utils/dateUtils';
+import { globalSwalWithIcon } from '../utils/globalSwal';
+import {showError} from "../utils/fetch/showError";
 
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
+import { useNavigate } from 'react-router-dom';
 
 const UsersTable = ({ users }) => {
   const { token, user } = useContext(AppContext);
   const { setUsers } = useContext(AdminContext);
+  const navigate = useNavigate()
 
   const [updatedUser, setUpdatedUser] = useState(null);
+  const [actionMenuOpen, setActionMenuOpen] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [openMenu, setOpenMenu] = useState(null); // State for open menu
-  const [errorMessage, setErrorMessage] = useState('');
 
-  const menuRef = useRef(null);
-
-  // Remove the current user, so it's not displayed on the table
-  users = users ? users.filter((item) => item.id !== user.id) : users;
-
-  const handleToggleLockButton = async (userId) => {
-    setLoading(true);
-
-    const res = await fetch(`/api/users/${userId}/toggle-lock`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      setUpdatedUser(data);
-    }
-
-    setLoading(false);
-    setOpenMenu(null); // Close menu after action
+  const actionMenuRefs = useRef([]);
+  const setActionMenuRef = (index, element) => {
+    actionMenuRefs.current[index] = element;
   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const isClickInside = actionMenuRefs.current.some(ref =>
+        ref && ref.contains(event.target)
+      );
 
-  const handleUnrestrictButton = async (userId) => {
-    setLoading(true);
-
-    const res = await fetch(`/api/users/${userId}/unrestrict`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      setUpdatedUser(data);
-    }
-
-    setLoading(false);
-    setOpenMenu(null); // Close menu after action
-  };
-
-  const handleSendResetLink = async (email) => {
-    setLoading(true);
-
-    try {
-      const res = await fetch('/reset-password', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('Reset link sent successfully!');
-      } else {
-        setErrorMessage(data.message || 'An error occurred.');
+      if (!isClickInside) {
+        setActionMenuOpen(null);
       }
-    } catch (error) {
-      setErrorMessage('An error occurred while sending the reset link.');
-    } finally {
-      setLoading(false);
-      setOpenMenu(null); // Close menu after action
-    }
-  };
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (users && updatedUser != null) {
@@ -106,6 +57,128 @@ const UsersTable = ({ users }) => {
     }
   }, [updatedUser]);
 
+  // remove the current user, so it's not displayed on the table
+  users = users ? users.filter((item) => item.id !== user.id) : users;
+
+  const viewUser = async (user) => {
+    navigate(`/users/${user.id}`, {
+      state: { user }
+    });
+  }
+
+  const handleToggleLockButton = async (userId, isLocked) => {
+    setActionMenuOpen(null)
+
+    globalSwalWithIcon.fire({
+      title: `Are you sure you want to <span style='color: red;'>${isLocked ? "unlock" : "lock"}</span> this account?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setLoading(true)
+    
+          const res = await fetch(`/api/users/${userId}/toggle-lock`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          if(!res.ok) {
+            throw new Error("Something went wrong. Please try again later.")
+          }
+    
+          const data = await res.json();
+          setUpdatedUser(data);  
+          
+          globalSwalWithIcon.fire({
+            icon: 'success',
+            title: `Account ${isLocked ? "unlocked" : "locked"} successfully!`
+          })
+        }
+        catch (err) {
+          showError(err)
+        }
+        finally {
+          setLoading(false)
+        }
+      }
+    })
+  };
+
+  const handleUnrestrictButton = async (userId) => {
+    setActionMenuOpen(null);
+
+    try {
+      setLoading(true)
+
+      const res = await fetch(`/api/users/${userId}/unrestrict`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if(!res.ok) {
+        throw new Error("Something went wrong. Please try again later.")
+      }
+
+      const data = await res.json();
+      setUpdatedUser(data);  
+      
+      globalSwalWithIcon.fire({
+        icon: 'success',
+        title: `Account unrestricted successfully!`
+      })
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+      setLoading(false)
+    }
+  };
+
+  const handleSendResetLink = async (email, personnelNumber) => {
+    setActionMenuOpen(null)
+
+    globalSwalWithIcon.fire({
+      title: `Send reset link to user ${personnelNumber}?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setLoading(true)
+    
+          const res = await fetch('/reset-password', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ email }),
+          });
+    
+          if(!res.ok) {
+            throw new Error("Something went wrong. Please try again later.")
+          }
+          
+          globalSwalWithIcon.fire({
+            icon: 'success',
+            title: `Reset link sent successfully!`
+          })
+        }
+        catch (err) {
+          showError(err)
+        }
+        finally {
+          setLoading(false)
+        }
+      }
+    })
+  };
+
   const getUserStatus = (user) => {
     let status = 'Active';
 
@@ -120,34 +193,19 @@ const UsersTable = ({ users }) => {
     return status;
   };
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenu(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
-    <div className="relative overflow-x-auto">
+    <div>
       {loading && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-10">
-          <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+          <BounceLoader color="#6CB6AD" loading={loading} size={60} />
         </div>
       )}
       <table className="min-w-full border border-spacing-0 border-gray-300">
         <thead>
           <tr>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Personnel Number</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Personnel No.</th>
             <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Role</th>
             <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[20%] lg:w-[15%]">Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[15%] lg:w-[10%]">Department</th>
             <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Date Registered</th>
             <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Status</th>
             <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center sm:w-[20%] md:w-[10%] lg:w-[10%]">Action</th>
@@ -160,62 +218,40 @@ const UsersTable = ({ users }) => {
                 <td className="border p-2 border-[#828282] text-center">{item.personnel_number}</td>
                 <td className="border p-2 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
                 <td className="border p-2 border-[#828282] text-center">{item.full_name}</td>
-                <td className="border p-2 border-[#828282] text-center">{item.department_name}</td>
                 <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
                 <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
                 <td className="border p-2 border-[#828282] text-center">
-                  <div className="relative flex items-center justify-center gap-2">
-                    <Link
-                      to={`/view-user/${item.id}`}
-                      className="py-2 px-5 w-auto rounded-lg bg-[#248176] text-white hover:bg-[#6CB6AD] transition duration-300"
+                  <div key={item.id} ref={(element) => setActionMenuRef(item.id, element)} className="relative flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => {viewUser(item)}}
+                      className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
                     >
                       View
-                    </Link>
-                    <button
-                      className="py-1 px-3 rounded-full bg-gray-300 text-black"
-                      onClick={() => setOpenMenu(openMenu === item.id ? null : item.id)}
-                    >
-                      ⋮
                     </button>
-
-                    {openMenu === item.id && (
-                      <div
-                        className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md border border-gray-300 z-10"
-                        ref={menuRef}
-                      >
-                        {item.is_locked ? (
-                          <button
-                            onClick={() => handleToggleLockButton(item.id)}
-                            className="block w-full text-left px-4 py-2 text-red-600"
-                          >
-                            Unlock Account
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleToggleLockButton(item.id)}
-                            className="block w-full text-left px-4 py-2 text-orange-600"
-                          >
-                            Lock Account
-                          </button>
-                        )}
-
-                        {item.failed_login_attempts > 2 && (
-                          <button
-                            onClick={() => handleUnrestrictButton(item.id)}
-                            className="block w-full text-left px-4 py-2 text-blue-600"
-                          >
-                            Unrestrict Account
-                          </button>
-                        )}
-
-                        <button
-                          className="block w-full text-left px-4 py-2 text-blue-600"
-                          onClick={() => handleSendResetLink(item.email)}
-                        >
-                          Send Reset Link
+                    <div className='ms-2'>
+                        <button onClick={() => {setActionMenuOpen(actionMenuOpen == item.id ? null : item.id)}}>
+                          <i className='bi bi-three-dots text-xl text-black hover:text-gray-700 relative'></i>
                         </button>
-                      </div>
-                    )}
+                        {actionMenuOpen === item.id && (
+                          <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md border overflow-clip border-[#248176] z-10">
+                            <button onClick={() => handleToggleLockButton(item.id, item.is_locked)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-2">
+                              <i className={`me-2 bi ${item.is_locked ? "bi-unlock" : "bi-lock"}`}></i>{item.is_locked ? "Unlock" : "Lock"}
+                            </button>
+
+                            {item.failed_login_attempts > 2 && (
+                              <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-2 text-green-600 bg-gray-200">
+                                Unrestrict
+                              </button>
+                            )}
+
+                            {!item.is_locked && (
+                              <button className="block w-full text-left px-3 pe-4 py-2 text-blue-600 hover:bg-gray-200" onClick={() => handleSendResetLink(item.email, item.personnel_number)}>
+                                <i className={`me-2 bi bi-send`}></i>Send Reset Link
+                              </button>
+                            )}
+                          </div>
+                        )}
+                    </div>
                   </div>
                 </td>
               </tr>

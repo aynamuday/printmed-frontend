@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { PulseLoader } from 'react-spinners';
+import {showError} from "../utils/fetch/showError";
 
 import AppContext from '../context/AppContext';
 import AdminContext from '../context/AdminContext';
@@ -163,7 +164,7 @@ const UsersPage = () => {
             status: ''
         })
     
-        getUsers(1, undefined, undefined, undefined, undefined, undefined, usersFilters.sort_by, usersFilters.order_by)
+        getUsers(1, undefined, undefined, undefined, undefined, usersFilters.sort_by, usersFilters.order_by)
     };
 
     return (

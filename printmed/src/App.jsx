@@ -53,9 +53,9 @@ const App = () => {
         <Route element={<AdminProvider />}>
           <Route path='/' element={<AdminDashboardPage/>}/>
           <Route path='users' element={<UsersPage/>}/>
+          <Route path='users/:userId' element={<UserPage/>}/>
           <Route path='add-user' element={<UserPage/>}/>
-          <Route path='view-user/:userId' element={<UserPage/>}/>
-          <Route path='/settings/edit-admin-info' element={<EditAdminInfoPage />}/>
+          <Route path='settings/edit-admin-info' element={<EditAdminInfoPage />}/>
           <Route path='departments' element={<DepartmentsPage/>}/>
           <Route path='audits' element={<AuditsPage/>}/>
           { generalRoutes }
