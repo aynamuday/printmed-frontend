@@ -75,7 +75,7 @@ const LoginPage = () => {
         }
       }
 
-      const data = await res.json()  
+      const data = await res.json()
 
       setIsOtpSent(true);
       setOtp({
@@ -166,7 +166,9 @@ const LoginPage = () => {
 
       globalSwalWithIcon.fire({
         title: "New OTP is sent successfully!",
-        icon: 'success'
+        icon: 'success',
+        showConfirmButton: false,
+        showCloseButton: true
       });
     }
     catch (err) {
@@ -198,7 +200,7 @@ const LoginPage = () => {
               <div>
                 <select
                   name="role"
-                  className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
                   value={credentials.role}
                   onChange={handleChange}
                   required
@@ -214,7 +216,7 @@ const LoginPage = () => {
                 <input
                   name="email"
                   type="email"
-                  className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Email"
                   value={credentials.email}
                   onChange={handleChange}
@@ -227,7 +229,7 @@ const LoginPage = () => {
                 <input
                   name="password"
                   type="password"
-                  className="appearance-none rounded-md w-full px-3 py-2 border text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
@@ -270,6 +272,7 @@ const LoginPage = () => {
               <button
                 onClick={handleResendOtp}
                 type="button"
+                disabled={loading}
                 className="text-sm text-red-600 hover:underline"
               >
                 Resend

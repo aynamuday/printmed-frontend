@@ -153,7 +153,7 @@ const UsersTable = ({ users }) => {
         try {
           setLoading(true)
     
-          const res = await fetch('/reset-password', {
+          const res = await fetch('/api/send-reset-link', {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${token}`
@@ -167,7 +167,9 @@ const UsersTable = ({ users }) => {
           
           globalSwalWithIcon.fire({
             icon: 'success',
-            title: `Reset link sent successfully!`
+            title: `Reset link sent successfully!`,
+            showConfirmButton: false,
+            showCloseButton: true
           })
         }
         catch (err) {
@@ -197,7 +199,7 @@ const UsersTable = ({ users }) => {
   return (
     <div>
       {loading && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-10">
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-50">
           <BounceLoader color="#6CB6AD" loading={loading} size={60} />
         </div>
       )}

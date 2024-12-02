@@ -27,7 +27,7 @@ const ChangePasswordPage = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/
 
     if(!passwordRegex.test(newPassword)) {
-      setError("Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).")
+      setError("Password must be at least 8 characters long, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character.")
       return;
     }
 
