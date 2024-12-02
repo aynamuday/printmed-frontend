@@ -41,7 +41,7 @@ export const AppProvider = ({children}) => {
 
   useEffect(()=> {
     if (token) {
-        getUser()
+      if (!user) getUser()
         getDepartments()
     } else {
       setLoading(false)

@@ -1,135 +1,192 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScaleLoader } from 'react-spinners';
+import { showError } from '../utils/fetch/showError'
 
 import AppContext from '../context/AppContext';
 
 import logo from '../assets/images/logo.png';
+import { globalSwalWithIcon } from '../utils/globalSwal';
 
 const LoginPage = () => {
-  const { setToken } = useContext(AppContext);
+  const { setToken, setUser } = useContext(AppContext);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
   const [credentials, setCredentials] = useState({
     role: '',
-    //personnel_number: '',
     email: '',
     password: '',
   });
-
   const [otp, setOtp] = useState({
     token: '',
     email: '',
     code: ''
   });
   const [isOtpSent, setIsOtpSent] = useState(false);
-
-  // Error states for each field
   const [errors, setErrors] = useState({
     role: '',
-    //personnel_number: '',
     email: '',
     password: '',
     otp: ''
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setErrors({ ...errors, [name]: '', general: ''});
+
     setCredentials({
       ...credentials,
       [name]: value,
     });
-    setErrors({ ...errors, [name]: '' });
   };
 
   const handleOtpChange = (e) => {
+    setErrors({ ...errors, otp: '', general: ''});
+
     setOtp({
       ...otp,
       code: e.target.value
     });
-    setErrors({ ...errors, otp: '' });
   };
 
   const handleLogin = async (e) => {
-    setErrors('')
-
     e.preventDefault();
 
-    const newErrors = {};
-    if (!credentials.role) newErrors.role = 'Please select your role.';
-    //if (!credentials.personnel_number) newErrors.personnel_number = 'Personnel number is required.';
-    if (!credentials.email) newErrors.email = 'Email is required.';
-    if (!credentials.password) newErrors.password = 'Password is required.';
+    setErrors('')
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+    try {
+      setLoading(true)
 
-    setLoading(true);
+      const res = await fetch("/api/login", {
+        method: "POST",
+        body: JSON.stringify(credentials)
+      });
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify(credentials)
-    });
+      if(!res.ok) {
+        if (res.status === 404 || res.status === 401) {
+          setErrors({ ...errors, general: "The provided credentials are incorrect." });
+          return
+        } else if (res.status === 403) {
+          setErrors({ ...errors, general: "This account is temporarily restricted due to multiple failed login attempts. You may wait for an hour or contact the admin."});
+          return
+        } else {
+          throw new Error("Something went wrong. Please try again later.")
+        }
+      }
 
-    const data = await res.json();
+      const data = await res.json()  
 
-    setLoading(false);
-
-    if (res.ok) {
       setIsOtpSent(true);
       setOtp({
         token: data.token,
         email: data.email,
         code: ''
       });
-    } else {
-      setErrors({ ...errors, general: data.error || 'Invalid credentials' });
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+      setLoading(false)
     }
   };
 
   const handleVerifyOtp = async (e) => {
-    setErrors([])
-
     e.preventDefault();
 
     if (!otp.code) {
-      setErrors({ ...errors, otp: 'OTP is required.' });
       return;
     }
+    setErrors([])
 
-    setLoading(true);
+    try {
+      setLoading(true)
 
-    const res = await fetch("/api/verify-otp", {
-      method: "POST",
-      body: JSON.stringify(otp),
-    });
+      const res = await fetch("/api/verify-otp", {
+        method: "POST",
+        body: JSON.stringify(otp),
+      });
 
-    const data = await res.json();
+      if(!res.ok) {
+          if (res.status === 400) {
+            setErrors({ ...errors, general: "This request is invalid." });
+            return
+          } else if (res.status === 410) {
+            setErrors({ ...errors, general: "OTP is expired." });
+            return
+          } else if (res.status === 401) {
+            setErrors({ ...errors, general: "OTP is invalid." });
+            return
+          } else {
+              throw new Error("Something went wrong. Please try again later.")
+          }
+      }
 
-    setLoading(false);
+      const data = await res.json()  
+	  
+      localStorage.setItem("token", data.token)
+      setUser(data.user)
+      setToken(data.token)
+      navigate('/')
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+      setLoading(false)
+    }
+  };
 
-    if (res.ok) {
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
-      navigate('/');
-    } else {
-      setErrors({ ...errors, otp: data.error || 'Invalid OTP' });
+  const handleResendOtp = async (e) => {
+    e.preventDefault();
+
+    if (!otp.token || !otp.email) {
+      return;
+    }
+    setErrors([])
+    setOtp({...otp, code: ''})
+
+    try {
+      setLoading(true)
+
+      const res = await fetch("/api/resend-otp", {
+        method: "POST",
+        body: JSON.stringify(otp),
+      });
+
+      if(!res.ok) {
+          if (res.status === 400) {
+            setErrors({ ...errors, general: "This request is invalid." });
+            return
+          } else {
+              throw new Error("Something went wrong. Please try again later.")
+          }
+      }
+
+      globalSwalWithIcon.fire({
+        title: "New OTP is sent successfully!",
+        icon: 'success'
+      });
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+      setLoading(false)
     }
   };
 
   const handleForgotPassword = () => {
-    navigate('/forgot-password');
+    globalSwalWithIcon.fire({
+      title: "Please contact the admin.",
+      icon: 'warning'
+    })
   };
 
-  const hanldeRegister = () => {
-    navigate('/register');
-  }
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
-      <div>
+      <div className='flex justify-center flex-col lg:w-[30%] md:w-[40%]'>
         <div className="flex flex-col items-center">
           <img src={logo} alt="" className="w-100 h-28" />
           <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2>
@@ -153,9 +210,6 @@ const LoginPage = () => {
                 </select>
                 {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
               </div>
-
-              
-
               <div>
                 <input
                   name="email"
@@ -191,13 +245,16 @@ const LoginPage = () => {
                 className="appearance-none rounded-md w-full px-3 py-2 border focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Enter OTP"
                 value={otp.code}
+                maxLength="6"
+                minLength="6"
                 onChange={handleOtpChange}
+                required
               />
               {errors.otp && <p className="text-red-500 text-sm">{errors.otp}</p>}
             </div>
           )}
 
-          {errors.general && <p className="text-red-500 text-center">{errors.general}</p>}
+          {errors.general && <p className="text-red-500 text-center text-sm">{errors.general}</p>}
 
           <button
             type="submit"
@@ -206,6 +263,19 @@ const LoginPage = () => {
           >
             {loading ? <ScaleLoader color="#ffffff" height={20} width={5} radius={2} margin={2} /> : isOtpSent ? 'Verify OTP' : 'Login'}
           </button>
+
+          {isOtpSent && (
+            <div className='flex gap-2 mt-4 justify-center'>
+              <span className='text-sm text-gray-600'>Didn't get the code?</span>
+              <button
+                onClick={handleResendOtp}
+                type="button"
+                className="text-sm text-red-600 hover:underline"
+              >
+                Resend
+              </button>
+            </div>
+          )}
 
           {!isOtpSent && (
             <button
@@ -216,14 +286,6 @@ const LoginPage = () => {
               Forgot Password?
             </button>
           )}
-
-            <button
-              onClick={hanldeRegister}
-              type="button"
-              className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
-            >
-              Register
-            </button>
         </form>
       </div>
     </div>
