@@ -15,7 +15,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import UpdateEmailPage from './pages/UpdateEmailPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 
-import EditAdminInfoPage from './pages/EditAdminInfoPage';
+import EditProfilePage from './pages/EditProfilePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import UsersPage from './pages/UsersPage';
 import UserPage from './pages/UserPage';
@@ -54,7 +54,7 @@ const App = () => {
           <Route path='users' element={<UsersPage/>}/>
           <Route path='users/:userId' element={<UserPage/>}/>
           <Route path='add-user' element={<UserPage/>}/>
-          <Route path='settings/edit-admin-info' element={<EditAdminInfoPage />}/>
+          <Route path='settings/edit-profile' element={<EditProfilePage />}/>
           <Route path='departments' element={<DepartmentsPage/>}/>
           <Route path='audits' element={<AuditsPage/>}/>
           { generalRoutes }

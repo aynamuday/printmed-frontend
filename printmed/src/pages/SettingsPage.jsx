@@ -73,7 +73,7 @@ const SettingsPage = () => {
       <div className="mt-6 space-y-4 w-full flex flex-col items-center">
       {user.role === 'admin' && (
         <Link
-          to="/settings/edit-admin-info"
+          to="/settings/edit-profile"
           className="w-48 sm:w-48 px-4 py-2 bg-[#248176] rounded-md hover:bg-blue-700 focus:outline-none text-center text-white"
         >
           Edit

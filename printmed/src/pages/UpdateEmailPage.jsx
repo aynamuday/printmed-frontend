@@ -152,7 +152,7 @@ const UpdateEmailPage = () => {
                                 <i className="bi bi-arrow-left font-bold text-2xl"></i> {/* Left arrow icon */}
                             </button>
                         </div>
-                        <h2 className="text-xl font-bold mt-12 mb-6">
+                        <h2 className="text-xl font-bold mb-6">
                             {step == 1 ? "Update Email" : "Verify OTP"}
                         </h2>
 
