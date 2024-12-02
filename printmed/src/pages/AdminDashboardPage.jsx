@@ -67,7 +67,7 @@ const DashboardAdminPage = () => {
           </div>
           {/* )} */}
 
-          <div className='h-12'></div>
+          <div className='h-6'></div>
 
           {/* audits */}
           <Audits forDashboard={true} />

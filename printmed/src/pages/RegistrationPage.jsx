@@ -10,7 +10,25 @@ import Swal from 'sweetalert2';
 function RegistrationPage() {
     const [loading, setLoading] = useState(false);
 
-    const [formData, setFormData] = useState([]);
+    const [formData, setFormData] = useState({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        suffix: '',
+        sex: '',
+        birthdate: '',
+        birthplace: '',
+        civil_status: '',
+        house_number: '',
+        street: '',
+        barangay: '',
+        city: '',
+        province: '',
+        postal_code: '',
+        religion: '',
+        phone_number: '',
+        email: '',
+    });
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [showTerms, setShowTerms] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
