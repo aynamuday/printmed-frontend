@@ -159,7 +159,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
     };
 
     return (
-        <form className='py-4 px-8'>
+        <form onSubmit={(e) => handleSubmit(e)} className='py-4 px-8'>
             { !isNext ? (
                 <>
                     <table className='text-start mb-8 border-collapse border border-black bg-white w-full break-words'>
@@ -365,7 +365,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                     <div className="mt-12 w-full">
                         <div className="flex justify-center items-center flex-col">
                             { addConsultationErrors.general.trim() != "" && (<p className='text-red-600 text-sm mb-4'>{addConsultationErrors.general}</p>)}
-                            <button onClick={(e) => handleSubmit(e)} className="block px-14 h-10 bg-[#b43c3a] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                            <button type='submit' className="block px-14 h-10 bg-[#b43c3a] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
                                 Submit
                             </button>
                         </div>

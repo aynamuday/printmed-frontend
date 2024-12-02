@@ -104,7 +104,7 @@ const PatientPageSecretary = () => {
         }
 
         globalSwalNoIcon.fire({
-            title: `Are you sure you want to generate identification card for patient?`,
+            title: `Generate identification card for patient?`,
             html: `<p style="color: black; font-size: 16px; margin: 0;">The previous identication card, if active, will be <span style="color: red;">deactivated</span>.</p>
                 ${patient.email != null ? `<div style="height: 16px;"></div>
                 <input type="checkbox" id="send-email"> <span style="color: black; font-size: 16px; margin-left: 8px;">Send digital copy to patient thru email</span>
@@ -142,7 +142,7 @@ const PatientPageSecretary = () => {
                     const url = URL.createObjectURL(data)
                     printPdf(url)
 
-                    setPatient((prevData) => ({...prevData, qr_status: {...prevData.qr_status, status: "Active", date_issued: getFormattedNumericDate(), issuances_count: prevData.qr_status.issuances_count + 1}}))
+                    setPatient((prevData) => ({...prevData, qr_status: {...prevData.qr_status, status: "Active", date_issued: getFormattedNumericDate(), issuances_count: prevData.qr_status.issuances_count ? + prevData.qr_status.issuances_count + 1 : 1}}))
                 }
                 catch (err) {
                     showError(err)
@@ -157,7 +157,8 @@ const PatientPageSecretary = () => {
     const deactivateIdCard = async () => {
         setShowPatientIdMenu(false)
 
-        globalSwalNoIcon.fire({
+        globalSwalWithIcon.fire({
+            icon: 'warning',
             title: `Are you sure you want to <span style="color: red;">deactivate patient's identification card</span>?`,
             html: `<p style="color: black; font-size: 17px; margin: 0;">This action cannot be undone!</p>`,
             showCancelButton: true,
@@ -230,9 +231,14 @@ const PatientPageSecretary = () => {
                         <Header />
 
                         <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
-                            <div className='flex gap-6 items-center mb-4'>
-                                <button onClick={() => handleClose()} className='flex items-center h-full'><i className='bi bi-x-lg'></i></button>
-                                <h2 className='font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
+                            <div className='flex items-center mb-4'>
+                                <button onClick={() => handleClose()} className='flex items-center h-full me-6'><i className='bi bi-x-lg'></i></button>
+                                <h2 className='font-bold text-2xl me-3'>Patient No. {patient.patient_number}</h2>
+                                { patient.is_new_in_department && 
+                                    <div className='me-2 h-full border border-green-500 border-1 px-2 py-1 rounded-lg'>
+                                        <p className='text-xs text-green-500 font-semibold'>New</p>
+                                    </div> 
+                                }
                             </div>
                             <div className='grid grid-cols-2 gap-4'>
                                 <div>
@@ -240,15 +246,17 @@ const PatientPageSecretary = () => {
                                 </div>
                                 <div className='bg-[#D9D9D9] bg-opacity-30 flex flex-col gap-4'>
                                     <div>
-                                        <p className='bg-[#B43C3A] py-2 px-4 font-semibold text-white text-lg'>Consultation Today</p>
+                                        <div className='flex bg-[#B43C3A] py-2 px-4 font-semibold text-white text-lg'>
+                                            { (vitalSignsState === "edit" || vitalSignsState === "add") && (
+                                                <button onClick={() => {setVitalSignsState(!patient.vital_signs ? null : "view")}}>
+                                                    <i className={`bi bi-arrow-left me-4 text-xl`}></i>
+                                                </button>
+                                            )}
+                                            <p>Vital Signs Today</p>
+                                        </div>
                                         <div className='px-6 py-4'>
                                             <div className='flex gap-2 items-center mb-2'>
-                                                { (vitalSignsState === "edit" || vitalSignsState === "add") && (
-                                                    <button onClick={() => {setVitalSignsState(!patient.vital_signs ? null : "view")}}>
-                                                        <i className={`bi bi-arrow-left me-2 text-xl text-black font-bold`}></i>
-                                                    </button>
-                                                )}
-                                                <p className={`text-black font-semibold`}>Vital Signs</p>
+                                                {/* <p className={`text-black font-semibold`}>Vital Signs</p> */}
                                                 { !vitalSignsState && (!patient.vital_signs) && (
                                                     <button onClick={() => {setVitalSignsState("add")}}>
                                                         <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#B43C3A] hover:text-red-500`}></i>

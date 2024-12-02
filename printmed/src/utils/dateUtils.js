@@ -18,7 +18,3 @@ export const getFormattedStringDate = (dateStamp) => {
 
     return date
 };
-
-export const hasDatePassed = (dateStamp) => {
-    return dateStamp < getFormattedNumericDate()
-}

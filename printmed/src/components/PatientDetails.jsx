@@ -1,18 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
-import { getFormattedNumericDate, getFormattedStringDate, hasDatePassed } from '../utils/dateUtils';
+import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils';
 import { capitalizedWords } from '../utils/wordUtils';
 import { handlePhoneNumberChange } from '../utils/handlePhoneNumberChange';
 import WebcamCapture from './WebcamCapture';
 import { showError } from '../utils/fetch/showError';
 import { globalSwalNoIcon } from '../utils/globalSwal';
 import { base64ToPngFile } from '../utils/fileUtils';
+import { getFollowUpDateStatus } from '../utils/patientUtils';
 import { fetchPhysicians } from '../utils/fetch/fetchPhysicians';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
 
     const [physicians, setPhysicians] = useState(null)
+    const followUpDateStatus = getFollowUpDateStatus(patient.follow_up_date)
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState([])
     const [image, setImage] = useState(null)
@@ -562,7 +564,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Follow-up Date</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             { patient.follow_up_date ? (
-                                                hasDatePassed(patient.follow_up_date) ? patient.follow_up_date + <span className='text-red-500'>Missed</span> : patient.follow_up_date
+                                                <>
+                                                    {patient.follow_up_date} 
+                                                    <span className={`ms-3 italic ${followUpDateStatus == "Missed" ? "text-red-600" : followUpDateStatus == "Today" ? "text-green-500" : ""}`}>
+                                                        {followUpDateStatus}
+                                                    </span>
+                                                </>
                                             ) : (
                                                 "N/A"
                                             )}

@@ -692,8 +692,12 @@ function RegistrationPage() {
                                     <p className='col-span-5'>{formData.civil_status}</p>
                                     <p className='col-span-3 font-semibold'>House No. </p>
                                     <p className='col-span-5'>{formData.house_number}</p>
-                                    <p className='col-span-3 font-semibold'>Street</p>
-                                    <p className='col-span-5'>{formData.street}</p>
+                                    { formData.street && (
+                                        <>
+                                            <p className='col-span-3 font-semibold'>Street</p>
+                                            <p className='col-span-5'>{formData.street}</p>    
+                                        </>
+                                    )}
                                     <p className='col-span-3 font-semibold'>Barangay</p>
                                     <p className='col-span-5'>{formData.barangay}</p>
                                     <p className='col-span-3 font-semibold'>City</p>
