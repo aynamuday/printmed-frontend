@@ -213,7 +213,7 @@ const UserPage = () => {
       <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 grid grid-cols-1 place-items-center relative">
         { loading && (
             <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-40 flex justify-center items-center z-50">
-                <BounceLoader color="#6CB6AD" loading={true} size={60} />
+                <BounceLoader color="#6CB6AD" loading={loading} size={60} />
             </div>
         )}
         
