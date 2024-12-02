@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppContext from '../context/AppContext';
+import SecretaryContext from '../context/SecretaryContext';
+import { PulseLoader } from 'react-spinners';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import AppContext from '../context/AppContext';
-import { PulseLoader } from 'react-spinners';
-import SecretaryContext from '../context/SecretaryContext';
+import Pusher from 'pusher-js'
+import { echo as Echo } from '../utils/pusher/echo';
+
+window.Pusher = Pusher;
 
 const RegistrationsPage = () => {
   const navigate = useNavigate();
@@ -15,6 +19,35 @@ const RegistrationsPage = () => {
   } = useContext(SecretaryContext)
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if(!registrations.data) {
+      setLoading(true)
+    }
+
+    const page = registrations.data ? registrations.current_page : 1
+    getRegistrations(page, registrationsSearch);
+
+    const echo = Echo(token)
+
+    echo.private('registration')
+        .listen('RegistrationNew', (e) => {
+          const newRegistration = e.registration
+
+          setRegistrations((prevState) => {
+            const updatedData = [newRegistration, ...prevState.data]
+            updatedData.pop()
+
+            return {
+              ...prevState, data: updatedData
+            }
+          })
+        })
+
+    return () => {
+      echo.leave('registration')
+    }
+  }, []);
   
   const getRegistrations = async (page = 1, search = '') => {
     let url = `/api/registrations?page=${page}`;
@@ -62,24 +95,17 @@ const RegistrationsPage = () => {
         setLoading(false)
     }
   };
-
-  useEffect(() => {
-    if(!registrations.data) {
-      setLoading(true)
-    }
-
-    const page = registrations.data ? registrations.current_page : 1
-    getRegistrations(page, registrationsSearch);
-  }, []);
   
   const handleSearchSubmit = (e) => {
     e.preventDefault()
+    setLoading(true)
 
     getRegistrations(registrations.current_page, registrationsSearch);
   };
 
   const handlePageChange = (page) => {
     if (page > 0 && page <= registrations.last_page) {
+      setLoading(true)
       getRegistrations(page, registrationsSearch);
     }
   };
