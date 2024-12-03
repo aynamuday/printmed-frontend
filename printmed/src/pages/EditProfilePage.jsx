@@ -62,23 +62,17 @@ const EditProfilePage = () => {
 
   const handlePersonnelNumberChange = (e) => {
     let value = e.target.value;
-
+  
+    // Clear any previous error message
     setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
   
-    const personnelNumberRegex = /^PN-\d*$/
-    if (!personnelNumberRegex.test(value)) {
-      return
-    }
-
-    if (value.length < 4) {
-      value = 'PN-';
-    }
-  
+    // Update the personnel number field
     setFormData((prevData) => ({
       ...prevData,
       personnel_number: value,
     }));
   };
+  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
