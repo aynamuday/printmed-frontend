@@ -25,6 +25,32 @@ const EditProfilePage = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  const [errors, setErrors] = useState({
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    personnel_number: '',
+  });
+
+  const capitalizeName = (name) => {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const handleNameChange = (e) => {
+    const { name, value } = e.target;
+    let formattedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    formattedValue = capitalizeName(formattedValue);
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: formattedValue,
+    }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -34,8 +60,33 @@ const EditProfilePage = () => {
     }));
   };
 
+  const handlePersonnelNumberChange = (e) => {
+    let value = e.target.value;
+  
+    // Clear any previous error message
+    setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
+  
+    // Update the personnel number field
+    setFormData((prevData) => ({
+      ...prevData,
+      personnel_number: value,
+    }));
+  };
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors([])
+
+    if (!formData.first_name || !formData.last_name || !formData.personnel_number) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        first_name: formData.first_name ? '' : 'First Name is required',
+        last_name: formData.last_name ? '' : 'Last Name is required',
+        personnel_number: formData.personnel_number ? '' : 'Personnel Number is required',
+      }));
+      return;
+    }
 
     try {
       setLoading(true)
@@ -125,11 +176,16 @@ const EditProfilePage = () => {
                   <input
                     type="text"
                     name="personnel_number"
-                    value={formData.personnel_number}
-                    onChange={handleChange}
+                    value={formData.personnel_number || "PN-"}
+                    onChange={handlePersonnelNumberChange}
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
+                    minLength="10"
+                    maxLength="10"
                     required
                   />
+                  {errors.personnel_number && (
+                    <p className="text-red-600 text-xs">{errors.personnel_number}</p>
+                  )}
                 </div>
 
                 {/* First Name */}
@@ -141,10 +197,13 @@ const EditProfilePage = () => {
                     type="text"
                     name="first_name"
                     value={formData.first_name}
-                    onChange={handleChange}
+                    onChange={handleNameChange}
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
+                  {errors.first_name && (
+                    <p className="text-red-600 text-xs">{errors.first_name}</p>
+                  )}
                 </div>
 
                 {/* Middle Name */}
@@ -154,7 +213,7 @@ const EditProfilePage = () => {
                     type="text"
                     name="middle_name"
                     value={formData.middle_name}
-                    onChange={handleChange}
+                    onChange={handleNameChange}
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                   />
                 </div>
@@ -168,10 +227,13 @@ const EditProfilePage = () => {
                     type="text"
                     name="last_name"
                     value={formData.last_name}
-                    onChange={handleChange}
+                    onChange={handleNameChange}
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
+                  {errors.last_name && (
+                    <p className="text-red-600 text-xs">{errors.last_name}</p>
+                  )}
                 </div>
 
                 {/* Suffix */}
