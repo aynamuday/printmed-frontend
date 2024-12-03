@@ -105,8 +105,7 @@ const PatientPageSecretary = () => {
 
         globalSwalNoIcon.fire({
             title: `Generate identification card for patient?`,
-            html: `<p style="color: black; font-size: 16px; margin: 0;">The previous identication card, if active, will be <span style="color: red;">deactivated</span>.</p>
-                ${patient.email != null ? `<div style="height: 16px;"></div>
+            html: `${patient.email != null ? `
                 <input type="checkbox" id="send-email"> <span style="color: black; font-size: 16px; margin-left: 8px;">Send digital copy to patient thru email</span>
                 <p style="color: black; font-size: 16px; margin-left: 8px; font-style: italic;">Please confirm to patient that their email is active.</p>` : ""}`,
             showCancelButton: true,
