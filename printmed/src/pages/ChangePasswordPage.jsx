@@ -19,6 +19,20 @@ const ChangePasswordPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [visibility, setVisibility] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
+
+  const toggleVisibility = (field) => {
+    setVisibility((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault()
 
@@ -110,30 +124,56 @@ const ChangePasswordPage = () => {
 
               {error && <p className="text-red-500 mb-4">{error}</p>}
               
-              <input
-                type="password"
-                placeholder="Old Password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-96 p-2 mb-4 mt-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-96 p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-96 p-2 mb-4 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-              />
+              <div className="relative w-96 mb-4">
+                <input
+                  type={visibility.current ? "text" : "password"}
+                  placeholder="Old Password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <i
+                  onClick={() => toggleVisibility('current')}
+                  className={`absolute right-3 top-3 cursor-pointer ${
+                    visibility.current ? 'bi bi-eye-slash' : 'bi bi-eye'
+                  }`}
+                ></i>
+              </div>
+
+              <div className="relative w-96 mb-4">
+                <input
+                  type={visibility.new ? "text" : "password"}
+                  placeholder="New Password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <i
+                  onClick={() => toggleVisibility('new')}
+                  className={`absolute right-3 top-3 cursor-pointer ${
+                    visibility.new ? 'bi bi-eye-slash' : 'bi bi-eye'
+                  }`}
+                ></i>
+              </div>
+
+              <div className="relative w-96 mb-4">
+                <input
+                  type={visibility.confirm ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <i
+                  onClick={() => toggleVisibility('confirm')}
+                  className={`absolute right-3 top-3 cursor-pointer ${
+                    visibility.confirm ? 'bi bi-eye-slash' : 'bi bi-eye'
+                  }`}
+                ></i>
+              </div>
 
               <div className="flex space-x-4 mt-4">
                 <button
