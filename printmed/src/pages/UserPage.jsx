@@ -217,10 +217,17 @@ const UserPage = () => {
             </div>
         )}
         
-        <div className="w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
+        <div className="relative w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
           <div className="flex justify-center items-center rounded-md">
             <img src={logo} className="h-20" alt="Logo" />
           </div>
+          {userId && (
+            <div className="absolute top-4 left-4 p-4">      
+              <button onClick={() => navigate("/users")} className="mr-4">
+                <i className="bi bi-arrow-left text-2xl font-bold"></i>
+              </button>
+            </div>
+          )}
 
           <h2 className="text-2xl text-center font-bold m-6">{userId ? "Update User Account" : "Create New Account"}</h2>
 
