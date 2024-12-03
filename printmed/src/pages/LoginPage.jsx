@@ -31,6 +31,14 @@ const LoginPage = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  const [visibility, setVisibility] = useState({
+    password: false,
+  });
+
+  const toggleVisibility = (field) => {
+    setVisibility((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setErrors({ ...errors, [name]: '', general: ''});
@@ -225,16 +233,22 @@ const LoginPage = () => {
                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
 
-              <div>
+              <div className="relative">
                 <input
                   name="password"
-                  type="password"
+                  type={visibility.password ? "text" : "password"}
                   className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
                   required
                 />
+                <i
+                  onClick={() => toggleVisibility('password')}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer ${
+                    visibility.password ? 'bi bi-eye-slash' : 'bi bi-eye'
+                  }`}
+                ></i>
                 {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
             </div>
