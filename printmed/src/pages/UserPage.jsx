@@ -127,7 +127,7 @@ const UserPage = () => {
       ...prevData,
       personnel_number: value,
     }));
-};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

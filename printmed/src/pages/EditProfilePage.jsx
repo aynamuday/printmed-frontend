@@ -62,17 +62,23 @@ const EditProfilePage = () => {
 
   const handlePersonnelNumberChange = (e) => {
     let value = e.target.value;
-  
-    // Clear any previous error message
+
     setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
   
-    // Update the personnel number field
+    const personnelNumberRegex = /^PN-\d*$/
+    if (!personnelNumberRegex.test(value)) {
+      return
+    }
+
+    if (value.length < 4) {
+      value = 'PN-';
+    }
+  
     setFormData((prevData) => ({
       ...prevData,
       personnel_number: value,
     }));
   };
-  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -159,7 +165,7 @@ const EditProfilePage = () => {
               </button>
             </div>
             {loading && (
-              <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+              <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-30 z-50">
                 <BounceLoader color="#6CB6AD" size={60} />
               </div>
             )}
@@ -177,7 +183,7 @@ const EditProfilePage = () => {
                     type="text"
                     name="personnel_number"
                     value={formData.personnel_number || "PN-"}
-                    onChange={handlePersonnelNumberChange}
+                    onChange={(e) => handlePersonnelNumberChange(e)}
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     minLength="10"
                     maxLength="10"
