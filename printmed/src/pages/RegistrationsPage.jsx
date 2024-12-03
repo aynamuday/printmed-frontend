@@ -8,7 +8,7 @@ import Sidebar from '../components/Sidebar';
 import Pusher from 'pusher-js'
 import { echo as Echo } from '../utils/pusher/echo';
 
-window.Pusher = Pusher;
+window.Pusher = Pusher   // Pusher for realtime
 
 const RegistrationsPage = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const RegistrationsPage = () => {
     registrationsSearch, setRegistrationsSearch
   } = useContext(SecretaryContext)
 
+  const [deleted, setDeleted] = useState(false)
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,26 +29,51 @@ const RegistrationsPage = () => {
     const page = registrations.data ? registrations.current_page : 1
     getRegistrations(page, registrationsSearch);
 
-    const echo = Echo(token)
 
+    // laravel echo for new registration
+    const echo = Echo(token)
     echo.private('registration')
         .listen('RegistrationNew', (e) => {
           const newRegistration = e.registration
 
           setRegistrations((prevState) => {
-            const updatedData = [newRegistration, ...prevState.data]
-            updatedData.pop()
+            const exists = prevState.data.some(item => item.id === newRegistration.id);
+            if (exists) {
+              return prevState;
+            }
 
+            const updatedData = [newRegistration, ...prevState.data]
+            if (updatedData > 20) {
+              updatedData.pop()
+            }
             return {
               ...prevState, data: updatedData
             }
           })
+        })
+        .listen('RegistrationDeleted', (e) => {
+          const deletedRegistrationId = e.registrationId
+          
+          setRegistrations((prevState) => ({
+            ...prevState,
+            data: prevState.data.filter(item => item.id != deletedRegistrationId)
+          }))
+
+          setDeleted(true)
         })
 
     return () => {
       echo.leave('registration')
     }
   }, []);
+
+  useEffect(() => {
+    if (registrations.data.length == 0 && registrations.current_page > 1) {
+      getRegistrations(registrations.current_page - 1, registrationsSearch)
+    } else if (registrations.data.length < 15 && registrations.last_page > 1) {
+      getRegistrations(registrations.current_page, registrationsSearch)
+    }
+  }, [deleted])
   
   const getRegistrations = async (page = 1, search = '') => {
     let url = `/api/registrations?page=${page}`;
@@ -131,7 +157,7 @@ const RegistrationsPage = () => {
           <h2 className={`font-bold text-2xl`}>Registrations</h2>
           <div className={`flex justify-end gap-4 items-end`}>
             <div>
-                <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Registration No."}</label>
+                <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Registration ID"}</label>
                 <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#248176] py-1 rounded ps-4'>
                     <input
                         type="text"
@@ -185,7 +211,7 @@ const RegistrationsPage = () => {
             <table className="w-full border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration No.</th>
+                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
                       <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
                       <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
                       <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>

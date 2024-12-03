@@ -5,6 +5,10 @@ import { ClipLoader, PulseLoader } from 'react-spinners';
 import { getFormattedNumericDate } from '../utils/dateUtils';
 
 import AuditsTable from './AuditsTable';
+import { echo as Echo } from '../utils/pusher/echo';
+import Pusher from 'pusher-js';
+
+window.pusher = Pusher
 
 const Audits = ({ forDashboard = false }) => {
     const { token } = useContext(AppContext)
@@ -23,6 +27,70 @@ const Audits = ({ forDashboard = false }) => {
     const [ loadingAudits, setLoadingAudits ] = useState(false)
     const audits = forDashboard ? auditsToday : auditsAll
     const dateToday = getFormattedNumericDate()
+
+    useEffect(() => {
+        if(audits.length < 1) {
+            setLoadingAudits(true)
+        }
+
+        const page = audits.data ? audits.current_page : 1
+        if (forDashboard) {
+            getAudits(page, undefined, undefined, undefined)
+        }  else {
+            const dateFrom = auditsAllFilters.dateFrom
+            const dateUntil = auditsAllFilters.dateUntil
+            const resource = auditsAllFilters.resource
+
+            getAudits(page, resource, dateFrom, dateUntil)
+        }
+
+
+        const echo = Echo(token)
+        echo.private('audit')
+            .listen('AuditNew', (e) => {
+                const newAudit = e.audit
+
+                if (auditsToday.current_page == 1) {
+                    setAuditsToday((prevState) => {
+                        const exists = prevState.data.some(item => item.id === newAudit.id);
+                        if (exists) {
+                            return prevState;
+                        }
+            
+                        const updatedData = [newAudit, ...prevState.data]
+                        if (updatedData > 20) {
+                            updatedData.pop()
+                        }
+            
+                        return {
+                            ...prevState, data: updatedData
+                        }
+                    })
+                }
+
+                if (auditsAll.current_page == 1 && (auditsAllFilters.dateUntil.trim() == "" || getFormattedNumericDate(auditsAllFilters.dateUntil) == getFormattedNumericDate())) {
+                    setAuditsAll((prevState) => {
+                        const exists = prevState.data.some(item => item.id === newAudit.id);
+                        if (exists) {
+                            return prevState;
+                        }
+            
+                        const updatedData = [newAudit, ...prevState.data]
+                        if (updatedData > 20) {
+                            updatedData.pop()
+                        }
+            
+                        return {
+                        ...prevState, data: updatedData
+                        }
+                    })
+                }
+            })
+
+        return () => {
+            echo.leave('audit')
+        }
+    }, [])
 
     // fetch the audits
     const getAudits = async (page = 1, resource='', dateFrom='', dateUntil='') => {
@@ -57,23 +125,6 @@ const Audits = ({ forDashboard = false }) => {
 
         setLoadingAudits(false)
     }
-
-    useEffect(() => {
-        if(audits.length < 1) {
-            setLoadingAudits(true)
-        }
-
-        const page = audits.data ? audits.current_page : 1
-        if (forDashboard) {
-            getAudits(page, undefined, undefined, undefined)
-        }  else {
-            const dateFrom = auditsAllFilters.dateFrom
-            const dateUntil = auditsAllFilters.dateUntil
-            const resource = auditsAllFilters.resource
-
-            getAudits(page, resource, dateFrom, dateUntil)
-        }
-    }, [])
 
     // executes when user selects audit resource
     const handleAuditsResourceChange = (e) => {
@@ -220,13 +271,13 @@ const Audits = ({ forDashboard = false }) => {
                     {!forDashboard && (
                         <>
                             {/* select audit resources dropdown */}
-                            <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
+                            {/* <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                     name="resource" id="resource" value={auditsAllFilters.resource} onChange={handleAuditsResourceChange}
                             >
                                 <option value="">Select resource</option>
                                 <option value="user">User</option>
                                 <option value="patient">Patient</option>
-                            </select>
+                            </select> */}
 
                             {/* date from */}
                             <div className="w-full sm:w-auto">
