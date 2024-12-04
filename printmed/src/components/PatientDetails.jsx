@@ -9,6 +9,7 @@ import { globalSwalNoIcon } from '../utils/globalSwal';
 import { base64ToPngFile } from '../utils/fileUtils';
 import { getFollowUpDateStatus } from '../utils/patientUtils';
 import { fetchPhysicians } from '../utils/fetch/fetchPhysicians';
+import { ClipLoader } from 'react-spinners';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
@@ -577,7 +578,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     </tr>
                                 </>
                             )}
-                            { user.role === "secreatry" && 
+                            { user.role === "secretary" && 
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Physician {update && <span className='text-red-600'>*</span>}</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
@@ -591,7 +592,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                 required
                                             >
                                                 <option value=''>Select Physician</option>
-                                                {physicians.map((physician, index) => (
+                                                {physicians && physicians.map((physician, index) => (
                                                     <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
                                                 ))}
                                             </select>

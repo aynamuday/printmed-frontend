@@ -187,6 +187,7 @@ const EditProfilePage = () => {
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     minLength="10"
                     maxLength="10"
+                    placeholder='Personnel Number'
                     required
                   />
                   {errors.personnel_number && (
@@ -204,6 +205,7 @@ const EditProfilePage = () => {
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleNameChange}
+                    placeholder='First Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
@@ -220,6 +222,7 @@ const EditProfilePage = () => {
                     name="middle_name"
                     value={formData.middle_name}
                     onChange={handleNameChange}
+                    placeholder='Middle Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                   />
                 </div>
@@ -234,6 +237,7 @@ const EditProfilePage = () => {
                     name="last_name"
                     value={formData.last_name}
                     onChange={handleNameChange}
+                    placeholder='Last Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
@@ -272,8 +276,8 @@ const EditProfilePage = () => {
                     className="mt-1 block w-full bg-white border border-black rounded-md shadow-sm p-2"
                     required
                   >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                   </select>
                 </div>
 

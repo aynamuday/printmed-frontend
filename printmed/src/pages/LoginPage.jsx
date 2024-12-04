@@ -190,7 +190,9 @@ const LoginPage = () => {
   const handleForgotPassword = () => {
     globalSwalWithIcon.fire({
       title: "Please contact the admin.",
-      icon: 'warning'
+      icon: 'warning',
+      showConfirmButton: false,
+      showCancelButton: true
     })
   };
 
