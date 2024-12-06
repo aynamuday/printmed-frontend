@@ -236,7 +236,7 @@ const PatientsPage = () => {
             </div>
 
             {/* qr scanning */}
-            <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] rounded-md p-0.5 border border-[#248176]' /></button>
+            <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' /></button>
 
             {/* pagination controls */}
             { patients.current_page &&

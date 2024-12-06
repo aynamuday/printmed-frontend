@@ -11,8 +11,8 @@ export const fetchPatientUsingQr = async (qrCode, token) => {
         })
 
         if(!res.ok) {
-            if (res.status === 500) {
-                throw new Error("Something went wrong. Please try again later.")
+            if (res.status === 422) {
+                throw new Error("The QR code is invalid.")
             } else if (res.status === 404) {
                 throw new Error("The QR code is either deactivated, expired, or does not exists.")
             } else if (res.status === 403) {

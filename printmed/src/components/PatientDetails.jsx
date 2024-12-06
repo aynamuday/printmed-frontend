@@ -100,7 +100,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                 return acc
             }
 
-            if (updateData[key].trim() == "" && (patient[key] == null || patient[key].trim() == "")) {
+            if (String(updateData[key].trim()) == "" && (patient[key] == null || String(patient[key].trim()) == "")) {
                 return acc
             }
 
@@ -585,17 +585,24 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         { !update ? (
                                             patient.physician ? "Doc. " + patient.physician.full_name : "N/A"
                                         ) : (
-                                            <select
-                                                value={updateData.physician_id}
-                                                className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
-                                                onChange={(e) => setUpdateData(prevData => ({...prevData, physician_id: e.target.value}))}
-                                                required
-                                            >
-                                                <option value=''>Select Physician</option>
-                                                {physicians && physicians.map((physician, index) => (
-                                                    <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
-                                                ))}
-                                            </select>
+                                            !physicians ? (
+                                                <div className='flex items-center italic'>
+                                                    <ClipLoader className='me-4' loading={true} size={20} color='#6CB6AD' />
+                                                    Loading Physicians
+                                                </div>
+                                            ) : (
+                                                <select
+                                                    value={updateData.physician_id}
+                                                    className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
+                                                    onChange={(e) => setUpdateData(prevData => ({...prevData, physician_id: e.target.value}))}
+                                                    required
+                                                >
+                                                    <option value=''>Select Physician</option>
+                                                    {physicians && physicians.map((physician, index) => (
+                                                        <option key={index} value={physician.id}>Doc. {physician.full_name}</option>
+                                                    ))}
+                                                </select>
+                                            )
                                         )}
                                     </td>
                                 </tr>

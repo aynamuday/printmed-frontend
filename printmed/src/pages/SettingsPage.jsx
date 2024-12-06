@@ -41,7 +41,7 @@ const SettingsPage = () => {
         console.error('Logout Error:', error);
         globalSwalWithIcon.fire({
           title: 'There was an issue logging out.',
-          text: 'You may refresh or check your Internet connection.',
+          html: `<p style="color: black; font-size: 17px; margin: 0;">You may refresh or check your Internet connection.</p>`,
           icon: 'error',
         });
       }

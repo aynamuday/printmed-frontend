@@ -32,7 +32,7 @@ const PatientsTable = ({ patients, setLoading }) => {
       <table className="min-w-full border border-spacing-0 border-gray-300">
         <thead>
           <tr>
-            <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Patient No.</th>
+            <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Patient ID</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
             <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Birthdate</th>

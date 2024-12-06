@@ -15,7 +15,7 @@ const ResetPasswordPage = () => {
   const token = queryParams.get('token');
   const email = queryParams.get('email');
 
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', birthdate: '', password: '', passwordConfirmation: '' });
+  const [formData, setFormData] = useState({ personnelNumber: '', birthdate: '', password: '', passwordConfirmation: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -23,27 +23,43 @@ const ResetPasswordPage = () => {
     setError('')
     
     const { name, value } = e.target;
-    const capitalizedValue = name == "firstName" || name == "lastName" ? capitalizedWords(value) : value
+    // const capitalizedValue = name == "firstName" || name == "lastName" ? capitalizedWords(value) : value
 
-    setFormData({ ...formData, [name]: capitalizedValue });
+    
+
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handlePersonnelNumberChange = (e) => {
+    let value = e.target.value;
+  
+    const personnelNumberRegex = /^PN-\d*$/
+    if (!personnelNumberRegex.test(value)) {
+      return
+    }
+
+    if (value.length < 4) {
+      value = 'PN-';
+    }
+  
+    setFormData((prevData) => ({
+      ...prevData,
+      personnelNumber: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('')
 
-    const { firstName, lastName, birthdate, password, passwordConfirmation } = formData;
+    const { personnelNumber, birthdate, password, passwordConfirmation } = formData;
 
     if (password !== passwordConfirmation) {
       setError('Passwords do not match.');
       return;
     }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      return;
-    }
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/
-    if(!passwordRegex.test(passwordConfirmation)) {
+    if(password.length < 8 || !passwordRegex.test(passwordConfirmation)) {
       setError("Password must be at least 8 characters long, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character.")
       return;
     }
@@ -59,8 +75,8 @@ const ResetPasswordPage = () => {
           Authorization: `Bearer ${bearerToken}`
         },
         body: JSON.stringify({ 
-          first_name: firstName,
-          last_name: lastName,
+          // first_name: firstName,
+          personnel_number: personnelNumber,
           birthdate: birthdate,
           token: token, 
           email: email, 
@@ -115,18 +131,20 @@ const ResetPasswordPage = () => {
         <form className="space-y-6 px-2" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label className='text-sm text-gray-700'>First Name</label>
+              <label className='text-sm text-gray-700'>Personnel Number</label>
               <input
                 name="firstName"
                 type="text"
                 className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-black focus:outline-none"
                 placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
+                value={formData.personnelNumber || "PN-"} 
+                onChange={(e) => handlePersonnelNumberChange(e)}
+                minLength="10"
+                maxLength="10"
                 required
               />
             </div>
-            <div>
+            {/* <div>
               <label className='text-sm text-gray-700'>Last Name</label>
               <input
                 name="lastName"
@@ -137,7 +155,7 @@ const ResetPasswordPage = () => {
                 onChange={handleChange}
                 required
               />
-            </div>
+            </div> */}
             <div>
               <label className='text-sm text-gray-700'>Birthdate</label>
               <input

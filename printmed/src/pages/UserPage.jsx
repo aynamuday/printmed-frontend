@@ -24,28 +24,38 @@ const UserPage = () => {
     return
   }
   
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState({
+    role: '',
+    personnel_number: '',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    suffix: '',
+    sex: '',
+    birthdate: '',
+    email: '',
+    department_id: ''
+  });
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
 
   useEffect(() => {
-    let user;
     if (location.pathname.includes('/users') && location.state.user != undefined) {
-      user = location.state.user
-    }
+      const user = location.state.user
 
-    setFormData({
-      role: user ? user.role : '',
-      personnel_number: user ? user.personnel_number : '',
-      first_name: user ? user.first_name : '',
-      middle_name: user ? user.middleName ?? '' : '',
-      last_name: user ? user.last_name : '',
-      suffix: user ? user.suffix ?? '' : '',
-      sex: user ? user.sex : '',
-      birthdate: user ? user.birthdate : '',
-      email: user ? user.email : '',
-      department_id: user ? user.department_id ?? '' : ''
-    })
+      setFormData({
+        role: user ? user.role : '',
+        personnel_number: user ? user.personnel_number : '',
+        first_name: user ? user.first_name : '',
+        middle_name: user ? user.middleName ?? '' : '',
+        last_name: user ? user.last_name : '',
+        suffix: user ? user.suffix ?? '' : '',
+        sex: user ? user.sex : '',
+        birthdate: user ? user.birthdate : '',
+        email: user ? user.email : '',
+        department_id: user ? user.department_id ?? '' : ''
+      })
+    }
 
     setErrors([])
   }, [userId])
@@ -133,6 +143,32 @@ const UserPage = () => {
     e.preventDefault();
     setErrors([])
 
+    let filteredFormData = formData
+    if (!userId) {
+      filteredFormData = Object.fromEntries(
+        Object.entries(formData).filter(([key, value]) => value !== '')
+      );
+    } else {
+      const user = location.state.user
+
+      filteredFormData = Object.keys(formData).reduce((acc, key) => {
+        if (String(formData[key]).trim() == "" && (user[key] == null || String(user[key]).trim() == "")) {
+            return acc
+        }
+
+        if ((formData[key] !== user[key])) {
+            acc[key] = formData[key]
+        }
+
+        return acc;
+      }, {});
+
+      if (!Object.keys(filteredFormData).length > 0) {
+        navigate("/users")
+        return
+      }
+    }
+
     globalSwalNoIcon.fire({
       title: `Are you sure you want to ${userId ? "update" : "add"} this account?`,
       showCancelButton: true,
@@ -142,13 +178,6 @@ const UserPage = () => {
       if (result.isConfirmed) {
         try {
           setLoading(true)
-
-          let filteredFormData = formData
-          if (!userId) {
-            filteredFormData = Object.fromEntries(
-              Object.entries(formData).filter(([key, value]) => value !== '')
-            );
-          }
 
           const url = userId ? '/api/users/' + userId + '/update-information' : '/api/users'
           const method = userId ? "PUT" : "POST"

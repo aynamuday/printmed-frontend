@@ -187,14 +187,14 @@ const LoginPage = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    globalSwalWithIcon.fire({
-      title: "Please contact the admin.",
-      icon: 'warning',
-      showConfirmButton: false,
-      showCancelButton: true
-    })
-  };
+  // const handleForgotPassword = () => {
+  //   globalSwalWithIcon.fire({
+  //     title: "Please contact the admin.",
+  //     icon: 'warning',
+  //     showConfirmButton: false,
+  //     showCancelButton: true
+  //   })
+  // };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
@@ -226,7 +226,7 @@ const LoginPage = () => {
                 <input
                   name="email"
                   type="email"
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Email"
                   value={credentials.email}
                   onChange={handleChange}
@@ -239,7 +239,7 @@ const LoginPage = () => {
                 <input
                   name="password"
                   type={visibility.password ? "text" : "password"}
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
@@ -260,7 +260,7 @@ const LoginPage = () => {
               <input
                 name="otp"
                 type="text"
-                className="appearance-none rounded-md w-full px-3 py-2 border focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="appearance-none rounded-md w-full px-3 py-2 border border-black focus:outline-none sm:text-sm"
                 placeholder="Enter OTP"
                 value={otp.code}
                 maxLength="6"
@@ -296,7 +296,7 @@ const LoginPage = () => {
             </div>
           )}
 
-          {!isOtpSent && (
+          {/* {!isOtpSent && (
             <button
               onClick={handleForgotPassword}
               type="button"
@@ -304,7 +304,7 @@ const LoginPage = () => {
             >
               Forgot Password?
             </button>
-          )}
+          )} */}
         </form>
       </div>
     </div>

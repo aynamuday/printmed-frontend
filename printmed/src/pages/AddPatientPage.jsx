@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 
 import AppContext from "../context/AppContext";
 
-import { BounceLoader } from "react-spinners";
+import { BounceLoader, ClipLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {globalSwalNoIcon, globalSwalWithIcon} from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
@@ -610,20 +610,25 @@ const AddPatientPage = () => {
                     <label className="block text-sm font-medium">
                       Physician <span className="text-red-600 cursor-help">*</span>
                     </label>
-                    <select
-                      name="physician_id"
-                      value={newPatientData.physician_id}
-                      onChange={handleChange}
-                      className="mt-1 block w-full border p-2 rounded-md border-black bg-white"
-                      required
-                    >
-                      <option value="">Assign Physician</option>
-                      { physicians && physicians.length != 0 && physicians.map((physician) => (
-                          <option key={physician.id} value={physician.id}>
-                            Doc. {physician.full_name}
-                          </option>
-                      ))}
-                    </select>
+                    {!physicians ? (
+                          <div className='flex items-center mt-3 italic'>
+                              <ClipLoader className='me-4' loading={true} size={20} color='#6CB6AD' />
+                              Loading Physicians
+                          </div>
+                      ) : (
+                        <select
+                          name="physician_id"
+                          value={newPatientData.physician_id}
+                          onChange={handleChange}
+                          className="mt-1 block w-full border p-2 rounded-md border-black bg-white"
+                          required
+                        >
+                          <option value="">Assign Physician</option>
+                          { physicians?.length != 0 && physicians.map((physician) => (
+                              <option key={physician.id} value={physician.id}>Doc. {physician.full_name}</option>
+                          ))}
+                        </select>
+                      )}
                   </div>
 
                   {/* Photo */}
