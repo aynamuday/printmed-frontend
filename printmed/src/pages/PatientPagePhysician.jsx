@@ -112,7 +112,7 @@ const PatientPagePhysician = () => {
                             <QrScanning />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
                             <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
-                            <button onClick={handleQrInputBlur} className='bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
+                            <button onClick={handleQrInputBlur} className='bg-[#6CB6AD] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
                                 Cancel
                             </button>
                         </div>
@@ -163,7 +163,7 @@ const PatientPagePhysician = () => {
                                 <PatientDetails patient={patient} />
                             </div>
                             <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
-                                <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
+                                <div className='bg-[#6CB6AD] py-2 px-4 flex items-center justify-between'>
                                     <div className='flex gap-4 w-full'>
                                         { consultationComponentStatus != null && 
                                             <button onClick={() => setConsultationComponentStatus(null)}>

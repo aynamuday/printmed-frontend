@@ -225,7 +225,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             )}
 
             <div className='bg-[#D9D9D9] bg-opacity-30'>
-                <div className='bg-[#B43C3A] py-2 px-4 flex items-center justify-between'>
+                <div className='bg-[#6CB6AD] py-2 px-4 flex items-center justify-between'>
                     <div className='flex gap-2'>
                         { !update ? (
                             <p className='font-semibold text-white text-lg'>Details</p>
@@ -243,7 +243,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                     <div className={`relative ${update && "mb-2"}`}>
                         <img src={ !update ? patient.photo_url || '' : image } alt="" className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300" />
                         { update && (
-                            <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#b43c3a] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-red-500'>
+                            <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#6CB6AD] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-red-500'>
                                 <i className='bi bi-pen'></i>
                             </button>
                         )}
