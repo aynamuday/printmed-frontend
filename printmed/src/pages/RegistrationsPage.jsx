@@ -67,13 +67,13 @@ const RegistrationsPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (registrations.data.length == 0 && registrations.current_page > 1) {
-      getRegistrations(registrations.current_page - 1, registrationsSearch)
-    } else if (registrations.data.length < 15 && registrations.last_page > 1) {
-      getRegistrations(registrations.current_page, registrationsSearch)
-    }
-  }, [deleted])
+  // useEffect(() => {
+  //   if (registrations.data.length == 0 && registrations.current_page > 1) {
+  //     getRegistrations(registrations.current_page - 1, registrationsSearch)
+  //   } else if (registrations.data.length < 15 && registrations.last_page > 1) {
+  //     getRegistrations(registrations.current_page, registrationsSearch)
+  //   }
+  // }, [deleted])
   
   const getRegistrations = async (page = 1, search = '') => {
     let url = `/api/registrations?page=${page}`;
