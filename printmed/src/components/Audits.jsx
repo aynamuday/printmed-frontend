@@ -63,7 +63,7 @@ const Audits = ({ forDashboard = false }) => {
                         }
             
                         return {
-                            ...prevState, data: updatedData
+                            ...prevState, data: updatedData, total: prevState.total+1
                         }
                     })
                 }
@@ -81,7 +81,7 @@ const Audits = ({ forDashboard = false }) => {
                         }
             
                         return {
-                        ...prevState, data: updatedData
+                        ...prevState, data: updatedData, total: prevState.total+1
                         }
                     })
                 }
@@ -91,6 +91,22 @@ const Audits = ({ forDashboard = false }) => {
             echo.leave('audit')
         }
     }, [])
+
+    useEffect(() => {
+        if (forDashboard) {
+            const lastPage = Math.ceil(auditsToday.total / auditsToday.per_page)
+
+            if (lastPage != auditsToday.last_page && lastPage > 1) {
+                setAuditsToday({...auditsToday, last_page: lastPage})
+            }
+        } else {
+            const lastPage = Math.ceil(auditsAll.total / auditsAll.per_page)
+
+            if (lastPage != auditsAll.last_page && lastPage > 1) {
+                setAuditsAll({...auditsAll, last_page: lastPage})
+            }
+        }
+    }, [auditsToday.total, auditsAll.total])
 
     // fetch the audits
     const getAudits = async (page = 1, resource='', dateFrom='', dateUntil='') => {

@@ -26,8 +26,8 @@ const RegistrationsPage = () => {
       setLoading(true)
     }
 
-    const page = registrations.data ? registrations.current_page : 1
-    getRegistrations(page, registrationsSearch);
+    // const page = registrations.data ? registrations.current_page : 1
+    getRegistrations(1, registrationsSearch);
 
 
     // laravel echo for new registration
@@ -36,27 +36,32 @@ const RegistrationsPage = () => {
         .listen('RegistrationNew', (e) => {
           const newRegistration = e.registration
 
-          setRegistrations((prevState) => {
-            const exists = prevState.data.some(item => item.id === newRegistration.id);
-            if (exists) {
-              return prevState;
-            }
-
-            const updatedData = [newRegistration, ...prevState.data]
-            if (updatedData > 20) {
-              updatedData.pop()
-            }
-            return {
-              ...prevState, data: updatedData
-            }
-          })
+          if (registrations.current_page == 1) {
+            setRegistrations((prevState) => {
+              const exists = prevState.data.some(item => item.id === newRegistration.id);
+              if (exists) {
+                return prevState;
+              }
+  
+              const updatedData = [newRegistration, ...prevState.data]
+              if (updatedData > 20) {
+                updatedData.pop()
+              }
+              return {
+                ...prevState, 
+                data: updatedData, 
+                total: prevState.total+1
+              }
+            })
+          }
         })
         .listen('RegistrationDeleted', (e) => {
           const deletedRegistrationId = e.registrationId
           
           setRegistrations((prevState) => ({
             ...prevState,
-            data: prevState.data.filter(item => item.id != deletedRegistrationId)
+            data: prevState.data.filter(item => item.id != deletedRegistrationId),
+            total: prevState.total-1
           }))
 
           setDeleted(true)
@@ -68,10 +73,22 @@ const RegistrationsPage = () => {
   }, []);
 
   useEffect(() => {
-    if (registrations.data.length == 0 && registrations.current_page > 1) {
-      getRegistrations(registrations.current_page - 1, registrationsSearch)
-    } else if (registrations.data.length < 15 && registrations.last_page > 1) {
+    if (registrations.length != 0) {
+      const lastPage = Math.ceil(registrations.total / registrations.per_page)
+
+      if (lastPage != registrations.last_page && lastPage > 1) {
+        setRegistrations({...registrations, last_page: lastPage})
+      }
+    }
+  }, [registrations.total])
+
+  useEffect(() => {
+    if (registrations.current_page > registrations.last_page) { //current page is greater than last page
+      getRegistrations(registrations.last_page, registrationsSearch)
+    } else if (registrations.current_page < 15 && registrations.current_page != registrations.last_page) {  // not last page
       getRegistrations(registrations.current_page, registrationsSearch)
+    } else if (registrations.data?.length == 0 && registrations.current_page != 1 && registrations.current_page == registrations.last_page) { // not page 1, but last page, and data length == 0
+      getRegistrations(registrations.current_page - 1, registrationsSearch)
     }
   }, [deleted])
   
@@ -95,7 +112,8 @@ const RegistrationsPage = () => {
 
       const data = await res.json()
 
-      setRegistrations(data);
+      setRegistrations(data)
+      console.log(data)
     }
     catch (err) {
       let error = err.message ?? "Something went wrong. Please try again later."
