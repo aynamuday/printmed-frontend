@@ -686,13 +686,21 @@ function RegistrationPage() {
                                     <label className="block text-sm font-medium">
                                         Religion
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="religion"
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         value={formData.religion}
-                                        onChange={(e) => {handleChange(e)}}
-                                    />
+                                        onChange={handleChange} 
+                                    >
+                                        <option value="">Select Religion</option>
+                                        <option value="Roman Catholicism">Roman Catholicism</option>
+                                        <option value="Protestant Christianity">Protestant Christianity</option>
+                                        <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Buddhism">Buddhism</option>
+                                        <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                     {errors.religion && (
                                         <p className="text-red-500 text-sm">{errors.religion}</p>
                                     )}

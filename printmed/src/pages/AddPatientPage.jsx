@@ -710,13 +710,21 @@ const AddPatientPage = () => {
                   {/* Religion */}
                   <div>
                     <label className="block text-sm font-medium">Religion</label>
-                    <input 
-                      type="text" 
-                      name="religion" 
-                      value={newPatientData.religion} 
+                    <select
+                      name="religion"
+                      className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                      value={newPatientData.religion}
                       onChange={handleChange} 
-                      className="mt-1 block w-full border p-2 rounded-md border-black" 
-                    />
+                    >
+                      <option value="">Select Religion</option>
+                      <option value="Roman Catholicism">Roman Catholicism</option>
+                      <option value="Protestant Christianity">Protestant Christianity</option>
+                      <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                      <option value="Islam">Islam</option>
+                      <option value="Buddhism">Buddhism</option>
+                      <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
 
                   {/* Phone Number */}
