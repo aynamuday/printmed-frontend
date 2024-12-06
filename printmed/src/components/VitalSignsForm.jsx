@@ -61,6 +61,26 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
             return
         }
 
+        let filteredFormData = vitalSignsData
+        console.log(filteredFormData)
+        if (vitalSigns) {
+            filteredFormData = Object.keys(vitalSignsData).reduce((acc, key) => {
+                if (String(vitalSignsData[key]).trim() == "" && (vitalSigns[key] == null || String(vitalSigns[key]).trim() == "")) {
+                    return acc
+                }
+
+                if ((vitalSignsData[key] !== vitalSigns[key])) {
+                    acc[key] = vitalSignsData[key]
+                }
+
+                return acc;
+            }, {})
+        }
+        if (!Object.keys(filteredFormData).length > 0) {
+            setVitalSignsState("view")
+            return
+        }
+
         const url = vitalSigns ? `/api/vital-signs/${vitalSigns.id}` : `/api/vital-signs/${patientId}`
         const method = vitalSigns ? "PUT" : "POST"
 
@@ -72,7 +92,7 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify(vitalSignsData)
+                body: JSON.stringify(filteredFormData)
             })
 
             if(!res.ok) {
@@ -149,7 +169,7 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
                                 className="px-2 border border-gray-800 block w-[70px] py-1 rounded"
                                 value={ vitalSignsData.weight }
                                 onChange={(e) => {handleVitalSignsInputChange("weight", e.target.value)}}
-                                maxLength={3}
+                                maxLength={5}
                                 required
                             />
                             <select
