@@ -5,6 +5,7 @@ import logo from '../assets/images/logo.png';
 
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function RegistrationPage() {
@@ -15,6 +16,7 @@ function RegistrationPage() {
         return data;
     }
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         first_name: '',
@@ -202,7 +204,6 @@ function RegistrationPage() {
         });
         setErrors({ ...errors, phone_number: '' });
     };
-    
 
     const handleConfirm = (e) => {
         e.preventDefault();
@@ -322,6 +323,7 @@ function RegistrationPage() {
 
             setRegistrationId(data.registration_id);
             resetForm()
+            navigate('/')
             setShowSuccess(true) 
         }
         catch (err) {
@@ -730,7 +732,7 @@ function RegistrationPage() {
                                         <input
                                             type="email"
                                             name="email_username"
-                                            placeholder="username"
+                                            placeholder="Email"
                                             className="w-full p-2 focus:outline-none"
                                             value={formData.email_username || ""}
                                             onChange={(e) => {
@@ -741,7 +743,6 @@ function RegistrationPage() {
                                                     email: emailUsername + "@gmail.com", // Append domain
                                                 });
                                             }}
-                                            //required
                                         />
                                         <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
                                     </div>

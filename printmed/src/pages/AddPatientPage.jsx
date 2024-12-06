@@ -48,6 +48,8 @@ const AddPatientPage = () => {
     physician_id: '',
     registration_id: registration.id || '',
   });
+  console.log('Registration Data:', registration);
+
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
 
@@ -719,50 +721,48 @@ const AddPatientPage = () => {
 
                   {/* Phone Number */}
                   <div>
-                                    <label className="block text-sm font-medium">
-                                        Phone Number <span className="text-red-600">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        {/* Phone number container */}
-                                        <div className="flex items-center border rounded-md border-black overflow-hidden">
-                                            <span className="bg-gray-100 p-2 text-gray-700">+63</span>
-                                            {/* Input field */}
-                                            <input
-                                                type="text"
-                                                name="phone_number"
-                                                value={newPatientData.phone_number || ''}
-                                                onChange={(e) => handlePhoneNumberChange(e)}
-                                                className="flex-1 p-2 border-l border-black focus:outline-none"
-                                                maxLength="10"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    {errors.phone_number && (
-                                        <p className="text-red-600 text-sm">{errors.phone_number}</p>
-                                    )}
-                                </div>
+                    <label className="block text-sm font-medium">
+                      Phone Number <span className="text-red-600">*</span>
+                    </label>
+                      <div className="relative">
+                        <div className="flex items-center border rounded-md border-black overflow-hidden">
+                          <span className="bg-gray-100 p-2 text-gray-700">+63</span>
+                            <input
+                              type="text"
+                              name="phone_number"
+                              value={newPatientData.phone_number || ''}
+                              onChange={(e) => handlePhoneNumberChange(e)}
+                              className="flex-1 p-2 border-l border-black focus:outline-none"
+                              maxLength="10"
+                              required
+                            />
+                        </div>
+                      </div>
+                    {errors.phone_number && (<p className="text-red-600 text-sm">{errors.phone_number}</p>)}
+                  </div>
                   
                   {/* Email */}
                   <div>
                     <label className="block text-sm font-medium">Email</label>
-                    <input
-                      type="email"
-                      name="email_username"
-                      value={newPatientData.email}
-                      onChange={(e) => {
-                        const emailUsername = e.target.value;
-                        setNewPatientData({
-                            ...newPatientData,
-                            email_username: emailUsername,
-                            email: emailUsername + "@gmail.com", // Append domain
-                        });
-                    }}
-                      className="mt-1 block w-full border p-2 rounded-md border-black"
+                    <div className="flex items-center border rounded-md border-black overflow-hidden">
+                      <input
+                        type="email"
+                        name="email_username"
+                        className="w-full p-2 focus:outline-none"
+                        value={newPatientData.email}
+                        onChange={(e) => {
+                          const emailUsername = e.target.value;
+                          setNewPatientData({
+                              ...newPatientData,
+                              email_username: emailUsername,
+                              email: emailUsername + "@gmail.com", // Append domain
+                          });
+                        }}
                     />
                     <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
+                    </div>
                   </div>
-
+                  
                   {/* Physician */}
                   <div>
                     <label className="block text-sm font-medium">
@@ -791,7 +791,7 @@ const AddPatientPage = () => {
                     </label>
                     <div>
                       { image && ( <img src={image} className="max-w-full h-[150px] mt-2 mb-2 rounded-lg" /> )}
-                      <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`py-1 px-4 rounded-lg text-white ${image ? "w-fit bg-red-700 hover:bg-red-500" : "w-full bg-orange-500 hover:bg-orange-600"}`}>
+                      <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-full py-2 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
                         <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                       </button>
                     </div>
