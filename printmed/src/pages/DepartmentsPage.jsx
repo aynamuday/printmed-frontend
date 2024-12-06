@@ -156,21 +156,21 @@ const DepartmentsPage = () => {
         <table className="w-full border border-spacing-0 border-gray-300">
           <thead>
             <tr>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">ID</th>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center">Name</th>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[30%]">Action</th>
+              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">ID</th>
+              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center">Name</th>
+              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[30%]">Action</th>
             </tr>
           </thead>
           <tbody>
             {departments && departments.length > 0 ? (
               departments.map((item, index) => (
                 <tr key={item.id}>
-                  <td className="border p-2 border-[#828282] text-center">{index + 1}</td>
-                  <td className="border p-2 border-[#828282] text-center">{item.name}</td>
-                  <td className="border p-2 border-[#828282]">
+                  <td className="border p-0.5 border-[#828282] text-center">{index + 1}</td>
+                  <td className="border p-0.5 border-[#828282] text-center">{item.name}</td>
+                  <td className="border p-0.5 border-[#828282]">
                     <div className="flex flex-row w-full items-center justify-center">
                       { item.users_count < 1 &&
-                        <button onClick={() => deleteDepartment(item.id)} className="py-1 w-20 rounded-lg bg-red-500 hover:bg-[#a43331] text-white">
+                        <button onClick={() => deleteDepartment(item.id)} className="py-0.5 w-20 rounded-lg bg-red-500 hover:bg-[#a43331] text-white">
                           Delete
                         </button>
                       }

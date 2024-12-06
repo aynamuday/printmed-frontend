@@ -229,27 +229,27 @@ const RegistrationsPage = () => {
             <table className="w-full border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Sex</th>
-                      <th className="p-2 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Sex</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {registrations && registrations.data && registrations.data.length > 0 ? (
                     registrations.data.map((registration, index) => (
                       <tr key={index}>
-                        <td className="p-2 border text-center border-[#828282]">{registration.registration_id}</td>
-                        <td className="p-2 border text-center border-[#828282]">{registration.last_name}</td>
-                        <td className="p-2 border text-center border-[#828282]">{registration.first_name}</td>
-                        <td className="p-2 border text-center border-[#828282]">{registration.age}</td>
-                        <td className="p-2 border text-center border-[#828282]">{registration.sex}</td>
-                        <td className="p-2 border text-center border-[#828282]">
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.registration_id}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.last_name}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.first_name}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.age}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.sex}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">
                           <button
                             onClick={() => handleViewRegistration(registration)}
-                            className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg "
+                            className="bg-red-500 hover:bg-red-700 text-white px-4 py-0.5 rounded-lg "
                           >
                             View
                           </button>

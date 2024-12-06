@@ -206,26 +206,26 @@ const UsersTable = ({ users }) => {
       <table className="min-w-full border border-spacing-0 border-gray-300">
         <thead>
           <tr>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Personnel No.</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Role</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Last Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">First Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Date Registered</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[10%]">Status</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-2 text-center w-[5%]">Action</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Personnel No.</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Role</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Last Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">First Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Date Registered</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Status</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[5%]">Action</th>
           </tr>
         </thead>
         <tbody>
           {users && users.length > 0 ? (
             users.map((item) => (
               <tr key={item.id}>
-                <td className="border p-2 border-[#828282] text-center">{item.personnel_number}</td>
-                <td className="border p-2 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
-                <td className="border p-2 border-[#828282] text-center">{item.last_name}</td>
-                <td className="border p-2 border-[#828282] text-center">{item.first_name}</td>
-                <td className="border p-2 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
-                <td className="border p-2 border-[#828282] text-center">{getUserStatus(item)}</td>
-                <td className="border p-2 border-[#828282] text-center">
+                <td className="border p-0.5 border-[#828282] text-center">{item.personnel_number}</td>
+                <td className="border p-0.5 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
+                <td className="border p-0.5 border-[#828282] text-center">{item.last_name}</td>
+                <td className="border p-0.5 border-[#828282] text-center">{item.first_name}</td>
+                <td className="border p-0.5 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
+                <td className="border p-0.5 border-[#828282] text-center">{getUserStatus(item)}</td>
+                <td className="border p-0.5 border-[#828282] text-center">
                   <div key={item.id} ref={(element) => setActionMenuRef(item.id, element)} className="ms-2 relative flex items-center justify-center gap-2">
                     <div>
                         <button onClick={() => {setActionMenuOpen(actionMenuOpen == item.id ? null : item.id)}}>
@@ -233,24 +233,24 @@ const UsersTable = ({ users }) => {
                         </button>
                         {actionMenuOpen === item.id && (
                           <>
-                          <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md border overflow-clip border-[#248176] z-10">
-                            <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-2">
+                          <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md py-0.5 border overflow-clip border-[#248176] z-10">
+                            <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-0.5">
                               <i className={`me-2 bi bi-pencil`}></i>Edit
                             </button>
 
                             {item.failed_login_attempts > 2 && (
-                              <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-2 text-green-600 bg-gray-200">
+                              <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-0.5 text-green-600 bg-gray-200">
                                 <i className={`me-2 bi bi-unlock`}></i>Unrestrict
                               </button>
                             )}
 
                             {!item.is_locked && (
-                              <button className="block w-full text-left px-3 pe-4 py-2 text-blue-600 hover:bg-gray-200" onClick={() => handleSendResetLink(item.email, item.personnel_number)}>
+                              <button className="block w-full text-left px-3 pe-4 py-0.5 text-blue-600 hover:bg-gray-200" onClick={() => handleSendResetLink(item.email, item.personnel_number)}>
                                 <i className={`me-2 bi bi-send`}></i>Send Reset Link
                               </button>
                             )}
 
-                            <button onClick={() => handleToggleLockButton(item.id, item.is_locked, item.personnel_number)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-2">
+                            <button onClick={() => handleToggleLockButton(item.id, item.is_locked, item.personnel_number)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-0.5">
                               <i className={`me-2 bi ${item.is_locked ? "bi-unlock" : "bi-lock"}`}></i>{item.is_locked ? "Unlock" : "Lock"}
                             </button>
                           </div>

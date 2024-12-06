@@ -245,7 +245,7 @@ const PatientPageSecretary = () => {
                                 </div>
                                 <div className='bg-[#D9D9D9] bg-opacity-30 flex flex-col gap-4'>
                                     <div>
-                                        <div className='flex bg-[#B43C3A] py-2 px-4 font-semibold text-white text-lg'>
+                                        <div className='flex bg-[#6CB6AD] py-2 px-4 font-semibold text-white text-lg'>
                                             { (vitalSignsState === "edit" || vitalSignsState === "add") && (
                                                 <button onClick={() => {setVitalSignsState(!patient.vital_signs ? null : "view")}}>
                                                     <i className={`bi bi-arrow-left me-4 text-xl`}></i>
@@ -258,17 +258,17 @@ const PatientPageSecretary = () => {
                                                 {/* <p className={`text-black font-semibold`}>Vital Signs</p> */}
                                                 { !vitalSignsState && (!patient.vital_signs) && (
                                                     <button onClick={() => {setVitalSignsState("add")}}>
-                                                        <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#B43C3A] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#6CB6AD] hover:text-red-500`}></i>
                                                     </button>
                                                 )}
                                                 { vitalSignsState === "view" && patient.vital_signs && (
                                                     <button onClick={() => {setVitalSignsState("edit")}}>
-                                                        <i className={`bi bi-pencil-square ms-4 text-lg text-[#B43C3A] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-pencil-square ms-4 text-lg text-[#6CB6AD] hover:text-red-500`}></i>
                                                     </button>
                                                 )}
                                                 { vitalSignsState === "view" && patient.vital_signs && (
                                                     <button onClick={() => {deleteVitalSigns()}}>
-                                                        <i className={`bi bi-trash ms-4 text-lg text-[#B43C3A] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-trash ms-4 text-lg text-[#6CB6AD] hover:text-red-500`}></i>
                                                     </button>
                                                 )}
                                             </div>
@@ -289,14 +289,14 @@ const PatientPageSecretary = () => {
                                             )}
 
                                             { patient.latest_prescription && (
-                                                <button onClick={() => {}} className={`block py-1 align-middle text-black font-semibold hover:text-[#B43C3A] ${vitalSignsState && "mt-6"}`}>
-                                                    Print Prescription<i className={`bi bi-printer-fill ms-4 text-xl text-[#B43C3A] hover:text-red-500`}></i>
+                                                <button onClick={() => {}} className={`block py-1 align-middle text-black font-semibold hover:text-[#6CB6AD] ${vitalSignsState && "mt-6"}`}>
+                                                    Print Prescription<i className={`bi bi-printer-fill ms-4 text-xl text-[#6CB6AD] hover:text-red-500`}></i>
                                                 </button>       
                                             )}
                                         </div>
                                     </div>
                                     <div>
-                                        <div className='bg-[#B43C3A] py-2 px-4 font-semibold text-white text-lg flex justify-between items-center'>
+                                        <div className='bg-[#6CB6AD] py-2 px-4 font-semibold text-white text-lg flex justify-between items-center'>
                                             <p>Patient Identification Card</p>
                                             <div ref={patientIdMenuRef}>
                                                 <button onClick={() => {setShowPatientIdMenu(!showPatientIdMenu)}}><i className='bi bi-three-dots-vertical text-xl text-white hover:text-gray-300 relative'></i></button>

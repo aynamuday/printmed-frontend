@@ -5,10 +5,18 @@ import logo from '../assets/images/logo.png';
 
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 function RegistrationPage() {
+    const fetchRegions = async () => {
+        const response = await fetch('https://psgc.gitlab.io/api/regions.json');
+        const data = await response.json();
+        console.log(data);
+        return data;
+    }
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         first_name: '',
@@ -24,18 +32,90 @@ function RegistrationPage() {
         barangay: '',
         city: '',
         province: '',
+        region: '',
         postal_code: '',
         religion: '',
         phone_number: '',
         email: '',
+        email_username: '',
     });
+    console.log(formData);
+
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [showTerms, setShowTerms] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [registrationId, setRegistrationId] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
+    const [regions, setRegions] = useState([]);
+    const [provinces, setProvinces] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [barangays, setBarangays] = useState([]);
 
     const [errors, setErrors] = useState([]);
+
+    useEffect(() => {
+        const getRegions = async () => {
+          const regionData = await fetchRegions();
+          setRegions(regionData);
+        };
+        getRegions();
+    }, []);
+
+    // Fetch provinces based on selected region
+    const handleRegionChange = async (event) => {
+        const selectedRegion = event.target.value;
+        // setFormData({ ...formData, region: selectedRegion });
+        const selectedOptionElement = event.target.options[event.target.selectedIndex];
+        const additionalData = selectedOptionElement.getAttribute('data-code'); 
+        const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
+        const data = await response.json();
+        console.log(selectedRegion);
+
+        // regions.
+        // regions // where code == ""
+        setProvinces(data);
+        // console.log(data.name);
+        // selected = event.target.selectedIndex
+        // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+        // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+        console.log(additionalData)
+
+        setFormData({ ...formData, region: selectedRegion });
+    };
+
+    // Fetch cities based on selected province
+    const handleProvinceChange = async (event) => {
+        const selectedProvince = event.target.value;
+
+        const selectedOptionElement = event.target.options[event.target.selectedIndex];
+        const additionalData = selectedOptionElement.getAttribute('data-code'); 
+        const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
+        const data = await response.json();
+        console.log(selectedProvince);
+
+        setCities(data);
+
+        // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+        // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+        setFormData({ ...formData, province: selectedProvince });
+        console.log(additionalData)
+    };
+
+    // Fetch barangays based on selected city
+    const handleCityChange = async (event) => {
+        const selectedCity = event.target.value;
+
+        const selectedOptionElement = event.target.options[event.target.selectedIndex];
+        const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
+        const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
+        const data = await response.json();
+        console.log(selectedCity)
+
+        setBarangays(data);
+        
+        setFormData({ ...formData, city: selectedCity });
+        console.log(additionalData)
+    };
 
     useEffect(() => {
         resetForm()
@@ -56,10 +136,12 @@ function RegistrationPage() {
             barangay: '',
             city: '',
             province: '',
+            region: '',
             postal_code: '',
             religion: '',
             phone_number: '',
             email: '',
+            email_username: '',
         });
 
         setErrors({});
@@ -86,11 +168,11 @@ function RegistrationPage() {
         }
           
         // no numbers and symbols allowed
-        if (name === 'city' || name === 'province') {
-            if (/[^a-zA-Z\s]/.test(value)) {
-                return;
-            }
-        }
+        // if (name === 'city' || name === 'province') {
+        //     if (/[^a-zA-Z\s]/.test(value)) {
+        //         return;
+        //     }
+        // }
           
         if (name === 'postal_code') {
             if (/[^0-9]/.test(value)) {
@@ -110,28 +192,17 @@ function RegistrationPage() {
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value;
     
-        setErrors({ ...errors, phone_number: '' });
-      
-        if (!/^\d*$/.test(value)) {
-          return;
+        value = value.replace(/\D/g, '');
+    
+        if (value.length > 10) {
+            value = value.slice(0, 10);
         }
-      
-        if (value.length === 1 && value !== '0') {
-          value = '09' + value;
-        }
-      
-        if (value.length < 3) {
-          value = '09';
-        }
-      
-        if (value.length > 11) {
-          return;
-        }
-      
+    
         setFormData({
-          ...formData,
-          phone_number: value,
+            ...formData,
+            phone_number: value,
         });
+        setErrors({ ...errors, phone_number: '' });
     };
 
     const handleConfirm = (e) => {
@@ -187,8 +258,21 @@ function RegistrationPage() {
             formIsValid = false;
         }
     
-        if (formData.email.trim() !== "" && !/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email address';
+        if (!formData.email_username.trim()) {
+            newErrors.email = 'Email username is required.';
+            formIsValid = false;
+        } else if (!/^[a-zA-Z0-9._%+-]+$/.test(formData.email_username)) {
+            newErrors.email = 'Email username contains invalid characters.';
+            formIsValid = false;
+        }
+    
+        // Construct full email and assign to formData
+        const fullEmail = `${formData.email_username}@gmail.com`;
+        formData.email = fullEmail;
+    
+        // Reassign errors if email is invalid
+        if (!/\S+@\S+\.\S+/.test(fullEmail)) {
+            newErrors.email = 'Please enter a valid email address.';
             formIsValid = false;
         }
 
@@ -196,7 +280,7 @@ function RegistrationPage() {
             newErrors.postal_code = 'Postal code must only range between 1000-9999';
         }
     
-        if (formData.phone_number.length !== 11) {
+        if (formData.phone_number.length !== 10) {
             newErrors.phone_number = 'Please enter a valid phone number.';
             formIsValid = false;
         }
@@ -239,6 +323,7 @@ function RegistrationPage() {
 
             setRegistrationId(data.registration_id);
             resetForm()
+            navigate('/')
             setShowSuccess(true) 
         }
         catch (err) {
@@ -263,6 +348,26 @@ function RegistrationPage() {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setShowTerms(false);
+            }
+        };
+
+        if (showTerms) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showTerms, setShowTerms]);
+
+    const stopPropagation = (event) => {
+        event.stopPropagation();
+    };
 
     return (
         <>
@@ -434,22 +539,92 @@ function RegistrationPage() {
                                     )}
                                 </div>
 
-                                {/* House Number */}
+                                {/* Region */}
                                 <div>
-                                    <label className="block text-sm font-medium">
-                                        House Number <span className="text-red-600">*</span>
+                                    <label htmlFor="region" className="block text-sm font-medium">
+                                        Region <span className="text-red-600">*</span>
                                     </label>
-                                    <input
-                                        type="text"
-                                        name="house_number"
-                                        className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        value={formData.house_number}
-                                        onChange={(e) => {handleChange(e)}}
+                                    <select
+                                    id="region"
+                                    name="region"
+                                    value={formData.region}
+                                    onChange={handleRegionChange}
+                                    className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                    required
+                                    >
+                                    <option value="">Select Region</option>
+                                    {regions.map((region) => (
+                                        <option key={region.code} data-code={region.code} value={region.name}>
+                                        {region.name} 
+                                        </option>
+                                    ))}
+                                    </select>
+                                </div>
+
+                                {/* Province */}
+                                <div>
+                                    <label htmlFor="province" className="block text-sm font-medium">
+                                        Province <span className="text-red-600">*</span>
+                                    </label>
+                                    <select
+                                        id="province"
+                                        name="province"
+                                        value={formData.province}
+                                        onChange={handleProvinceChange}
+                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         required
-                                    />
-                                    {errors.house_number && (
-                                        <p className="text-red-500 text-sm">{errors.house_number}</p>
-                                    )}
+                                    >
+                                    <option value="">Select Province</option>
+                                    {provinces && provinces.map((province) => (
+                                        <option key={province.code} data-code={province.code} value={province.name}>
+                                        {province.name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                </div>
+
+                                {/* City */}
+                                <div>
+                                    <label htmlFor="city" className="block text-sm font-medium">
+                                        City/Municipality <span className="text-red-600">*</span>
+                                    </label>
+                                    <select
+                                        id="city"
+                                        name="city"
+                                        value={formData.city}
+                                        onChange={handleCityChange}
+                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        required
+                                    >
+                                    <option value="">Select City/Municipality</option>
+                                    {cities.map((city) => (
+                                        <option key={city.code} data-code={city.code}value={city.name}>
+                                        {city.name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                </div>
+
+                                {/* Barangay */}
+                                <div>
+                                    <label htmlFor="barangay" className="block text-sm font-medium">
+                                        Barangay <span className="text-red-600">*</span>
+                                    </label>
+                                    <select
+                                        id="barangay"
+                                        name="barangay"
+                                        value={formData.barangay}
+                                        onChange={(e) => setFormData({ ...formData, barangay: e.target.value })}
+                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        required
+                                    >
+                                    <option value="">Select Barangay</option>
+                                    {barangays.map((barangay) => (
+                                        <option key={barangay.code} data-code={barangay.code} value={barangay.name}>
+                                        {barangay.name}
+                                        </option>
+                                    ))}
+                                    </select>
                                 </div>
 
                                 {/* Street */}
@@ -469,57 +644,21 @@ function RegistrationPage() {
                                     )}
                                 </div>
 
-                                {/* Barangay */}
+                                {/* House Number */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Barangay <span className="text-red-600">*</span>
+                                        House Number <span className="text-red-600">*</span>
                                     </label>
                                     <input
                                         type="text"
-                                        name="barangay"
+                                        name="house_number"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        value={formData.barangay}
+                                        value={formData.house_number}
                                         onChange={(e) => {handleChange(e)}}
                                         required
                                     />
-                                    {errors.barangay && (
-                                        <p className="text-red-500 text-sm">{errors.barangay}</p>
-                                    )}
-                                </div>
-
-                                {/* City */}
-                                <div>
-                                    <label className="block text-sm font-medium">
-                                        City <span className="text-red-600 cursor-help">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        name="city" 
-                                        className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        value={formData.city} 
-                                        onChange={(e) => {handleChange(e)}}
-                                        required
-                                    />
-                                    {errors.city && (
-                                        <p className="text-red-500 text-sm">{errors.city}</p>
-                                    )}
-                                </div>
-
-                                {/* Province */}
-                                <div>
-                                    <label className="block text-sm font-medium">
-                                        Province <span className="text-red-600 cursor-help">*</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        name="province" 
-                                        className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        value={formData.province} 
-                                        onChange={(e) => {handleChange(e)}} 
-                                        required
-                                    />
-                                    {errors.province && (
-                                        <p className="text-red-500 text-sm">{errors.province}</p>
+                                    {errors.house_number && (
+                                        <p className="text-red-500 text-sm">{errors.house_number}</p>
                                     )}
                                 </div>
 
@@ -547,13 +686,21 @@ function RegistrationPage() {
                                     <label className="block text-sm font-medium">
                                         Religion
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="religion"
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                                         value={formData.religion}
-                                        onChange={(e) => {handleChange(e)}}
-                                    />
+                                        onChange={handleChange} 
+                                    >
+                                        <option value="">Select Religion</option>
+                                        <option value="Roman Catholicism">Roman Catholicism</option>
+                                        <option value="Protestant Christianity">Protestant Christianity</option>
+                                        <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Buddhism">Buddhism</option>
+                                        <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
+                                        <option value="Other">Other</option>
+                                    </select>
                                     {errors.religion && (
                                         <p className="text-red-500 text-sm">{errors.religion}</p>
                                     )}
@@ -565,19 +712,20 @@ function RegistrationPage() {
                                         Phone Number <span className="text-red-600">*</span>
                                     </label>
                                     <div className="relative">
-                                        <input
-                                            type="text"
-                                            name="phone_number"
-                                            value={formData.phone_number  || '09'}
-                                            onChange={(e) => handlePhoneNumberChange(e)}
-                                            className="mt-1 block w-full border p-2 rounded-md border-black"
-                                            maxLength="11"
-                                            minLength="11"
-                                            required
-                                        />
-                                        {/* <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700">
-                                        +639
-                                        </span> */}
+                                        {/* Phone number container */}
+                                        <div className="flex items-center border rounded-md border-black overflow-hidden">
+                                            <span className="bg-gray-100 p-2 text-gray-700">+63</span>
+                                            {/* Input field */}
+                                            <input
+                                                type="text"
+                                                name="phone_number"
+                                                value={formData.phone_number || ''}
+                                                onChange={(e) => handlePhoneNumberChange(e)}
+                                                className="flex-1 p-2 border-l border-black focus:outline-none"
+                                                maxLength="10"
+                                                required
+                                            />
+                                        </div>
                                     </div>
                                     {errors.phone_number && (
                                         <p className="text-red-600 text-sm">{errors.phone_number}</p>
@@ -586,16 +734,26 @@ function RegistrationPage() {
 
                                 {/* Email */}
                                 <div>
-                                    <label className="block text-sm font-medium">
-                                        Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        value={formData.email}
-                                        onChange={(e) => {handleChange(e)}}
-                                    />
+                                    <label className="block text-sm font-medium">Email</label>
+                                    <div className="flex items-center border rounded-md border-black overflow-hidden">
+                                        {/* Username Input */}
+                                        <input
+                                            type="email"
+                                            name="email_username"
+                                            placeholder="Email"
+                                            className="w-full p-2 focus:outline-none"
+                                            value={formData.email_username || ""}
+                                            onChange={(e) => {
+                                                const emailUsername = e.target.value;
+                                                setFormData({
+                                                    ...formData,
+                                                    email_username: emailUsername,
+                                                    email: emailUsername + "@gmail.com", // Append domain
+                                                });
+                                            }}
+                                        />
+                                        <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
+                                    </div>
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                                 </div>
                             </div>
@@ -638,11 +796,17 @@ function RegistrationPage() {
 
                 {/* Terms and Conditions Message */}
                 {showTerms && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-8 max-w-[80%] lg:max-w-[40%] max-h-[90vh] w-full rounded-lg shadow-lg overflow-y-auto">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                         onClick={() => setShowTerms(false)}    
+                    >
+                        <div className="bg-white p-8 max-w-[80%] lg:max-w-[40%] max-h-[90vh] w-full rounded-lg shadow-lg overflow-y-auto"
+                             onClick={stopPropagation}
+                        >
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-xl font-bold">Terms and Conditions</h3>
                                 <button onClick={() => setShowTerms(false)} className="text-2xl">&times;</button>
+                            
+                            
                             </div>
                             <div className="space-y-4">
                                 <div className='flex gap-4'>
@@ -708,22 +872,24 @@ function RegistrationPage() {
                                     )}
                                     <p className='col-span-3 font-semibold'>Civil Status </p>
                                     <p className='col-span-5'>{formData.civil_status}</p>
-                                    <p className='col-span-3 font-semibold'>House No. </p>
-                                    <p className='col-span-5'>{formData.house_number}</p>
+                                    <p className='col-span-3 font-semibold'>Region</p>
+                                    <p className='col-span-5'>{formData.region}</p>
+                                    <p className='col-span-3 font-semibold'>Province</p>
+                                    <p className='col-span-5'>{formData.province}</p>
+                                    <p className='col-span-3 font-semibold'>City</p>
+                                    <p className='col-span-5'>{formData.city}</p>
+                                    <p className='col-span-3 font-semibold'>Barangay</p>
+                                    <p className='col-span-5'>{formData.barangay}</p>
                                     { formData.street && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Street</p>
                                             <p className='col-span-5'>{formData.street}</p>    
                                         </>
                                     )}
-                                    <p className='col-span-3 font-semibold'>Barangay</p>
-                                    <p className='col-span-5'>{formData.barangay}</p>
-                                    <p className='col-span-3 font-semibold'>City</p>
-                                    <p className='col-span-5'>{formData.city}</p>
-                                    <p className='col-span-3 font-semibold'>Province</p>
-                                    <p className='col-span-5'>{formData.province}</p>
+                                    <p className='col-span-3 font-semibold'>House No. </p>
+                                    <p className='col-span-5'>{formData.house_number}</p>
                                     <p className='col-span-3 font-semibold'>Phone No. </p>
-                                    <p className='col-span-5'>09{formData.phone_number}</p>
+                                    <p className='col-span-5'>{formData.phone_number}</p>
                                     { formData.email && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Email </p>
