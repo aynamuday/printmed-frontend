@@ -659,6 +659,7 @@ function RegistrationPage() {
                                     <input
                                         type="text"
                                         name="house_number"
+                                        placeholder="Blk and Lot"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.house_number}
                                         onChange={(e) => {handleChange(e)}}

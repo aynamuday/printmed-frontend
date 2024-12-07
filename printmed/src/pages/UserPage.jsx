@@ -65,48 +65,6 @@ const UserPage = () => {
     setErrors([])
   }, [userId])
 
-  // fetches the user if route is for update
-  // const fetchUser = async () => {
-  //   try {
-  //     setLoading(true)
-
-  //     const res = await fetch(`/api/users/${userId}`, {
-  //       headers: {
-  //           Authorization: `Bearer ${token}`
-  //       }
-  //     })
-
-  //    if(!res.ok) {
-  //       if (res.status === 404) {
-  //         throw new Error("Account not found.")
-  //       } else {
-  //         throw new Error("An error occured while finding the account. Please try again later.")
-  //       }
-  //    }
-
-  //     const data = await res.json()
-
-  //     setFormData({
-  //       role: data.role,
-  //       personnel_number: data.personnel_number,
-  //       first_name: data.first_name,
-  //       middle_name: data.middleName ?? '',
-  //       last_name: data.last_name,
-  //       suffix: data.suffix ?? '',
-  //       sex: data.sex,
-  //       birthdate: data.birthdate,
-  //       email: data.email,
-  //       department_id: data.department_id ?? ''
-  //     })
-  //   }
-  //   catch (err) {
-  //     showError(err)  
-  //   }
-  //   finally {
-  //     setLoading(false)
-  //   }
-  // }
-
   const handleEmailChange = (e) => {
     const emailUsername = e.target.value;
     setFormData({
@@ -136,12 +94,26 @@ const UserPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const capitalizedValue = (name != "personnel_number" && name != "suffix" && name != "role") ? capitalizedWords(value) : value
+    console.log(value);
+
+    const capitalizedValue = (name != "suffix" && name != "role") ? capitalizedWords(value) : value
 
     setErrors({ ...errors, [name]: '' });
   
     // letters only
     if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: 'Cannot contain numbers or special characters.',
+      }));
+      return;
+    }
+
+    if (name === 'personnel_number' && /[^\d]/g.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: 'Please enter only numbers for Personnel Number.',
+      }));
       return;
     }
 
@@ -151,30 +123,6 @@ const UserPage = () => {
     });
   };
 
-  const handlePersonnelNumberChange = (e) => {
-    let value = e.target.value;
-
-    setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
-
-    // Allow only numeric characters
-    const sanitizedValue = value.replace(/\D/g, ''); // Remove non-numeric characters
-
-    if (value !== sanitizedValue) {  // Limit to 10 characters
-        setErrors((prevData) => ({
-            ...prevData,
-            personnel_number: 'Enter a valid Personnel Number',  // Store only the numeric value
-        }));
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
-      }
-
-      const limitedValue = sanitizedValue.slice(0, 7);
-
-        setFormData({
-            ...formData,
-            personnel_number: limitedValue,
-        });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -321,30 +269,42 @@ const UserPage = () => {
                 <label className="block text-sm font-medium">
                     Personnel Number <span className="text-red-600 cursor-help">*</span>
                 </label>
-                  <div className="relative">
-                      <div className="flex items-center border rounded-md border-black overflow-hidden">
-                        <span className="bg-gray-100 p-2 text-gray-700">PN-</span>
-                          <input
-                              type="text"
-                              name="personnel_number"
-                              placeholder="Personnel Number"
-                              value={formData.personnel_number_input}
-                              onChange={(e) => {
-                                const personnelNumber = e.target.value.replace(/\D/g, '');
-                                const limitedValue = personnelNumber.slice(0, 7);
-                                setFormData({
-                                    ...formData,
-                                    personnel_number_input: limitedValue,
-                                    personnel_number: "PN-" +  limitedValue,
-                                });
-                            }}
-                              className="flex-1 p-2 border-l border-black focus:outline-none"
-                              maxLength="7"
-                              required
-                          />
-                      </div>
-                  </div>
-                  {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.errors.personnel_number}</p>}
+                <div className="relative">
+                  <div className="flex items-center border rounded-md border-black overflow-hidden">
+                    <span className="bg-gray-100 p-2 text-gray-700">PN-</span>
+                      <input
+                        type="text"
+                        name="personnel_number"
+                        placeholder="Personnel Number"
+                        value={formData.personnel_number_input}
+                        onChange={(e) => {
+                          const personnelNumber = e.target.value.replace(/\D/g, '');
+                          const limitedValue = personnelNumber.slice(0, 7);
+                            setFormData({
+                              ...formData,
+                              personnel_number_input: limitedValue,
+                              personnel_number: "PN-" +  limitedValue,
+                            });
+
+                            if (/[^0-9]/.test(e.target.value)) {
+                              setErrors({
+                                ...errors,
+                                personnel_number: 'Only numeric characters are allowed.',
+                              });
+                            } else {
+                              setErrors({
+                                ...errors,
+                                personnel_number: '',
+                              });
+                            }
+                          }}
+                        className="flex-1 p-2 border-l border-black focus:outline-none"
+                        maxLength="7"
+                        required
+                      />
+                    </div>
+                  {errors.personnel_number && (<p className="text-red-600 text-sm">{errors.personnel_number}</p>)}
+                </div>
               </div>
 
               <div>
@@ -360,6 +320,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.first_name && (<p className="text-red-500 text-sm">{errors.first_name}</p>)}
               </div>
 
               <div>
@@ -372,6 +333,7 @@ const UserPage = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                 />
+                {errors.middle_name && (<p className="text-red-500 text-sm">{errors.middle_name}</p>)}
               </div>
 
               <div className="mb-2">
@@ -387,6 +349,7 @@ const UserPage = () => {
                   className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.last_name && (<p className="text-red-500 text-sm">{errors.last_name}</p>)}
               </div>
 
               <div className="mb-2 w-1/2">
