@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import AppContext from '../context/AppContext';
 import { ScaleLoader } from "react-spinners";
-import { capitalizedWords } from '../utils/wordUtils';
 import { globalSwalWithIcon } from '../utils/globalSwal';
 
 const ResetPasswordPage = () => {
@@ -24,8 +23,6 @@ const ResetPasswordPage = () => {
     
     const { name, value } = e.target;
     // const capitalizedValue = name == "firstName" || name == "lastName" ? capitalizedWords(value) : value
-
-    
 
     setFormData({ ...formData, [name]: value });
   };
