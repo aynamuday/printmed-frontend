@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ScaleLoader } from 'react-spinners';
 import { showError } from '../utils/fetch/showError'
 
@@ -187,15 +187,6 @@ const LoginPage = () => {
     }
   };
 
-  // const handleForgotPassword = () => {
-  //   globalSwalWithIcon.fire({
-  //     title: "Please contact the admin.",
-  //     icon: 'warning',
-  //     showConfirmButton: false,
-  //     showCancelButton: true
-  //   })
-  // };
-
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
       <div className='flex justify-center flex-col lg:w-[30%] md:w-[40%]'>
@@ -210,7 +201,7 @@ const LoginPage = () => {
               <div>
                 <select
                   name="role"
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
+                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   value={credentials.role}
                   onChange={handleChange}
                   required
@@ -296,15 +287,14 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* {!isOtpSent && (
-            <button
-              onClick={handleForgotPassword}
-              type="button"
+          {!isOtpSent && (
+            <Link
+              to={() => navigate('/forgot-password')}
               className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
             >
               Forgot Password?
-            </button>
-          )} */}
+            </Link>
+          )}
         </form>
       </div>
     </div>
