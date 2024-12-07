@@ -79,17 +79,23 @@ const AddPatientPage = () => {
   const handlePhoneNumberChange = (e) => {
     let value = e.target.value;
 
-    value = value.replace(/\D/g, '');
+    const sanitizedValue = value.replace(/\D/g, '');
 
-    if (value.length > 10) {
-        value = value.slice(0, 10);
+    if (value !== sanitizedValue) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        phone_number: 'Phone number can only contain numbers.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }));
     }
 
-    setFormData({
-        ...formData,
-        phone_number: value,
+    const limitedValue = sanitizedValue.slice(0, 10);
+
+    setNewPatientData({
+      ...newPatientData,
+      phone_number: limitedValue,
     });
-    setErrors({ ...errors, phone_number: '' });
   };
 
   // Fetch provinces based on selected region
@@ -104,7 +110,7 @@ const AddPatientPage = () => {
         const data = await response.json();
 
         setProvinces(data);
-        setFormData({ ...formData, region: selectedRegion });
+        setNewPatientData({ ...formData, region: selectedRegion });
     } else {
         console.error("Region not found.");
     }
@@ -143,7 +149,7 @@ const handleProvinceChange = async (event) => {
         const data = await response.json();
 
         setCities(data);
-        setFormData({ ...formData, province: selectedProvince });
+        setNewPatientData({ ...formData, province: selectedProvince });
     } else {
         console.error("Province not found.");
     }
@@ -178,7 +184,7 @@ const handleCityChange = async (event) => {
         const data = await response.json();
 
         setBarangays(data);
-        setFormData({ ...formData, city: selectedCity });
+        setNewPatientData({ ...formData, city: selectedCity });
     } else {
         console.error("City not found.");
     }
@@ -273,7 +279,11 @@ const handleCityChange = async (event) => {
       
     // no numbers and symbols numbers
     if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-        return;
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: 'Cannot contain numbers or special characters.',
+      }));  
+      return;
     }
 
     // no symbols allowed
@@ -577,6 +587,7 @@ const handleCityChange = async (event) => {
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                     />
+                    {errors.first_name && <p className="text-red-600 text-sm mt-1">{errors.first_name}</p>}
                   </div>
 
                   {/* Last Name */}
@@ -756,7 +767,7 @@ const handleCityChange = async (event) => {
                       id="barangay"
                       name="barangay"
                       value={newPatientData.barangay}
-                      onChange={(e) => setFormData({ ...formData, barangay: e.target.value })}
+                      onChange={(e) => setNewPatientData({ ...formData, barangay: e.target.value })}
                       className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
                       required
                     >
@@ -865,7 +876,7 @@ const handleCityChange = async (event) => {
                         type="email"
                         name="email_username"
                         className="w-full p-2 focus:outline-none"
-                        value={newPatientData.email}
+                        value={newPatientData.email || ""}
                         onChange={(e) => {
                           const emailUsername = e.target.value;
                           setNewPatientData({
