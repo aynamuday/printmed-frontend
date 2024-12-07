@@ -107,8 +107,7 @@ function RegistrationPage() {
         } catch (error) {
             console.error("Error fetching cities:", error);
         }
-    };
-     
+    };    
     
     const handleCityChange = async (event) => {
         const selectedCity = event.target.value;

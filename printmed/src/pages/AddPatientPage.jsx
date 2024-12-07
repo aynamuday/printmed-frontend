@@ -57,11 +57,23 @@ const AddPatientPage = () => {
   const [errors, setErrors] = useState([]);
 
   const fetchRegions = async () => {
-    const response = await fetch('https://psgc.gitlab.io/api/regions.json');
-    const data = await response.json();
-    console.log(data);
-    return data;
-  }
+    try {
+        const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
+        const data = await response.json();
+        if (data && data.geonames) {
+            const regionsData = data.geonames.map(region => ({
+                code: region.geonameId,
+                name: region.name,
+            }));
+            //console.log(regionsData);
+            setRegions(regionsData);
+        } else {
+            console.error("No regions found or invalid response:", data);
+        }
+    } catch (error) {
+        console.error("Error fetching regions:", error);
+    }
+  };
 
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -98,167 +110,60 @@ const AddPatientPage = () => {
     });
   };
 
-  // Fetch provinces based on selected region
   const handleRegionChange = async (event) => {
     const selectedRegion = event.target.value;
-
-    // Find the region object by its name
     const regionObject = regions.find((region) => region.name === selectedRegion);
+    console.log(regionObject);
 
     if (regionObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionObject.code}/provinces.json`);
+        const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionObject.code}&username=nico_183`);
         const data = await response.json();
+        console.log("Selected Region Object: ", regionObject);
 
-        setProvinces(data);
-        setNewPatientData({ ...formData, region: selectedRegion });
+        setProvinces(data.geonames);
+        setNewPatientData({ ...newPatientData, region: selectedRegion });
     } else {
         console.error("Region not found.");
     }
 };
 
-// const handleRegionChange = async (event) => {
-//     const selectedRegion = event.target.value;
-//     // setFormData({ ...formData, region: selectedRegion });
-//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     const additionalData = selectedOptionElement.getAttribute('data-code'); 
-//     const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
-//     const data = await response.json();
-//     console.log(selectedRegion);
-
-//     // regions.
-//     // regions // where code == ""
-//     setProvinces(data);
-//     // console.log(data.name);
-//     // selected = event.target.selectedIndex
-//     // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-//     console.log(additionalData)
-
-//     setFormData({ ...formData, region: selectedRegion });
-// };
-
-// Fetch cities based on selected province
 const handleProvinceChange = async (event) => {
     const selectedProvince = event.target.value;
-
-    // Find the province object by its name
     const provinceObject = provinces.find((province) => province.name === selectedProvince);
+    console.log('Selected Province:', selectedProvince);
+    console.log('Province Object:', provinceObject);
 
-    if (provinceObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceObject.code}/cities.json`);
+    try {
+        const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceObject.geonameId}&username=nico_183`);
         const data = await response.json();
+        console.log("Cities API Response:", data); // Log the full response
 
-        setCities(data);
-        setNewPatientData({ ...formData, province: selectedProvince });
-    } else {
-        console.error("Province not found.");
+        if (data.geonames && data.geonames.length > 0) {
+            setCities(data.geonames);
+            setNewPatientData({ ...newPatientData, province: selectedProvince });
+        } else {
+            console.error("No cities found for this province.");
+        }
+    } catch (error) {
+        console.error("Error fetching cities:", error);
     }
-};
+};    
 
-// const handleProvinceChange = async (event) => {
-//     const selectedProvince = event.target.value;
-
-//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     const additionalData = selectedOptionElement.getAttribute('data-code'); 
-//     const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-//     const data = await response.json();
-//     console.log(selectedProvince);
-
-//     setCities(data);
-
-//     // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-//     setFormData({ ...formData, province: selectedProvince });
-//     console.log(additionalData)
-// };
-
-// Fetch barangays based on selected city
 const handleCityChange = async (event) => {
     const selectedCity = event.target.value;
-
-    // Find the city object by its name
     const cityObject = cities.find((city) => city.name === selectedCity);
 
     if (cityObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/cities/${cityObject.code}/barangays.json`);
+        const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityObject.geonameId}&username=nico_183`);
         const data = await response.json();
+        console.log(data);
 
-        setBarangays(data);
-        setNewPatientData({ ...formData, city: selectedCity });
+        setBarangays(data.geonames);
+        setNewPatientData({ ...newPatientData, city: selectedCity });
     } else {
         console.error("City not found.");
     }
 };
-
-// const handleCityChange = async (event) => {
-//     const selectedCity = event.target.value;
-
-//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-//     const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-//     const data = await response.json();
-//     console.log(selectedCity)
-
-//     setBarangays(data);
-    
-//     setFormData({ ...formData, city: selectedCity });
-//     console.log(additionalData)
-// };
-
-
-  // const handleRegionChange = async (event) => {
-  //   const selectedRegion = event.target.value;
-  //   // setFormData({ ...formData, region: selectedRegion });
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
-  //   const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
-  //   const data = await response.json();
-  //   console.log(selectedRegion);
-
-  //   // regions.
-  //   // regions // where code == ""
-  //   setProvinces(data);
-  //   // console.log(data.name);
-  //   // selected = event.target.selectedIndex
-  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-  //   console.log(additionalData)
-
-  //   setNewPatientData({ ...newPatientData, region: selectedRegion });
-  // };
-
-  // const handleProvinceChange = async (event) => {
-  //   const selectedProvince = event.target.value;
-
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
-  //   const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-  //   const data = await response.json();
-  //   console.log(selectedProvince);
-
-  //   setCities(data);
-
-  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-  //   setNewPatientData({ ...newPatientData, province: selectedProvince });
-  //   console.log(additionalData)
-  // };
-
-  // const handleCityChange = async (event) => {
-  //   const selectedCity = event.target.value;
-
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-  //   const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-  //   const data = await response.json();
-  //   console.log(selectedCity)
-
-  //   setBarangays(data);
-    
-  //   setNewPatientData({ ...newPatientData, city: selectedCity });
-  //   console.log(additionalData)
-  // };
-
   useEffect(() => {
     const getPhysicians = async () => {
       try {
@@ -287,10 +192,12 @@ const handleCityChange = async (event) => {
     }
 
     // no symbols allowed
-    if (name === 'house_number' || name === 'street') {
-        if (/[^a-zA-Z0-9\s]/.test(value)) {
-          return;
-        }
+    if ((name === 'house_number' || name === 'street') && /[^a-zA-Z0-9\s]/.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: 'Enter a valid house number.',
+      }))
+      return;
     }
     
     if (name === 'postal_code') {
@@ -792,6 +699,8 @@ const handleCityChange = async (event) => {
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
+                    {errors.street && <p className="text-red-600 text-sm mt-1">{errors.street}</p>}
+                  
                   </div>
 
                   {/* House No */}
@@ -807,6 +716,8 @@ const handleCityChange = async (event) => {
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                       required 
                     />
+                    {errors.house_number && <p className="text-red-600 text-sm mt-1">{errors.house_number}</p>}
+                  
                   </div>
 
                   {/* Postal Code */}
