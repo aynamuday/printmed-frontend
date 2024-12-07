@@ -92,58 +92,166 @@ const AddPatientPage = () => {
     setErrors({ ...errors, phone_number: '' });
   };
 
+  // Fetch provinces based on selected region
   const handleRegionChange = async (event) => {
     const selectedRegion = event.target.value;
-    // setFormData({ ...formData, region: selectedRegion });
-    const selectedOptionElement = event.target.options[event.target.selectedIndex];
-    const additionalData = selectedOptionElement.getAttribute('data-code'); 
-    const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
-    const data = await response.json();
-    console.log(selectedRegion);
 
-    // regions.
-    // regions // where code == ""
-    setProvinces(data);
-    // console.log(data.name);
-    // selected = event.target.selectedIndex
-    // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-    // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-    console.log(additionalData)
+    // Find the region object by its name
+    const regionObject = regions.find((region) => region.name === selectedRegion);
 
-    setNewPatientData({ ...newPatientData, region: selectedRegion });
-  };
+    if (regionObject) {
+        const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionObject.code}/provinces.json`);
+        const data = await response.json();
 
-  const handleProvinceChange = async (event) => {
+        setProvinces(data);
+        setFormData({ ...formData, region: selectedRegion });
+    } else {
+        console.error("Region not found.");
+    }
+};
+
+// const handleRegionChange = async (event) => {
+//     const selectedRegion = event.target.value;
+//     // setFormData({ ...formData, region: selectedRegion });
+//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
+//     const additionalData = selectedOptionElement.getAttribute('data-code'); 
+//     const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
+//     const data = await response.json();
+//     console.log(selectedRegion);
+
+//     // regions.
+//     // regions // where code == ""
+//     setProvinces(data);
+//     // console.log(data.name);
+//     // selected = event.target.selectedIndex
+//     // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+//     // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+//     console.log(additionalData)
+
+//     setFormData({ ...formData, region: selectedRegion });
+// };
+
+// Fetch cities based on selected province
+const handleProvinceChange = async (event) => {
     const selectedProvince = event.target.value;
 
-    const selectedOptionElement = event.target.options[event.target.selectedIndex];
-    const additionalData = selectedOptionElement.getAttribute('data-code'); 
-    const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-    const data = await response.json();
-    console.log(selectedProvince);
+    // Find the province object by its name
+    const provinceObject = provinces.find((province) => province.name === selectedProvince);
 
-    setCities(data);
+    if (provinceObject) {
+        const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceObject.code}/cities.json`);
+        const data = await response.json();
 
-    // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-    // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-    setNewPatientData({ ...newPatientData, province: selectedProvince });
-    console.log(additionalData)
-  };
+        setCities(data);
+        setFormData({ ...formData, province: selectedProvince });
+    } else {
+        console.error("Province not found.");
+    }
+};
 
-  const handleCityChange = async (event) => {
+// const handleProvinceChange = async (event) => {
+//     const selectedProvince = event.target.value;
+
+//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
+//     const additionalData = selectedOptionElement.getAttribute('data-code'); 
+//     const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
+//     const data = await response.json();
+//     console.log(selectedProvince);
+
+//     setCities(data);
+
+//     // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+//     // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+//     setFormData({ ...formData, province: selectedProvince });
+//     console.log(additionalData)
+// };
+
+// Fetch barangays based on selected city
+const handleCityChange = async (event) => {
     const selectedCity = event.target.value;
 
-    const selectedOptionElement = event.target.options[event.target.selectedIndex];
-    const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-    const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-    const data = await response.json();
-    console.log(selectedCity)
+    // Find the city object by its name
+    const cityObject = cities.find((city) => city.name === selectedCity);
 
-    setBarangays(data);
+    if (cityObject) {
+        const response = await fetch(`https://psgc.gitlab.io/api/cities/${cityObject.code}/barangays.json`);
+        const data = await response.json();
+
+        setBarangays(data);
+        setFormData({ ...formData, city: selectedCity });
+    } else {
+        console.error("City not found.");
+    }
+};
+
+// const handleCityChange = async (event) => {
+//     const selectedCity = event.target.value;
+
+//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
+//     const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
+//     const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
+//     const data = await response.json();
+//     console.log(selectedCity)
+
+//     setBarangays(data);
     
-    setNewPatientData({ ...newPatientData, city: selectedCity });
-    console.log(additionalData)
-  };
+//     setFormData({ ...formData, city: selectedCity });
+//     console.log(additionalData)
+// };
+
+
+  // const handleRegionChange = async (event) => {
+  //   const selectedRegion = event.target.value;
+  //   // setFormData({ ...formData, region: selectedRegion });
+  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
+  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
+  //   const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
+  //   const data = await response.json();
+  //   console.log(selectedRegion);
+
+  //   // regions.
+  //   // regions // where code == ""
+  //   setProvinces(data);
+  //   // console.log(data.name);
+  //   // selected = event.target.selectedIndex
+  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+  //   console.log(additionalData)
+
+  //   setNewPatientData({ ...newPatientData, region: selectedRegion });
+  // };
+
+  // const handleProvinceChange = async (event) => {
+  //   const selectedProvince = event.target.value;
+
+  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
+  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
+  //   const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
+  //   const data = await response.json();
+  //   console.log(selectedProvince);
+
+  //   setCities(data);
+
+  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
+  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
+  //   setNewPatientData({ ...newPatientData, province: selectedProvince });
+  //   console.log(additionalData)
+  // };
+
+  // const handleCityChange = async (event) => {
+  //   const selectedCity = event.target.value;
+
+  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
+  //   const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
+  //   const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
+  //   const data = await response.json();
+  //   console.log(selectedCity)
+
+  //   setBarangays(data);
+    
+  //   setNewPatientData({ ...newPatientData, city: selectedCity });
+  //   console.log(additionalData)
+  // };
 
   useEffect(() => {
     const getPhysicians = async () => {
@@ -588,7 +696,7 @@ const AddPatientPage = () => {
                     >
                     <option value="">Select Region</option>
                     {regions.map((region) => (
-                      <option key={region.code} data-code={region.code} value={region.name}>
+                      <option key={region.code} value={region.name}>
                         {region.name}
                       </option>
                     ))}
@@ -610,7 +718,7 @@ const AddPatientPage = () => {
                     >
                     <option value="">Select Province</option>
                     {provinces.map((province) => (
-                      <option key={province.code} data-code={province.code} value={province.name}>
+                      <option key={province.code} value={province.name}>
                         {province.name}
                       </option>
                     ))}
@@ -632,7 +740,7 @@ const AddPatientPage = () => {
                     >
                       <option value="">Select City/Municipality</option>
                         {cities.map((city) => (
-                        <option key={city.code} data-code={city.code} value={city.name}>
+                        <option key={city.code} value={city.name}>
                           {city.name}
                         </option>
                       ))}
@@ -654,7 +762,7 @@ const AddPatientPage = () => {
                     >
                       <option value="">Select Barangay</option>
                         {barangays.map((barangay) => (
-                          <option key={barangay.code} data-code={barangay.code} value={barangay.name}>
+                          <option key={barangay.code} value={barangay.name}>
                           {barangay.name}
                       </option>
                     ))}

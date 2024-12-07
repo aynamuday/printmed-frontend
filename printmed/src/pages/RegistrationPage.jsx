@@ -64,59 +64,60 @@ function RegistrationPage() {
     // Fetch provinces based on selected region
     const handleRegionChange = async (event) => {
         const selectedRegion = event.target.value;
-        // setFormData({ ...formData, region: selectedRegion });
-        const selectedOptionElement = event.target.options[event.target.selectedIndex];
-        const additionalData = selectedOptionElement.getAttribute('data-code'); 
-        const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
-        const data = await response.json();
-        console.log(selectedRegion);
-
-        // regions.
-        // regions // where code == ""
-        setProvinces(data);
-        // console.log(data.name);
-        // selected = event.target.selectedIndex
-        // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-        // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-        console.log(additionalData)
-
-        setFormData({ ...formData, region: selectedRegion });
+    
+        // Find the region object by its name
+        const regionObject = regions.find((region) => region.name === selectedRegion);
+        console.log(regions);
+        console.log(regionObject);
+    
+        if (regionObject) {
+            const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionObject.code}/provinces.json`);
+            const data = await response.json();
+            console.log(data);
+    
+            setProvinces(data);
+            setFormData({ ...formData, region: selectedRegion });
+        } else {
+            console.error("Region not found.");
+        }
     };
-
+    
     // Fetch cities based on selected province
     const handleProvinceChange = async (event) => {
         const selectedProvince = event.target.value;
-
-        const selectedOptionElement = event.target.options[event.target.selectedIndex];
-        const additionalData = selectedOptionElement.getAttribute('data-code'); 
-        const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-        const data = await response.json();
-        console.log(selectedProvince);
-
-        setCities(data);
-
-        // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-        // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-        setFormData({ ...formData, province: selectedProvince });
-        console.log(additionalData)
+    
+        // Find the province object by its name
+        const provinceObject = provinces.find((province) => province.name === selectedProvince);
+    
+        if (provinceObject) {
+            const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceObject.code}/cities.json`);
+            const data = await response.json();
+    
+            setCities(data);
+            setFormData({ ...formData, province: selectedProvince });
+        } else {
+            console.error("Province not found.");
+        }
     };
 
     // Fetch barangays based on selected city
     const handleCityChange = async (event) => {
         const selectedCity = event.target.value;
-
-        const selectedOptionElement = event.target.options[event.target.selectedIndex];
-        const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-        const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-        const data = await response.json();
-        console.log(selectedCity)
-
-        setBarangays(data);
-        
-        setFormData({ ...formData, city: selectedCity });
-        console.log(additionalData)
+    
+        // Find the city object by its name
+        const cityObject = cities.find((city) => city.name === selectedCity);
+    
+        if (cityObject) {
+            const response = await fetch(`https://psgc.gitlab.io/api/cities/${cityObject.code}/barangays.json`);
+            const data = await response.json();
+    
+            setBarangays(data);
+            setFormData({ ...formData, city: selectedCity });
+        } else {
+            console.error("City not found.");
+        }
     };
-
+    
     useEffect(() => {
         resetForm()
     }, [])
@@ -157,6 +158,10 @@ function RegistrationPage() {
 
         // should not accept numbers and special characters    
         if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: 'Cannot contain numbers or special characters.',
+            }));
             return;
         }
           
@@ -192,17 +197,23 @@ function RegistrationPage() {
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value;
     
-        value = value.replace(/\D/g, '');
+        const sanitizedValue = value.replace(/\D/g, '');
     
-        if (value.length > 10) {
-            value = value.slice(0, 10);
+        if (value !== sanitizedValue) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                phone_number: 'Phone number can only contain numbers.',
+            }));
+        } else {
+            setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }));
         }
-    
+
+        const limitedValue = sanitizedValue.slice(0, 10);
+
         setFormData({
             ...formData,
-            phone_number: value,
+            phone_number: limitedValue,
         });
-        setErrors({ ...errors, phone_number: '' });
     };
 
     const handleConfirm = (e) => {
@@ -401,9 +412,7 @@ function RegistrationPage() {
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                         required
                                     />
-                                    {errors.first_name && (
-                                        <p className="text-red-500 text-sm">{errors.first_name}</p>
-                                    )}
+                                    {errors.first_name && (<p className="text-red-500 text-sm">{errors.first_name}</p>)}
                                 </div>
 
                                 {/* Middle Name */}
@@ -418,9 +427,7 @@ function RegistrationPage() {
                                         onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                     />
-                                    {errors.middle_name && (
-                                        <p className="text-red-500 text-sm">{errors.middle_name}</p>
-                                    )}
+                                    {errors.middle_name && (<p className="text-red-500 text-sm">{errors.middle_name}</p>)}
                                 </div>
 
                                 {/* Last Name */}
@@ -436,9 +443,7 @@ function RegistrationPage() {
                                         className="mt-1 block w-full border border-black p-2 rounded-md"
                                         required
                                     />
-                                    {errors.last_name && (
-                                        <p className="text-red-500 text-sm">{errors.last_name}</p>
-                                    )}
+                                    {errors.last_name && (<p className="text-red-500 text-sm">{errors.last_name}</p>)}
                                 </div>
 
                                 {/* Suffix */}
@@ -475,9 +480,7 @@ function RegistrationPage() {
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>
-                                    {errors.sex && (
-                                        <p className="text-red-500 text-sm">{errors.sex}</p>
-                                    )}
+                                    {errors.sex && (<p className="text-red-500 text-sm">{errors.sex}</p>)}
                                 </div>
 
                                 {/* Birthdate */}
@@ -495,9 +498,7 @@ function RegistrationPage() {
                                         min="1920-01-01"
                                         required
                                     />
-                                    {errors.birthdate && (
-                                        <p className="text-red-500 text-sm">{errors.birthdate}</p>
-                                    )}
+                                    {errors.birthdate && (<p className="text-red-500 text-sm">{errors.birthdate}</p>)}
                                 </div>
 
                                 {/* Birthplace */}
@@ -512,9 +513,7 @@ function RegistrationPage() {
                                         value={formData.birthplace} 
                                         onChange={(e) => {handleChange(e)}}
                                     />
-                                    {errors.birthplace && (
-                                        <p className="text-red-500 text-sm">{errors.birthplace}</p>
-                                    )}
+                                    {errors.birthplace && (<p className="text-red-500 text-sm">{errors.birthplace}</p>)}
                                 </div>
 
                                 {/* Civil Status */}
@@ -534,9 +533,7 @@ function RegistrationPage() {
                                         <option value="Married">Married</option>
                                         <option value="Widowed">Widowed</option>
                                     </select>
-                                    {errors.civil_status && (
-                                        <p className="text-red-500 text-sm">{errors.civil_status}</p>
-                                    )}
+                                    {errors.civil_status && (<p className="text-red-500 text-sm">{errors.civil_status}</p>)}
                                 </div>
 
                                 {/* Region */}
@@ -554,7 +551,7 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select Region</option>
                                     {regions.map((region) => (
-                                        <option key={region.code} data-code={region.code} value={region.name}>
+                                        <option key={region.code} value={region.name}>
                                         {region.name} 
                                         </option>
                                     ))}
@@ -575,8 +572,8 @@ function RegistrationPage() {
                                         required
                                     >
                                     <option value="">Select Province</option>
-                                    {provinces && provinces.map((province) => (
-                                        <option key={province.code} data-code={province.code} value={province.name}>
+                                    {provinces.map((province) => (
+                                        <option key={province.code} value={province.name}>
                                         {province.name}
                                         </option>
                                     ))}
@@ -598,7 +595,7 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select City/Municipality</option>
                                     {cities.map((city) => (
-                                        <option key={city.code} data-code={city.code}value={city.name}>
+                                        <option key={city.code} value={city.name}>
                                         {city.name}
                                         </option>
                                     ))}
@@ -620,7 +617,7 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select Barangay</option>
                                     {barangays.map((barangay) => (
-                                        <option key={barangay.code} data-code={barangay.code} value={barangay.name}>
+                                        <option key={barangay.code} value={barangay.name}>
                                         {barangay.name}
                                         </option>
                                     ))}
@@ -639,9 +636,7 @@ function RegistrationPage() {
                                         value={formData.street} 
                                         onChange={(e) => {handleChange(e)}}
                                     />
-                                    {errors.street && (
-                                        <p className="text-red-500 text-sm">{errors.street}</p>
-                                    )}
+                                    {errors.street && (<p className="text-red-500 text-sm">{errors.street}</p>)}
                                 </div>
 
                                 {/* House Number */}
@@ -657,9 +652,7 @@ function RegistrationPage() {
                                         onChange={(e) => {handleChange(e)}}
                                         required
                                     />
-                                    {errors.house_number && (
-                                        <p className="text-red-500 text-sm">{errors.house_number}</p>
-                                    )}
+                                    {errors.house_number && (<p className="text-red-500 text-sm">{errors.house_number}</p>)}
                                 </div>
 
                                 {/* Postal Code */}
@@ -676,9 +669,7 @@ function RegistrationPage() {
                                         minLength="4"
                                         onChange={(e) => {handleChange(e)}}
                                     />
-                                    {errors.postal_code && (
-                                        <p className="text-red-500 text-sm">{errors.postal_code}</p>
-                                    )}
+                                    {errors.postal_code && (<p className="text-red-500 text-sm">{errors.postal_code}</p>)}
                                 </div>
 
                                 {/* Religion */}
@@ -701,9 +692,7 @@ function RegistrationPage() {
                                         <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    {errors.religion && (
-                                        <p className="text-red-500 text-sm">{errors.religion}</p>
-                                    )}
+                                    {errors.religion && (<p className="text-red-500 text-sm">{errors.religion}</p>)}
                                 </div>
 
                                 {/* Phone Number */}
@@ -727,9 +716,7 @@ function RegistrationPage() {
                                             />
                                         </div>
                                     </div>
-                                    {errors.phone_number && (
-                                        <p className="text-red-600 text-sm">{errors.phone_number}</p>
-                                    )}
+                                    {errors.phone_number && (<p className="text-red-600 text-sm">{errors.phone_number}</p>)}
                                 </div>
 
                                 {/* Email */}
