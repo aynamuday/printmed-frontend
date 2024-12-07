@@ -194,6 +194,11 @@ function RegistrationPage() {
         });
     };
 
+    const handleClose = () => {
+        setShowSuccess(false);
+        navigate("/");
+    };
+
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value;
     
@@ -241,6 +246,12 @@ function RegistrationPage() {
 
         if (formData.birthdate.trim() === "") {
             newErrors.birthdate = 'This field is required.';
+            formIsValid = false;
+        } else if (new Date(formData.birthdate) < new Date("1920-01-01")) {
+            newErrors.birthdate = 'Birthdate cannot be earlier than January 1, 1920.';
+            formIsValid = false;
+        } else if (new Date(formData.birthdate) > new Date()) {
+            newErrors.birthdate = 'Birthdate cannot be in the future.';
             formIsValid = false;
         }
 
@@ -334,8 +345,9 @@ function RegistrationPage() {
 
             setRegistrationId(data.registration_id);
             resetForm()
-            navigate('/')
+            //navigate('/')
             setShowSuccess(true) 
+            //navigate('/')
         }
         catch (err) {
             let error = err.message ?? "Something went wrong. Please try again later."
@@ -583,7 +595,7 @@ function RegistrationPage() {
                                 {/* City */}
                                 <div>
                                     <label htmlFor="city" className="block text-sm font-medium">
-                                        City/Municipality <span className="text-red-600">*</span>
+                                        City/Municipality 
                                     </label>
                                     <select
                                         id="city"
@@ -591,7 +603,7 @@ function RegistrationPage() {
                                         value={formData.city}
                                         onChange={handleCityChange}
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                                        required
+                                        
                                     >
                                     <option value="">Select City/Municipality</option>
                                     {cities.map((city) => (
@@ -896,7 +908,7 @@ function RegistrationPage() {
                 {showSuccess && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-8 max-w-[80%] w-full lg:max-w-[30%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto relative">
-                            <button onClick={() => setShowSuccess(false)} className="text-2xl absolute right-6 top-6">&times;</button>
+                            <button onClick={handleClose} className="text-2xl absolute right-6 top-6">&times;</button>
                             <i className='bi bi-check-circle text-[#44b85a] text-6xl text-center block mb-4'></i>
                             <h3 className="text-xl font-bold text-center mb-2">Registration Successful!</h3>
                             <div className='text-center'>

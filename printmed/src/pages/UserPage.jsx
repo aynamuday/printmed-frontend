@@ -34,8 +34,11 @@ const UserPage = () => {
     sex: '',
     birthdate: '',
     email: '',
-    department_id: ''
+    email_username: '',
+    department_id: '',
+    personnel_number_input: '',
   });
+  console.log(formData);
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
 
@@ -46,6 +49,7 @@ const UserPage = () => {
       setFormData({
         role: user ? user.role : '',
         personnel_number: user ? user.personnel_number : '',
+        personnel_number_input: user ? user.personnel_number?.replace('PN-', '') ?? '' : '',
         first_name: user ? user.first_name : '',
         middle_name: user ? user.middleName ?? '' : '',
         last_name: user ? user.last_name : '',
@@ -53,6 +57,7 @@ const UserPage = () => {
         sex: user ? user.sex : '',
         birthdate: user ? user.birthdate : '',
         email: user ? user.email : '',
+        email_username: user ? user.email?.replace('@gmail.com', '') ?? '' : '',
         department_id: user ? user.department_id ?? '' : ''
       })
     }
@@ -102,9 +107,36 @@ const UserPage = () => {
   //   }
   // }
 
+  const handleEmailChange = (e) => {
+    const emailUsername = e.target.value;
+    setFormData({
+        ...formData,
+        email_username: emailUsername,  // Update only the username part
+        email: emailUsername + "@gmail.com", // Construct the full email
+    });
+
+    // Email Validation
+    let newErrors = { ...errors };  // Clone errors to modify
+    if (!emailUsername.trim()) {
+        newErrors.email = 'Email username is required.';
+    } else if (!/^[a-zA-Z0-9._%+-]+$/.test(emailUsername)) {
+        newErrors.email = 'Email username contains invalid characters.';
+    } else {
+        // Construct full email
+        const fullEmail = `${emailUsername}@gmail.com`;
+        if (!/\S+@\S+\.\S+/.test(fullEmail)) {
+            newErrors.email = 'Please enter a valid email address.';
+        } else {
+            newErrors.email = '';  // Clear any email errors if valid
+        }
+    }
+
+    setErrors(newErrors); // Update the errors state
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const capitalizedValue = (name != "email" && name != "personnel_number" && name != "suffix" && name != "role") ? capitalizedWords(value) : value
+    const capitalizedValue = (name != "personnel_number" && name != "suffix" && name != "role") ? capitalizedWords(value) : value
 
     setErrors({ ...errors, [name]: '' });
   
@@ -123,20 +155,25 @@ const UserPage = () => {
     let value = e.target.value;
 
     setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
-  
-    const personnelNumberRegex = /^PN-\d*$/
-    if (!personnelNumberRegex.test(value)) {
-      return
-    }
 
-    if (value.length < 4) {
-      value = 'PN-';
-    }
-  
-    setFormData((prevData) => ({
-      ...prevData,
-      personnel_number: value,
-    }));
+    // Allow only numeric characters
+    const sanitizedValue = value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (value !== sanitizedValue) {  // Limit to 10 characters
+        setErrors((prevData) => ({
+            ...prevData,
+            personnel_number: 'Enter a valid Personnel Number',  // Store only the numeric value
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
+      }
+
+      const limitedValue = sanitizedValue.slice(0, 7);
+
+        setFormData({
+            ...formData,
+            personnel_number: limitedValue,
+        });
   };
 
   const handleSubmit = async (e) => {
@@ -282,20 +319,32 @@ const UserPage = () => {
 
               <div className="mb-2">
                 <label className="block text-sm font-medium">
-                  Personnel Number <span className="text-red-600 cursor-help">*</span>
+                    Personnel Number <span className="text-red-600 cursor-help">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="personnel_number"
-                  placeholder="Personnel Number"
-                  value={formData.personnel_number || "PN-"} 
-                  onChange={(e) => handlePersonnelNumberChange(e)}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  minLength="10"
-                  maxLength="10"
-                  required
-                />
-                {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.errors.personnel_number}</p>}
+                  <div className="relative">
+                      <div className="flex items-center border rounded-md border-black overflow-hidden">
+                        <span className="bg-gray-100 p-2 text-gray-700">PN-</span>
+                          <input
+                              type="text"
+                              name="personnel_number"
+                              placeholder="Personnel Number"
+                              value={formData.personnel_number_input}
+                              onChange={(e) => {
+                                const personnelNumber = e.target.value.replace(/\D/g, '');
+                                const limitedValue = personnelNumber.slice(0, 7);
+                                setFormData({
+                                    ...formData,
+                                    personnel_number_input: limitedValue,
+                                    personnel_number: "PN-" +  limitedValue,
+                                });
+                            }}
+                              className="flex-1 p-2 border-l border-black focus:outline-none"
+                              maxLength="7"
+                              required
+                          />
+                      </div>
+                  </div>
+                  {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.errors.personnel_number}</p>}
               </div>
 
               <div>
@@ -400,17 +449,21 @@ const UserPage = () => {
 
               <div className="mb-2">
                 <label className="block text-sm font-medium">
-                  Email <span className="text-red-600 cursor-help">*</span>
+                    Email <span className="text-red-600 cursor-help">*</span>
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  required
-                />
+                  <div className="flex items-center border rounded-md border-black overflow-hidden">
+                    <input
+                      type="text"
+                      name="email_username"
+                      placeholder="Email"
+                      value={formData.email_username}  
+                      onChange={handleEmailChange}
+                      className="w-full p-2 focus:outline-none"
+                      required
+                    />
+                    <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span>  {/* Display domain externally */}
+                  </div>
+                {errors.email && <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>}
               </div>
 
               {(formData.role === 'physician' || formData.role === 'secretary') && (
