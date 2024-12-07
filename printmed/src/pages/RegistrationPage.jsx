@@ -10,11 +10,24 @@ import Swal from 'sweetalert2';
 
 function RegistrationPage() {
     const fetchRegions = async () => {
-        const response = await fetch('https://psgc.gitlab.io/api/regions.json');
-        const data = await response.json();
-        console.log(data);
-        return data;
-    }
+        try {
+            const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
+            const data = await response.json();
+            if (data && data.geonames) {
+                const regionsData = data.geonames.map(region => ({
+                    code: region.geonameId,
+                    name: region.name,
+                }));
+                //console.log(regionsData);
+                setRegions(regionsData);
+            } else {
+                console.error("No regions found or invalid response:", data);
+            }
+        } catch (error) {
+            console.error("Error fetching regions:", error);
+        }
+    };
+
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -54,67 +67,79 @@ function RegistrationPage() {
     const [errors, setErrors] = useState([]);
 
     useEffect(() => {
-        const getRegions = async () => {
-          const regionData = await fetchRegions();
-          setRegions(regionData);
-        };
-        getRegions();
+        fetchRegions()
     }, []);
 
-    // Fetch provinces based on selected region
     const handleRegionChange = async (event) => {
         const selectedRegion = event.target.value;
-    
-        // Find the region object by its name
         const regionObject = regions.find((region) => region.name === selectedRegion);
-        console.log(regions);
         console.log(regionObject);
     
         if (regionObject) {
-            const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionObject.code}/provinces.json`);
+            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionObject.code}&username=nico_183`);
             const data = await response.json();
-            console.log(data);
+            console.log("Selected Region Object: ", regionObject);
     
-            setProvinces(data);
+            setProvinces(data.geonames);
             setFormData({ ...formData, region: selectedRegion });
         } else {
             console.error("Region not found.");
         }
     };
-    
-    // Fetch cities based on selected province
+
     const handleProvinceChange = async (event) => {
         const selectedProvince = event.target.value;
-    
-        // Find the province object by its name
         const provinceObject = provinces.find((province) => province.name === selectedProvince);
+        console.log('Selected Province:', selectedProvince);
+        console.log('Province Object:', provinceObject);
     
-        if (provinceObject) {
-            const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceObject.code}/cities.json`);
+        try {
+            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceObject.geonameId}&username=nico_183`);
             const data = await response.json();
-    
-            setCities(data);
-            setFormData({ ...formData, province: selectedProvince });
-        } else {
-            console.error("Province not found.");
+            console.log("Cities API Response:", data); // Log the full response
+
+            if (data.geonames && data.geonames.length > 0) {
+                setCities(data.geonames);
+                setFormData({ ...formData, province: selectedProvince });
+            } else {
+                console.error("No cities found for this province.");
+            }
+        } catch (error) {
+            console.error("Error fetching cities:", error);
         }
     };
-
-    // Fetch barangays based on selected city
+     
+    
     const handleCityChange = async (event) => {
         const selectedCity = event.target.value;
-    
-        // Find the city object by its name
         const cityObject = cities.find((city) => city.name === selectedCity);
     
         if (cityObject) {
-            const response = await fetch(`https://psgc.gitlab.io/api/cities/${cityObject.code}/barangays.json`);
+            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityObject.geonameId}&username=nico_183`);
             const data = await response.json();
+            console.log(data);
     
-            setBarangays(data);
+            setBarangays(data.geonames);
             setFormData({ ...formData, city: selectedCity });
         } else {
             console.error("City not found.");
+        }
+    };
+
+    const handleBarangayChange = async (event) => {
+        const selectedBarangay = event.target.value;
+    
+        // Find the city object by its name
+        const barangayObject = barangays.find((barangay) => barangay.name === selectedBarangay);
+    
+        if (barangayObject) {
+            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${barangayObject.code}&username=nico_183`);
+            const data = await response.json();
+    
+            setBarangays(data.geoname);
+            setFormData({ ...formData, barangay: selectedBarangay });
+        } else {
+            console.error("Barangay not found.");
         }
     };
     
@@ -558,11 +583,11 @@ function RegistrationPage() {
                                     name="region"
                                     value={formData.region}
                                     onChange={handleRegionChange}
-                                    className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                    className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                     required
                                     >
                                     <option value="">Select Region</option>
-                                    {regions.map((region) => (
+                                    {regions?.map((region) => (
                                         <option key={region.code} value={region.name}>
                                         {region.name} 
                                         </option>
@@ -580,12 +605,12 @@ function RegistrationPage() {
                                         name="province"
                                         value={formData.province}
                                         onChange={handleProvinceChange}
-                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
                                     <option value="">Select Province</option>
                                     {provinces.map((province) => (
-                                        <option key={province.code} value={province.name}>
+                                        <option key={`${province.name}-${province.code}`} value={province.name}>
                                         {province.name}
                                         </option>
                                     ))}
@@ -602,12 +627,12 @@ function RegistrationPage() {
                                         name="city"
                                         value={formData.city}
                                         onChange={handleCityChange}
-                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         
                                     >
                                     <option value="">Select City/Municipality</option>
-                                    {cities.map((city) => (
-                                        <option key={city.code} value={city.name}>
+                                    {cities?.map((city) => (
+                                        <option key={`${city.name}-${city.code}`} value={city.name}>
                                         {city.name}
                                         </option>
                                     ))}
@@ -624,12 +649,12 @@ function RegistrationPage() {
                                         name="barangay"
                                         value={formData.barangay}
                                         onChange={(e) => setFormData({ ...formData, barangay: e.target.value })}
-                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
                                     <option value="">Select Barangay</option>
-                                    {barangays.map((barangay) => (
-                                        <option key={barangay.code} value={barangay.name}>
+                                    {barangays?.map((barangay) => (
+                                        <option key={`${barangay.name}-${barangay.code}`} value={barangay.name}>
                                         {barangay.name}
                                         </option>
                                     ))}
