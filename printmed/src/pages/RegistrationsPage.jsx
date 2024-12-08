@@ -249,9 +249,9 @@ const RegistrationsPage = () => {
                         <td className="p-0.5 border text-center border-[#828282]">
                           <button
                             onClick={() => handleViewRegistration(registration)}
-                            className="bg-red-500 hover:bg-red-700 text-white px-4 py-0.5 rounded-lg "
+                            className="text-blue-600 hover:text-red-500 hover:underline px-4 py-0.5 rounded-lg "
                           >
-                            View
+                            View Registration
                           </button>
                         </td>
                       </tr>

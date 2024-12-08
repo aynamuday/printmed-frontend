@@ -258,17 +258,17 @@ const PatientPageSecretary = () => {
                                                 {/* <p className={`text-black font-semibold`}>Vital Signs</p> */}
                                                 { !vitalSignsState && (!patient.vital_signs) && (
                                                     <button onClick={() => {setVitalSignsState("add")}}>
-                                                        <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#248176] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
                                                     </button>
                                                 )}
                                                 { vitalSignsState === "view" && patient.vital_signs && (
                                                     <button onClick={() => {setVitalSignsState("edit")}}>
-                                                        <i className={`bi bi-pencil-square ms-4 text-lg text-[#248176] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-pencil-square ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
                                                     </button>
                                                 )}
                                                 { vitalSignsState === "view" && patient.vital_signs && (
                                                     <button onClick={() => {deleteVitalSigns()}}>
-                                                        <i className={`bi bi-trash ms-4 text-lg text-[#248176] hover:text-red-500`}></i>
+                                                        <i className={`bi bi-trash ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
                                                     </button>
                                                 )}
                                             </div>
