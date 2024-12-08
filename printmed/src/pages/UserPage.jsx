@@ -66,32 +66,36 @@ const UserPage = () => {
   }, [userId])
 
   const handleEmailChange = (e) => {
-    const emailUsername = e.target.value;
+    let emailUsername = e.target.value;
+    
+    emailUsername = emailUsername.replace(/[^a-zñ0-9.+]/g, '');
+    
     setFormData({
-        ...formData,
-        email_username: emailUsername,  // Update only the username part
-        email: emailUsername + "@gmail.com", // Construct the full email
+      ...formData,
+      email_username: emailUsername,
+      email: emailUsername + "@gmail.com",
     });
 
-    // Email Validation
-    let newErrors = { ...errors };  // Clone errors to modify
-    if (!emailUsername.trim()) {
-        newErrors.email = 'Email username is required.';
-    } else if (!/^[a-zA-Z0-9._%+-]+$/.test(emailUsername)) {
-        newErrors.email = 'Email username contains invalid characters.';
-    } else {
-        // Construct full email
-        const fullEmail = `${emailUsername}@gmail.com`;
-        if (!/\S+@\S+\.\S+/.test(fullEmail)) {
-            newErrors.email = 'Please enter a valid email address.';
-        } else {
-            newErrors.email = '';  // Clear any email errors if valid
-        }
+    let newErrors = { ...errors };
+  
+    if (emailUsername.length < 6 || emailUsername.length > 30) {
+      newErrors.email = "Email username must be between 6 and 30 characters.";
     }
-
-    setErrors(newErrors); // Update the errors state
+    else if (/^[\.\+]/.test(emailUsername)) {
+      newErrors.email = "Username cannot start with a special character like . or +.";
+    }
+    else if (/\.\./.test(emailUsername)) {
+      newErrors.email = "Username cannot have consecutive dots.";
+    }
+    else if (/[^a-z0-9]$/.test(emailUsername)) {
+      newErrors.email = "The last character must be a letter or number.";
+    } else {
+      newErrors.email = "";
+    }
+  
+    setErrors(newErrors);
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(value);
@@ -109,13 +113,36 @@ const UserPage = () => {
       return;
     }
 
-    if (name === 'personnel_number' && /[^\d]/g.test(value)) {
+    if (name === 'personnel_number') {
+    const personnelNumber = value.replace(/\D/g, ''); // Remove non-numeric characters
+    const limitedValue = personnelNumber.slice(0, 7); // Max 7 characters for numeric part
+    const formattedValue = "PN-" + limitedValue;
+
+    setFormData({
+      ...formData,
+      personnel_number_input: limitedValue,
+      personnel_number: formattedValue,
+    });
+
+    // Display error if non-numeric or length exceeds limit
+    if (/[^\d]/.test(value)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: 'Please enter only numbers for Personnel Number.',
+        personnel_number: 'Only numeric characters are allowed.',
       }));
-      return;
+    } else if (formattedValue.length !== 10) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        personnel_number: 'Personnel Number must be exactly 10 characters.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        personnel_number: '',
+      }));
     }
+    return;
+  }
 
     setFormData({
       ...formData,
@@ -123,10 +150,11 @@ const UserPage = () => {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors([])
+
+    let newErrors = {};
 
     let filteredFormData = formData
     if (!userId) {
@@ -153,6 +181,21 @@ const UserPage = () => {
         return
       }
     }
+
+    if (formData.email_username.length < 6 || formData.email_username.length > 30) {
+      newErrors.email = "Email username must be between 6 and 30 characters.";
+    }
+  
+    if (errors.email) {
+      newErrors.email = errors.email;
+    }
+  
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+  
+    console.log("Form submitted:", formData);
 
     globalSwalNoIcon.fire({
       title: `Are you sure you want to ${userId ? "update" : "add"} this account?`,
@@ -300,6 +343,7 @@ const UserPage = () => {
                           }}
                         className="flex-1 p-2 border-l border-black focus:outline-none"
                         maxLength="7"
+                        minLength="7"
                         required
                       />
                     </div>
@@ -412,21 +456,32 @@ const UserPage = () => {
 
               <div className="mb-2">
                 <label className="block text-sm font-medium">
-                    Email <span className="text-red-600 cursor-help">*</span>
+                  Email <span className="text-red-600 cursor-help">*</span>
                 </label>
-                  <div className="flex items-center border rounded-md border-black overflow-hidden">
-                    <input
-                      type="text"
-                      name="email_username"
-                      placeholder="Email"
-                      value={formData.email_username}  
-                      onChange={handleEmailChange}
-                      className="w-full p-2 focus:outline-none"
-                      required
-                    />
-                    <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span>  {/* Display domain externally */}
-                  </div>
-                {errors.email && <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>}
+                <div className="flex items-center border rounded-md border-black overflow-hidden">
+                  <input
+                    type="text"
+                    name="email_username"
+                    placeholder="Email"
+                    value={formData.email_username}
+                    onChange={handleEmailChange}
+                    onInput={(e) => {
+                      const filteredValue = e.target.value.replace(/[^a-zñ0-9.+]/g, '');
+                      e.target.value = filteredValue;
+                      setFormData({
+                        ...formData,
+                        email_username: filteredValue,
+                        email: filteredValue + "@gmail.com",
+                      });
+                    }}
+                    className="w-full p-2 focus:outline-none"
+                    required
+                  />
+                  <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span>
+                </div>
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>
+                )}
               </div>
 
               {(formData.role === 'physician' || formData.role === 'secretary') && (

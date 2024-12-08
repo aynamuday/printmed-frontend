@@ -124,23 +124,6 @@ function RegistrationPage() {
             console.error("City not found.");
         }
     };
-
-    const handleBarangayChange = async (event) => {
-        const selectedBarangay = event.target.value;
-    
-        // Find the city object by its name
-        const barangayObject = barangays.find((barangay) => barangay.name === selectedBarangay);
-    
-        if (barangayObject) {
-            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${barangayObject.code}&username=nico_183`);
-            const data = await response.json();
-    
-            setBarangays(data.geoname);
-            setFormData({ ...formData, barangay: selectedBarangay });
-        } else {
-            console.error("Barangay not found.");
-        }
-    };
     
     useEffect(() => {
         resetForm()
@@ -196,13 +179,6 @@ function RegistrationPage() {
             }
         }
           
-        // no numbers and symbols allowed
-        // if (name === 'city' || name === 'province') {
-        //     if (/[^a-zA-Z\s]/.test(value)) {
-        //         return;
-        //     }
-        // }
-          
         if (name === 'postal_code') {
             if (/[^0-9]/.test(value)) {
                 return;
@@ -244,6 +220,37 @@ function RegistrationPage() {
             phone_number: limitedValue,
         });
     };
+
+    const handleEmailChange = (e) => {
+        let emailUsername = e.target.value;
+        
+        emailUsername = emailUsername.replace(/[^a-zñ0-9.+]/g, '');
+        
+        setFormData({
+          ...formData,
+          email_username: emailUsername,
+          email: emailUsername + "@gmail.com",
+        });
+    
+        let newErrors = { ...errors };
+      
+        if (emailUsername.length < 6 || emailUsername.length > 30) {
+          newErrors.email = "Email username must be between 6 and 30 characters.";
+        }
+        else if (/^[\.\+]/.test(emailUsername)) {
+          newErrors.email = "Username cannot start with a special character like . or +.";
+        }
+        else if (/\.\./.test(emailUsername)) {
+          newErrors.email = "Username cannot have consecutive dots.";
+        }
+        else if (/[^a-z0-9]$/.test(emailUsername)) {
+          newErrors.email = "The last character must be a letter or number.";
+        } else {
+          newErrors.email = "";
+        }
+      
+        setErrors(newErrors);
+    }; 
 
     const handleConfirm = (e) => {
         e.preventDefault();
@@ -307,20 +314,45 @@ function RegistrationPage() {
         if (!formData.email_username.trim()) {
             newErrors.email = 'Email username is required.';
             formIsValid = false;
-        } else if (!/^[a-zA-Z0-9._%+-]+$/.test(formData.email_username)) {
-            newErrors.email = 'Email username contains invalid characters.';
-            formIsValid = false;
-        }
-    
-        // Construct full email and assign to formData
-        const fullEmail = `${formData.email_username}@gmail.com`;
-        formData.email = fullEmail;
-    
-        // Reassign errors if email is invalid
-        if (!/\S+@\S+\.\S+/.test(fullEmail)) {
+          } else {
+            const emailUsername = formData.email_username;
+        
+            // Check for invalid characters in the email
+            if (!/^[a-zA-Z0-9ñ._%+-]+$/.test(emailUsername)) {
+              newErrors.email = 'Email username contains invalid characters.';
+              formIsValid = false;
+            }
+        
+            // Check if email starts with invalid character or has consecutive dots
+            if (emailUsername.startsWith('.') || emailUsername.startsWith('+')) {
+              newErrors.email = 'Sorry, only letters (a-z), numbers (0-9), and periods (.) are allowed.';
+              formIsValid = false;
+            } else if (/\.\./.test(emailUsername)) {
+              newErrors.email = 'Sorry, consecutive periods are not allowed.';
+              formIsValid = false;
+            }
+        
+            // Check if the last character is not an ASCII letter or number
+            if (!/[a-z0-9]$/.test(emailUsername)) {
+              newErrors.email = 'Sorry, the last character of your username must be an ASCII letter (a-z) or number (0-9).';
+              formIsValid = false;
+            }
+
+            if (emailUsername.length < 6 || emailUsername.length > 30) {
+                newErrors.email = 'Email username must be between 6 and 30 characters.';
+                formIsValid = false;
+            }
+          }
+        
+          // Construct full email and assign to formData
+          const fullEmail = `${formData.email_username}@gmail.com`;
+          formData.email = fullEmail;
+        
+          // Email format validation
+          if (!/\S+@\S+\.\S+/.test(fullEmail)) {
             newErrors.email = 'Please enter a valid email address.';
             formIsValid = false;
-        }
+          }
 
         if (formData.postal_code.trim() !== "" && (Number (formData.postal_code) < 1000 || Number (formData.postal_code) > 9999)) {
             newErrors.postal_code = 'Postal code must only range between 1000-9999';
@@ -762,24 +794,18 @@ function RegistrationPage() {
                                     <div className="flex items-center border rounded-md border-black overflow-hidden">
                                         {/* Username Input */}
                                         <input
-                                            type="email"
-                                            name="email_username"
-                                            placeholder="Email"
-                                            className="w-full p-2 focus:outline-none"
-                                            value={formData.email_username || ""}
-                                            onChange={(e) => {
-                                                const emailUsername = e.target.value;
-                                                setFormData({
-                                                    ...formData,
-                                                    email_username: emailUsername,
-                                                    email: emailUsername + "@gmail.com", // Append domain
-                                                });
-                                            }}
+                                        type="text"
+                                        name="email_username"
+                                        placeholder="Email"
+                                        className="w-full p-2 focus:outline-none"
+                                        value={formData.email_username || ""}
+                                        onChange={handleEmailChange} // Trigger the email validation on change
                                         />
                                         <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
                                     </div>
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                                 </div>
+
                             </div>
 
                             {/* Terms */}
