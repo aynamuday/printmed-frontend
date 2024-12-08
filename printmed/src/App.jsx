@@ -28,6 +28,7 @@ import PatientsPage from './pages/PatientsPage';
 import PatientPageSecretary from './pages/PatientPageSecretary';
 import AddPatientPage from './pages/AddPatientPage';
 import RegistrationsPage from './pages/RegistrationsPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 const App = () => {
   const { user, loading } = useContext(AppContext);
@@ -90,6 +91,7 @@ const App = () => {
           <>
             <Route path='/' element={<LandingPage />}/>
             <Route path='login' element={<LoginPage />}/>
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
           </>
         ) : (

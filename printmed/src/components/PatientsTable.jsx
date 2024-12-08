@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import AppContext from '../context/AppContext';
 import { fetchPatient } from '../utils/fetch/fetchPatient';
 import { showError } from '../utils/fetch/showError';
@@ -35,6 +34,7 @@ const PatientsTable = ({ patients, setLoading }) => {
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Patient ID</th>
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
+            <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Middle Name</th>
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Birthdate</th>
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Sex</th>
             <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
@@ -47,13 +47,14 @@ const PatientsTable = ({ patients, setLoading }) => {
                 <td className="p-0.5 border text-center border-[#828282]">{patient.patient_number}</td>
                 <td className="p-0.5 border text-center border-[#828282]">{patient.last_name}</td>
                 <td className="p-0.5 border text-center border-[#828282]">{patient.first_name}</td>
+                <td className="p-0.5 border text-center border-[#828282]">{patient.middle_name}</td>
                 <td className="p-0.5 border text-center border-[#828282]">{patient.birthdate}</td>
                 <td className="p-0.5 border text-center border-[#828282]">{patient.sex}</td>
                 <td className="p-0.5 border text-center border-[#828282]">
                   <div className="flex justify-center gap-2">
                     <button
                       onClick={() => viewPatient(patient.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white px-4 py-0.5 rounded-lg "
+                      className="text-blue-600 hover:text-red-500 hover:underline px-4 py-0.5 rounded-lg "
                     >
                       View Details
                     </button>
@@ -63,7 +64,7 @@ const PatientsTable = ({ patients, setLoading }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="border p-2 border-[#828282] text-center">
+              <td colSpan="8" className="border p-2 border-[#828282] text-center">
                 No patients
               </td>
             </tr>

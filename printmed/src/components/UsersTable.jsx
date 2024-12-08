@@ -180,7 +180,7 @@ const UsersTable = ({ users }) => {
         }
       }
     })
-  };
+  }
 
   const getUserStatus = (user) => {
     let status = 'Active';

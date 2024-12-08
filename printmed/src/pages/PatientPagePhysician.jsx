@@ -112,7 +112,7 @@ const PatientPagePhysician = () => {
                             <QrScanning />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
                             <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
-                            <button onClick={handleQrInputBlur} className='bg-[#6CB6AD] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
+                            <button onClick={handleQrInputBlur} className='bg-red-700 text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
                                 Cancel
                             </button>
                         </div>
