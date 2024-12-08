@@ -5,8 +5,20 @@ import bg_nurse from '../assets/images/bg-nurse.png';
 import logo from '../assets/images/logo.png';
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
-import Swal from 'sweetalert2';
 import { showError } from '../utils/fetch/showError';
+import { validatePatientDetails } from '../utils/formValidations/validatePatientDetails';
+import { validatePhoneNumber } from '../utils/formValidations/validatePhoneNumber';
+import { validateEmail } from '../utils/formValidations/validateEmail';
+import { handleRegionChange } from '../utils/handleRegionChange';
+import { handleProvinceChange } from '../utils/handleProvinceChange';
+import { handleCityChange } from '../utils/handleCityChange';
+import { fetchProvinces } from '../utils/fetch/fetchProvinces';
+import { fetchRegions } from '../utils/fetch/fetchRegions';
+import { fetchCities } from '../utils/fetch/fetchCities';
+import { fetchBarangays } from '../utils/fetch/fetchBarangays';
+import { handleBarangayChange } from '../utils/handleBarangayChange';
+import { validatePostalCode } from '../utils/formValidations/validatePostalCode';
+import { validateBirthdate } from '../utils/formValidations/validateBirthdate';
 
 function RegistrationPage() {
     const navigate = useNavigate();
@@ -51,7 +63,7 @@ function RegistrationPage() {
     const [errors, setErrors] = useState([]);
 
     useEffect(() => {
-        fetchRegions()
+        getRegions()
         resetForm()
     }, []);
 
@@ -65,12 +77,17 @@ function RegistrationPage() {
             birthdate: '',
             birthplace: '',
             civil_status: '',
+            region: '',
+            region_code: '',
+            province: '',
+            province_code: '',
+            city: '',
+            city_code: '',
+            barangay: '',
+            barangay_code: '',
             house_number: '',
             street: '',
             barangay: '',
-            city: '',
-            province: '',
-            region: '',
             postal_code: '',
             religion: '',
             phone_number: '',
@@ -81,262 +98,47 @@ function RegistrationPage() {
         setErrors({});
 
         setTermsAccepted(false)
+    }
+
+    const getRegions = async () => {
+        const data = await fetchRegions()
+        setRegions(data.geonames)
     };
 
+    // executes when region code changes, sets the provinces
+    useEffect(() => {
+        const getProvinces = async () => {
+          const data = await fetchProvinces(formData.region_code)
+          setProvinces(data.geonames)
+        }
+        getProvinces()
+    }, [formData.region_code])
+
+
+    // executes when province code changes, sets the cities
+    useEffect(() => {
+        const getCities = async () => {
+            const data = await fetchCities(formData.province_code)
+            setCities(data.geonames)
+        }
+        getCities()
+    }, [formData.province_code])
+
+    // executes when city code changes
+    useEffect(() => {
+        const getBarangays = async () => {
+            const data = await fetchBarangays(formData.city_code)
+            setBarangays(data.geonames)
+        }
+        getBarangays()
+    }, [formData.city_code])
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        setErrors((prevErrors) => ({...prevErrors, [name]: ''}))
-        const capitalizedValue = name !== "email" && name !== "suffix" ? capitalizedWords(value) : value
-
-        // should not accept numbers and special characters    
-        if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                [name]: 'Cannot contain numbers or special characters.',
-            }));
-            return;
-        }
-
-        if (name === "birthplace") {
-            if (!/^([a-zA-Z][a-zA-Z, ]*|)$/.test(value)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [name]: 'Can only contain letters and comma, and must start with a letter.',
-                }));
-                return
-            }
-        }
-          
-        // no symbols allowed
-        if (name === 'house_number') {
-            if (/[^a-zA-Z0-9\s]/.test(value)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [name]: 'Cannot contain special characters.',
-                }));
-                return;
-            }
-        }
-          
-        if (name === 'postal_code') {
-            if (/[^0-9]/.test(value)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [name]: 'Can only contain numbers.',
-                }));
-                return;
-            }
-        }
-
-        if (name === "email_username") {
-            setErrors((prevErrors) => ({...prevErrors, email: ''}))
-            const emailUsername = value.toLowerCase();
-
-            // only allows letters, numbers, dot
-            if (!/^[a-zA-Z0-9.]*$/.test(emailUsername)) {
-                setErrors({...errors, email: "Can only contain letters, numbers, and dot."})
-                return
-            }
-
-            setFormData({
-                ...formData,
-                email_username: emailUsername,
-                email: emailUsername + "@gmail.com", 
-            });
-            return
-        }
-
-        setFormData({ 
-            ...formData, 
-            [name]: capitalizedValue, 
-        });
+        validatePatientDetails(e, setErrors, setFormData, formData)
     };
 
     const handlePhoneNumberChange = (e) => {
-        setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }))
-
-        let value = e.target.value;
-        const sanitizedValue = value.replace(/\D/g, '');
-    
-        if (value !== sanitizedValue) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                phone_number: 'Can only contain numbers.',
-            }));
-            return
-        }
-
-        setFormData({
-            ...formData,
-            phone_number: sanitizedValue,
-        });
-    };
-
-    const fetchRegions = async () => {
-        try {
-            const res = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
-            const data = await res.json();
-            if (data?.geonames) {
-                // const regionsData = data.geonames.map(region => ({
-                //     code: region.geonameId,
-                //     name: region.name,
-                // }));
-                setRegions(data.geonames);
-            }
-        } catch (err) {
-            console.error("Error fetching regions:", err);
-        }
-    };
-
-    const handleRegionChange = async (e) => {
-        const region = e.target.value
-        const selectedOption = e.target.selectedOptions[0]
-        const regionCode = selectedOption.getAttribute('data-code')
-
-        console.log(region, regionCode)
-
-        try {
-            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionCode}&username=nico_183`);
-            if (!res.ok) {
-                throw new Error('An error occured while getting the list of provinces. You may check your Internet connection and refresh.')
-            }
-            const data = await res.json();
-    
-            setProvinces(data.geonames);
-        } catch (err) {
-            showError(err)
-        }
-
-        setFormData({...formData, 
-            region: region,
-            region_code: regionCode,
-            province: '',
-            province_code: '',
-            city: '',
-            city_code: '',
-            barangay: '',
-            barangay_code: ''
-        })
-        setCities([])
-        setBarangays([])
-
-        // const selectedRegion = event.target.value;
-        // const regionObject = regions.find((region) => region.name === selectedRegion);
-        // console.log(regionObject);
-    
-        // if (regionObject) {
-            // const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionObject.code}&username=nico_183`);
-            // const data = await response.json();
-            // console.log("Selected Region Object: ", regionObject);
-    
-            // setProvinces(data.geonames);
-            // setFormData({ ...formData, region: selectedRegion });
-        // } else {
-        //     console.error("Region not found.");
-        // }
-    };
-
-    const handleProvinceChange = async (event) => {
-        const province = event.target.value
-        const selectedOption = event.target.selectedOptions[0]
-        const provinceCode = selectedOption.getAttribute('data-code')
-
-        console.log(province, provinceCode)
-
-        try {
-            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceCode}&username=nico_183`);
-            if (!res.ok) {
-                throw new Error('An error occured while getting the list of cities/municipalities. You may check your Internet connection and refresh.')
-            }
-            const data = await res.json();
-    
-            setCities(data.geonames);
-        } catch (err) {
-            showError(err)
-        }
-
-        setFormData({...formData, 
-            province: province,
-            province_code: provinceCode,
-            city: '',
-            city_code: '',
-            barangay: '',
-            barangay_code: ''
-        })
-        setBarangays([])
-
-        // const selectedProvince = event.target.value;
-        // const provinceObject = provinces.find((province) => province.name === selectedProvince);
-        // console.log('Selected Province:', selectedProvince);
-        // console.log('Province Object:', provinceObject);
-    
-        // try {
-        //     const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceObject.geonameId}&username=nico_183`);
-        //     const data = await response.json();
-        //     console.log("Cities API Response:", data); // Log the full response
-
-        //     if (data.geonames && data.geonames.length > 0) {
-        //         setCities(data.geonames);
-        //         setFormData({ ...formData, province: selectedProvince });
-        //     } else {
-        //         console.error("No cities found for this province.");
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching cities:", error);
-        // }
-    };    
-    
-    const handleCityChange = async (event) => {
-        const city = event.target.value
-        const selectedOption = event.target.selectedOptions[0]
-        const cityCode = selectedOption.getAttribute('data-code')
-
-        console.log(city, cityCode)
-
-        try {
-            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityCode}&username=nico_183`);
-            if (!res.ok) {
-                throw new Error('An error occured while getting the list of barangays. You may check your Internet connection and refresh.')
-            }
-            const data = await res.json();
-    
-            setBarangays(data.geonames);
-        } catch (err) {
-            showError(err)
-        }
-
-        setFormData({...formData, 
-            city: city,
-            city_code: cityCode,
-            barangay: '',
-            barangay_code: ''
-        })
-
-        // const selectedCity = event.target.value;
-        // const cityObject = cities.find((city) => city.name === selectedCity);
-    
-        // if (cityObject) {
-        //     const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityObject.geonameId}&username=nico_183`);
-        //     const data = await response.json();
-        //     console.log(data);
-    
-        //     setBarangays(data.geonames);
-        //     setFormData({ ...formData, city: selectedCity });
-        // } else {
-        //     console.error("City not found.");
-        // }
-    }
-
-    const handleBarangayChange = async (event) => {
-        const barangay = event.target.value
-        const selectedOption = event.target.selectedOptions[0]
-        const barangayCode = selectedOption.getAttribute('data-code')
-
-        setFormData({...formData,
-            barangay: barangay,
-            barangay_code: barangayCode
-        })
+        validatePhoneNumber(e, setErrors, setFormData, formData)
     }
 
     const handleConfirm = (e) => {
@@ -366,12 +168,10 @@ function RegistrationPage() {
             newErrors.birthdate = 'This field is required.';
             formIsValid = false;
         } else {
-            if (new Date(formData.birthdate) < new Date("1908-01-01")) {
-                newErrors.birthdate = 'Birthdate cannot be earlier than January 1, 1908.';
-                formIsValid = false;
-            } else if (new Date(formData.birthdate) > new Date()) {
-                newErrors.birthdate = 'Birthdate cannot be in the future.';
-                formIsValid = false;
+            const error = validateBirthdate(formData.birthdate)
+            if (error.trim() != "") {
+                newErrors.birthdate = error
+                formIsValid = false
             }
         }
 
@@ -401,31 +201,19 @@ function RegistrationPage() {
         }
     
         if (formData.email_username.trim() != "") {
-            const emailUsername = formData.email_username;
-        
-            // Check if email starts with invalid character or has consecutive dots
-            if (emailUsername.startsWith('.') || emailUsername.startsWith('+')) {
-              newErrors.email = 'Must start with a letter or number.';
-              formIsValid = false;
-            } else if (/\.\./.test(emailUsername)) {
-              newErrors.email = 'Consecutive periods are not valid.';
-              formIsValid = false;
-            }
-        
-            // Check if the last character is not an ASCII letter or number
-            if (!/[a-z0-9]$/.test(emailUsername)) {
-              newErrors.email = 'Email username must end with a letter or number.';
-              formIsValid = false;
-            }
-
-            if (emailUsername.length < 6 || emailUsername.length > 30) {
-                newErrors.email = 'Email username must be between 6 to 30 characters.';
-                formIsValid = false;
+            const error = validateEmail(formData.email_username)
+            if (error.trim() != "") {
+                newErrors.email = error
+                formIsValid = false
             }
         }
 
-        if (formData.postal_code.trim() !== "" && (Number (formData.postal_code) < 1000 || Number (formData.postal_code) > 9999)) {
-            newErrors.postal_code = 'Postal code must only range between 1000-9999';
+        if (formData.postal_code.trim() !== "") {
+            const error = validatePostalCode(formData.postal_code)
+            if (error.trim() != "") {
+                newErrors.postal_code = error
+                formIsValid = false
+            }
         }
     
         if (formData.phone_number.length !== 10) {
@@ -496,7 +284,7 @@ function RegistrationPage() {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [showTerms, setShowTerms]);
+    }, [showTerms, setShowTerms])
 
     const handleClose = () => {
         setShowSuccess(false);
@@ -664,14 +452,14 @@ function RegistrationPage() {
 
                                 {/* Region */}
                                 <div>
-                                    <label htmlFor="region" className="block text-sm font-medium">
+                                    <label className="block text-sm font-medium">
                                         Region <span className="text-red-600">*</span>
                                     </label>
                                     <select
                                         id="region"
                                         name="region"
                                         value={formData.region}
-                                        onChange={handleRegionChange}
+                                        onChange={(e) => handleRegionChange(e, setFormData, setCities, setBarangays)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
@@ -686,14 +474,14 @@ function RegistrationPage() {
 
                                 {/* Province */}
                                 <div>
-                                    <label htmlFor="province" className="block text-sm font-medium">
+                                    <label className="block text-sm font-medium">
                                         Province <span className="text-red-600">*</span>
                                     </label>
                                     <select
                                         id="province"
                                         name="province"
                                         value={formData.province}
-                                        onChange={handleProvinceChange}
+                                        onChange={(e) => handleProvinceChange(e, setFormData, setBarangays)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
@@ -708,14 +496,14 @@ function RegistrationPage() {
 
                                 {/* City */}
                                 <div>
-                                    <label htmlFor="city" className="block text-sm font-medium">
+                                    <label className="block text-sm font-medium">
                                         City/Municipality <span className="text-red-600">*</span>
                                     </label>
                                     <select
                                         id="city"
                                         name="city"
                                         value={formData.city}
-                                        onChange={handleCityChange}
+                                        onChange={(e) => handleCityChange(e, setFormData)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         
                                     >
@@ -730,14 +518,14 @@ function RegistrationPage() {
 
                                 {/* Barangay */}
                                 <div>
-                                    <label htmlFor="barangay" className="block text-sm font-medium">
+                                    <label className="block text-sm font-medium">
                                         Barangay <span className="text-red-600">*</span>
                                     </label>
                                     <select
                                         id="barangay"
                                         name="barangay"
                                         value={formData.barangay}
-                                        onChange={(e) => handleBarangayChange(e)}
+                                        onChange={(e) => handleBarangayChange(e, setFormData)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
@@ -852,7 +640,7 @@ function RegistrationPage() {
                                     <div className="flex items-center border rounded-md border-black overflow-hidden">
                                         {/* Username Input */}
                                         <input
-                                            type="email"
+                                            type="text"
                                             name="email_username"
                                             placeholder="Email"
                                             className="w-full p-2 focus:outline-none border-r border-r-black"
@@ -873,7 +661,7 @@ function RegistrationPage() {
                                     <input
                                         type="checkbox"
                                         checked={termsAccepted}
-                                        onChange={() => setTermsAccepted(!termsAccepted)}
+                                        onChange={() => {setTermsAccepted(!termsAccepted); setErrors({...errors, termsAccepted: ''})}}
                                     />
 
                                     {/* Text */}
