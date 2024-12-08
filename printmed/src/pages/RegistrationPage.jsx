@@ -143,6 +143,10 @@ function RegistrationPage() {
 
     const handleConfirm = (e) => {
         e.preventDefault();
+
+        if (formData.sex == "Male") {
+            setFormData(prevData => ({ ...prevData, suffix: null})) 
+        }
     
         let newErrors = {};
         let formIsValid = true;

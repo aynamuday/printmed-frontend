@@ -17,16 +17,16 @@ import { fetchPhysicians } from "../utils/fetch/fetchPhysicians";
 import { validatePatientDetails } from "../utils/formValidations/validatePatientDetails";
 import { validatePhoneNumber } from "../utils/formValidations/validatePhoneNumber";
 import { validatePostalCode } from "../utils/formValidations/validatePostalCode";
+import { validateBirthdate } from "../utils/formValidations/validateBirthdate";
+import { validateEmail } from "../utils/formValidations/validateEmail";
 import { handleRegionChange } from "../utils/handleRegionChange";
 import { handleProvinceChange } from "../utils/handleProvinceChange";
 import { handleCityChange } from "../utils/handleCityChange";
+import { handleBarangayChange } from "../utils/handleBarangayChange";
 import { fetchProvinces } from "../utils/fetch/fetchProvinces";
 import { fetchRegions } from "../utils/fetch/fetchRegions";
 import { fetchCities } from "../utils/fetch/fetchCities";
 import { fetchBarangays } from "../utils/fetch/fetchBarangays";
-import { validateBirthdate } from "../utils/formValidations/validateBirthdate";
-import { handleBarangayChange } from "../utils/handleBarangayChange";
-import { validateEmail } from "../utils/formValidations/validateEmail";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
@@ -46,7 +46,6 @@ const AddPatientPage = () => {
     civil_status: registration.civil_status || '',
     house_number: registration.house_number || '',
     street: registration.street || '',
-    barangay: registration.barangay || '',
     region: registration.region || '',
     region_code: registration.region_code || '',
     province: registration.province || '',
@@ -121,16 +120,22 @@ const AddPatientPage = () => {
     getBarangays()
   }, [newPatientData.city_code])
 
+  // handle changes in form fields
   const handleChange = (e) => {
     validatePatientDetails(e, setErrors, setNewPatientData, newPatientData)
   };
 
+  // handle change in phone number input
   const handlePhoneNumberChange = (e) => {
     validatePhoneNumber(e, setErrors, setNewPatientData, newPatientData)
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (newPatientData.sex == "Male") {
+      setNewPatientData(prevData => ({ ...prevData, suffix: null})) 
+    }
 
     let newErrors = {};
     let formIsValid = true;
@@ -145,9 +150,16 @@ const AddPatientPage = () => {
       }
     }
 
+    if (newPatientData.postal_code.trim() != "") {
+      const error = validatePostalCode(newPatientData.postal_code)
+      if (error.trim() != "") {
+        newErrors.postal_code = error
+        formIsValid = false
+      }
+    }
 
-    if (newPatientData.birthdate.trim() === "") {
-      const error = validateBirthdate(formData.birthdate)
+    if (newPatientData.birthdate.trim() !== "") {
+      const error = validateBirthdate(newPatientData.birthdate)
       if (error.trim() != "") {
           newErrors.birthdate = error
           formIsValid = false
@@ -670,20 +682,20 @@ const AddPatientPage = () => {
                     <label className="block text-sm font-medium">
                       Phone Number <span className="text-red-600">*</span>
                     </label>
-                      <div className="relative">
-                        <div className="flex items-center border rounded-md border-black overflow-hidden">
-                          <span className="bg-gray-100 p-2">+63</span>
-                            <input
-                              type="text"
-                              name="phone_number"
-                              value={newPatientData.phone_number}
-                              onChange={(e) => handlePhoneNumberChange(e)}
-                              className="flex-1 p-2 border-l border-black focus:outline-none"
-                              maxLength="10"
-                              required
-                            />
-                        </div>
+                    <div className="relative">
+                      <div className="flex items-center border rounded-md border-black overflow-hidden">
+                        <span className="bg-gray-100 p-2">+63</span>
+                          <input
+                            type="text"
+                            name="phone_number"
+                            value={newPatientData.phone_number}
+                            onChange={(e) => handlePhoneNumberChange(e)}
+                            className="flex-1 p-2 border-l border-black focus:outline-none"
+                            maxLength="10"
+                            required
+                          />
                       </div>
+                    </div>
                     {errors.phone_number && (<p className="text-red-600 text-sm">{errors.phone_number}</p>)}
                   </div>
                   
@@ -704,8 +716,8 @@ const AddPatientPage = () => {
                               email: emailUsername + "@gmail.com",
                           });
                         }}
-                    />
-                    <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
+                      />
+                      <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                     </div>
                     {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                   </div>
