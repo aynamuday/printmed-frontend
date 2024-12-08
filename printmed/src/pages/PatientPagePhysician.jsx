@@ -17,6 +17,7 @@ import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
 import { globalSwalNoIcon } from '../utils/globalSwal'
 import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr'
+import { showError } from '../utils/fetch/showError'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
@@ -34,7 +35,6 @@ const PatientPagePhysician = () => {
     const fetchPatient = async () => {
         setPatientPageLoading(true)
         setIsQrInputFocused(false)
-        setQrCode("")
 
         try {
             const data = await fetchPatientUsingQr(qrCode, token)
@@ -43,26 +43,11 @@ const PatientPagePhysician = () => {
             console.log(data)
         }
         catch (err) {
-            let error = err.message ?? "Something went wrong. Please try again later."
-
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
-                }
-            })
+            showError(err)
         }
         finally {
             setPatientPageLoading(false)
+            setQrCode("")
         }
     }
 
@@ -139,13 +124,14 @@ const PatientPagePhysician = () => {
                                     onChange={(e) => setQrCode(e.target.value)}
                                     onFocus={handleQrInputFocus}
                                     onBlur={handleQrInputBlur}
+                                    disabled={patientPageLoading}
                                     required
                                 />
                             </form>
                         </div>
                     </div>
                 ) : (
-                    <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
+                    <div className="md:w-[calc(100%-370px)] w-[calc(100%-320px)]  md:ml-[335px] ml-[285px] mt-[10%] mb-12">
                         <div className='flex items-center mb-4'>
                             <button onClick={() => handleClose()} className='me-6 flex items-center h-full'><i className='bi bi-x-lg'></i></button>
                             <h2 className='me-3 font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
@@ -163,7 +149,7 @@ const PatientPagePhysician = () => {
                                 <PatientDetails patient={patient} />
                             </div>
                             <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
-                                <div className='bg-[#6CB6AD] py-2 px-4 flex items-center justify-between'>
+                                <div className='bg-[#248176] py-2 px-4 flex items-center justify-between'>
                                     <div className='flex gap-4 w-full'>
                                         { consultationComponentStatus != null && 
                                             <button onClick={() => setConsultationComponentStatus(null)}>
@@ -185,7 +171,7 @@ const PatientPagePhysician = () => {
                                         ) : consultationComponentStatus === "view" ? (
                                             <ViewConsultation setLoading={setPatientPageLoading} /> 
                                         ) : consultationComponentStatus === "add" && (
-                                            <ConsultationForm age={patient.age} vitalSigns={patient.vital_signs} /> 
+                                            <ConsultationForm birthdate={patient.birthdate} vitalSigns={patient.vital_signs} /> 
                                         )}
                                     </div>
                                 </div>

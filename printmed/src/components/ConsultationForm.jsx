@@ -8,7 +8,7 @@ import { capitalizedWords } from '../utils/wordUtils'
 import { showError } from '../utils/fetch/showError'
 import { globalSwalNoIcon } from '../utils/globalSwal'
 
-const ConsultationForm = ({age, vitalSigns}) => {
+const ConsultationForm = ({birthdate, vitalSigns}) => {
     const { token } = useContext(AppContext)
     const { 
         setPatientPageLoading,
@@ -77,7 +77,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
             title: "Submit consultation record?",
             html: `<p style="color: black; font-size: 16px; margin: 0;">Once submitted, you can no longer edit this consultation record.</p>`,
             showCancelButton: true,
-            confirmButtonText: "Yes, submit"
+            confirmButtonText: "Yes"
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
@@ -119,10 +119,11 @@ const ConsultationForm = ({age, vitalSigns}) => {
         })
     }
 
-    const handleInputChange = (key, value) => {
+    const handleChange = (key, value) => {
         setAddConsultationErrors((prevData) => ({...prevData, [key]: ""}))
         setAddConsultationErrors((prevData) => ({...prevData, general: ""}))
         setAddConsultationData(prevData => ({ ...prevData, [key]: value}))
+        console.log(addConsultationData)
     }
 
     const addPrescription = (e) => {
@@ -184,7 +185,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.chief_complaint }
                             rows="2"
-                            onChange={(e) => {handleInputChange("chief_complaint", e.target.value)}}
+                            onChange={(e) => {handleChange("chief_complaint", e.target.value)}}
                         />
                         { addConsultationErrors.chief_complaint.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{addConsultationErrors.chief_complaint}</p>)}
                     </div>
@@ -194,7 +195,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.present_illness_hx }
                             rows="2"
-                            onChange={(e) => {handleInputChange("present_illness_hx", e.target.value)}}
+                            onChange={(e) => {handleChange("present_illness_hx", e.target.value)}}
                         />
                     </div>
                     <div className='mb-4'>
@@ -203,7 +204,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.family_hx }
                             rows="2"
-                            onChange={(e) => {handleInputChange("family_hx", e.target.value)}}
+                            onChange={(e) => {handleChange("family_hx", e.target.value)}}
                         />
                     </div>
                     <div className='mb-4'>
@@ -212,57 +213,49 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.medical_hx }
                             rows="2"
-                            onChange={(e) => {handleInputChange("medical_hx", e.target.value)}}
+                            onChange={(e) => {handleChange("medical_hx", e.target.value)}}
                         />
                     </div>
                     <div className='mt-8'>
-                        { age && Number(age) <= 18 && (
+                        { new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && (
                             <>
                                 <div className='mt-4'>
                                     <div className='mb-4'>
-                                        <p className="block font-semibold text-black col-span-2 mb-2">{"(H) Home"}</p>
+                                        <p className="block font-semibold text-black col-span-2 mb-2">Birth and Maternal History</p>
                                         <textarea
                                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={ addConsultationData.pediatrics_h }
+                                            value={ addConsultationData.birth_maternal_hx }
                                             rows="2"
-                                            onChange={(e) => {handleInputChange("pediatrics_h", e.target.value)}}
+                                            onChange={(e) => {handleChange("birth_maternal_hx", e.target.value)}}
                                         />
                                     </div>
                                 </div>
                                 <div className='mt-4'>
                                     <div className='mb-4'>
-                                        <p className="block font-semibold text-black col-span-2 mb-2">{"(E) Education"}</p>
+                                        <p className="block font-semibold text-black col-span-2 mb-2">Immunization</p>
                                         <textarea
                                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={ addConsultationData.pediatrics_e }
+                                            value={ addConsultationData.immunization }
                                             rows="2"
-                                            onChange={(e) => {handleInputChange("pediatrics_e", e.target.value)}}
-                                        />
-                                    </div>
-                                </div>
-                                <div className='mt-4'>
-                                    <div className='mb-4'>
-                                        <p className="block font-semibold text-black col-span-2 mb-2">{"(A) Activities"}</p>
-                                        <textarea
-                                            className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={ addConsultationData.pediatrics_a }
-                                            rows="2"
-                                            onChange={(e) => {handleInputChange("pediatrics_a", e.target.value)}}
-                                        />
-                                    </div>
-                                </div>
-                                <div className='mt-4'>
-                                    <div className='mb-4'>
-                                        <p className="block font-semibold text-black col-span-2 mb-2">{"(D) Drugs"}</p>
-                                        <textarea
-                                            className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                            value={ addConsultationData.pediatrics_d }
-                                            rows="2"
-                                            onChange={(e) => {handleInputChange("pediatrics_d", e.target.value)}}
+                                            onChange={(e) => {handleChange("immunization", e.target.value)}}
                                         />
                                     </div>
                                 </div>
                             </>
+                        )}
+
+                        { new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 12)) && (
+                            <div className='mt-4'>
+                                <div className='mb-4'>
+                                    <p className="block font-semibold text-black col-span-2 mb-2">HEADS</p>
+                                    <textarea
+                                        className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
+                                        value={ addConsultationData.heads }
+                                        rows="2"
+                                        onChange={(e) => {handleChange("heads", e.target.value)}}
+                                    />
+                                </div>
+                            </div>
                         )}
                     </div>
                     <div className="mt-6 w-full">
@@ -283,12 +276,30 @@ const ConsultationForm = ({age, vitalSigns}) => {
                         </div>
                     </div>
                     <div className='mb-4'>
+                        <p className="block font-semibold text-black col-span-2 mb-2">Pertinent Physical Examination</p>
+                        <textarea
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
+                            value={ addConsultationData.pertinent_physical_examination }
+                            rows="2"
+                            onChange={(e) => {handleChange("pertinent_physical_examination", e.target.value)}}
+                        />
+                    </div>
+                    <div className='mb-4'>
+                        <p className="block font-semibold text-black col-span-2 mb-2">Laboratory or Diagnostics Tests</p>
+                        <textarea
+                            className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
+                            value={ addConsultationData.laboratory_diagnostics_tests }
+                            rows="2"
+                            onChange={(e) => {handleChange("laboratory_diagnostics_tests", e.target.value)}}
+                        />
+                    </div>
+                    <div className='mb-4'>
                         <p className="block font-semibold text-black col-span-2 mb-2">Diagnosis<span className='text-red-600 ms-2'>*</span></p>
                         <textarea
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.diagnosis }
                             rows="2"
-                            onChange={(e) => {handleInputChange("diagnosis", e.target.value)}}
+                            onChange={(e) => {handleChange("diagnosis", e.target.value)}}
                         />
                         { addConsultationErrors.diagnosis.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{addConsultationErrors.diagnosis}</p>)}
                     </div>
@@ -298,7 +309,7 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             type='text'
                             className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
                             value={ addConsultationData.primary_diagnosis }
-                            onChange={(e) => {handleInputChange("primary_diagnosis", e.target.value)}}
+                            onChange={(e) => {handleChange("primary_diagnosis", e.target.value)}}
                         />
                         { addConsultationErrors.primary_diagnosis.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{addConsultationErrors.primary_diagnosis}</p>)}
                     </div>
@@ -359,15 +370,20 @@ const ConsultationForm = ({age, vitalSigns}) => {
                             max={getFormattedNumericDate(undefined, 1)}
                             className="col-span-5 border border-gray-800 block py-1 px-2 rounded"
                             value={ addConsultationData.follow_up_date }
-                            onChange={(e) => {handleInputChange("follow_up_date", e.target.value)}}
+                            onChange={(e) => {handleChange("follow_up_date", e.target.value)}}
                         />
                     </div>
                     <div className="mt-12 w-full">
                         <div className="flex justify-center items-center flex-col">
                             { addConsultationErrors.general.trim() != "" && (<p className='text-red-600 text-sm mb-4'>{addConsultationErrors.general}</p>)}
-                            <button type='submit' className="block px-14 h-10 bg-[#b43c3a] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
-                                Submit
-                            </button>
+                            <div className='flex items-center justify-center gap-2'>
+                                <button onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                                    Previous
+                                </button>
+                                <button type='submit' className="block px-14 h-10 bg-[#b43c3a] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                                    Submit
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </>

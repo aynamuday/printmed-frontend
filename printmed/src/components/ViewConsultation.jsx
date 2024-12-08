@@ -22,6 +22,7 @@ const ViewConsultation = () => {
             fetchConsultation()
         } else {
             setConsultation(consultations[viewConsultationId])
+            console.log(consultations[viewConsultationId])
         }
     }, [])
 
@@ -131,25 +132,35 @@ const ViewConsultation = () => {
                                     <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.medical_hx}</td>
                                 </tr>
                             )}
-                            { (consultation.pediatrics_h || consultation.pediatrics_e || consultation.pediatrics_a || consultation.pediatrics_d) && (
-                                <>
-                                    <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[25%]'>{"(H)"} Home</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pediatrics_h ?? ''}</td>
-                                    </tr>
-                                    <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[25%]'>{"(E)"} Education</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pediatrics_e ?? ''}</td>
-                                    </tr>
-                                    <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[25%]'>{"(A)"} Activities</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pediatrics_a ?? ''}</td>
-                                    </tr>
-                                    <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[25%]'>{"(D)"} Drugs</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pediatrics_d ?? ''}</td>
-                                    </tr>
-                                </>
+                            { (consultation.birth_maternal_hx) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Birth and Maternal History</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.birth_maternal_hx}</td>
+                                </tr>
+                            )}
+                            { (consultation.immunization) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Immunization</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.immunization}</td>
+                                </tr>
+                            )}
+                            { (consultation.heads) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>HEADS</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.heads}</td>
+                                </tr>
+                            )}
+                            { (consultation.pertinent_physical_examination) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Pertinent Physical Examination</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pertinent_physical_examination}</td>
+                                </tr>
+                            )}
+                            { (consultation.laboratory_diagnostics_tests) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Laboratory or Diagnostics Tests</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.laboratory_diagnostics_tests}</td>
+                                </tr>
                             )}
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[25%]'>Primary Diagnosis</th>
