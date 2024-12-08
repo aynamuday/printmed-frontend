@@ -6,113 +6,82 @@ import {globalSwalWithIcon} from '../utils/globalSwal';
 import { showError } from '../utils/fetch/showError';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { validateUserDetails } from '../utils/formValidations/validateUserDetails';
+import { validateEmail } from '../utils/formValidations/validateEmail';
+import { validateUserBirthdate } from '../utils/formValidations/validateUserBirthdate';
 
 const EditProfilePage = () => {
   const { user, setUser, token } = useContext(AppContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    role: user.role || '',
-    personnel_number: user.personnel_number || '',
-    full_name: user.full_name || '',
-    first_name: user.first_name || '',
-    middle_name: user.middle_name || '',
-    last_name: user.last_name || '',
-    suffix: user.suffix || '',
-    sex: user.sex || '',
-    birthdate: user.birthdate || '',
-    email: user.email || '',
+    personnel_number: user?.personnel_number || '',
+    personnel_number_input: user?.personnel_number?.replace('PN-', '') || '',
+    first_name: user?.first_name || '',
+    middle_name: user?.middleName || '',
+    last_name: user?.last_name || '',
+    suffix: user?.suffix || '',
+    sex: user?.sex || '',
+    birthdate: user?.birthdate || ''
   });
   const [loading, setLoading] = useState(false);
-
-  const [errors, setErrors] = useState({
-    first_name: '',
-    middle_name: '',
-    last_name: '',
-    personnel_number: '',
-  });
-
-  const capitalizeName = (name) => {
-    return name
-      .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-
-  const handleNameChange = (e) => {
-    const { name, value } = e.target;
-    let formattedValue = value.replace(/[^a-zA-Z\s]/g, '');
-    formattedValue = capitalizeName(formattedValue);
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: formattedValue,
-    }));
-  };
+  const [errors, setErrors] = useState([]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handlePersonnelNumberChange = (e) => {
-    let value = e.target.value;
-
-    setErrors((prevErrors) => ({ ...prevErrors, personnel_number: '' }));
-  
-    const personnelNumberRegex = /^PN-\d*$/
-    if (!personnelNumberRegex.test(value)) {
-      return
-    }
-
-    if (value.length < 4) {
-      value = 'PN-';
-    }
-  
-    setFormData((prevData) => ({
-      ...prevData,
-      personnel_number: value,
-    }));
-  };
+    validateUserDetails(e, setErrors, setFormData, formData)
+  }
   
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     setErrors([])
 
-    if (!formData.first_name || !formData.last_name || !formData.personnel_number) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        first_name: formData.first_name ? '' : 'First Name is required',
-        last_name: formData.last_name ? '' : 'Last Name is required',
-        personnel_number: formData.personnel_number ? '' : 'Personnel Number is required',
-      }));
+    if (formData.sex == "Female") {
+      setFormData(prevData => ({ ...prevData, suffix: ""})) 
+    }
+
+    let newErrors = {};
+    let isFormValid = true
+
+    if (formData.email) {
+      const error = validateEmail(formData.email_username)
+      if (error.trim() != "") {
+        newErrors.email = error
+        isFormValid = false
+      } 
+    }
+
+    if (formData.birthdate) {
+      const error = validateUserBirthdate(formData.birthdate)
+      if (error.trim() != "") {
+        newErrors.birthdate = error
+        isFormValid = false
+      }
+    }
+  
+    if (!isFormValid) {
+      setErrors(newErrors);
       return;
+    }
+
+    const formDataToSubmit = Object.keys(formData).reduce((acc, key) => {
+      if (formData[key].trim() == "" && (user[key] == null || user[key].trim() == "")) {
+        return acc
+      }
+
+      if ((formData[key] !== user[key])) {
+        acc[key] = formData[key]
+      }
+
+      return acc;
+    }, {});
+
+    if (!Object.keys(formDataToSubmit).length > 0) {
+      navigate('/settings');
+      return
     }
 
     try {
       setLoading(true)
-
-      const formDataToSubmit = Object.keys(formData).reduce((acc, key) => {
-        if (formData[key].trim() == "" && (user[key] == null || user[key].trim() == "")) {
-          return acc
-        }
-
-        if ((formData[key] !== user[key])) {
-          acc[key] = formData[key]
-        }
-
-        return acc;
-      }, {});
-
-      if (!Object.keys(formDataToSubmit).length > 0) {
-        navigate('/settings');
-        return
-      }
 
       const res = await fetch(`/api/users/${user.id}/update-information`, {
         method: 'PUT',
@@ -125,10 +94,8 @@ const EditProfilePage = () => {
       const data = await res.json()
 
       if(!res.ok) {
-        if (res.status === 422 && data.field == "email") {
-          throw new Error("Email is already taken.")
-        } else if (res.status === 422 && data.field == "personnel_number") {
-          throw new Error("Personnel number is already taken.")
+        if (res.status === 422 && data.field == "personnel_number") {
+          showWarning("Personnel number is already taken.")
         } else {
           throw new Error("Something went wrong. Please try again later.")
         }
@@ -179,19 +146,24 @@ const EditProfilePage = () => {
                   <label className="block text-sm font-medium text-black">
                     Personnel Number <span className="text-red-600 cursor-help">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="personnel_number"
-                    value={formData.personnel_number || "PN-"}
-                    onChange={(e) => handlePersonnelNumberChange(e)}
-                    className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                    minLength="10"
-                    maxLength="10"
-                    placeholder='Personnel Number'
-                    required
-                  />
+                  <div className="relative">
+                    <div className="flex items-center border rounded-md border-black overflow-hidden">
+                      <span className="bg-gray-100 p-2">PN-</span>
+                      <input
+                          type="text"
+                          name="personnel_number_input"
+                          placeholder="Personnel Number"
+                          value={formData.personnel_number_input}
+                          onChange={handleChange}
+                          className="flex-1 p-2 border-l border-black focus:outline-none"
+                          maxLength="7"
+                          minLength="7"
+                          required
+                      />
+                    </div>
+                  </div>
                   {errors.personnel_number && (
-                    <p className="text-red-600 text-xs">{errors.personnel_number}</p>
+                    <p className="text-red-600 text-sm">{errors.personnel_number}</p>
                   )}
                 </div>
 
@@ -204,13 +176,13 @@ const EditProfilePage = () => {
                     type="text"
                     name="first_name"
                     value={formData.first_name}
-                    onChange={handleNameChange}
+                    onChange={handleChange}
                     placeholder='First Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
                   {errors.first_name && (
-                    <p className="text-red-600 text-xs">{errors.first_name}</p>
+                    <p className="text-red-600 text-sm">{errors.first_name}</p>
                   )}
                 </div>
 
@@ -221,10 +193,13 @@ const EditProfilePage = () => {
                     type="text"
                     name="middle_name"
                     value={formData.middle_name}
-                    onChange={handleNameChange}
+                    onChange={handleChange}
                     placeholder='Middle Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                   />
+                  {errors.middle_name && (
+                    <p className="text-red-600 text-sm">{errors.middle_name}</p>
+                  )}
                 </div>
 
                 {/* Last Name */}
@@ -236,13 +211,13 @@ const EditProfilePage = () => {
                     type="text"
                     name="last_name"
                     value={formData.last_name}
-                    onChange={handleNameChange}
+                    onChange={handleChange}
                     placeholder='Last Name'
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
                   {errors.last_name && (
-                    <p className="text-red-600 text-xs">{errors.last_name}</p>
+                    <p className="text-red-600 text-sm">{errors.last_name}</p>
                   )}
                 </div>
 
@@ -294,6 +269,9 @@ const EditProfilePage = () => {
                     className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
                     required
                   />
+                  {errors.birthdate && (
+                    <p className="text-red-600 text-sm">{errors.birthdate}</p>
+                  )}
                 </div>
               </div>
 

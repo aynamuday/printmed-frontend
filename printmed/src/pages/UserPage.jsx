@@ -10,6 +10,10 @@ import Sidebar from "../components/Sidebar";
 import logo from '../assets/images/logo.png';
 
 import AppContext from "../context/AppContext";
+import { validateEmail } from "../utils/formValidations/validateEmail";
+import { showWarning } from "../utils/fetch/showWarning";
+import { validateUserDetails } from "../utils/formValidations/validateUserDetails";
+import { validateUserBirthdate } from "../utils/formValidations/validateUserBirthdate";
 
 // for viewing/updating a user, and adding a new user
 const UserPage = () => {
@@ -38,7 +42,6 @@ const UserPage = () => {
     department_id: '',
     personnel_number_input: '',
   });
-  console.log(formData);
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
 
@@ -47,114 +50,59 @@ const UserPage = () => {
       const user = location.state.user
 
       setFormData({
-        role: user ? user.role : '',
-        personnel_number: user ? user.personnel_number : '',
-        personnel_number_input: user ? user.personnel_number?.replace('PN-', '') ?? '' : '',
-        first_name: user ? user.first_name : '',
-        middle_name: user ? user.middleName ?? '' : '',
-        last_name: user ? user.last_name : '',
-        suffix: user ? user.suffix ?? '' : '',
-        sex: user ? user.sex : '',
-        birthdate: user ? user.birthdate : '',
-        email: user ? user.email : '',
-        email_username: user ? user.email?.replace('@gmail.com', '') ?? '' : '',
-        department_id: user ? user.department_id ?? '' : ''
+        role: user?.role || '',
+        personnel_number: user?.personnel_number || '',
+        personnel_number_input: user?.personnel_number?.replace('PN-', '') || '',
+        first_name: user?.first_name || '',
+        middle_name: user?.middleName || '',
+        last_name: user?.last_name || '',
+        suffix: user?.suffix || '',
+        sex: user?.sex || '',
+        birthdate: user?.birthdate || '',
+        email: user?.email || '',
+        email_username: user?.email?.replace('@gmail.com', '') || '',
+        department_id: user?.department_id || ''
       })
     }
 
     setErrors([])
   }, [userId])
-
-  const handleEmailChange = (e) => {
-    let emailUsername = e.target.value;
-    
-    emailUsername = emailUsername.replace(/[^a-zñ0-9.+]/g, '');
-    
-    setFormData({
-      ...formData,
-      email_username: emailUsername,
-      email: emailUsername + "@gmail.com",
-    });
-
-    let newErrors = { ...errors };
-  
-    if (emailUsername.length < 6 || emailUsername.length > 30) {
-      newErrors.email = "Email username must be between 6 and 30 characters.";
-    }
-    else if (/^[\.\+]/.test(emailUsername)) {
-      newErrors.email = "Username cannot start with a special character like . or +.";
-    }
-    else if (/\.\./.test(emailUsername)) {
-      newErrors.email = "Username cannot have consecutive dots.";
-    }
-    else if (/[^a-z0-9]$/.test(emailUsername)) {
-      newErrors.email = "The last character must be a letter or number.";
-    } else {
-      newErrors.email = "";
-    }
-  
-    setErrors(newErrors);
-  };
   
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    console.log(value);
-
-    const capitalizedValue = (name != "suffix" && name != "role") ? capitalizedWords(value) : value
-
-    setErrors({ ...errors, [name]: '' });
-  
-    // letters only
-    if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: 'Cannot contain numbers or special characters.',
-      }));
-      return;
-    }
-
-    if (name === 'personnel_number') {
-    const personnelNumber = value.replace(/\D/g, ''); // Remove non-numeric characters
-    const limitedValue = personnelNumber.slice(0, 7); // Max 7 characters for numeric part
-    const formattedValue = "PN-" + limitedValue;
-
-    setFormData({
-      ...formData,
-      personnel_number_input: limitedValue,
-      personnel_number: formattedValue,
-    });
-
-    // Display error if non-numeric or length exceeds limit
-    if (/[^\d]/.test(value)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        personnel_number: 'Only numeric characters are allowed.',
-      }));
-    } else if (formattedValue.length !== 10) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        personnel_number: 'Personnel Number must be exactly 10 characters.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        personnel_number: '',
-      }));
-    }
-    return;
+    validateUserDetails(e, setErrors, setFormData, formData)
   }
-
-    setFormData({
-      ...formData,
-      [name]: capitalizedValue,
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors([])
 
+    if (formData.sex == "Female") {
+      setFormData(prevData => ({ ...prevData, suffix: ""})) 
+    }
+
     let newErrors = {};
+    let isFormValid = true
+
+    if (formData.email) {
+      const error = validateEmail(formData.email_username)
+      if (error.trim() != "") {
+        newErrors.email = error
+        isFormValid = false
+      } 
+    }
+
+    if (formData.birthdate) {
+      const error = validateUserBirthdate(formData.birthdate)
+      if (error.trim() != "") {
+        newErrors.birthdate = error
+        isFormValid = false
+      }
+    }
+  
+    if (!isFormValid) {
+      setErrors(newErrors);
+      return;
+    }
 
     let filteredFormData = formData
     if (!userId) {
@@ -165,7 +113,7 @@ const UserPage = () => {
       const user = location.state.user
 
       filteredFormData = Object.keys(formData).reduce((acc, key) => {
-        if (String(formData[key]).trim() == "" && (user[key] == null || String(user[key]).trim() == "")) {
+        if ((String(formData[key]).trim() == "" && (user[key] == null || String(user[key]).trim() == "")) || key == "email_username" || key == 'personnel_number_input') {
             return acc
         }
 
@@ -181,21 +129,6 @@ const UserPage = () => {
         return
       }
     }
-
-    if (formData.email_username.length < 6 || formData.email_username.length > 30) {
-      newErrors.email = "Email username must be between 6 and 30 characters.";
-    }
-  
-    if (errors.email) {
-      newErrors.email = errors.email;
-    }
-  
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-  
-    console.log("Form submitted:", formData);
 
     globalSwalNoIcon.fire({
       title: `Are you sure you want to ${userId ? "update" : "add"} this account?`,
@@ -221,18 +154,19 @@ const UserPage = () => {
           const data = await res.json()
    
           if(!res.ok) {
-              if (res.status === 422 && data.field == "email") {
-                throw new Error("Email is already taken.")
-              } else if (res.status === 422 && data.field == "personnel_number") {
-                throw new Error("Personnel number is already taken.")
-              } else {
-                throw new Error("Something went wrong. Please try again later.")
-              }
+            if (res.status === 422 && data.field == "email") {
+              showWarning("Email is already taken.")
+            } else if (res.status === 422 && data.field == "personnel_number") {
+              showWarning("Personnel number is already taken.")
+            } else {
+              throw new Error("Something went wrong. Please try again later.")
+            }
           }
           
           setFormData({
             role: '',
             personnel_number: '',
+            personnel_number_input: '',
             first_name: '',
             middle_name: '',
             last_name: '',
@@ -240,6 +174,7 @@ const UserPage = () => {
             sex: '',
             birthdate: '',
             email: '',
+            email_username: '',
             department_id: '',
           });
 
@@ -313,42 +248,22 @@ const UserPage = () => {
                     Personnel Number <span className="text-red-600 cursor-help">*</span>
                 </label>
                 <div className="relative">
-                  <div className="flex items-center border rounded-md border-black overflow-hidden">
-                    <span className="bg-gray-100 p-2 text-gray-700">PN-</span>
+                    <div className="flex items-center border rounded-md border-black overflow-hidden">
+                      <span className="bg-gray-100 p-2">PN-</span>
                       <input
-                        type="text"
-                        name="personnel_number"
-                        placeholder="Personnel Number"
-                        value={formData.personnel_number_input}
-                        onChange={(e) => {
-                          const personnelNumber = e.target.value.replace(/\D/g, '');
-                          const limitedValue = personnelNumber.slice(0, 7);
-                            setFormData({
-                              ...formData,
-                              personnel_number_input: limitedValue,
-                              personnel_number: "PN-" +  limitedValue,
-                            });
-
-                            if (/[^0-9]/.test(e.target.value)) {
-                              setErrors({
-                                ...errors,
-                                personnel_number: 'Only numeric characters are allowed.',
-                              });
-                            } else {
-                              setErrors({
-                                ...errors,
-                                personnel_number: '',
-                              });
-                            }
-                          }}
-                        className="flex-1 p-2 border-l border-black focus:outline-none"
-                        maxLength="7"
-                        minLength="7"
-                        required
+                          type="text"
+                          name="personnel_number_input"
+                          placeholder="Personnel Number"
+                          value={formData.personnel_number_input}
+                          onChange={handleChange}
+                          className="flex-1 p-2 border-l border-black focus:outline-none"
+                          maxLength="7"
+                          minLength="7"
+                          required
                       />
                     </div>
-                  {errors.personnel_number && (<p className="text-red-600 text-sm">{errors.personnel_number}</p>)}
-                </div>
+                  </div>
+                  {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.personnel_number}</p>}
               </div>
 
               <div>
@@ -441,17 +356,11 @@ const UserPage = () => {
                   value={formData.birthdate}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]} // min age is 18
-                  min={new Date(new Date().setFullYear(new Date().getFullYear() - 100)).toISOString().split("T")[0]} // max age is 100
                   required
                 />
-                {formData.birthdate &&
-                  new Date(formData.birthdate) > new Date(new Date().setFullYear(new Date().getFullYear() - 18)) && (
-                    <p className="text-red-600 text-sm mt-1">
-                      User must be at least 18 years old.
-                    </p>
-                  )
-                }
+                {errors.birthdate && (
+                  <p className="text-red-600 text-sm mt-1 mb-1">{errors.birthdate}</p>
+                )}
               </div>
 
               <div className="mb-2">
@@ -464,20 +373,11 @@ const UserPage = () => {
                     name="email_username"
                     placeholder="Email"
                     value={formData.email_username}
-                    onChange={handleEmailChange}
-                    onInput={(e) => {
-                      const filteredValue = e.target.value.replace(/[^a-zñ0-9.+]/g, '');
-                      e.target.value = filteredValue;
-                      setFormData({
-                        ...formData,
-                        email_username: filteredValue,
-                        email: filteredValue + "@gmail.com",
-                      });
-                    }}
-                    className="w-full p-2 focus:outline-none"
+                    onChange={handleChange}
+                    className="w-full p-2 focus:outline-none border-r border-r-black"
                     required
                   />
-                  <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span>
+                  <span className="bg-gray-100 px-2">@gmail.com</span>
                 </div>
                 {errors.email && (
                   <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>
