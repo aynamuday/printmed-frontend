@@ -16,6 +16,6 @@ export const validateEmail = (email) => {
     if (email.length < 6 || email.length > 30) {
         return 'Email username must be between 6 to 30 characters.';
     }
-
+    
     return ""
 }

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import bg_nurse from '../assets/images/bg-nurse.png';
 import logo from '../assets/images/logo.png';
 import { BounceLoader } from 'react-spinners';
-import { capitalizedWords } from '../utils/wordUtils';
 import { showError } from '../utils/fetch/showError';
 import { validatePatientDetails } from '../utils/formValidations/validatePatientDetails';
 import { validatePhoneNumber } from '../utils/formValidations/validatePhoneNumber';
@@ -18,7 +17,7 @@ import { fetchCities } from '../utils/fetch/fetchCities';
 import { fetchBarangays } from '../utils/fetch/fetchBarangays';
 import { handleBarangayChange } from '../utils/handleBarangayChange';
 import { validatePostalCode } from '../utils/formValidations/validatePostalCode';
-import { validateBirthdate } from '../utils/formValidations/validateBirthdate';
+import { validatePatientBirthdate } from '../utils/formValidations/validatePatientBirthdate';
 
 function RegistrationPage() {
     const navigate = useNavigate();
@@ -144,8 +143,8 @@ function RegistrationPage() {
     const handleConfirm = (e) => {
         e.preventDefault();
 
-        if (formData.sex == "Male") {
-            setFormData(prevData => ({ ...prevData, suffix: null})) 
+        if (formData.sex == "Female") {
+            setFormData(prevData => ({ ...prevData, suffix: ""})) 
         }
     
         let newErrors = {};
@@ -172,7 +171,7 @@ function RegistrationPage() {
             newErrors.birthdate = 'This field is required.';
             formIsValid = false;
         } else {
-            const error = validateBirthdate(formData.birthdate)
+            const error = validatePatientBirthdate(formData.birthdate)
             if (error.trim() != "") {
                 newErrors.birthdate = error
                 formIsValid = false

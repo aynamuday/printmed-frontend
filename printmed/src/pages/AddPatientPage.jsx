@@ -17,7 +17,7 @@ import { fetchPhysicians } from "../utils/fetch/fetchPhysicians";
 import { validatePatientDetails } from "../utils/formValidations/validatePatientDetails";
 import { validatePhoneNumber } from "../utils/formValidations/validatePhoneNumber";
 import { validatePostalCode } from "../utils/formValidations/validatePostalCode";
-import { validateBirthdate } from "../utils/formValidations/validateBirthdate";
+import { validatePatientBirthdate } from "../utils/formValidations/validatePatientBirthdate";
 import { validateEmail } from "../utils/formValidations/validateEmail";
 import { handleRegionChange } from "../utils/handleRegionChange";
 import { handleProvinceChange } from "../utils/handleProvinceChange";
@@ -133,8 +133,8 @@ const AddPatientPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (newPatientData.sex == "Male") {
-      setNewPatientData(prevData => ({ ...prevData, suffix: null})) 
+    if (newPatientData.sex == "Female") {
+      setNewPatientData(prevData => ({ ...prevData, suffix: ""})) 
     }
 
     let newErrors = {};
@@ -159,7 +159,7 @@ const AddPatientPage = () => {
     }
 
     if (newPatientData.birthdate.trim() !== "") {
-      const error = validateBirthdate(newPatientData.birthdate)
+      const error = validatePatientBirthdate(newPatientData.birthdate)
       if (error.trim() != "") {
           newErrors.birthdate = error
           formIsValid = false
@@ -708,14 +708,7 @@ const AddPatientPage = () => {
                         name="email_username"
                         className="w-full p-2 focus:outline-none border-r border-r-black"
                         value={newPatientData.email_username}
-                        onChange={(e) => {
-                          const emailUsername = e.target.value;
-                          setNewPatientData({
-                              ...newPatientData,
-                              email_username: emailUsername,
-                              email: emailUsername + "@gmail.com",
-                          });
-                        }}
+                        onChange={handleChange}
                       />
                       <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                     </div>

@@ -12,7 +12,7 @@ import { ClipLoader } from 'react-spinners';
 import { validatePatientDetails } from "../utils/formValidations/validatePatientDetails";
 import { validatePhoneNumber } from "../utils/formValidations/validatePhoneNumber";
 import { validatePostalCode } from "../utils/formValidations/validatePostalCode";
-import { validateBirthdate } from "../utils/formValidations/validateBirthdate";
+import { validatePatientBirthdate } from "../utils/formValidations/validatePatientBirthdate";
 import { validateEmail } from "../utils/formValidations/validateEmail";
 import { handleRegionChange } from "../utils/handleRegionChange";
 import { handleProvinceChange } from "../utils/handleProvinceChange";
@@ -135,8 +135,8 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        if (updateData.sex == "Male") {
-            setUpdateData(prevData => ({ ...prevData, suffix: null})) 
+        if (updateData.sex == "Female") {
+            setUpdateData(prevData => ({ ...prevData, suffix: ""})) 
         }
 
         let newErrors = {};
@@ -161,7 +161,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         }
 
         if (updateData.birthdate.trim() !== "") {
-            const error = validateBirthdate(updateData.birthdate)
+            const error = validatePatientBirthdate(updateData.birthdate)
             if (error.trim() != "") {
                 newErrors.birthdate = error
                 formIsValid = false
@@ -708,14 +708,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                         name="email_username"
                                                         className="w-full p-2 focus:outline-none border-r border-r-black"
                                                         value={updateData.email_username}
-                                                        onChange={(e) => {
-                                                            const emailUsername = e.target.value;
-                                                            setUpdateData({
-                                                                ...updateData,
-                                                                email_username: emailUsername,
-                                                                email: emailUsername + "@gmail.com",
-                                                            });
-                                                        }}
+                                                        onChange={handleChange}
                                                     />
                                                     <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                                                 </div>

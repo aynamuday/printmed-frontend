@@ -232,6 +232,7 @@ const RegistrationsPage = () => {
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
+                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Middle Name</th>
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Sex</th>
                       <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
@@ -244,6 +245,7 @@ const RegistrationsPage = () => {
                         <td className="p-0.5 border text-center border-[#828282]">{registration.registration_id}</td>
                         <td className="p-0.5 border text-center border-[#828282]">{registration.last_name}</td>
                         <td className="p-0.5 border text-center border-[#828282]">{registration.first_name}</td>
+                        <td className="p-0.5 border text-center border-[#828282]">{registration.middle_name}</td>
                         <td className="p-0.5 border text-center border-[#828282]">{registration.age}</td>
                         <td className="p-0.5 border text-center border-[#828282]">{registration.sex}</td>
                         <td className="p-0.5 border text-center border-[#828282]">
@@ -258,7 +260,7 @@ const RegistrationsPage = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="border p-2 border-[#828282] text-center">
+                      <td colSpan="7" className="border p-2 border-[#828282] text-center">
                         No registrations
                       </td>
                     </tr>
