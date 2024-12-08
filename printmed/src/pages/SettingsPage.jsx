@@ -14,8 +14,7 @@ const SettingsPage = () => {
       title: 'Are you sure you want to log out?',
       showCancelButton: true,
       confirmButtonText: 'Yes',
-      cancelButtonText: 'Cancel',
-      allowOutsideClick: false,
+      cancelButtonText: 'Cancel'
     });
   
     if (result.isConfirmed) {
@@ -38,11 +37,12 @@ const SettingsPage = () => {
         setUser(null);
         navigate('/login');
       } catch (error) {
-        console.error('Logout Error:', error);
         globalSwalWithIcon.fire({
           title: 'There was an issue logging out.',
           html: `<p style="color: black; font-size: 17px; margin: 0;">You may refresh or check your Internet connection.</p>`,
           icon: 'error',
+          showConfirmButton: false,
+          showCloseButton: true
         });
       }
     }

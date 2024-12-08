@@ -52,7 +52,7 @@ export const validatePatientDetails = (e, setErrors, setFormData, formData) => {
 
         // only allows letters, numbers, dot
         if (!/^[a-zA-Z0-9.]*$/.test(emailUsername)) {
-            setErrors({...errors, email: "Can only contain letters, numbers, and dot."})
+            setErrors((prevErrors) => ({...prevErrors, email: "Can only contain letters, numbers, and dot."}))
             return
         }
 

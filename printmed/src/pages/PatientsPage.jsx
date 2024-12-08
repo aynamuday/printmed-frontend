@@ -146,7 +146,6 @@ const PatientsPage = () => {
 
     setLoading(true)
     setIsQrInputFocused(false)
-    setQrCode("")
 
     try {
       const patient = await fetchPatientUsingQr(qrCode, token)
@@ -159,6 +158,7 @@ const PatientsPage = () => {
     }
     finally {
       setLoading(false)
+      setQrCode("")
     }
   }
 
@@ -192,6 +192,7 @@ const PatientsPage = () => {
           onChange={(e) => setQrCode(e.target.value)}
           onFocus={handleQrInputFocus}
           onBlur={handleQrInputBlur}
+          disabled={loading}
           required
         />
       </form>

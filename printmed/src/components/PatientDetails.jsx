@@ -570,7 +570,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Street</th>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Street {update && <p className='text-gray-700 font-normal'>(or Purok)</p>}</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             <input
                                                 type="text"
