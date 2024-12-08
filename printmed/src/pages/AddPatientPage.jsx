@@ -6,7 +6,6 @@ import { BounceLoader, ClipLoader } from "react-spinners";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {globalSwalNoIcon, globalSwalWithIcon} from "../utils/globalSwal";
 import logo from '../assets/images/logo.png';
-import { capitalizedWords } from "../utils/wordUtils";
 import { base64ToPngFile } from "../utils/fileUtils";
 
 import Header from "../components/Header"
@@ -14,8 +13,20 @@ import Sidebar from "../components/Sidebar"
 import WebcamCapture from "../components/WebcamCapture"
 import { showError } from "../utils/fetch/showError";
 import { fetchPatient } from "../utils/fetch/fetchPatient";
-//import { handlePhoneNumberChange } from "../utils/handlePhoneNumberChange";
 import { fetchPhysicians } from "../utils/fetch/fetchPhysicians";
+import { validatePatientDetails } from "../utils/formValidations/validatePatientDetails";
+import { validatePhoneNumber } from "../utils/formValidations/validatePhoneNumber";
+import { validatePostalCode } from "../utils/formValidations/validatePostalCode";
+import { handleRegionChange } from "../utils/handleRegionChange";
+import { handleProvinceChange } from "../utils/handleProvinceChange";
+import { handleCityChange } from "../utils/handleCityChange";
+import { fetchProvinces } from "../utils/fetch/fetchProvinces";
+import { fetchRegions } from "../utils/fetch/fetchRegions";
+import { fetchCities } from "../utils/fetch/fetchCities";
+import { fetchBarangays } from "../utils/fetch/fetchBarangays";
+import { validateBirthdate } from "../utils/formValidations/validateBirthdate";
+import { handleBarangayChange } from "../utils/handleBarangayChange";
+import { validateEmail } from "../utils/formValidations/validateEmail";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
@@ -23,7 +34,6 @@ const AddPatientPage = () => {
   const navigate = useNavigate();
 
   const [physicians, setPhysicians] = useState([])
-  const [duplicatePatients, setDuplicatePatients] = useState([])
   const registration = state?.registration || {};
   const [newPatientData, setNewPatientData] = useState({
     first_name: registration.first_name || '',
@@ -37,208 +47,37 @@ const AddPatientPage = () => {
     house_number: registration.house_number || '',
     street: registration.street || '',
     barangay: registration.barangay || '',
-    city: registration.city || '',
-    province: registration.province || '',
     region: registration.region || '',
+    region_code: registration.region_code || '',
+    province: registration.province || '',
+    province_code: registration.province_code || '',
+    city: registration.city || '',
+    city_code: registration.city_code || '',
+    barangay: registration.barangay || '',
+    barangay_code: registration.barangay_code || '',
     postal_code: registration.postal_code || '',
     religion: registration.religion || '',
     email: registration.email || '',
-    email_username: registration.email_username || '',
+    email_username: registration.email?.slice(0, registration.email.indexOf("@gmail.com")) || '',
     phone_number: registration.phone_number || '',
     physician_id: '',
     registration_id: registration.id || '',
   });
-  console.log('Registration Data:', registration);
-
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
-
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState([]);
-
-  const fetchRegions = async () => {
-    const response = await fetch('https://psgc.gitlab.io/api/regions.json');
-    const data = await response.json();
-    console.log(data);
-    return data;
-  }
+  const [duplicatePatients, setDuplicatePatients] = useState([])
 
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
 
-  useEffect(() => {
-    const getRegions = async () => {
-      const regionData = await fetchRegions();
-      setRegions(regionData);
-    };
-    getRegions();
-  }, []);
-
-  const handlePhoneNumberChange = (e) => {
-    let value = e.target.value;
-
-    const sanitizedValue = value.replace(/\D/g, '');
-
-    if (value !== sanitizedValue) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        phone_number: 'Phone number can only contain numbers.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }));
-    }
-
-    const limitedValue = sanitizedValue.slice(0, 10);
-
-    setNewPatientData({
-      ...newPatientData,
-      phone_number: limitedValue,
-    });
-  };
-
-  // Fetch provinces based on selected region
-  const handleRegionChange = async (event) => {
-    const selectedRegion = event.target.value;
-
-    // Find the region object by its name
-    const regionObject = regions.find((region) => region.name === selectedRegion);
-
-    if (regionObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/regions/${regionObject.code}/provinces.json`);
-        const data = await response.json();
-
-        setProvinces(data);
-        setNewPatientData({ ...formData, region: selectedRegion });
-    } else {
-        console.error("Region not found.");
-    }
-};
-
-// Fetch cities based on selected province
-const handleProvinceChange = async (event) => {
-    const selectedProvince = event.target.value;
-
-    // Find the province object by its name
-    const provinceObject = provinces.find((province) => province.name === selectedProvince);
-
-    if (provinceObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/provinces/${provinceObject.code}/cities.json`);
-        const data = await response.json();
-
-        setCities(data);
-        setNewPatientData({ ...formData, province: selectedProvince });
-    } else {
-        console.error("Province not found.");
-    }
-};
-
-// const handleProvinceChange = async (event) => {
-//     const selectedProvince = event.target.value;
-
-//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     const additionalData = selectedOptionElement.getAttribute('data-code'); 
-//     const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-//     const data = await response.json();
-//     console.log(selectedProvince);
-
-//     setCities(data);
-
-//     // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-//     setFormData({ ...formData, province: selectedProvince });
-//     console.log(additionalData)
-// };
-
-// Fetch barangays based on selected city
-const handleCityChange = async (event) => {
-    const selectedCity = event.target.value;
-
-    // Find the city object by its name
-    const cityObject = cities.find((city) => city.name === selectedCity);
-
-    if (cityObject) {
-        const response = await fetch(`https://psgc.gitlab.io/api/cities/${cityObject.code}/barangays.json`);
-        const data = await response.json();
-
-        setBarangays(data);
-        setNewPatientData({ ...formData, city: selectedCity });
-    } else {
-        console.error("City not found.");
-    }
-};
-
-// const handleCityChange = async (event) => {
-//     const selectedCity = event.target.value;
-
-//     const selectedOptionElement = event.target.options[event.target.selectedIndex];
-//     const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-//     const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-//     const data = await response.json();
-//     console.log(selectedCity)
-
-//     setBarangays(data);
-    
-//     setFormData({ ...formData, city: selectedCity });
-//     console.log(additionalData)
-// };
-
-
-  // const handleRegionChange = async (event) => {
-  //   const selectedRegion = event.target.value;
-  //   // setFormData({ ...formData, region: selectedRegion });
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
-  //   const response = await fetch(`https://psgc.gitlab.io/api/regions/${additionalData}/provinces.json`);
-  //   const data = await response.json();
-  //   console.log(selectedRegion);
-
-  //   // regions.
-  //   // regions // where code == ""
-  //   setProvinces(data);
-  //   // console.log(data.name);
-  //   // selected = event.target.selectedIndex
-  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-  //   console.log(additionalData)
-
-  //   setNewPatientData({ ...newPatientData, region: selectedRegion });
-  // };
-
-  // const handleProvinceChange = async (event) => {
-  //   const selectedProvince = event.target.value;
-
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code'); 
-  //   const response = await fetch(`https://psgc.gitlab.io/api/provinces/${additionalData}/cities.json`);
-  //   const data = await response.json();
-  //   console.log(selectedProvince);
-
-  //   setCities(data);
-
-  //   // const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   // const additionalData = selectedOptionElement.getAttribute('data-name');  // Access the data-info attribute
-  //   setNewPatientData({ ...newPatientData, province: selectedProvince });
-  //   console.log(additionalData)
-  // };
-
-  // const handleCityChange = async (event) => {
-  //   const selectedCity = event.target.value;
-
-  //   const selectedOptionElement = event.target.options[event.target.selectedIndex];
-  //   const additionalData = selectedOptionElement.getAttribute('data-code');  // Access the data-info attribute
-  //   const response = await fetch(`https://psgc.gitlab.io/api/cities/${additionalData}/barangays.json`);
-  //   const data = await response.json();
-  //   console.log(selectedCity)
-
-  //   setBarangays(data);
-    
-  //   setNewPatientData({ ...newPatientData, city: selectedCity });
-  //   console.log(additionalData)
-  // };
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
+    getRegions()
+
     const getPhysicians = async () => {
       try {
         setPhysicians(await fetchPhysicians(token))
@@ -246,47 +85,48 @@ const handleCityChange = async (event) => {
         showError(err)
       }
     };
-    
+
     getPhysicians()
   }, [])
 
+  const getRegions = async () => {
+    const data = await fetchRegions()
+    setRegions(data.geonames)
+  };
+
+  // executes when region code changes
+  useEffect(() => {
+    const getProvinces = async () => {
+      const data = await fetchProvinces(newPatientData.region_code)
+      setProvinces(data.geonames)
+    }
+    getProvinces()
+  }, [newPatientData.region_code])
+
+  // executes when province code changes
+  useEffect(() => {
+    const getCities = async () => {
+      const data = await fetchCities(newPatientData.province_code)
+      setCities(data.geonames)
+    }
+    getCities()
+  }, [newPatientData.province_code])
+
+  // executes when city code changes
+  useEffect(() => {
+    const getBarangays = async () => {
+      const data = await fetchBarangays(newPatientData.city_code)
+      setBarangays(data.geonames)
+    }
+    getBarangays()
+  }, [newPatientData.city_code])
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const capitalizedValue = name !== "email" && name !== "suffix" ? capitalizedWords(value) : value
+    validatePatientDetails(e, setErrors, setNewPatientData, newPatientData)
+  };
 
-    setErrors({ ...errors, [name]: '' });
-      
-    // no numbers and symbols numbers
-    if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: 'Cannot contain numbers or special characters.',
-      }));  
-      return;
-    }
-
-    // no symbols allowed
-    if ((name === 'house_number' || name === 'street') && /[^a-zA-Z0-9\s]/.test(value)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: 'Enter a valid house number.',
-      }))
-      return;
-    }
-    
-    if (name === 'postal_code') {
-        if (/[^0-9]/.test(value)) {
-          return;
-        }
-        if (value.length > 4) {
-          return;
-        }
-    }
-
-    setNewPatientData({ 
-        ...newPatientData, 
-        [name]: capitalizedValue, 
-    });
+  const handlePhoneNumberChange = (e) => {
+    validatePhoneNumber(e, setErrors, setNewPatientData, newPatientData)
   };
 
   const handleSubmit = async (e) => {
@@ -297,31 +137,21 @@ const handleCityChange = async (event) => {
 
     setErrors({});
 
-    if (!newPatientData.email_username.trim()) {
-      newErrors.email = 'Email username is required.';
-      formIsValid = false;
-  } else if (!/^[a-zA-Z0-9._%+-]+$/.test(newPatientData.email_username)) {
-      newErrors.email = 'Email username contains invalid characters.';
-      formIsValid = false;
-  }
-
-  // Construct full email and assign to formData
-  const fullEmail = `${newPatientData.email_username}@gmail.com`;
-  newPatientData.email = fullEmail;
-
-  // Reassign errors if email is invalid
-  if (!/\S+@\S+\.\S+/.test(fullEmail)) {
-      newErrors.email = 'Please enter a valid email address.';
-      formIsValid = false;
-  }
-
-    if (newPatientData.postal_code.trim() !== "" && (Number (newPatientData.postal_code) < 1000 || Number (newPatientData.postal_code) > 9999)) {
-      newErrors.postal_code = 'Postal code must only range between 1000-9999';
+    if (newPatientData.email_username.trim() != "") {
+      const error = validateEmail(newPatientData.email_username)
+      if (error.trim() != "") {
+        newErrors.email = error
+        formIsValid = false
+      }
     }
 
-    if (newPatientData.phone_number.length !== 11) {
-      newErrors.phone_number = 'Please enter a valid phone number.';
-      formIsValid = false;
+
+    if (newPatientData.birthdate.trim() === "") {
+      const error = validateBirthdate(formData.birthdate)
+      if (error.trim() != "") {
+          newErrors.birthdate = error
+          formIsValid = false
+      }
     }
 
     if (!image) {
@@ -378,24 +208,6 @@ const handleCityChange = async (event) => {
       } 
     })
   }
-
-  const viewPatient = async (patientId) => {
-    setLoading(true)
-
-    try {
-        const patient = await fetchPatient(patientId, token)
-
-        navigate(`/patients/${patientId}`, {
-          state: { patient }
-        });
-    }
-    catch (err) {
-      showError(err)
-    }
-    finally {
-        setLoading(false)
-    }
-  }
   
   const addPatient = async (e) => {
     e.preventDefault()
@@ -450,10 +262,15 @@ const handleCityChange = async (event) => {
         email: '',
         email_username: '',
         house_number: '',
-        barangay: '',
         street: '',
-        city: '',
+        region: '',
+        region_code: '',
         province: '',
+        province_code: '',
+        city: '',
+        city_code: '',
+        barangay: '',
+        barangay_code: '',
         postal_code: '',
       });
 
@@ -469,6 +286,25 @@ const handleCityChange = async (event) => {
     catch (err) {
       setLoading(false)
       showError(err)
+    }
+  }
+
+  // from duplicates
+  const viewPatient = async (patientId) => {
+    setLoading(true)
+
+    try {
+        const patient = await fetchPatient(patientId, token)
+
+        navigate(`/patients/${patientId}`, {
+          state: { patient }
+        });
+    }
+    catch (err) {
+      showError(err)
+    }
+    finally {
+        setLoading(false)
     }
   }
 
@@ -568,7 +404,7 @@ const handleCityChange = async (event) => {
                       onChange={handleChange} 
                       className="mt-1 block w-full border p-2 rounded-md border-black" 
                     />
-                    {errors.first_name && <p className="text-red-600 text-sm mt-1">{errors.first_name}</p>}
+                    {errors.middle_name && <p className="text-red-600 text-sm mt-1">{errors.middle_name}</p>}
                   </div>
 
                   {/* Last Name */}
@@ -634,25 +470,26 @@ const handleCityChange = async (event) => {
                       value={newPatientData.birthdate}
                       onChange={handleChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black"
-                      max={new Date().toISOString().split("T")[0]}
-                      min="1920-01-01"
                       required
                     />
+                    {errors.birthdate && <p className="text-red-600 text-sm mt-1">{errors.birthdate}</p>}
                   </div>
 
                   {/* Birthplace */}
                   <div>
-                      <label className="block text-sm font-medium">
-                        Birthplace
-                      </label>
-                      <input 
-                        type="text" 
-                        name="birthplace" 
-                        value={newPatientData.birthplace} 
-                        onChange={handleChange} 
-                        className="mt-1 block w-full border p-2 rounded-md border-black"
-                      />
-                    </div>
+                    <label className="block text-sm font-medium">
+                      Birthplace <span className="text-red-600 cursor-help">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="birthplace" 
+                      value={newPatientData.birthplace} 
+                      onChange={handleChange} 
+                      className="mt-1 block w-full border p-2 rounded-md border-black"
+                      required
+                    />
+                    {errors.birthplace && <p className="text-red-600 text-sm mt-1">{errors.birthplace}</p>}
+                  </div>
                   
                   {/* Civil Status */}
                   <div>
@@ -675,96 +512,93 @@ const handleCityChange = async (event) => {
 
                   {/* Region */}
                   <div>
-                    <label htmlFor="region" className="block text-sm font-medium">
-                      Region <span className="text-red-600">*</span>
-                    </label>
-                    <select
-                      id="region"
-                      name="region"
-                      value={newPatientData.region}
-                      onChange={handleRegionChange}
-                      className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                      required
-                    >
-                    <option value="">Select Region</option>
-                    {regions.map((region) => (
-                      <option key={region.code} value={region.name}>
-                        {region.name}
-                      </option>
-                    ))}
-                    </select>
+                      <label className="block text-sm font-medium">
+                          Region <span className="text-red-600">*</span>
+                      </label>
+                      <select
+                          name="region"
+                          value={newPatientData.region}
+                          onChange={(e) => handleRegionChange(e, setNewPatientData, setCities, setBarangays)}
+                          className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                          required
+                      >
+                          <option value="">Select Region</option>
+                          {regions?.map((region) => (
+                              <option key={region.geonameId} data-code={region.geonameId} value={region.name}>
+                                  {region.name} 
+                              </option>
+                          ))}
+                      </select>
                   </div>
 
                   {/* Province */}
                   <div>
-                    <label htmlFor="province" className="block text-sm font-medium">
-                      Province <span className="text-red-600 cursor-help">*</span>
+                    <label className="block text-sm font-medium">
+                        Province <span className="text-red-600">*</span>
                     </label>
                     <select
-                      id="province"
-                      name="province"
-                      value={newPatientData.province}
-                      onChange={handleProvinceChange}
-                      className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                      required
+                        name="province"
+                        value={newPatientData.province}
+                        onChange={(e) => handleProvinceChange(e, setNewPatientData, setBarangays)}
+                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                        required
                     >
                     <option value="">Select Province</option>
-                    {provinces.map((province) => (
-                      <option key={province.code} value={province.name}>
-                        {province.name}
-                      </option>
+                    {provinces?.map((province) => (
+                        <option key={province.geonameId} data-code={province.geonameId} value={province.name}>
+                            {province.name} 
+                        </option>
                     ))}
                     </select>
                   </div>
 
                   {/* City */}
                   <div>
-                    <label htmlFor="city" className="block text-sm font-medium">
-                      City/Municipality <span className="text-red-600 cursor-help">*</span>
-                    </label>
-                    <select
-                      id="city"
-                      name="city"
-                      value={newPatientData.city}
-                      onChange={handleCityChange}
-                      className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                      required
-                    >
+                      <label className="block text-sm font-medium">
+                          City/Municipality <span className="text-red-600">*</span>
+                      </label>
+                      <select
+                          id="city"
+                          name="city"
+                          value={newPatientData.city}
+                          onChange={(e) => handleCityChange(e, setNewPatientData)}
+                          className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                          
+                      >
                       <option value="">Select City/Municipality</option>
-                        {cities.map((city) => (
-                        <option key={city.code} value={city.name}>
-                          {city.name}
-                        </option>
+                      {cities?.map((city) => (
+                          <option key={city.geonameId} data-code={city.geonameId} value={city.name}>
+                              {city.name} 
+                          </option>
                       ))}
-                    </select>
+                      </select>
                   </div>
 
                   {/* Barangay */}
                   <div>
-                    <label htmlFor="barangay" className="block text-sm font-medium">
-                      Barangay <span className="text-red-600">*</span>
-                    </label>
-                    <select
-                      id="barangay"
-                      name="barangay"
-                      value={newPatientData.barangay}
-                      onChange={(e) => setNewPatientData({ ...formData, barangay: e.target.value })}
-                      className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                      required
-                    >
+                      <label className="block text-sm font-medium">
+                          Barangay <span className="text-red-600">*</span>
+                      </label>
+                      <select
+                          name="barangay"
+                          value={newPatientData.barangay}
+                          onChange={(e) => handleBarangayChange(e, setNewPatientData)}
+                          className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                          required
+                      >
                       <option value="">Select Barangay</option>
-                        {barangays.map((barangay) => (
-                          <option key={barangay.code} value={barangay.name}>
-                          {barangay.name}
-                      </option>
-                    ))}
-                    </select>
+                      {barangays?.map((barangay) => (
+                          <option key={barangay.geonameId} data-code={barangay.geonameId} value={barangay.name}>
+                              {barangay.name} 
+                          </option>
+                      ))}
+                      </select>
                   </div>
-
+                
                   {/* Street */}
                   <div>
                     <label className="block text-sm font-medium">
-                      Street
+                      Street <span className='text-gray-700'>(or Purok)</span> 
                     </label>
                     <input 
                       type="text" 
@@ -780,7 +614,7 @@ const handleCityChange = async (event) => {
                   {/* House No */}
                   <div>
                     <label className="block text-sm font-medium">
-                      House No. <span className="text-red-600 cursor-help">*</span>
+                      House No. <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Phase)</span> 
                     </label>
                     <input 
                       type="text" 
@@ -800,12 +634,12 @@ const handleCityChange = async (event) => {
                       Postal Code
                     </label>
                     <input 
-                      type="number" 
+                      type="text" 
                       name="postal_code" 
                       maxLength="4"
                       minLength="4"
                       value={newPatientData.postal_code} 
-                      onChange={handleChange} 
+                      onChange={handleChange}
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
                     {errors.postal_code && <p className="text-red-600 text-sm mt-1">{errors.postal_code}</p>}
@@ -824,9 +658,9 @@ const handleCityChange = async (event) => {
                       <option value="Roman Catholicism">Roman Catholicism</option>
                       <option value="Protestant Christianity">Protestant Christianity</option>
                       <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                      <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                       <option value="Islam">Islam</option>
                       <option value="Buddhism">Buddhism</option>
-                      <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                       <option value="Other">Other</option>
                     </select>
                   </div>
@@ -838,11 +672,11 @@ const handleCityChange = async (event) => {
                     </label>
                       <div className="relative">
                         <div className="flex items-center border rounded-md border-black overflow-hidden">
-                          <span className="bg-gray-100 p-2 text-gray-700">+63</span>
+                          <span className="bg-gray-100 p-2">+63</span>
                             <input
                               type="text"
                               name="phone_number"
-                              value={newPatientData.phone_number || ''}
+                              value={newPatientData.phone_number}
                               onChange={(e) => handlePhoneNumberChange(e)}
                               className="flex-1 p-2 border-l border-black focus:outline-none"
                               maxLength="10"
@@ -858,21 +692,22 @@ const handleCityChange = async (event) => {
                     <label className="block text-sm font-medium">Email</label>
                     <div className="flex items-center border rounded-md border-black overflow-hidden">
                       <input
-                        type="email"
+                        type="text"
                         name="email_username"
-                        className="w-full p-2 focus:outline-none"
-                        value={newPatientData.email || ""}
+                        className="w-full p-2 focus:outline-none border-r border-r-black"
+                        value={newPatientData.email_username}
                         onChange={(e) => {
                           const emailUsername = e.target.value;
                           setNewPatientData({
                               ...newPatientData,
                               email_username: emailUsername,
-                              email: emailUsername + "@gmail.com", // Append domain
+                              email: emailUsername + "@gmail.com",
                           });
                         }}
                     />
-                    <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
+                    <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                     </div>
+                    {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                   </div>
                   
                   {/* Physician */}
@@ -907,7 +742,7 @@ const handleCityChange = async (event) => {
                       Photo <span className="text-red-600 cursor-help">*</span>
                     </label>
                     <div>
-                      { image && ( <img src={image} className="max-w-full h-[150px] mt-2 mb-2 rounded-lg" /> )}
+                      { image && ( <img src={image} className="max-w-full h-[170px] mt-2 mb-2 rounded-lg" /> )}
                       <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-full py-2 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
                         <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                       </button>
