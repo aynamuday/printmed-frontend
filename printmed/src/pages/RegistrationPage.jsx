@@ -1,34 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import bg_nurse from '../assets/images/bg-nurse.png';
 import logo from '../assets/images/logo.png';
-
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { showError } from '../utils/fetch/showError';
 
 function RegistrationPage() {
-    const fetchRegions = async () => {
-        try {
-            const response = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
-            const data = await response.json();
-            if (data && data.geonames) {
-                const regionsData = data.geonames.map(region => ({
-                    code: region.geonameId,
-                    name: region.name,
-                }));
-                //console.log(regionsData);
-                setRegions(regionsData);
-            } else {
-                console.error("No regions found or invalid response:", data);
-            }
-        } catch (error) {
-            console.error("Error fetching regions:", error);
-        }
-    };
-
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -40,94 +20,40 @@ function RegistrationPage() {
         birthdate: '',
         birthplace: '',
         civil_status: '',
-        house_number: '',
-        street: '',
-        barangay: '',
-        city: '',
-        province: '',
         region: '',
+        region_code: '',
+        province: '',
+        province_code: '',
+        city: '',
+        city_code: '',
+        barangay: '',
+        barangay_code: '',
+        street: '',
+        house_number: '',
         postal_code: '',
         religion: '',
         phone_number: '',
         email: '',
         email_username: '',
     });
-    console.log(formData);
-
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [showTerms, setShowTerms] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [registrationId, setRegistrationId] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
+
     const [regions, setRegions] = useState([]);
     const [provinces, setProvinces] = useState([]);
     const [cities, setCities] = useState([]);
     const [barangays, setBarangays] = useState([]);
 
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState([]);
 
     useEffect(() => {
         fetchRegions()
-    }, []);
-
-    const handleRegionChange = async (event) => {
-        const selectedRegion = event.target.value;
-        const regionObject = regions.find((region) => region.name === selectedRegion);
-        console.log(regionObject);
-    
-        if (regionObject) {
-            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionObject.code}&username=nico_183`);
-            const data = await response.json();
-            console.log("Selected Region Object: ", regionObject);
-    
-            setProvinces(data.geonames);
-            setFormData({ ...formData, region: selectedRegion });
-        } else {
-            console.error("Region not found.");
-        }
-    };
-
-    const handleProvinceChange = async (event) => {
-        const selectedProvince = event.target.value;
-        const provinceObject = provinces.find((province) => province.name === selectedProvince);
-        console.log('Selected Province:', selectedProvince);
-        console.log('Province Object:', provinceObject);
-    
-        try {
-            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceObject.geonameId}&username=nico_183`);
-            const data = await response.json();
-            console.log("Cities API Response:", data); // Log the full response
-
-            if (data.geonames && data.geonames.length > 0) {
-                setCities(data.geonames);
-                setFormData({ ...formData, province: selectedProvince });
-            } else {
-                console.error("No cities found for this province.");
-            }
-        } catch (error) {
-            console.error("Error fetching cities:", error);
-        }
-    };    
-    
-    const handleCityChange = async (event) => {
-        const selectedCity = event.target.value;
-        const cityObject = cities.find((city) => city.name === selectedCity);
-    
-        if (cityObject) {
-            const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityObject.geonameId}&username=nico_183`);
-            const data = await response.json();
-            console.log(data);
-    
-            setBarangays(data.geonames);
-            setFormData({ ...formData, city: selectedCity });
-        } else {
-            console.error("City not found.");
-        }
-    };
-    
-    useEffect(() => {
         resetForm()
-    }, [])
+    }, []);
 
     const resetForm = () => {
         setFormData({
@@ -171,21 +97,54 @@ function RegistrationPage() {
             }));
             return;
         }
+
+        if (name === "birthplace") {
+            if (!/^([a-zA-Z][a-zA-Z, ]*|)$/.test(value)) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [name]: 'Can only contain letters and comma, and must start with a letter.',
+                }));
+                return
+            }
+        }
           
         // no symbols allowed
-        if (name === 'house_number' || name === 'street' || name === 'barangay') {
+        if (name === 'house_number') {
             if (/[^a-zA-Z0-9\s]/.test(value)) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [name]: 'Cannot contain special characters.',
+                }));
                 return;
             }
         }
           
         if (name === 'postal_code') {
             if (/[^0-9]/.test(value)) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [name]: 'Can only contain numbers.',
+                }));
                 return;
             }
-            if (value.length > 4 ) {
-                return;
+        }
+
+        if (name === "email_username") {
+            setErrors((prevErrors) => ({...prevErrors, email: ''}))
+            const emailUsername = value.toLowerCase();
+
+            // only allows letters, numbers, dot
+            if (!/^[a-zA-Z0-9.]*$/.test(emailUsername)) {
+                setErrors({...errors, email: "Can only contain letters, numbers, and dot."})
+                return
             }
+
+            setFormData({
+                ...formData,
+                email_username: emailUsername,
+                email: emailUsername + "@gmail.com", 
+            });
+            return
         }
 
         setFormData({ 
@@ -194,63 +153,191 @@ function RegistrationPage() {
         });
     };
 
-    const handleClose = () => {
-        setShowSuccess(false);
-        navigate("/");
-    };
-
     const handlePhoneNumberChange = (e) => {
+        setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }))
+
         let value = e.target.value;
-    
         const sanitizedValue = value.replace(/\D/g, '');
     
         if (value !== sanitizedValue) {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                phone_number: 'Phone number can only contain numbers.',
+                phone_number: 'Can only contain numbers.',
             }));
-        } else {
-            setErrors((prevErrors) => ({ ...prevErrors, phone_number: '' }));
+            return
         }
-
-        const limitedValue = sanitizedValue.slice(0, 10);
 
         setFormData({
             ...formData,
-            phone_number: limitedValue,
+            phone_number: sanitizedValue,
         });
     };
 
-    const handleEmailChange = (e) => {
-        let emailUsername = e.target.value;
-        
-        emailUsername = emailUsername.replace(/[^a-zñ0-9.+]/g, '');
-        
-        setFormData({
-          ...formData,
-          email_username: emailUsername,
-          email: emailUsername + "@gmail.com",
-        });
+    const fetchRegions = async () => {
+        try {
+            const res = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
+            const data = await res.json();
+            if (data?.geonames) {
+                // const regionsData = data.geonames.map(region => ({
+                //     code: region.geonameId,
+                //     name: region.name,
+                // }));
+                setRegions(data.geonames);
+            }
+        } catch (err) {
+            console.error("Error fetching regions:", err);
+        }
+    };
+
+    const handleRegionChange = async (e) => {
+        const region = e.target.value
+        const selectedOption = e.target.selectedOptions[0]
+        const regionCode = selectedOption.getAttribute('data-code')
+
+        console.log(region, regionCode)
+
+        try {
+            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionCode}&username=nico_183`);
+            if (!res.ok) {
+                throw new Error('An error occured while getting the list of provinces. You may check your Internet connection and refresh.')
+            }
+            const data = await res.json();
     
-        let newErrors = { ...errors };
-      
-        if (emailUsername.length < 6 || emailUsername.length > 30) {
-          newErrors.email = "Email username must be between 6 and 30 characters.";
+            setProvinces(data.geonames);
+        } catch (err) {
+            showError(err)
         }
-        else if (/^[\.\+]/.test(emailUsername)) {
-          newErrors.email = "Username cannot start with a special character like . or +.";
+
+        setFormData({...formData, 
+            region: region,
+            region_code: regionCode,
+            province: '',
+            province_code: '',
+            city: '',
+            city_code: '',
+            barangay: '',
+            barangay_code: ''
+        })
+        setCities([])
+        setBarangays([])
+
+        // const selectedRegion = event.target.value;
+        // const regionObject = regions.find((region) => region.name === selectedRegion);
+        // console.log(regionObject);
+    
+        // if (regionObject) {
+            // const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${regionObject.code}&username=nico_183`);
+            // const data = await response.json();
+            // console.log("Selected Region Object: ", regionObject);
+    
+            // setProvinces(data.geonames);
+            // setFormData({ ...formData, region: selectedRegion });
+        // } else {
+        //     console.error("Region not found.");
+        // }
+    };
+
+    const handleProvinceChange = async (event) => {
+        const province = event.target.value
+        const selectedOption = event.target.selectedOptions[0]
+        const provinceCode = selectedOption.getAttribute('data-code')
+
+        console.log(province, provinceCode)
+
+        try {
+            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceCode}&username=nico_183`);
+            if (!res.ok) {
+                throw new Error('An error occured while getting the list of cities/municipalities. You may check your Internet connection and refresh.')
+            }
+            const data = await res.json();
+    
+            setCities(data.geonames);
+        } catch (err) {
+            showError(err)
         }
-        else if (/\.\./.test(emailUsername)) {
-          newErrors.email = "Username cannot have consecutive dots.";
+
+        setFormData({...formData, 
+            province: province,
+            province_code: provinceCode,
+            city: '',
+            city_code: '',
+            barangay: '',
+            barangay_code: ''
+        })
+        setBarangays([])
+
+        // const selectedProvince = event.target.value;
+        // const provinceObject = provinces.find((province) => province.name === selectedProvince);
+        // console.log('Selected Province:', selectedProvince);
+        // console.log('Province Object:', provinceObject);
+    
+        // try {
+        //     const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${provinceObject.geonameId}&username=nico_183`);
+        //     const data = await response.json();
+        //     console.log("Cities API Response:", data); // Log the full response
+
+        //     if (data.geonames && data.geonames.length > 0) {
+        //         setCities(data.geonames);
+        //         setFormData({ ...formData, province: selectedProvince });
+        //     } else {
+        //         console.error("No cities found for this province.");
+        //     }
+        // } catch (error) {
+        //     console.error("Error fetching cities:", error);
+        // }
+    };    
+    
+    const handleCityChange = async (event) => {
+        const city = event.target.value
+        const selectedOption = event.target.selectedOptions[0]
+        const cityCode = selectedOption.getAttribute('data-code')
+
+        console.log(city, cityCode)
+
+        try {
+            const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityCode}&username=nico_183`);
+            if (!res.ok) {
+                throw new Error('An error occured while getting the list of barangays. You may check your Internet connection and refresh.')
+            }
+            const data = await res.json();
+    
+            setBarangays(data.geonames);
+        } catch (err) {
+            showError(err)
         }
-        else if (/[^a-z0-9]$/.test(emailUsername)) {
-          newErrors.email = "The last character must be a letter or number.";
-        } else {
-          newErrors.email = "";
-        }
-      
-        setErrors(newErrors);
-    }; 
+
+        setFormData({...formData, 
+            city: city,
+            city_code: cityCode,
+            barangay: '',
+            barangay_code: ''
+        })
+
+        // const selectedCity = event.target.value;
+        // const cityObject = cities.find((city) => city.name === selectedCity);
+    
+        // if (cityObject) {
+        //     const response = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityObject.geonameId}&username=nico_183`);
+        //     const data = await response.json();
+        //     console.log(data);
+    
+        //     setBarangays(data.geonames);
+        //     setFormData({ ...formData, city: selectedCity });
+        // } else {
+        //     console.error("City not found.");
+        // }
+    }
+
+    const handleBarangayChange = async (event) => {
+        const barangay = event.target.value
+        const selectedOption = event.target.selectedOptions[0]
+        const barangayCode = selectedOption.getAttribute('data-code')
+
+        setFormData({...formData,
+            barangay: barangay,
+            barangay_code: barangayCode
+        })
+    }
 
     const handleConfirm = (e) => {
         e.preventDefault();
@@ -278,12 +365,14 @@ function RegistrationPage() {
         if (formData.birthdate.trim() === "") {
             newErrors.birthdate = 'This field is required.';
             formIsValid = false;
-        } else if (new Date(formData.birthdate) < new Date("1920-01-01")) {
-            newErrors.birthdate = 'Birthdate cannot be earlier than January 1, 1920.';
-            formIsValid = false;
-        } else if (new Date(formData.birthdate) > new Date()) {
-            newErrors.birthdate = 'Birthdate cannot be in the future.';
-            formIsValid = false;
+        } else {
+            if (new Date(formData.birthdate) < new Date("1908-01-01")) {
+                newErrors.birthdate = 'Birthdate cannot be earlier than January 1, 1908.';
+                formIsValid = false;
+            } else if (new Date(formData.birthdate) > new Date()) {
+                newErrors.birthdate = 'Birthdate cannot be in the future.';
+                formIsValid = false;
+            }
         }
 
         if (formData.civil_status.trim() === "") {
@@ -311,48 +400,29 @@ function RegistrationPage() {
             formIsValid = false;
         }
     
-        if (!formData.email_username.trim()) {
-            newErrors.email = 'Email username is required.';
-            formIsValid = false;
-          } else {
+        if (formData.email_username.trim() != "") {
             const emailUsername = formData.email_username;
-        
-            // Check for invalid characters in the email
-            if (!/^[a-zA-Z0-9ñ._%+-]+$/.test(emailUsername)) {
-              newErrors.email = 'Email username contains invalid characters.';
-              formIsValid = false;
-            }
         
             // Check if email starts with invalid character or has consecutive dots
             if (emailUsername.startsWith('.') || emailUsername.startsWith('+')) {
-              newErrors.email = 'Sorry, only letters (a-z), numbers (0-9), and periods (.) are allowed.';
+              newErrors.email = 'Must start with a letter or number.';
               formIsValid = false;
             } else if (/\.\./.test(emailUsername)) {
-              newErrors.email = 'Sorry, consecutive periods are not allowed.';
+              newErrors.email = 'Consecutive periods are not valid.';
               formIsValid = false;
             }
         
             // Check if the last character is not an ASCII letter or number
             if (!/[a-z0-9]$/.test(emailUsername)) {
-              newErrors.email = 'Sorry, the last character of your username must be an ASCII letter (a-z) or number (0-9).';
+              newErrors.email = 'Email username must end with a letter or number.';
               formIsValid = false;
             }
 
             if (emailUsername.length < 6 || emailUsername.length > 30) {
-                newErrors.email = 'Email username must be between 6 and 30 characters.';
+                newErrors.email = 'Email username must be between 6 to 30 characters.';
                 formIsValid = false;
             }
-          }
-        
-          // Construct full email and assign to formData
-          const fullEmail = `${formData.email_username}@gmail.com`;
-          formData.email = fullEmail;
-        
-          // Email format validation
-          if (!/\S+@\S+\.\S+/.test(fullEmail)) {
-            newErrors.email = 'Please enter a valid email address.';
-            formIsValid = false;
-          }
+        }
 
         if (formData.postal_code.trim() !== "" && (Number (formData.postal_code) < 1000 || Number (formData.postal_code) > 9999)) {
             newErrors.postal_code = 'Postal code must only range between 1000-9999';
@@ -370,6 +440,7 @@ function RegistrationPage() {
 
         if (!formIsValid) {
             setErrors(newErrors);
+            console.log(newErrors)
             return
         }
 
@@ -401,27 +472,10 @@ function RegistrationPage() {
 
             setRegistrationId(data.registration_id);
             resetForm()
-            //navigate('/')
-            setShowSuccess(true) 
-            //navigate('/')
+            setShowSuccess(true)
         }
         catch (err) {
-            let error = err.message ?? "Something went wrong. Please try again later."
-            if (err.name === "TypeError") {
-                error = "Something went wrong. Please try again later. You may refresh or check your Internet connection."
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: `${error}`,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    title: 'text-xl font-bold text-black text-center',
-                    popup: 'border-2 rounded-xl px-4 py-8',
-                    icon: 'p-0 mx-auto my-0'
-                }
-            })
+            showError(err)
         }
         finally {
             setLoading(false)
@@ -443,6 +497,11 @@ function RegistrationPage() {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [showTerms, setShowTerms]);
+
+    const handleClose = () => {
+        setShowSuccess(false);
+        navigate("/");
+    };
 
     const stopPropagation = (event) => {
         event.stopPropagation();
@@ -562,8 +621,6 @@ function RegistrationPage() {
                                         value={formData.birthdate}
                                         onChange={(e) => {handleChange(e)}}
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
-                                        max={new Date().toISOString().split("T")[0]}
-                                        min="1920-01-01"
                                         required
                                     />
                                     {errors.birthdate && (<p className="text-red-500 text-sm">{errors.birthdate}</p>)}
@@ -572,7 +629,7 @@ function RegistrationPage() {
                                 {/* Birthplace */}
                                 <div> 
                                     <label className="block text-sm font-medium">
-                                        Birthplace
+                                        Birthplace <span className="text-red-600">*</span> <span className='text-gray-700'>(City, Province)</span> 
                                     </label>
                                     <input 
                                         type="text" 
@@ -580,6 +637,7 @@ function RegistrationPage() {
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.birthplace} 
                                         onChange={(e) => {handleChange(e)}}
+                                        required
                                     />
                                     {errors.birthplace && (<p className="text-red-500 text-sm">{errors.birthplace}</p>)}
                                 </div>
@@ -610,19 +668,19 @@ function RegistrationPage() {
                                         Region <span className="text-red-600">*</span>
                                     </label>
                                     <select
-                                    id="region"
-                                    name="region"
-                                    value={formData.region}
-                                    onChange={handleRegionChange}
-                                    className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
-                                    required
+                                        id="region"
+                                        name="region"
+                                        value={formData.region}
+                                        onChange={handleRegionChange}
+                                        className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
+                                        required
                                     >
-                                    <option value="">Select Region</option>
-                                    {regions?.map((region) => (
-                                        <option key={region.code} value={region.name}>
-                                        {region.name} 
-                                        </option>
-                                    ))}
+                                        <option value="">Select Region</option>
+                                        {regions?.map((region) => (
+                                            <option key={region.geonameId} data-code={region.geonameId} value={region.name}>
+                                                {region.name} 
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
 
@@ -640,9 +698,9 @@ function RegistrationPage() {
                                         required
                                     >
                                     <option value="">Select Province</option>
-                                    {provinces.map((province) => (
-                                        <option key={`${province.name}-${province.code}`} value={province.name}>
-                                        {province.name}
+                                    {provinces?.map((province) => (
+                                        <option key={province.geonameId} data-code={province.geonameId} value={province.name}>
+                                            {province.name} 
                                         </option>
                                     ))}
                                     </select>
@@ -651,7 +709,7 @@ function RegistrationPage() {
                                 {/* City */}
                                 <div>
                                     <label htmlFor="city" className="block text-sm font-medium">
-                                        City/Municipality 
+                                        City/Municipality <span className="text-red-600">*</span>
                                     </label>
                                     <select
                                         id="city"
@@ -663,8 +721,8 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select City/Municipality</option>
                                     {cities?.map((city) => (
-                                        <option key={`${city.name}-${city.code}`} value={city.name}>
-                                        {city.name}
+                                        <option key={city.geonameId} data-code={city.geonameId} value={city.name}>
+                                            {city.name} 
                                         </option>
                                     ))}
                                     </select>
@@ -679,14 +737,14 @@ function RegistrationPage() {
                                         id="barangay"
                                         name="barangay"
                                         value={formData.barangay}
-                                        onChange={(e) => setFormData({ ...formData, barangay: e.target.value })}
+                                        onChange={(e) => handleBarangayChange(e)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
                                     >
                                     <option value="">Select Barangay</option>
                                     {barangays?.map((barangay) => (
-                                        <option key={`${barangay.name}-${barangay.code}`} value={barangay.name}>
-                                        {barangay.name}
+                                        <option key={barangay.geonameId} data-code={barangay.geonameId} value={barangay.name}>
+                                            {barangay.name} 
                                         </option>
                                     ))}
                                     </select>
@@ -695,7 +753,7 @@ function RegistrationPage() {
                                 {/* Street */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Street
+                                        Street <span className='text-gray-700'>(or Purok)</span> 
                                     </label>
                                     <input 
                                         type="text" 
@@ -710,12 +768,12 @@ function RegistrationPage() {
                                 {/* House Number */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        House Number <span className="text-red-600">*</span>
+                                        House Number <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Phase)</span> 
                                     </label>
                                     <input
                                         type="text"
                                         name="house_number"
-                                        placeholder="Blk and Lot"
+                                        placeholder="House Number"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.house_number}
                                         onChange={(e) => {handleChange(e)}}
@@ -730,7 +788,7 @@ function RegistrationPage() {
                                         Postal Code 
                                     </label>
                                     <input 
-                                        type="number" 
+                                        type="text" 
                                         name="postal_code" 
                                         className="mt-1 block w-full border p-2 rounded-md border-black" 
                                         value={formData.postal_code} 
@@ -756,9 +814,9 @@ function RegistrationPage() {
                                         <option value="Roman Catholicism">Roman Catholicism</option>
                                         <option value="Protestant Christianity">Protestant Christianity</option>
                                         <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                                        <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Buddhism">Buddhism</option>
-                                        <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                                         <option value="Other">Other</option>
                                     </select>
                                     {errors.religion && (<p className="text-red-500 text-sm">{errors.religion}</p>)}
@@ -772,12 +830,12 @@ function RegistrationPage() {
                                     <div className="relative">
                                         {/* Phone number container */}
                                         <div className="flex items-center border rounded-md border-black overflow-hidden">
-                                            <span className="bg-gray-100 p-2 text-gray-700">+63</span>
+                                            <span className="bg-gray-100 p-2">+63</span>
                                             {/* Input field */}
                                             <input
                                                 type="text"
                                                 name="phone_number"
-                                                value={formData.phone_number || ''}
+                                                value={formData.phone_number}
                                                 onChange={(e) => handlePhoneNumberChange(e)}
                                                 className="flex-1 p-2 border-l border-black focus:outline-none"
                                                 maxLength="10"
@@ -794,14 +852,14 @@ function RegistrationPage() {
                                     <div className="flex items-center border rounded-md border-black overflow-hidden">
                                         {/* Username Input */}
                                         <input
-                                        type="text"
-                                        name="email_username"
-                                        placeholder="Email"
-                                        className="w-full p-2 focus:outline-none"
-                                        value={formData.email_username || ""}
-                                        onChange={handleEmailChange} // Trigger the email validation on change
+                                            type="email"
+                                            name="email_username"
+                                            placeholder="Email"
+                                            className="w-full p-2 focus:outline-none border-r border-r-black"
+                                            value={formData.email_username}
+                                            onChange={(e) => {handleChange(e)}}
                                         />
-                                        <span className="bg-gray-100 text-gray-600 px-2">@gmail.com</span> {/* Fixed domain */}
+                                        <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                                     </div>
                                     {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                                 </div>
@@ -895,15 +953,15 @@ function RegistrationPage() {
                             <div>
                                 <div className='grid grid-cols-8 gap-y-2 gap-x-4'>
                                     <p className='col-span-3 font-semibold'>First Name </p>
-                                    <p className='col-span-5'>{formData.first_name}</p>
+                                    <p className='col-span-5 break-words'>{formData.first_name}</p>
                                     { formData.middle_name && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Middle Name </p>
-                                            <p className='col-span-5'>{formData.middle_name}</p>
+                                            <p className='col-span-5 break-words'>{formData.middle_name}</p>
                                         </>
                                     )}
                                     <p className='col-span-3 font-semibold'>Last Name </p>
-                                    <p className='col-span-5'>{formData.last_name}</p>
+                                    <p className='col-span-5 break-words'>{formData.last_name}</p>
                                     { formData.suffix && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Suffix </p>
@@ -917,33 +975,33 @@ function RegistrationPage() {
                                     { formData.birthplace && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Birthplace </p>
-                                            <p className='col-span-5'>{formData.birthplace}</p>      
+                                            <p className='col-span-5 break-words'>{formData.birthplace}</p>      
                                         </>
                                     )}
                                     <p className='col-span-3 font-semibold'>Civil Status </p>
                                     <p className='col-span-5'>{formData.civil_status}</p>
                                     <p className='col-span-3 font-semibold'>Region</p>
-                                    <p className='col-span-5'>{formData.region}</p>
+                                    <p className='col-span-5 break-words'>{formData.region}</p>
                                     <p className='col-span-3 font-semibold'>Province</p>
-                                    <p className='col-span-5'>{formData.province}</p>
+                                    <p className='col-span-5 break-words'>{formData.province}</p>
                                     <p className='col-span-3 font-semibold'>City</p>
-                                    <p className='col-span-5'>{formData.city}</p>
+                                    <p className='col-span-5 break-words'>{formData.city}</p>
                                     <p className='col-span-3 font-semibold'>Barangay</p>
-                                    <p className='col-span-5'>{formData.barangay}</p>
+                                    <p className='col-span-5 break-words'>{formData.barangay}</p>
                                     { formData.street && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Street</p>
-                                            <p className='col-span-5'>{formData.street}</p>    
+                                            <p className='col-span-5 break-words'>{formData.street}</p>    
                                         </>
                                     )}
                                     <p className='col-span-3 font-semibold'>House No. </p>
-                                    <p className='col-span-5'>{formData.house_number}</p>
+                                    <p className='col-span-5 break-words'>{formData.house_number}</p>
                                     <p className='col-span-3 font-semibold'>Phone No. </p>
-                                    <p className='col-span-5'>{formData.phone_number}</p>
+                                    <p className='col-span-5 break-words'>{formData.phone_number}</p>
                                     { formData.email && (
                                         <>
                                             <p className='col-span-3 font-semibold'>Email </p>
-                                            <p className='col-span-5'>{formData.email}</p>
+                                            <p className='col-span-5 break-words'>{formData.email}</p>
                                         </>
                                     )}
                                 </div>
