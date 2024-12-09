@@ -5,7 +5,6 @@ import PhysicianContext from '../context/PhysicianContext'
 
 import qr from '../assets/images/qr.png'
 import '../assets/styles/QrScanAnimation.css'
-import Swal from 'sweetalert2'
 import { ClipLoader } from 'react-spinners'
 
 import Header from "../components/Header"
@@ -15,10 +14,14 @@ import ConsultationForm from '../components/ConsultationForm'
 import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
-import { globalSwalNoIcon } from '../utils/globalSwal'
+import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal'
 import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr'
 import { showError } from '../utils/fetch/showError'
 import { fetchPatientUsingId } from '../utils/fetch/fetchPatientUsingId'
+import Pusher from 'pusher-js'
+import { echo as Echo } from '../utils/pusher/echo';
+
+window.pusher = Pusher
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
@@ -36,8 +39,27 @@ const PatientPagePhysician = () => {
     const [manualLookup, setManualLookup] = useState(false)
     const [patientId, setPatientId] = useState('')
     const [patientIdError, setPatientIdError] = useState('')
-    
-    //const [showManualLookup, setShowManualLookup] = useState(false);
+
+    useEffect(() => {
+        if (patient) {
+            const echo = Echo(token)
+            echo.private(`vital-signs.${patient.id}`)
+                .listen('VitalSignsNew', (e) => {
+                    const newVitalSigns = e.vitalSigns
+                    
+                    setPatient({...patient, vital_signs: newVitalSigns})
+                })
+                .listen('VitalSignsUpdated', (e) => {
+                    const updatedVitalSigns = e.vitalSigns
+                    
+                    setPatient({...patient, vital_signs: updatedVitalSigns})
+                })
+
+            return () => {
+                echo.leave('registration')
+            }
+        }
+    }, [patient])
 
     const getPatientUsingQr = async (e) => {
         e.preventDefault()
@@ -47,8 +69,6 @@ const PatientPagePhysician = () => {
         try {
             const data = await fetchPatientUsingQr(qrCode, token)
             setPatient(data)
-
-            console.log(data)
         }
         catch (err) {
             showError(err)
@@ -66,8 +86,6 @@ const PatientPagePhysician = () => {
         try {
             const data = await fetchPatientUsingId(patientId, token)
             setPatient(data)
-
-            console.log(data)
             
             setManualLookup(false)
             setPatientId('')
@@ -84,10 +102,9 @@ const PatientPagePhysician = () => {
         setPatientIdError('')
 
         const value = e.target.value
-        console.log(value)
 
         if(!/^[\d-]*$/.test(value)) {
-            setPatientIdError('Can only contain numbers and dash.')
+            setPatientIdError('Can only contain numbers and dash (-).')
             return
         }
 
@@ -120,34 +137,48 @@ const PatientPagePhysician = () => {
         }
     }
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                setManualLookup(false);
-            }
-        };
-
-        const handleKeyDown = (event) => {
-            if (event.key === 'Escape') {
-                setManualLookup(false);
-            }
-        };
-
-        if (manualLookup) {
-            window.addEventListener('mousedown', handleClickOutside);
-            window.addEventListener('keydown', handleKeyDown);
+    const handleAddConsultationButton = () => {
+        if (!patient.vital_signs) {
+            globalSwalWithIcon.fire({
+                title: "Vital signs not available, unable to add consultation record.",
+                icon: 'warning',
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+            return
         }
 
-        return () => {
-            window.removeEventListener('mousedown', handleClickOutside);
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [manualLookup, setManualLookup])
+        setConsultationComponentStatus("add")
+    }
 
-    const closeModal = () => {
-        setManualLookup(false);
-        setPatientId('');
-    };
+    // useEffect(() => {
+    //     const handleClickOutside = (event) => {
+    //         if (modalRef.current && !modalRef.current.contains(event.target)) {
+    //             setManualLookup(false);
+    //         }
+    //     };
+
+    //     const handleKeyDown = (event) => {
+    //         if (event.key === 'Escape') {
+    //             setManualLookup(false);
+    //         }
+    //     };
+
+    //     if (manualLookup) {
+    //         window.addEventListener('mousedown', handleClickOutside);
+    //         window.addEventListener('keydown', handleKeyDown);
+    //     }
+
+    //     return () => {
+    //         window.removeEventListener('mousedown', handleClickOutside);
+    //         window.removeEventListener('keydown', handleKeyDown);
+    //     };
+    // }, [manualLookup, setManualLookup])
+
+    // const closeModal = () => {
+    //     setManualLookup(false);
+    //     setPatientId('');
+    // };
 
     return (
         <>
@@ -184,7 +215,7 @@ const PatientPagePhysician = () => {
                                 Find Patient
                             </button>
                         </form>
-                        <button onClick={closeModal} className='absolute text-lg top-2 right-2'>
+                        <button onClick={() => setManualLookup(false)} className='absolute text-lg top-2 right-2'>
                             <i className='bi bi-x-lg'></i>
                         </button>
                     </div>
@@ -245,7 +276,7 @@ const PatientPagePhysician = () => {
                                 </div> 
                             }
                             <div className={`h-full border ${patient.vital_signs == null ? "border-gray-500" : "border-orange-500"} border-1 px-2 py-1 rounded-lg`}>
-                                <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>{patient.vital_signs == null && "No"} Vital Signs Available</p>
+                                <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {patient.vital_signs == null && "Not"} Available</p>
                             </div>
                         </div>
                         <div className='grid grid-cols-5 gap-4'>
@@ -263,7 +294,7 @@ const PatientPagePhysician = () => {
                                         { consultationComponentStatus === null && 
                                             <div className='flex justify-between items-center w-full'>
                                                 <p className='font-semibold text-white text-lg'>Consultations</p>
-                                                <button onClick={() => {setConsultationComponentStatus("add")}}><i className={`bi bi-plus-square-fill me-2 text-xl text-white`}></i></button>
+                                                <button onClick={() => handleAddConsultationButton()}><i className={`bi bi-plus-square-fill me-2 text-xl text-white`}></i></button>
                                             </div>
                                         }
                                     </div>
@@ -275,7 +306,7 @@ const PatientPagePhysician = () => {
                                         ) : consultationComponentStatus === "view" ? (
                                             <ViewConsultation setLoading={setPatientPageLoading} /> 
                                         ) : consultationComponentStatus === "add" && (
-                                            <ConsultationForm birthdate={patient.birthdate} vitalSigns={patient.vital_signs} /> 
+                                            <ConsultationForm /> 
                                         )}
                                     </div>
                                 </div>
