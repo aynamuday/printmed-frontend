@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import bg_nurse from '../assets/images/bg-nurse.png';
@@ -18,9 +18,10 @@ import { fetchBarangays } from '../utils/fetch/fetchBarangays';
 import { handleBarangayChange } from '../utils/handleBarangayChange';
 import { validatePostalCode } from '../utils/formValidations/validatePostalCode';
 import { validatePatientBirthdate } from '../utils/formValidations/validatePatientBirthdate';
+import html2pdf from 'html2pdf.js';
 
 function RegistrationPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
         first_name: '',
@@ -52,6 +53,7 @@ function RegistrationPage() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [registrationId, setRegistrationId] = useState('');
     const modalRef = useRef(null);
+    const [registrationName, setRegistrationName] = useState('')
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [regions, setRegions] = useState([]);
@@ -262,7 +264,8 @@ function RegistrationPage() {
 
             const data = await res.json()
 
-            setRegistrationId(data.registration_id);
+            setRegistrationId(data.registration_id)
+            setRegistrationName(formData.first_name)
             resetForm()
             setShowSuccess(true)
         }
@@ -307,13 +310,52 @@ function RegistrationPage() {
         event.stopPropagation();
     };
 
+    const downloadRegistrationConfirmation = () => {
+        const html = `
+            <div style='display: flex; align-items: center; justify-content: center; padding: 16px; flex-direction: column;'>
+                <div style='display: flex; align-items: center; justify-content: center; gap: 8px;'>
+                    <div style='height: 6px; background-color: #6CB6AD; width: 290px;'></div>
+                    <img src=${logo} style='max-width: 100%; height: 50px;'>
+                    <div style='height: 6px; background-color: #6CB6AD; width: 290px;'></div>
+                </div>
+                <p style="max-width: 60%; text-align: center; font-weight: bold;">Hello, ${registrationName}.</p>
+                <p style="max-width: 60%; text-align: center;">Thank you for registering with us.</p>
+                <p style="max-width: 60%; text-align: center;">Your health and well-being are our top priority, and we look forward to providing you with the highest quality of care.</p>
+                <p style='margin-top: 16px;'>Here is your registration ID:</p>
+                <p style='font-size: 30px; font-weight: bold; letter-spacing: 6px;'>${registrationId}</p>
+                <p style='font-weight: bold; margin-top: 16px;'>Next Step:</p>
+                <p style='max-width: 60%; text-align: center;'>Visit Carmona Hospital and Medical Center's Outpatient Department (3rd Floor) for in-person verification. Bring a valid government-issued ID and present the registration ID above.</p>
+            </div>
+        `
+
+        const options = {
+            filename: `registration-123456789.pdf`,
+            html2canvas: { scale: 10 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+        };
+
+        setLoading(true)
+
+        html2pdf()
+            .from(html)
+            .set(options)
+            .save()
+            .finally(() => {
+                setLoading(false)
+            });
+    }
+
     return (
         <>
             { loading && (
-                <div className='z-20 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
+                <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
                     <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
                 </div>
             )}
+
+            <div>
+                
+            </div>
 
             <div className="min-h-screen grid place-items-center lg:p-16 p-8 bg-cover bg-center bg-[url('assets/images/bg_nurse_transparent.png')]">
                 <div className="grid grid-cols-1 md:grid-cols-5 bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl mx-auto">
@@ -568,7 +610,7 @@ function RegistrationPage() {
                                 {/* House Number */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        House Number <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Phase)</span> 
+                                        House Number <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Lot, Phase)</span> 
                                     </label>
                                     <input
                                         type="text"
@@ -704,7 +746,7 @@ function RegistrationPage() {
 
                 {/* Terms and Conditions Message */}
                 {showTerms && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
                          onClick={() => setShowTerms(false)}    
                     >
                         <div className="bg-white p-8 max-w-[80%] lg:max-w-[40%] max-h-[90vh] w-full rounded-lg shadow-lg overflow-y-auto"
@@ -747,7 +789,7 @@ function RegistrationPage() {
                 )}
 
                 {showConfirmation && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
                         <div className="bg-white p-8 max-w-[80%] lg:max-w-[40%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto">
                             <h3 className="text-xl font-bold text-center mb-4">Confirm Your Details</h3>
                             <div>
@@ -815,19 +857,25 @@ function RegistrationPage() {
                 )}
 
                 {showSuccess && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-8 max-w-[80%] w-full lg:max-w-[30%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto relative">
-                            <button onClick={handleClose} className="text-2xl absolute right-6 top-6">&times;</button>
-                            <i className='bi bi-check-circle text-[#44b85a] text-6xl text-center block mb-4'></i>
-                            <h3 className="text-xl font-bold text-center mb-2">Registration Successful!</h3>
-                            <div className='text-center'>
-                                <p>Your registration is now complete.</p>
-                                <p className='mb-4'>Thank you for registering.</p>
-                                <p>Here is your registration ID:</p>
-                                <p className='text-2xl font-bold tracking-widest mb-4'>{registrationId}</p>
-                                <p className='w-[90%] mx-auto'>Make sure to screenshot this or write the registration ID on your note.</p>
-                                <p className='font-bold mt-4'>Next Step:</p>
-                                <p>Visit Carmona Hospital and Medical Center's Outpatient Department (3rd Floor) for in-person verification. Bring a valid government-issued ID and present the registration ID above.</p>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
+                        <div className="bg-white p-6 pt-4 max-w-[80%] w-full lg:max-w-[30%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto relative">
+                            <button onClick={downloadRegistrationConfirmation} className="text-2xl absolute right-6 top-6">
+                                <i className='bi bi-download'></i>
+                            </button>
+                            <div className='p-2'>
+                                <i className='bi bi-check-circle text-[#44b85a] text-6xl text-center block mb-4'></i>
+                                <h3 className="text-xl font-bold text-center mb-2">Registration Successful!</h3>
+                                <div className='text-center'>
+                                    <p className='mb-4'>Thank you for registering with us.</p>
+                                    <p>Here is your registration ID:</p>
+                                    <p className='text-2xl font-bold tracking-widest mb-4'>{registrationId}</p>
+                                    <p className='w-[90%] mx-auto'>Make sure to save this by clicking on the download button.</p>
+                                    <p className='font-bold mt-4'>Next Step:</p>
+                                    <p>Visit Carmona Hospital and Medical Center's Outpatient Department (3rd Floor) for in-person verification. Bring a valid government-issued ID and present the registration ID above.</p>
+                                </div>
+                            </div>
+                            <div className='flex items-center justify-center mt-4'>
+                                <button onClick={handleClose} className="text-white bg-[#248176] hover:bg-[#499e94] text-lg px-4 py-1 rounded-md block">Okay</button>
                             </div>
                         </div>
                     </div>
