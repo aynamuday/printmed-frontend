@@ -3,12 +3,11 @@ import { getFormattedNumericDate } from '../utils/dateUtils'
 
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
-import Swal from 'sweetalert2'
 import { capitalizedWords } from '../utils/wordUtils'
 import { showError } from '../utils/fetch/showError'
 import { globalSwalNoIcon } from '../utils/globalSwal'
 
-const ConsultationForm = ({birthdate, vitalSigns}) => {
+const ConsultationForm = () => {
     const { token } = useContext(AppContext)
     const { 
         setPatientPageLoading,
@@ -20,20 +19,6 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
         setConsultationComponentStatus, 
         resetAddConsultation
     } = useContext(PhysicianContext)
-
-    useEffect(() => {
-        setAddConsultationData((prevData) => ({
-            ...prevData, 
-            patient_id: patient.id,
-            height: vitalSigns ? vitalSigns.height : "",
-            height_unit: vitalSigns ? vitalSigns.height_unit : "",
-            weight: vitalSigns ? vitalSigns.weight : "",
-            weight_unit: vitalSigns ? vitalSigns.weight_unit : "",
-            temperature: vitalSigns ? vitalSigns.temperature : "",
-            systolic: vitalSigns ? vitalSigns.systolic : "",
-            diastolic: vitalSigns ? vitalSigns.diastolic : ""
-        }))
-    }, [])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -217,7 +202,7 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
                         />
                     </div>
                     <div className='mt-8'>
-                        { new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && (
+                        { new Date(patient.birthdate) > new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && (
                             <>
                                 <div className='mt-4'>
                                     <div className='mb-4'>
@@ -244,7 +229,7 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
                             </>
                         )}
 
-                        { new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && new Date(birthdate) < new Date(new Date().setFullYear(new Date().getFullYear() - 12)) && (
+                        { new Date(patient.birthdate) > new Date(new Date().setFullYear(new Date().getFullYear() - 19)) && new Date(patient.birthdate) <= new Date(new Date().setFullYear(new Date().getFullYear() - 13)) && (
                             <div className='mt-4'>
                                 <div className='mb-4'>
                                     <p className="block font-semibold text-black col-span-2 mb-2">HEADS</p>
@@ -260,7 +245,7 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
                     </div>
                     <div className="mt-6 w-full">
                         <div className="flex justify-center items-center">
-                            <button onClick={() => setIsNext(true)} className="mt-1 block px-10 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                            <button type='button' onClick={() => setIsNext(true)} className="mt-1 block px-10 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
                                 Next
                             </button>
                         </div>
@@ -270,7 +255,7 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
                 <>
                     <div className="w-full">
                         <div className="flex justify-end items-center">
-                            <button onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                            <button type='button' onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
                                 Previous
                             </button>
                         </div>
@@ -377,7 +362,7 @@ const ConsultationForm = ({birthdate, vitalSigns}) => {
                         <div className="flex justify-center items-center flex-col">
                             { addConsultationErrors.general.trim() != "" && (<p className='text-red-600 text-sm mb-4'>{addConsultationErrors.general}</p>)}
                             <div className='flex items-center justify-center gap-2'>
-                                <button onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                                <button type='button' onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
                                     Previous
                                 </button>
                                 <button type='submit' className="block px-14 h-10 bg-[#b43c3a] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">

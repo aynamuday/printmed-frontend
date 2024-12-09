@@ -10,7 +10,6 @@ export const PhysicianProvider = () => {
   const [consultations, setConsultations] = useState([])
   const [viewConsultationId, setViewConsultationId] = useState(null)
   const [addConsultationData, setAddConsultationData] = useState([])
-  const [isPediatrics, setIsPediatrics] = useState(false)
   const [isNext, setIsNext] = useState(false)
   const [addConsultationErrors, setAddConsultationErrors] = useState([])
 
@@ -22,15 +21,33 @@ export const PhysicianProvider = () => {
     resetAddConsultation()
   }
 
+  useEffect(() => {
+    if (patient) {
+      const vitalSigns = patient.vital_signs
+
+      setAddConsultationData((prevData) => ({
+        ...prevData, 
+        patient_id: patient.id,
+        height: vitalSigns.height || "",
+        height_unit: vitalSigns.height_unit || "",
+        weight: vitalSigns.weight || "",
+        weight_unit: vitalSigns.weight_unit || "",
+        temperature: vitalSigns.temperature || "",
+        systolic: vitalSigns.systolic || "",
+        diastolic: vitalSigns.diastolic || ""
+      }))
+    }
+  }, [patient])
+
   const resetAddConsultation = () => {
     setAddConsultationData({
-      height: '165',
-      height_unit: 'cm',
-      weight: '50',
-      weight_unit: 'kg',
-      temperature: '36.9',
+      height: '',
+      height_unit: '',
+      weight: '',
+      weight_unit: '',
+      temperature: '',
       temperature_unit: 'C',
-      blood_pressure: '120/80',
+      blood_pressure: '',
       chief_complaint: '',
       present_illness_hx: '',
       family_hx: '',
@@ -45,7 +62,6 @@ export const PhysicianProvider = () => {
       prescriptions: [],
       follow_up_date: ''
     })
-    setIsPediatrics(false)
     setIsNext(false)
     setAddConsultationErrors({
       general: '',
@@ -81,7 +97,6 @@ export const PhysicianProvider = () => {
       consultations, setConsultations,
       viewConsultationId, setViewConsultationId,
       addConsultationData, setAddConsultationData,
-      isPediatrics, setIsPediatrics,
       isNext, setIsNext,
       addConsultationErrors, setAddConsultationErrors,
       resetAddConsultation

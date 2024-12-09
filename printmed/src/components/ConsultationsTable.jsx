@@ -4,8 +4,6 @@ import { getFormattedNumericDate } from '../utils/dateUtils'
 import PhysicianContext from '../context/PhysicianContext'
 
 const ConsultationsTable = ({consultations}) => {
-    console.log(consultations)
-    
     const { setConsultationComponentStatus, setViewConsultationId } = useContext(PhysicianContext)
 
     return (

@@ -7,7 +7,7 @@ import { showError } from '../utils/fetch/showError'
 import { printPdf } from '../utils/printPdf'
 
 const ViewConsultation = () => {
-    const { token } = useContext(AppContext)
+    const { token, user } = useContext(AppContext)
     const { 
         setPatientPageLoading,
         setConsultationComponentStatus,
@@ -198,7 +198,7 @@ const ViewConsultation = () => {
                             )}
                             <tr>
                                 <th className='text-start border border-[#828282] p-2 w-[25%]'>Physician</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>Doc. { consultation.physician.full_name}</td>
+                                <td className='border p-2 border-[#828282] w-[65%]'>{consultation.physician.id == user.id ? <span className='italic'>You</span> : "Doc. " + consultation.physician.full_name}</td>
                             </tr>
                         </tbody>
                     </table>

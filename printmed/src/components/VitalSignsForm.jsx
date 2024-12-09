@@ -62,7 +62,6 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
         }
 
         let filteredFormData = vitalSignsData
-        console.log(filteredFormData)
         if (vitalSigns) {
             filteredFormData = Object.keys(vitalSignsData).reduce((acc, key) => {
                 if (String(vitalSignsData[key]).trim() == "" && (vitalSigns[key] == null || String(vitalSigns[key]).trim() == "")) {

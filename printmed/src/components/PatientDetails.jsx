@@ -77,7 +77,9 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             getPhysicians()
         }
 
-        getRegions()
+        if (user.role == "secretary") {
+            getRegions()
+        }
     }, [update])
 
     const handleChange = (e) => {
@@ -95,34 +97,37 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
     // executes when region code changes
     useEffect(() => {
-        const getProvinces = async () => {
-            const data = await fetchProvinces(updateData.region_code)
-            setProvinces(data.geonames)
-            console.log(data.geonames)
-            console.log(updateData)
+        if (user.role == "secretary") {
+            const getProvinces = async () => {
+                const data = await fetchProvinces(updateData.region_code)
+                setProvinces(data.geonames)
+            }
+            getProvinces()
         }
-        getProvinces()
     }, [updateData.region_code])
 
     // executes when province code changes
     useEffect(() => {
-        const getCities = async () => {
-            const data = await fetchCities(updateData.province_code)
-            setCities(data.geonames)
-            console.log(updateData.province_code)
-            console.log(data.geonames)
+        if (user.role == "secretary") {
+            const getCities = async () => {
+                const data = await fetchCities(updateData.province_code)
+                setCities(data.geonames)
+            }
+            getCities()
         }
-        getCities()
+        
     }, [updateData.province_code])
 
     // executes when city code changes
     useEffect(() => {
-        const getBarangays = async () => {
-            const data = await fetchBarangays(updateData.city_code)
-            setBarangays(data.geonames)
-            console.log(data.geonames)
+        if (user.role == "secretary") {
+            const getBarangays = async () => {
+                const data = await fetchBarangays(updateData.city_code)
+                setBarangays(data.geonames)
+                console.log(data.geonames)
+            }
+            getBarangays()
         }
-        getBarangays()
     }, [updateData.city_code])
 
     const handleSubmit = (e) => {
@@ -239,6 +244,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             });
         
             setPatient(data)
+            setImage(data.photo_url)
             setUpdate(false)
         }
         catch (err) {
@@ -531,7 +537,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>House No. {update && <span className='text-red-600'>*</span> && <p className='text-gray-700 font-normal'>(or Blk, Phase)</p>}</th>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>House No. {update && <span className='text-red-600'>*</span> && <p className='text-gray-700 font-normal'>(or Blk, Lot, Phase)</p>}</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             <input
                                                 type="text"
