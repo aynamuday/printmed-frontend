@@ -12,7 +12,7 @@ const LandingPage = () => {
       style={{ backgroundImage: `url(${bgBuilding})` }}
     >
       {/* <div className="absolute inset-0 bg-black opacity-25"></div> */}
-      <div className="bg-white rounded-lg shadow-lg p-8 w-96 text-center z-10">
+      <div className="bg-gray-100 rounded-lg shadow-lg p-8 w-96 text-center z-10">
         <img src={logo} alt="Logo" className="mx-auto mb-4 w-30" />
         <h1 className="text-lg font-semibold mb-4">
           Please select your destination

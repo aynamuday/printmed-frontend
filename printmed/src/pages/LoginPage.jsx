@@ -7,6 +7,7 @@ import AppContext from '../context/AppContext';
 
 import logo from '../assets/images/logo.png';
 import { globalSwalWithIcon } from '../utils/globalSwal';
+import backdrop from '../assets/images/Backdrop.png';
 
 const LoginPage = () => {
   const { setToken, setUser } = useContext(AppContext);
@@ -188,8 +189,19 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white-100">
-      <div className='flex justify-center flex-col lg:w-[30%] md:w-[40%]'>
+    <div 
+      className="min-h-screen flex flex-col justify-center items-center"
+      style={{
+        backgroundImage: `url(${backdrop})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}>
+        <div
+          className="absolute inset-0 bg-white bg-opacity-30 backdrop-blur-md"
+          aria-hidden="true"
+        ></div>
+      <div className='relative z-10 flex justify-center flex-col lg:w-[30%] md:w-[40%] bg-gray-100 p-6 rounded-md'>
         <div className="flex flex-col items-center">
           <img src={logo} alt="" className="w-100 h-28" />
           <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2>
