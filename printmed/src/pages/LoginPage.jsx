@@ -300,12 +300,12 @@ const LoginPage = () => {
           )}
 
           {!isOtpSent && (
-            <Link
-              to={() => navigate('/forgot-password')}
+            <button
+              onClick={() => navigate('/forgot-password')}
               className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
             >
               Forgot Password?
-            </Link>
+            </button>
           )}
         </form>
       </div>
