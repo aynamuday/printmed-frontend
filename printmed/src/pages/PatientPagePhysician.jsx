@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useRef, useState, useEffect } from 'react'
 
 import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
@@ -32,9 +32,12 @@ const PatientPagePhysician = () => {
     const qrInputRef = useRef(null)
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
+    const modalRef = useRef(null);
     const [manualLookup, setManualLookup] = useState(false)
     const [patientId, setPatientId] = useState('')
     const [patientIdError, setPatientIdError] = useState('')
+    
+    //const [showManualLookup, setShowManualLookup] = useState(false);
 
     const getPatientUsingQr = async (e) => {
         e.preventDefault()
@@ -117,6 +120,35 @@ const PatientPagePhysician = () => {
         }
     }
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                setManualLookup(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setManualLookup(false);
+            }
+        };
+
+        if (manualLookup) {
+            window.addEventListener('mousedown', handleClickOutside);
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [manualLookup, setManualLookup])
+
+    const closeModal = () => {
+        setManualLookup(false);
+        setPatientId('');
+    };
+
     return (
         <>
             { patientPageLoading && (
@@ -128,7 +160,7 @@ const PatientPagePhysician = () => {
             {/* pop up to find patient */}
             {manualLookup && (
                 <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-40 z-40'>
-                    <div className="bg-white rounded-md flex justify-items-center flex-col p-6 max-h-[70vh] relative">
+                    <div ref={modalRef} className="bg-white rounded-md flex justify-items-center flex-col p-6 max-h-[70vh] relative">
                         <i className="bi bi-search block text-3xl font-bold text-center text-[#6CB6AD]"></i>
                         <form onSubmit={(e) => getPatientUsingId(e)} className='flex items-center justify-center flex-col'>
                             <div className='mt-3'>
@@ -152,7 +184,7 @@ const PatientPagePhysician = () => {
                                 Find Patient
                             </button>
                         </form>
-                        <button onClick={() => {setManualLookup(false); setPatientId('');}} className='absolute text-lg top-2 right-2'>
+                        <button onClick={closeModal} className='absolute text-lg top-2 right-2'>
                             <i className='bi bi-x-lg'></i>
                         </button>
                     </div>
