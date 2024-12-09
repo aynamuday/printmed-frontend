@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import bg_nurse from '../assets/images/bg-nurse.png';
@@ -51,6 +51,7 @@ function RegistrationPage() {
     const [showTerms, setShowTerms] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [registrationId, setRegistrationId] = useState('');
+    const modalRef = useRef(null);
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [regions, setRegions] = useState([]);
@@ -274,6 +275,12 @@ function RegistrationPage() {
     }
 
     useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                setManualLookup(false);
+            }
+        };
+
         const handleKeyDown = (event) => {
             if (event.key === 'Escape') {
                 setShowTerms(false);
@@ -281,10 +288,12 @@ function RegistrationPage() {
         };
 
         if (showTerms) {
+            window.addEventListener('keydown', handleClickOutside);
             window.addEventListener('keydown', handleKeyDown);
         }
 
         return () => {
+            window.removeEventListener('keydown', handleClickOutside);
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [showTerms, setShowTerms])
