@@ -198,7 +198,7 @@ const LoginPage = () => {
         backgroundRepeat: 'no-repeat',
       }}>
         <div
-          className="absolute inset-0 bg-white bg-opacity-30 backdrop-blur-md"
+          className="absolute inset-0 bg-white bg-opacity-50"
           aria-hidden="true"
         ></div>
       <div className='relative z-10 flex justify-center flex-col lg:w-[30%] md:w-[40%] bg-gray-100 p-6 rounded-md'>
