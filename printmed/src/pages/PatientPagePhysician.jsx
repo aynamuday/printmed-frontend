@@ -18,6 +18,7 @@ import ViewConsultation from '../components/ViewConsultation'
 import { globalSwalNoIcon } from '../utils/globalSwal'
 import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr'
 import { showError } from '../utils/fetch/showError'
+import { fetchPatientUsingId } from '../utils/fetch/fetchPatientUsingId'
 
 const PatientPagePhysician = () => {
     const { token } = useContext(AppContext)
@@ -31,8 +32,12 @@ const PatientPagePhysician = () => {
     const qrInputRef = useRef(null)
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
+    const [manualLookup, setManualLookup] = useState(false)
+    const [patientId, setPatientId] = useState('')
+    const [patientIdError, setPatientIdError] = useState('')
 
-    const fetchPatient = async () => {
+    const getPatientUsingQr = async (e) => {
+        e.preventDefault()
         setPatientPageLoading(true)
         setIsQrInputFocused(false)
 
@@ -49,6 +54,41 @@ const PatientPagePhysician = () => {
             setPatientPageLoading(false)
             setQrCode("")
         }
+    }
+
+    const getPatientUsingId = async (e) => {
+        e.preventDefault()
+        setPatientPageLoading(true)
+
+        try {
+            const data = await fetchPatientUsingId(patientId, token)
+            setPatient(data)
+
+            console.log(data)
+            
+            setManualLookup(false)
+            setPatientId('')
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setPatientPageLoading(false)
+        }
+    }
+
+    const handlePatientIdChange = (e) => {
+        setPatientIdError('')
+
+        const value = e.target.value
+        console.log(value)
+
+        if(!/^[\d-]*$/.test(value)) {
+            setPatientIdError('Can only contain numbers and dash.')
+            return
+        }
+
+        setPatientId(value)
     }
 
     const handleClose = () => {
@@ -77,16 +117,45 @@ const PatientPagePhysician = () => {
         }
     }
 
-    const handleQrCodeSubmit = (e) => {
-        e.preventDefault()
-        fetchPatient()
-    }
-
     return (
         <>
             { patientPageLoading && (
                 <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
                     <ClipLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
+                </div>
+            )}
+
+            {/* pop up to find patient */}
+            {manualLookup && (
+                <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-40 z-40'>
+                    <div className="bg-white rounded-md flex justify-items-center flex-col p-6 max-h-[70vh] relative">
+                        <i className="bi bi-search block text-3xl font-bold text-center text-[#6CB6AD]"></i>
+                        <form onSubmit={(e) => getPatientUsingId(e)} className='flex items-center justify-center flex-col'>
+                            <div className='mt-3'>
+                                {/* <label className='block text-sm'>Enter Patient ID</label> */}
+                                <div className="flex items-center border rounded-md border-black overflow-hidden">
+                                    <span className="bg-gray-200 p-2 border-r border-r-black">P</span>
+                                    <input
+                                        type="text"
+                                        placeholder="00000-0000"
+                                        value={patientId}
+                                        onChange={handlePatientIdChange}
+                                        className="w-full p-2 focus:outline-none min-w-[300px]"
+                                        minLength={10}
+                                        maxLength={10}
+                                        required
+                                    />
+                                </div>
+                                {patientIdError && <p className='text-red-600 text-sm'>{patientIdError}</p>}
+                            </div>
+                            <button type='submit' className='bg-[#248176] mt-4 text-md text-white font-medium hover:bg-[#499e94] p-1.5 px-5 rounded-md'>
+                                Find Patient
+                            </button>
+                        </form>
+                        <button onClick={() => {setManualLookup(false); setPatientId('');}} className='absolute text-lg top-2 right-2'>
+                            <i className='bi bi-x-lg'></i>
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -96,7 +165,7 @@ const PatientPagePhysician = () => {
                         <div className='px-4 py-6 bg-white shadow-lg w-[400px] rounded-md'>
                             <QrScanning />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
-                            <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
+                            <p className='text-center'>Please ensure that the QR code is properly placed on the scanner for accurate reading.</p>
                             <button onClick={handleQrInputBlur} className='bg-red-700 text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
                                 Cancel
                             </button>
@@ -110,12 +179,15 @@ const PatientPagePhysician = () => {
                 { !patient ? (
                     <div className={`md:ml-[300px] min-h-[calc(100vh-120px)] mt-[7%]`}>
                         <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover min-h-[calc(100vh-105px)] pt-28">
-                            <div className='w-[250px] mx-auto flex flex-col items-center bg-white p-4'>
-                                <img src={qr} alt="" className='w-[220px] p-3 border border-black' />
-                                <p className='text-center my-2 font-semibold'>Scan the patient's QR code to access their medical records.</p>
+                            <div className='w-[300px] mx-auto flex flex-col items-center bg-white p-4'>
+                                <img src={qr} alt="" className='w-full p-3 border border-black' />
+                                <p className='text-center my-2 text-lg font-semibold'>Scan the patient's QR code to access their medical records.</p>
                                 <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan</button>
+                                <p className='text-center my-2 font-normal text-sm'>Or you may do a manual lookup using Patient ID&nbsp;  
+                                    <span onClick={() => setManualLookup(true)} className='underline hover:text-[#248176] cursor-pointer'>here</span>.
+                                </p>
                             </div>
-                            <form onSubmit={(e) => handleQrCodeSubmit(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
+                            <form onSubmit={(e) => getPatientUsingQr(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
                                 <input 
                                     className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'
                                     ref={qrInputRef} 
