@@ -29,8 +29,33 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     const [physicians, setPhysicians] = useState(null)
     const followUpDateStatus = getFollowUpDateStatus(patient.follow_up_date)
     const [update, setUpdate] = useState(false)
-    const [updateData, setUpdateData] = useState([])
-    const [image, setImage] = useState(null)
+    const [updateData, setUpdateData] = useState({
+        'first_name': patient.first_name ?? '',
+        'middle_name': patient.middle_name ?? '',
+        'last_name': patient.last_name ?? '',
+        'suffix': patient.suffix ?? '',
+        'birthdate': patient.birthdate ?? '',
+        'birthplace': patient.birthplace ?? '',
+        'sex': patient.sex ?? '',
+        'house_number': patient.house_number ?? '',
+        'street': patient.street ?? '',
+        'region': patient.region ?? '',
+        'region_code': patient.region_code ?? '',
+        'province': patient.province ?? '',
+        'province_code': patient.province_code ?? '',
+        'city': patient.city ?? '',
+        'city_code': patient.city_code ?? '',
+        'barangay': patient.barangay ?? '',
+        'barangay_code': patient.barangay_code ?? '',
+        'postal_code': patient.postal_code ?? '',
+        'civil_status': patient.civil_status ?? '',
+        'religion': patient.religion ?? '',
+        'phone_number': patient.phone_number ?? '',
+        'email': patient.email ?? '',
+        'email_username': patient.email?.slice(0, patient.email.indexOf("@gmail.com")) || '',
+        'physician_id': patient.physician ? patient.physician.id : '',
+    })
+    const [image, setImage] = useState(patient.photo_url ?? null)
     const [takePhoto, setTakePhoto] = useState(false)
     const [errors, setErrors] = useState([])
 
@@ -40,9 +65,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     const [barangays, setBarangays] = useState([]);
 
     useEffect(() => {
-        resetUpdateData()
-        resetErrors()
-
         const getPhysicians = async () => {
             try {
                 setPhysicians(await fetchPhysicians(token))
@@ -57,40 +79,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
         getRegions()
     }, [update])
-
-    const resetUpdateData = () => {
-        setImage(patient.photo_url ?? null)
-        setUpdateData({
-            'first_name': patient.first_name ?? '',
-            'middle_name': patient.middle_name ?? '',
-            'last_name': patient.last_name ?? '',
-            'suffix': patient.suffix ?? '',
-            'birthdate': patient.birthdate ?? '',
-            'birthplace': patient.birthplace ?? '',
-            'sex': patient.sex ?? '',
-            'house_number': patient.house_number ?? '',
-            'street': patient.street ?? '',
-            'region': patient.region ?? '',
-            'region_code': patient.region_code ?? '',
-            'province': patient.province ?? '',
-            'province_code': patient.province_code ?? '',
-            'city': patient.city ?? '',
-            'city_code': patient.city_code ?? '',
-            'barangay': patient.barangay ?? '',
-            'barangay_code': patient.barangay_code ?? '',
-            'postal_code': patient.postal_code ?? '',
-            'civil_status': patient.civil_status ?? '',
-            'religion': patient.religion ?? '',
-            'phone_number': patient.phone_number ?? '',
-            'email': patient.email ?? '',
-            'email_username': patient.email?.slice(0, patient.email.indexOf("@gmail.com")) || '',
-            'physician_id': patient.physician ? patient.physician.id : '',
-        })
-    }
-
-    const resetErrors = () => {
-        setErrors({})
-    }
 
     const handleChange = (e) => {
         validatePatientDetails(e, setErrors, setUpdateData, updateData)
@@ -110,6 +98,8 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         const getProvinces = async () => {
             const data = await fetchProvinces(updateData.region_code)
             setProvinces(data.geonames)
+            console.log(data.geonames)
+            console.log(updateData)
         }
         getProvinces()
     }, [updateData.region_code])
@@ -119,6 +109,8 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         const getCities = async () => {
             const data = await fetchCities(updateData.province_code)
             setCities(data.geonames)
+            console.log(updateData.province_code)
+            console.log(data.geonames)
         }
         getCities()
     }, [updateData.province_code])
@@ -128,6 +120,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         const getBarangays = async () => {
             const data = await fetchBarangays(updateData.city_code)
             setBarangays(data.geonames)
+            console.log(data.geonames)
         }
         getBarangays()
     }, [updateData.city_code])
@@ -255,54 +248,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             setLoading(false)
         }
     }
-
-    // const handleLettersOnlyInputChange = (key, value) => {
-    //     setErrors(prevData => ({ ...prevData, [key]: ""}))
-
-    //     // allows only one trailing space
-    //     let trimmedValue = value.trim()
-    //     if (value.endsWith(' ')) {
-    //         trimmedValue = trimmedValue + ' ';
-    //     }
-        
-    //     const lettersOneCommaRegex = /^[a-zA-ZñÑ]*(, ?[a-zA-ZñÑ]*)?$/
-    //     if (key == "birthplace" && lettersOneCommaRegex.test(value)) {
-    //         setUpdateData(prevData => ({ ...prevData, [key]: capitalizedWords(trimmedValue)})) 
-    //         return
-    //     }
-
-    //     // allows only letters and spaces
-    //     const lettersOnlyRegex = /^[a-zA-ZñÑ\s]*$/
-    //     if (lettersOnlyRegex.test(value)) {
-    //         setUpdateData(prevData => ({ ...prevData, [key]: capitalizedWords(trimmedValue)}))  // capitalized each word
-    //     }
-    // }
-
-    // const handleNoSpecialCharactersInputChange = (key, value) => {
-    //     setErrors(prevData => ({ ...prevData, [key]: ""}))
-
-    //     // allows only one trailing space
-    //     let trimmedValue = value.trim()
-    //     if (value.endsWith(' ')) {
-    //         trimmedValue = trimmedValue + ' ';
-    //     }
-
-
-    //     // allows only letters, numbers, and spaces
-    //     const noSpecialCharactersRegex = /^[a-zA-ZñÑ0-9\s]*$/
-    //     if (noSpecialCharactersRegex.test(value)) {
-    //         setUpdateData(prevData => ({ ...prevData, [key]: capitalizedWords(trimmedValue)}))  // capitalized each word
-    //     }
-    // }
-
-    // const handleNumbersOnlyInputChange = (key, value) => {
-    //     setErrors(prevData => ({ ...prevData, [key]: ""}))
-        
-    //     const numbersOnlyRegex = /^\d*$/
-    //     if (numbersOnlyRegex.test(value)) {
-    //         setUpdateData(prevData => ({ ...prevData, [key]: value}))
-    //     }
-    // }
    
     return (
         <>
@@ -334,7 +279,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                     <div className={`relative ${update && "mb-2"}`}>
                         <img src={ !update ? patient.photo_url || '' : image } alt="" className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300" />
                         { update && (
-                            <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#248176] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-[#6cb6ad]'>
+                            <button type='button' onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#248176] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-[#6cb6ad]'>
                                 <i className='bi bi-pen'></i>
                             </button>
                         )}

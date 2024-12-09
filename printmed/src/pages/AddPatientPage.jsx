@@ -748,7 +748,7 @@ const AddPatientPage = () => {
                     </label>
                     <div>
                       { image && ( <img src={image} className="max-w-full h-[170px] mt-2 mb-2 rounded-lg" /> )}
-                      <button onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-full py-2 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
+                      <button type="button" onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-full py-2 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
                         <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                       </button>
                     </div>
