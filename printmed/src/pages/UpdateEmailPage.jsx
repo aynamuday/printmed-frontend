@@ -6,11 +6,13 @@ import {globalSwalWithIcon} from '../utils/globalSwal';
 import {showError} from '../utils/fetch/showError';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { validateEmail } from '../utils/formValidations/validateEmail';
 
 const UpdateEmailPage = () => {
     const { token, user, setUser } = useContext(AppContext);
     const navigate = useNavigate();
-
+    
+    const [newEmailUsername, setNewEmailUsername] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [step, setStep] = useState(1); // Tracks the current step: 1 - Enter new email, 2 - Verify OTP
@@ -18,20 +20,33 @@ const UpdateEmailPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleSendOtp = async () => {
+    const handleNewEmailUsernameChange = (e) => {
+        setError('')
+        const value = e.target.value.toLowerCase();
+
+        // only allows letters, numbers, dot
+        if (!/^[a-zA-Z0-9.]*$/.test(value)) {
+            setError("Can only contain letters, numbers, and dot.");
+            return
+        }
+
+        setNewEmailUsername(value)
+        setNewEmail(value + "@gmail.com")
+    }
+
+    const handleSendOtp = async (e) => {
+        e.preventDefault()
         setError('');
 
-        if (!newEmail) {
-            return;
-        }
         if (newEmail === user.email) {
             setError('The provided email is the same as the current email.');
             return;
-        }
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-        if (!emailRegex.test(newEmail)) {
-            setError('Please provide a valid email.');
-            return;
+        } else {
+            const error = validateEmail(newEmail)
+            if(error.trim() != "") {
+                setError(error)
+                return
+            }
         }
 
         try {
@@ -57,12 +72,12 @@ const UpdateEmailPage = () => {
             const data = await res.json()
      
             setOtpToken(data.token);
-            globalSwalWithIcon.fire({
-                title: 'An OTP has been sent to your new email.',
-                icon: 'info',
-                showConfirmButton: false,
-                showCloseButton: true
-            });
+            // globalSwalWithIcon.fire({
+            //     title: 'An OTP has been sent to your new email.',
+            //     icon: 'info',
+            //     showConfirmButton: false,
+            //     showCloseButton: true
+            // });
             setStep(2);   
         }
         catch (err) {
@@ -73,7 +88,8 @@ const UpdateEmailPage = () => {
         }
     };
 
-    const handleVerifyOtp = async () => {
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault()
         setError('');
 
         if (!otp) {
@@ -88,7 +104,7 @@ const UpdateEmailPage = () => {
             setLoading(true)
 
             const res = await fetch('/api/update-email/verify-otp', {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -130,6 +146,51 @@ const UpdateEmailPage = () => {
         }
     };
 
+    const handleResendOtp = async (e) => {
+        e.preventDefault();
+    
+        if (!otpToken || !newEmail) {
+          return;
+        }
+        setError('')
+        setOtp('')
+    
+        try {
+            setLoading(true)
+        
+            const res = await fetch("/api/resend-update-email-otp", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({token: otpToken, email: newEmail}),
+            });
+        
+            if(!res.ok) {
+                console.log(res.status)
+                if (res.status === 400) {
+                    setError('This request is invalid.')
+                    return
+                } else {
+                    throw new Error("Something went wrong. Please try again later.")
+                }
+            }
+        
+            globalSwalWithIcon.fire({
+                title: "New OTP sent!",
+                icon: 'success',
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        }
+        catch (err) {
+          showError(err)
+        }
+        finally {
+          setLoading(false)
+        }
+    };
+
     return (
         <>
             <Sidebar />
@@ -142,7 +203,7 @@ const UpdateEmailPage = () => {
             )}
 
             <div className="w-full md:w-[70%] md:ml-[25%] mt-[10%] relative">
-                <div className="flex flex-col items-center justify-center mt-10 bg-[#98e6dd] bg-opacity-50 p-16 rounded-lg shadow-lg min-h-80">
+                <div className="mt-10 bg-[#98e6dd] bg-opacity-50 p-16 rounded-lg shadow-lg min-h-80">
                     <div className="flex flex-col items-center min-w-96">
                         <div className="absolute top-4 left-4 p-4">
                             <button
@@ -152,47 +213,55 @@ const UpdateEmailPage = () => {
                                 <i className="bi bi-arrow-left font-bold text-2xl"></i> {/* Left arrow icon */}
                             </button>
                         </div>
-                        <h2 className="text-xl font-bold mb-6">
+                        <h2 className="text-xl font-bold mb-4">
                             {step == 1 ? "Update Email" : "Verify OTP"}
                         </h2>
 
-                        {error && <p className="text-red-500 mb-4">{error}</p>}
+                        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
                         {step === 1 && (
-                            <>
-                                <input
-                                    type="email"
-                                    placeholder="Enter new email"
-                                    value={newEmail}
-                                    onChange={(e) => {setError(''); setNewEmail(e.target.value);}}
-                                    className="w-full p-2 mb-4 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
-                                />
+                            <form onSubmit={(e) => handleSendOtp(e)} className='flex flex-col items-center justify-center '>
+                                <div className="flex items-center border rounded-md border-black overflow-hidden mb-6 mt-2">
+                                    <input
+                                        type="text"
+                                        name="email_username"
+                                        placeholder="Email"
+                                        value={newEmailUsername}
+                                        onChange={(e) => {handleNewEmailUsernameChange(e)}}
+                                        className="w-full p-2 focus:outline-none border-r border-r-black"
+                                        required
+                                    />
+                                    <span className="bg-gray-100 p-2">@gmail.com</span>
+                                </div>
                                 <button
-                                    onClick={handleSendOtp}
+                                    type='submit'
                                     className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
                                 >
                                     Send OTP
                                 </button>
-                            </>
+                            </form>
                         )}
 
                         {step === 2 && (
-                            <>
+                            <form onSubmit={(e) => handleVerifyOtp(e)} className='flex flex-col items-center justify-center '>
                                 <input
                                     type="text"
                                     placeholder="Enter OTP"
                                     value={otp}
                                     onChange={(e) => {setError(''); setOtp(e.target.value);}}
-                                    className="w-full p-2 mb-4 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                                    className="w-full min-w-[290px] p-2 mb-4 border border-black rounded-md focus:outline-none"
                                     maxLength="6"
                                 />
                                 <button
-                                    onClick={handleVerifyOtp}
+                                    type='submit'
                                     className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
                                 >
                                     Verify OTP
                                 </button>
-                            </>
+                                <p className='text-sm mt-4'>
+                                    Didn't get an email? <button type='submit' disabled={loading} onClick={(e) => handleResendOtp(e)} className='text-red-600 hover:underline'>Resend</button>
+                                </p>
+                            </form>
                         )}
                     </div>
                 </div>
