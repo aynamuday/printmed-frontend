@@ -626,7 +626,7 @@ const AddPatientPage = () => {
                   {/* House No */}
                   <div>
                     <label className="block text-sm font-medium">
-                      House No. <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Phase)</span> 
+                      House No. <span className="text-red-600">*</span> <span className='text-gray-700'>(or Blk, Lot, Phase)</span> 
                     </label>
                     <input 
                       type="text" 

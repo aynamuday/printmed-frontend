@@ -174,7 +174,7 @@ const LoginPage = () => {
       }
 
       globalSwalWithIcon.fire({
-        title: "New OTP is sent successfully!",
+        title: "New OTP sent!",
         icon: 'success',
         showConfirmButton: false,
         showCloseButton: true
@@ -301,7 +301,8 @@ const LoginPage = () => {
 
           {!isOtpSent && (
             <button
-              onClick={() => navigate('/forgot-password')}
+              type='button'
+              onClick={() => {navigate('/forgot-password')}}
               className="text-sm text-gray-600 hover:text-gray-900 mt-4 w-full flex justify-center"
             >
               Forgot Password?

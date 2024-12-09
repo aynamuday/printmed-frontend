@@ -859,7 +859,7 @@ function RegistrationPage() {
                 {showSuccess && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
                         <div className="bg-white p-6 pt-4 max-w-[80%] w-full lg:max-w-[30%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto relative">
-                            <button onClick={downloadRegistrationConfirmation} className="text-2xl absolute right-6 top-6">
+                            <button onClick={downloadRegistrationConfirmation} className="text-2xl absolute right-6 top-6 hover:bg-gray-200 px-2 py-1 rounded-full">
                                 <i className='bi bi-download'></i>
                             </button>
                             <div className='p-2'>

@@ -95,7 +95,9 @@ const UsersTable = ({ users }) => {
           
           globalSwalWithIcon.fire({
             icon: 'success',
-            title: `Account ${isLocked ? "unlocked" : "locked"} successfully!`
+            title: `Account ${isLocked ? "unlocked" : "locked"} successfully!`,
+            showConfirmButton: false,
+            showCloseButton: true
           })
         }
         catch (err) {
@@ -130,7 +132,9 @@ const UsersTable = ({ users }) => {
       
       globalSwalWithIcon.fire({
         icon: 'success',
-        title: `Account unrestricted successfully!`
+        title: `Account unrestricted successfully!`,
+        showConfirmButton: false,
+          showCloseButton: true
       })
     }
     catch (err) {
