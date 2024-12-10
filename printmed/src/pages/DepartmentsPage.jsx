@@ -4,10 +4,12 @@ import Sidebar from "../components/Sidebar";
 import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
 import {globalSwalWithIcon} from "../utils/globalSwal";
+import { fetchDepartments } from "../utils/fetch/fetchDepartments";
 
 const DepartmentsPage = () => {
-  const { token } = useContext(AppContext);
-  const { departments, setDepartments } = useContext(AppContext);
+  const { token } = useContext(AppContext)
+  
+  const [departments, setDepartments] = useState([]);
   const [ newDepartment, setNewDepartment ] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +31,14 @@ const DepartmentsPage = () => {
     "Rheumatology",
     "Ophthalmology"
   ];
+
+  useEffect(() => {
+    const getDepartments = async () => {
+      setDepartments(await fetchDepartments(token))
+    }
+    
+    getDepartments()
+  }, [])
 
   useContext(() => {
     if (departments) {
@@ -129,7 +139,7 @@ const DepartmentsPage = () => {
 
       <Sidebar />
       <Header />
-      <div className="w-full md:w-[60%] md:ml-[25%] mt-[10%] mb-8 p-4 relative">
+      <div className="mb-8 p-4 relative w-full md:w-[55%] md:ml-[22%] mt-[10%] px-4 sm:px-6 md:px-8">
         <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-4">
           <h2 className="text-2xl font-bold">Departments</h2>
 
