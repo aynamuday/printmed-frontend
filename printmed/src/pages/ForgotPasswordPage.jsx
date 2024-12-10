@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import AppContext from '../context/AppContext';
 import { ScaleLoader } from "react-spinners";
@@ -11,47 +11,14 @@ const ForgotPasswordPage = () => {
     const { token } = useContext(AppContext)
     const navigate = useNavigate()
 
-    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    // const handleEmailChange = (e) => {
-    //     setError('')
-
-    //     const value = e.target.value.trim().toLowerCase()
-    //     const emailRegex = /^(?!.*[\.\+]{2,})(?!.*[^a-zA-Z0-9\s+.]).*$/
-
-    //     console.log(value)
-
-    //     if(!emailRegex.test(value)) {
-    //         setError('Email username must begin with an alphanumeric character and may include non-consecutive dots and plus signs.')
-    //         return
-    //     }
-
-    //     setUsername(value)
-    // }
-
-    const handleEmailChange = (e) => {
-        setError('')
-
-        const value = e.target.value.trim().toLowerCase()
-        const emailRegex = /^(?!.*[\.\+]{2,})(?!.*[^a-zA-Z0-9\s+.]).*$/
-
-        console.log(value)
-
-        if(!emailRegex.test(value)) {
-            setError('Email username must begin with an alphanumeric character and may include non-consecutive dots and plus signs.')
-            return
-        }
-
-        setUsername(value)
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!email.endsWith('@gmail.com') || email.length < 16) {
+        if (!email.endsWith('@gmail.com') || email.length < 6) {
             setError('Email not found.')
             return
         }
@@ -115,22 +82,6 @@ const ForgotPasswordPage = () => {
                 {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
                 <form className="space-y-6 px-2" onSubmit={(e) => handleSubmit(e)}>
                     <div className="rounded-md shadow-sm space-y-4">
-                        {/* <div>
-                            <label className='text-sm text-gray-700'>Email</label>
-                            <div className='relative overflow-clip'>
-                                <input
-                                    name="email"
-                                    type="email"
-                                    className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-black focus:outline-none"
-                                    placeholder="Email"
-                                    value={username}
-                                    onChange={(e) => handleEmailChange(e)}
-                                    minLength={6}
-                                    maxLength={30}
-                                />
-                                <span className="bg-gray-100 absolute right-0 top-0 bottom-0 flex items-center px-2 border border-gray-500 rounded-tr-md rounded-br-md">@gmail.com</span>
-                            </div>
-                        </div> */}
                         <div>
                             <label className='text-sm text-gray-700'>Email</label>
                             <input

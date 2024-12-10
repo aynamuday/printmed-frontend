@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import AppContext from '../context/AppContext';
@@ -15,15 +15,20 @@ const ResetPasswordPage = () => {
   const token = queryParams.get('token');
   const email = queryParams.get('email');
 
-  const [formData, setFormData] = useState({ personnelNumber: '', birthdate: '', password: '', passwordConfirmation: '' });
+  const [formData, setFormData] = useState({ personnelNumber: '', personnelNumberInput: '', birthdate: '', password: '', passwordConfirmation: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login')
+    }
+  }, [])
 
   const handleChange = (e) => {
     setError('')
     
     const { name, value } = e.target;
-    // const capitalizedValue = name == "firstName" || name == "lastName" ? capitalizedWords(value) : value
 
     setFormData({ ...formData, [name]: value });
   };
@@ -31,18 +36,10 @@ const ResetPasswordPage = () => {
   const handlePersonnelNumberChange = (e) => {
     let value = e.target.value;
   
-    const personnelNumberRegex = /^PN-\d*$/
-    if (!personnelNumberRegex.test(value)) {
-      return
-    }
-
-    if (value.length < 4) {
-      value = 'PN-';
-    }
-  
     setFormData((prevData) => ({
       ...prevData,
-      personnelNumber: value,
+      personnelNumberInput: value,
+      personnelNumber: "PN" + value
     }));
   };
 
@@ -131,7 +128,6 @@ const ResetPasswordPage = () => {
       <div className="relative z-10 flex justify-center flex-col bg-gray-100 p-6 rounded-lg lg:w-[30%] md:w-[40%]">
         <div className="flex flex-col items-center mb-6">
           <img src={logo} alt="" className="w-100 h-28" />
-          {/* <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2> */}
           <h2 className="text-center text-2xl font-bold mt-4">Reset Your Password</h2>
         </div>
 
@@ -140,37 +136,30 @@ const ResetPasswordPage = () => {
         <form className="space-y-6 px-2" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label className='text-sm text-gray-700'>Personnel Number</label>
-              <input
-                name="firstName"
-                type="text"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-black focus:outline-none"
-                placeholder="First Name"
-                value={formData.personnelNumber || "PN-"} 
-                onChange={(e) => handlePersonnelNumberChange(e)}
-                minLength="10"
-                maxLength="10"
-                required
-              />
+              <label className='text-sm'>Personnel Number</label>
+              <div className="relative">
+                <div className="flex items-center border rounded-md border-black overflow-hidden">
+                  <span className="bg-gray-100 p-2">PN-</span>
+                  <input
+                      type="text"
+                      name="personnelNumberInput"
+                      placeholder="Personnel Number"
+                      value={formData.personnelNumberInput}
+                      onChange={(e) => handlePersonnelNumberChange(e)}
+                      className="flex-1 p-2 border-l border-black focus:outline-none"
+                      maxLength="7"
+                      minLength="7"
+                      required
+                  />
+                </div>
+              </div>
             </div>
-            {/* <div>
-              <label className='text-sm text-gray-700'>Last Name</label>
-              <input
-                name="lastName"
-                type="text"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-black focus:outline-none"
-                placeholder="First Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
-            </div> */}
             <div>
-              <label className='text-sm text-gray-700'>Birthdate</label>
+              <label className='text-sm'>Birthdate</label>
               <input
                 name="birthdate"
                 type="date"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-black focus:outline-none"
+                className="appearance-none rounded-md w-full px-3 py-2 border border-black text-black focus:outline-none"
                 placeholder="Birthdate"
                 value={formData.birthdate}
                 onChange={handleChange}
@@ -178,11 +167,11 @@ const ResetPasswordPage = () => {
               />
             </div>
             <div>
-              <label className='text-sm text-gray-700'>New Password</label>
+              <label className='text-sm'>New Password</label>
               <input
                 name="password"
                 type="password"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
+                className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                 placeholder="New Password"
                 value={formData.password}
                 onChange={handleChange}
@@ -190,11 +179,11 @@ const ResetPasswordPage = () => {
               />
             </div>
             <div>
-              <label className='text-sm text-gray-700'>Confirm New Password</label>
+              <label className='text-sm'>Confirm New Password</label>
               <input
                 name="passwordConfirmation"
                 type="password"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-gray-500 text-gray-900 focus:outline-none sm:text-sm"
+                className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                 placeholder="Confirm Password"
                 value={formData.passwordConfirmation}
                 onChange={handleChange}

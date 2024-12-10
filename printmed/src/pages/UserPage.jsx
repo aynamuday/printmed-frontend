@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {globalSwalNoIcon, globalSwalWithIcon} from "../utils/globalSwal";
-import { capitalizedWords } from "../utils/wordUtils";
 import { BounceLoader } from "react-spinners";
 import {showError} from "../utils/fetch/showError";
 
@@ -14,10 +13,11 @@ import { validateEmail } from "../utils/formValidations/validateEmail";
 import { showWarning } from "../utils/fetch/showWarning";
 import { validateUserDetails } from "../utils/formValidations/validateUserDetails";
 import { validateUserBirthdate } from "../utils/formValidations/validateUserBirthdate";
+import { fetchDepartments } from "../utils/fetch/fetchDepartments";
 
 // for viewing/updating a user, and adding a new user
 const UserPage = () => {
-  const { user, departments, token } = useContext(AppContext)
+  const { user, token } = useContext(AppContext)
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -28,6 +28,7 @@ const UserPage = () => {
     return
   }
   
+  const [departments, setDepartments] = useState([])
   const [formData, setFormData] = useState({
     role: '',
     personnel_number: '',
@@ -44,6 +45,14 @@ const UserPage = () => {
   });
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState([])
+
+  useEffect(() => {
+    const getDepartments = async () => {
+      setDepartments(await fetchDepartments(token))
+    }
+    
+    getDepartments()
+  }, [])
 
   useEffect(() => {
     if (location.pathname.includes('/users') && location.state.user != undefined) {
@@ -248,22 +257,22 @@ const UserPage = () => {
                     Personnel Number <span className="text-red-600 cursor-help">*</span>
                 </label>
                 <div className="relative">
-                    <div className="flex items-center border rounded-md border-black overflow-hidden">
-                      <span className="bg-gray-100 p-2">PN-</span>
-                      <input
-                          type="text"
-                          name="personnel_number_input"
-                          placeholder="Personnel Number"
-                          value={formData.personnel_number_input}
-                          onChange={handleChange}
-                          className="flex-1 p-2 border-l border-black focus:outline-none"
-                          maxLength="7"
-                          minLength="7"
-                          required
-                      />
-                    </div>
+                  <div className="flex items-center border rounded-md border-black overflow-hidden">
+                    <span className="bg-gray-100 p-2">PN-</span>
+                    <input
+                        type="text"
+                        name="personnel_number_input"
+                        placeholder="Personnel Number"
+                        value={formData.personnel_number_input}
+                        onChange={handleChange}
+                        className="flex-1 p-2 border-l border-black focus:outline-none"
+                        maxLength="7"
+                        minLength="7"
+                        required
+                    />
                   </div>
-                  {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.personnel_number}</p>}
+                </div>
+                {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.personnel_number}</p>}
               </div>
 
               <div>
