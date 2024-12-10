@@ -1,4 +1,5 @@
 import React from 'react'
+import { capitalizedWords } from '../utils/wordUtils'
 
 const AuditsTable = ({ forDashboard, audits }) => {
   return (
@@ -10,6 +11,7 @@ const AuditsTable = ({ forDashboard, audits }) => {
                 <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[15%]">User Role</th>
                 <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[15%]">User No.</th>
                 <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[30%]">Action</th>
+                <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[15%]">Entity</th>
               </tr>
             </thead>
             <tbody>
@@ -17,14 +19,15 @@ const AuditsTable = ({ forDashboard, audits }) => {
                 audits.map((audit, index) => (
                   <tr key={index}>
                     <td className="border p-0.5 border-[#828282] text-center">{`${!forDashboard ? audit.date + '\u00A0' : ""} ${audit.time}`}</td>
-                    <td className="border p-0.5 border-[#828282] text-center">{audit.user_role}</td>
+                    <td className="border p-0.5 border-[#828282] text-center">{capitalizedWords(audit.user_role)}</td>
                     <td className="border p-0.5 border-[#828282] text-center">{audit.user_personnel_number}</td>
                     <td className="border p-0.5 border-[#828282] text-center">{audit.message}</td>
+                    <td className="border p-0.5 border-[#828282] text-center">{audit.resource_entity}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="border p-2 border-[#828282] text-center">No audits</td>
+                  <td colSpan="5" className="border p-2 border-[#828282] text-center">No audits</td>
                 </tr>
               )}
             </tbody>

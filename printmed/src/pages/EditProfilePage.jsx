@@ -64,7 +64,7 @@ const EditProfilePage = () => {
     }
 
     const formDataToSubmit = Object.keys(formData).reduce((acc, key) => {
-      if (formData[key].trim() == "" && (user[key] == null || user[key].trim() == "")) {
+      if ((String(formData[key]).trim() == "" && (user[key] == null || String(user[key]).trim() == "")) || key == "email_username" || key == 'personnel_number_input') {
         return acc
       }
 

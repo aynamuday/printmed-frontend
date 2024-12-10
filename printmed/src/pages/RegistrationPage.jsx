@@ -90,7 +90,6 @@ function RegistrationPage() {
             barangay_code: '',
             house_number: '',
             street: '',
-            barangay: '',
             postal_code: '',
             religion: '',
             phone_number: '',

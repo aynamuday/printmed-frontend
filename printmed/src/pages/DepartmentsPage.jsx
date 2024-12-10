@@ -170,7 +170,7 @@ const DepartmentsPage = () => {
                   <td className="border p-0.5 border-[#828282]">
                     <div className="flex flex-row w-full items-center justify-center">
                       { item.users_count < 1 &&
-                        <button onClick={() => deleteDepartment(item.id)} className="py-0.5 w-20 rounded-lg bg-red-500 hover:bg-[#a43331] text-white">
+                        <button onClick={() => deleteDepartment(item.id)} className="py-0.5 w-20 rounded-lg text-red-600 hover:underline">
                           Delete
                         </button>
                       }

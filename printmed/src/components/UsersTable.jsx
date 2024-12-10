@@ -145,46 +145,46 @@ const UsersTable = ({ users }) => {
     }
   };
 
-  const handleSendResetLink = async (email, personnelNumber) => {
-    setActionMenuOpen(null)
+  // const handleSendResetLink = async (email, personnelNumber) => {
+  //   setActionMenuOpen(null)
 
-    globalSwalNoIcon.fire({
-      title: `Send reset link to user ${personnelNumber}?`,
-      showCancelButton: true,
-      confirmButtonText: "Yes"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          setLoading(true)
+  //   globalSwalNoIcon.fire({
+  //     title: `Send reset link to user ${personnelNumber}?`,
+  //     showCancelButton: true,
+  //     confirmButtonText: "Yes"
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //         setLoading(true)
     
-          const res = await fetch('/api/send-reset-link', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ email }),
-          });
+  //         const res = await fetch('/api/send-reset-link', {
+  //           method: 'POST',
+  //           headers: {
+  //             Authorization: `Bearer ${token}`
+  //           },
+  //           body: JSON.stringify({ email }),
+  //         });
     
-          if(!res.ok) {
-            throw new Error("Something went wrong. Please try again later.")
-          }
+  //         if(!res.ok) {
+  //           throw new Error("Something went wrong. Please try again later.")
+  //         }
           
-          globalSwalWithIcon.fire({
-            icon: 'success',
-            title: `Reset link sent successfully!`,
-            showConfirmButton: false,
-            showCloseButton: true
-          })
-        }
-        catch (err) {
-          showError(err)
-        }
-        finally {
-          setLoading(false)
-        }
-      }
-    })
-  }
+  //         globalSwalWithIcon.fire({
+  //           icon: 'success',
+  //           title: `Reset link sent successfully!`,
+  //           showConfirmButton: false,
+  //           showCloseButton: true
+  //         })
+  //       }
+  //       catch (err) {
+  //         showError(err)
+  //       }
+  //       finally {
+  //         setLoading(false)
+  //       }
+  //     }
+  //   })
+  // }
 
   const getUserStatus = (user) => {
     let status = 'Active';
@@ -240,9 +240,11 @@ const UsersTable = ({ users }) => {
                         {actionMenuOpen === item.id && (
                           <>
                           <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md py-0.5 border overflow-clip border-[#248176] z-10">
-                            <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-0.5">
-                              <i className={`me-2 bi bi-pencil`}></i>Edit
-                            </button>
+                            {!item.is_locked && (
+                              <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-0.5">
+                                <i className={`me-2 bi bi-pencil`}></i>Edit
+                              </button>
+                            )}
 
                             {item.failed_login_attempts > 2 && (
                               <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-0.5 text-green-600 bg-gray-200">
@@ -250,11 +252,11 @@ const UsersTable = ({ users }) => {
                               </button>
                             )}
 
-                            {!item.is_locked && (
+                            {/* {!item.is_locked && (
                               <button className="block w-full text-left px-3 pe-4 py-0.5 text-blue-600 hover:bg-gray-200" onClick={() => handleSendResetLink(item.email, item.personnel_number)}>
                                 <i className={`me-2 bi bi-send`}></i>Send Reset Link
                               </button>
-                            )}
+                            )} */}
 
                             <button onClick={() => handleToggleLockButton(item.id, item.is_locked, item.personnel_number)} className="block w-full hover:bg-gray-200 text-left text-red-600 px-3 pe-4 py-0.5">
                               <i className={`me-2 bi ${item.is_locked ? "bi-unlock" : "bi-lock"}`}></i>{item.is_locked ? "Unlock" : "Lock"}
