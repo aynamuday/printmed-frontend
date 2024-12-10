@@ -3,8 +3,9 @@ import AppContext from '../context/AppContext'
 import Swal from 'sweetalert2'
 import { showError } from '../utils/fetch/showError'
 
-const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns, setLoading }) => {
+const VitalSignsForm = ({ setPatient, setVitalSignsState, setLoading, patient }) => {
     const { token } = useContext(AppContext)
+    const vitalSigns = patient.vital_signs
 
     const [vitalSignsData, setVitalSignsData] = useState({
         'height': vitalSigns ? vitalSigns.height : '',
@@ -80,7 +81,7 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
             return
         }
 
-        const url = vitalSigns ? `/api/vital-signs/${vitalSigns.id}` : `/api/vital-signs/${patientId}`
+        const url = vitalSigns ? `/api/vital-signs/${vitalSigns.id}` : `/api/vital-signs/${patient.id}`
         const method = vitalSigns ? "PUT" : "POST"
 
         try {  
@@ -104,15 +105,17 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, patientId, vitalSigns,
             }
      
            const data = await res.json()
-           setPatient((prevData) => ({...prevData, vital_signs: data}))
+           const updatedPatient = {...patient, vital_signs:data }
+           setPatient(updatedPatient)
            setVitalSignsState("view")
-         }
-         catch (err) {
-           showError(err)
-         }
-         finally {
-             setLoading(false)
-         }
+           sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
+        }
+        catch (err) {
+            showError(err)
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     const handleVitalSignsInputChange = (key, value) => {

@@ -85,7 +85,7 @@ const App = () => {
       roleBasedRoutes = (
         <Route element={<SecretaryProvider />}>
           <Route path='/' element={<PatientsPage/>}/>
-          <Route path='patients/:id' element={<PatientPageSecretary/>}/>
+          <Route path='patient' element={<PatientPageSecretary/>}/>
           <Route path='registrations' element={<RegistrationsPage/>}/>
           <Route path='add-patient' element={<AddPatientPage/>}/>
           { generalRoutes }

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../context/AppContext'
-import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils';
-import { capitalizedWords } from '../utils/wordUtils';
+import { getFormattedStringDate } from '../utils/dateUtils';
 import WebcamCapture from './WebcamCapture';
 import { showError } from '../utils/fetch/showError';
 import { globalSwalNoIcon } from '../utils/globalSwal';
@@ -26,7 +25,7 @@ import { fetchBarangays } from "../utils/fetch/fetchBarangays";
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
 
-    const [physicians, setPhysicians] = useState(null)
+    const [physicians, setPhysicians] = useState('')
     const followUpDateStatus = getFollowUpDateStatus(patient.follow_up_date)
     const [update, setUpdate] = useState(false)
     const [updateData, setUpdateData] = useState({
@@ -69,26 +68,31 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     useEffect(() => {
         const getPhysicians = async () => {
             try {
-                setPhysicians(await fetchPhysicians(token))
+                const data = await fetchPhysicians(token)
+                setPhysicians(data)
             } catch (err) {
                 showError(err)
             }
         };
         
-        if (user.role === "secretary" && update && (!physicians || physicians.length == 0)) {
+        if (user.role === "secretary" && !physicians) {
             getPhysicians()
         }
 
-        if (user.role == "secretary") {
+        if (patient.length != 0 && user.role == "secretary") {
             getRegions()
         }
-
-        resetUpdate()
-    }, [update])
+    }, [])
 
     useEffect(() => {
         resetUpdate()
     }, [patient])
+
+    useEffect(() => {
+        if (!update) {
+            resetUpdate()
+        }
+    }, [update])
 
     const resetUpdate = () => {
         setUpdateData({
@@ -119,6 +123,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             'hmo': patient.hmo ?? '',
             'physician_id': patient.physician ? patient.physician.id : '',
         })
+        setImage(patient.photo_url ?? null)
 
         setErrors([])
     }
@@ -138,7 +143,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
     // executes when region code changes
     useEffect(() => {
-        if (user.role == "secretary") {
+        if (patient.length != 0 && user.role == "secretary") {
             const getProvinces = async () => {
                 const data = await fetchProvinces(updateData.region_code)
                 setProvinces(data.geonames)
@@ -149,23 +154,26 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
     // executes when province code changes
     useEffect(() => {
-        if (user.role == "secretary") {
+        if (patient.length != 0 && user.role == "secretary") {
             const getCities = async () => {
                 const data = await fetchCities(updateData.province_code)
                 setCities(data.geonames)
             }
+            
             getCities()
+            // encountered a problem here, since I call this every time updateData.province_code is updated, it executed multiple times even province_code is empty
+            // and since it is asynchronous, I received responses multiple times too and not in order
+            // so I get response last for the empty, then setCities to empty
+            // therefore I added condition to if statement, the patient.length != 0, so that this only executes when patient is set
         }
-        
     }, [updateData.province_code])
 
     // executes when city code changes
     useEffect(() => {
-        if (user.role == "secretary") {
+        if (patient.length != 0 && user.role == "secretary") {
             const getBarangays = async () => {
                 const data = await fetchBarangays(updateData.city_code)
                 setBarangays(data.geonames)
-                console.log(data.geonames)
             }
             getBarangays()
         }
@@ -272,7 +280,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             })
 
             const data = await res.json()
-            console.log(data)
         
             if(!res.ok) {
                 throw new Error("Something went wrong. Please try again later.")
@@ -288,6 +295,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             setPatient(data)
             setImage(data.photo_url)
             setUpdate(false)
+            sessionStorage.setItem('patient', JSON.stringify(data))
         }
         catch (err) {
             showError(err)

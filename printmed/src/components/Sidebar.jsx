@@ -88,7 +88,7 @@ const Sidebar = () => {
               </>
             ) : ( user.role === "secretary" ? (
               <>
-                <NavLink to="/" className={({ isActive }) => `${linkClass({ isActive })} ${!isActive && location.pathname.includes('/patients') ? "bg-gray-700" : ""}`}>
+                <NavLink to="/" className={({ isActive }) => `${linkClass({ isActive })} ${!isActive && location.pathname.includes('/patient') ? "bg-gray-700" : ""}`}>
                   <i className="bi bi-person-fill text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Patients</span>
                 </NavLink>

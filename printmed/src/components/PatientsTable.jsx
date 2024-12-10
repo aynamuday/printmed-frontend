@@ -12,11 +12,10 @@ const PatientsTable = ({ patients, setLoading }) => {
     setLoading(true)
 
     try {
-        const patient = await fetchPatient(patientId, token)
-
-        navigate(`/patients/${patientId}`, {
-          state: { patient }
-        });
+      const patient = await fetchPatient(patientId, token)
+  
+      sessionStorage.setItem('patient', JSON.stringify(patient))
+      navigate(`/patient`)
     }
     catch (err) {
       showError(err)

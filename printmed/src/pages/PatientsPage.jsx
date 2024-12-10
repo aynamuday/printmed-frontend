@@ -149,9 +149,8 @@ const PatientsPage = () => {
 
     try {
       const patient = await fetchPatientUsingQr(qrCode, token)
-      navigate(`/patients/${patient.id}`, {
-        state: { patient }
-      });
+      sessionStorage.setItem('patient', JSON.stringify(patient))
+      navigate(`/patient`);
     }
     catch (err) {
       showError(err)

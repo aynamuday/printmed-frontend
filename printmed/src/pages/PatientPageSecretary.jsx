@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import AppContext from '../context/AppContext'
 
-import Swal from 'sweetalert2'
 import { ClipLoader } from 'react-spinners'
 import { globalSwalWithIcon, globalSwalNoIcon } from '../utils/globalSwal'
 import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils'
@@ -19,29 +18,29 @@ import { showError } from '../utils/fetch/showError'
 const PatientPageSecretary = () => {
     const { token } = useContext(AppContext)
     const navigate = useNavigate()
-    const location = useLocation();
 
-    const [patient, setPatient] = useState()
+    const [patient, setPatient] = useState([])
     const [vitalSignsState, setVitalSignsState] = useState(null)
     const [showPatientIdMenu, setShowPatientIdMenu] = useState(false)
     const patientIdMenuRef = useRef(null)
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        if (location.state.patient == undefined) {
+        const sessionStoragePatient = sessionStorage.getItem('patient')
+        if (sessionStoragePatient === null) {
             navigate('/')
             return
-        } else {
-            setPatient(location.state.patient)
-            setVitalSignsState(location.state.patient.vital_signs == null ? null : "view")
         }
+        const patient = JSON.parse(sessionStoragePatient)
+        setPatient(patient)
+        setVitalSignsState(patient.vital_signs == null ? null : "view")
 
         document.addEventListener('click', handleClickOutside);
     
         return () => {
-          document.removeEventListener('click', handleClickOutside);
+          document.removeEventListener('click', handleClickOutside)
         };
-    }, []);
+    }, [])
 
     const handleClickOutside = (event) => {
         if (patientIdMenuRef.current && !patientIdMenuRef.current.contains(event.target)) {
@@ -78,8 +77,10 @@ const PatientPageSecretary = () => {
                        }
                    }    
         
-                   setPatient((prevData) => ({...prevData, vital_signs: null}))
+                   const updatedPatient = {...patient, vital_signs: null}
+                   setPatient(updatedPatient)
                    setVitalSignsState(null)
+                   sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
                 }
                  catch (err) {
                    showError(err)
@@ -141,7 +142,10 @@ const PatientPageSecretary = () => {
                     const url = URL.createObjectURL(data)
                     printPdf(url)
 
-                    setPatient((prevData) => ({...prevData, qr_status: {...prevData.qr_status, status: "Active", date_issued: getFormattedNumericDate(), issuances_count: prevData.qr_status.issuances_count ? + prevData.qr_status.issuances_count + 1 : 1}}))
+                    const updatedPatient = {...patient, qr_status: {...patient.qr_status, status: "Active", date_issued: getFormattedNumericDate(), issuances_count: patient.qr_status.issuances_count ? + patient.qr_status.issuances_count + 1 : 1}}
+                    setPatient(updatedPatient)
+                    setVitalSignsState(null)
+                    sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
                 }
                 catch (err) {
                     showError(err)
@@ -189,7 +193,10 @@ const PatientPageSecretary = () => {
                         showCloseButton: true
                     })
 
-                    setPatient((prevData) => ({...prevData, qr_status: {...prevData.qr_status, status: "Deactivated", date_deactivated: getFormattedNumericDate()}}))
+                    const updatedPatient = {...patient, qr_status: {...patient.qr_status, status: "Deactivated", date_deactivated: getFormattedNumericDate()}}
+                    setPatient(updatedPatient)
+                    setVitalSignsState(null)
+                    sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
                 }
                 catch (err) {
                     showError(err)
@@ -211,6 +218,7 @@ const PatientPageSecretary = () => {
                 navigate('/')
                 setPatient(null)
                 setLoading(false)
+                sessionStorage.removeItem('patient')
             }
         });
     }
@@ -280,12 +288,12 @@ const PatientPageSecretary = () => {
 
                                             {/* edit vital signs */}
                                             { vitalSignsState === "edit" && patient.vital_signs && (
-                                                <VitalSignsForm setPatient={setPatient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} vitalSigns={patient.vital_signs} />
+                                                <VitalSignsForm setPatient={setPatient} patient={patient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} />
                                             )}
 
                                             {/* add vital signs */}
                                             { vitalSignsState === "add" && !patient.vital_signs && (
-                                                <VitalSignsForm setPatient={setPatient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} patientId={patient.id} />
+                                                <VitalSignsForm setPatient={setPatient} patient={patient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} />
                                             )}
                                         </div>
                                     </div>
