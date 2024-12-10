@@ -113,7 +113,6 @@ const RegistrationsPage = () => {
       const data = await res.json()
 
       setRegistrations(data)
-      console.log(data)
     }
     catch (err) {
       let error = err.message ?? "Something went wrong. Please try again later."

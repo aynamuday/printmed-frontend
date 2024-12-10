@@ -195,7 +195,6 @@ const PatientPagePhysician = () => {
                         <i className="bi bi-search block text-3xl font-bold text-center text-[#6CB6AD]"></i>
                         <form onSubmit={(e) => getPatientUsingId(e)} className='flex items-center justify-center flex-col'>
                             <div className='mt-3'>
-                                {/* <label className='block text-sm'>Enter Patient ID</label> */}
                                 <div className="flex items-center border rounded-md border-black overflow-hidden">
                                     <span className="bg-gray-200 p-2 border-r border-r-black">P</span>
                                     <input

@@ -22,7 +22,7 @@ export const PhysicianProvider = () => {
   }
 
   useEffect(() => {
-    if (patient) {
+    if (patient && patient.vital_signs) {
       const vitalSigns = patient.vital_signs
 
       setAddConsultationData((prevData) => ({

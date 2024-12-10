@@ -7,7 +7,7 @@ export const fetchPhysicians = async (token) => {
         });
 
         if(!res.ok) {
-            throw new Error("An error occured while fetching the physicians. Please try again later.")
+            throw new Error("An error occured while fetching the physicians. You may refresh to try again.")
         }
 
         return await res.json()
