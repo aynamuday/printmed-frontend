@@ -87,8 +87,6 @@ const AddPatientPage = () => {
       }
     };
 
-    console.log(registration)
-
     getPhysicians()
   }, [])
 
@@ -312,11 +310,10 @@ const AddPatientPage = () => {
     setLoading(true)
 
     try {
-        const patient = await fetchPatient(patientId, token)
+      const patient = await fetchPatient(patientId, token)
 
-        navigate(`/patients/${patientId}`, {
-          state: { patient }
-        });
+      sessionStorage.setItem('patient', JSON.stringify(patient))
+      navigate(`/patient`);
     }
     catch (err) {
       showError(err)
@@ -352,7 +349,8 @@ const AddPatientPage = () => {
             <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-40'>
               <div className="bg-white rounded-md flex justify-items-center flex-col pt-4 pb-8 px-8 max-h-[70vh] overflow-y-auto">
                 <i className="bi bi-exclamation-circle block text-[60px] text-center text-orange-500"></i>
-                <p className="text-center font-bold text-xl text-black">Duplicate Patient/s Found</p>
+                <p className="text-center font-bold text-xl text-black">Duplicate Patient{duplicatePatients.length > 1 && "s"} Found</p>
+                <p className="text-center italic">based on first name, last name, birthdate, and sex</p>
                 <table className="w-[100%] border-collapse mt-4 break-words">
                   <thead>
                     <tr>
@@ -366,21 +364,21 @@ const AddPatientPage = () => {
                     {(duplicatePatients.map((patient, index) => (
                       <tr key={index}>
                         <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">{patient.patient_number}</td>
-                        <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">{patient.full_name}</td>
+                        <td className="border-b-[1px] border-[#696969] max-w-[150px] text-center p-2 align-top px-6">{patient.first_name} {patient.last_name}</td>
                         <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
                           <div className="w-full flex justify-center items-center">
                             <img src={patient.photo_url ?? ""} className="max-w-[80%] max-h-[120px]"/>
                           </div>
                         </td>
                         <td className="border-b-[1px] border-[#696969] text-center p-2 align-top px-6">
-                          <button onClick={() => viewPatient(patient.id)} className="py-2 px-4 bg-[#007bff] hover:bg-blue-700 text-white rounded-md">View</button>
+                          <button onClick={() => viewPatient(patient.id)} className="py-2 px-4 bg-[#248176] hover:bg-[#379c90] text-white rounded-md">View</button>
                         </td>
                       </tr>
                     )))}
                   </tbody>
                 </table>
                 <div className="flex items-center justify-center gap-4 mt-6">
-                  <button onClick={(e) => addPatient(e)} className="py-2 px-4 bg-[#248176] hover:bg-[#1b6a61] text-white rounded-md">Add anyway</button>
+                  <button onClick={(e) => addPatient(e)} className="py-2 px-4 bg-[#248176] hover:bg-blue-600 text-white rounded-md">Add anyway</button>
                   <button onClick={() => setDuplicatePatients([])} className="py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md">Cancel</button>
                 </div>
               </div>
@@ -815,7 +813,7 @@ const AddPatientPage = () => {
                     </label>
                     <div>
                       { image && ( <img src={image} className="max-w-full h-[170px] mt-2 mb-2 rounded-lg" /> )}
-                      <button type="button" onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-full py-2 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
+                      <button type="button" onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-[60%] py-1 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
                         <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                       </button>
                     </div>
@@ -823,7 +821,7 @@ const AddPatientPage = () => {
                   </div>
                 </div>
 
-                <button type="submit" className="mt-8 w-[50%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
+                <button type="submit" className="mt-8 w-[30%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
               </form>
             </div>
           </div>
