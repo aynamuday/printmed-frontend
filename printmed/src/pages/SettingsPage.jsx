@@ -71,7 +71,7 @@ const SettingsPage = () => {
 
       <div className='min-h-10'></div>
       <div className="mt-6 space-y-4 w-full flex flex-col items-center">
-      {user.role === 'admin' && (
+      {user.role === 'super admin' && (
         <Link
           to="/settings/edit-profile"
           className="w-48 sm:w-48 px-4 py-2 bg-[#248176] rounded-md hover:bg-[#359c90] focus:outline-none text-center text-white"

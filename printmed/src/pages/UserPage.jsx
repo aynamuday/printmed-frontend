@@ -17,7 +17,7 @@ import { validateUserBirthdate } from "../utils/formValidations/validateUserBirt
 
 // for viewing/updating a user, and adding a new user
 const UserPage = () => {
-  const { departments, token } = useContext(AppContext)
+  const { user, departments, token } = useContext(AppContext)
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -237,7 +237,7 @@ const UserPage = () => {
                   required
                 >
                   <option value="">Select Role</option>
-                  <option value="admin">Admin</option>
+                  {user.role == "super admin" && <option value="admin">Admin</option>}
                   <option value="physician">Physician</option>
                   <option value="secretary">Secretary</option>
                 </select>
@@ -411,8 +411,8 @@ const UserPage = () => {
               <div className="flex justify-center items-center">
                 <button
                   type="submit"
-                  className="mt-1 block w-[50%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
-                    { userId ? "Save" : "Create Account" }
+                  className="mt-1 block w-[30%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                    { userId ? "Save" : "Create" }
                 </button>
               </div>
             </div>

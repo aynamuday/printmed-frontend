@@ -46,7 +46,7 @@ const Sidebar = () => {
           <hr className="my-2 text-white" />
 
           <div>
-            { user.role === "admin" ? (
+            { user.role === "admin" || user.role === "super admin" ? (
               <>
                 <NavLink to="/" className={linkClass}>
                   <i className="bi bi-house-door-fill text-2xl"></i>
@@ -60,10 +60,12 @@ const Sidebar = () => {
                   <i className="bi bi-plus-circle text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Add User</span>
                 </NavLink> 
-                <NavLink to="/departments" className={linkClass}>
-                  <i className="bi bi-building text-2xl"></i>
-                  <span className="text-xl ml-4 text-white">Departments</span>
-                </NavLink>
+                {user.role === "super admin" && 
+                  <NavLink to="/departments" className={linkClass}>
+                    <i className="bi bi-building text-2xl"></i>
+                    <span className="text-xl ml-4 text-white">Departments</span>
+                  </NavLink>
+                }
                 <NavLink to="/audits" className={linkClass}>
                   <i className="bi bi-file-earmark-bar-graph text-2xl"></i>
                   <span className="text-xl ml-4 text-white">Audits</span>

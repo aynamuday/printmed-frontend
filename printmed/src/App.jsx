@@ -45,19 +45,32 @@ const App = () => {
     </>
   )
 
+  const adminRoutes = (
+    <>
+      <Route path='/' element={<AdminDashboardPage/>}/>
+      <Route path='users' element={<UsersPage/>}/>
+      <Route path='users/:userId' element={<UserPage/>}/>
+      <Route path='add-user' element={<UserPage/>}/>
+      <Route path='audits' element={<AuditsPage/>}/>
+    </>
+  )
+
   let roleBasedRoutes;
 
   if (user) {
-    if (user.role === "admin") {
+    if (user.role == "super admin") {
       roleBasedRoutes = (
         <Route element={<AdminProvider />}>
-          <Route path='/' element={<AdminDashboardPage/>}/>
-          <Route path='users' element={<UsersPage/>}/>
-          <Route path='users/:userId' element={<UserPage/>}/>
-          <Route path='add-user' element={<UserPage/>}/>
+          <Route path='departments' element={<DepartmentsPage/>}/> &&
           <Route path='settings/edit-profile' element={<EditProfilePage />}/>
-          <Route path='departments' element={<DepartmentsPage/>}/>
-          <Route path='audits' element={<AuditsPage/>}/>
+          { adminRoutes }
+          { generalRoutes }
+        </Route>
+      )
+    } else if (user.role === "admin") {
+      roleBasedRoutes = (
+        <Route element={<AdminProvider />}>
+          { adminRoutes }
           { generalRoutes }
         </Route>
       )

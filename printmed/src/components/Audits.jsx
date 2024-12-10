@@ -248,6 +248,10 @@ const Audits = ({ forDashboard = false }) => {
             }
         })
 
+        if (!res.ok) {
+            console.log(await res.json())
+        }
+
         const blob = await res.blob()
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')

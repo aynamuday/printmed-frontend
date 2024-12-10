@@ -12,7 +12,7 @@ import Audits from '../components/Audits';
 
 
 const DashboardAdminPage = () => {
-  const { token } = useContext(AppContext)
+  const { user, token } = useContext(AppContext)
   const { usersCount, setUsersCount } = useContext(AdminContext)
 
   const [loadingUsersCount, setLoadingUsersCount] = useState(false)
@@ -60,8 +60,8 @@ const DashboardAdminPage = () => {
               <PulseLoader color="#6CB6AD" loading={loadingUsersCount} size={15} />
             </div>
           ) : ( */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-            <DashboardCard name={"Admins"} value={usersCount ? usersCount.admins : 0} />
+          <div className={`grid gap-4 mt-8 ${user.role == "admin" ? "grid-cols-2" : "grid-cols-3" }`}>
+            {user.role == "super admin" && <DashboardCard name={"Admins"} value={usersCount ? usersCount.admins : 0} />}
             <DashboardCard name={"Physicians"} value={usersCount ? usersCount.physicians : 0} />
             <DashboardCard name={"Secretaries"} value={usersCount ? usersCount.secretaries : 0} />
           </div>

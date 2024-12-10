@@ -11,7 +11,7 @@ import Sidebar from '../components/Sidebar';
 import UsersTable from '../components/UsersTable';
 
 const UsersPage = () => {
-    const { token } = useContext(AppContext)
+    const { user, token } = useContext(AppContext)
     const { 
         users, setUsers, 
         searchUser, setSearchUser, 
@@ -200,7 +200,7 @@ const UsersPage = () => {
                                 <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
                                         name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
                                 <option value="">Select role</option>
-                                <option value="admin">Admin</option>
+                                {user.role == "super admin" && <option value="admin">Admin</option>}
                                 <option value="physician">Physician</option>
                                 <option value="secretary">Secretary</option>
                                 </select>
