@@ -47,6 +47,7 @@ function RegistrationPage() {
         phone_number: '',
         email: '',
         email_username: '',
+        payment_method: '',
         hmo: '',
     });
     const [termsAccepted, setTermsAccepted] = useState(false)
@@ -95,6 +96,7 @@ function RegistrationPage() {
             phone_number: '',
             email: '',
             email_username: '',
+            payment_method: '',
             hmo: '',
         });
 
@@ -225,6 +227,16 @@ function RegistrationPage() {
     
         if (formData.phone_number.length !== 10) {
             newErrors.phone_number = 'Please enter a valid phone number.';
+            formIsValid = false;
+        }
+
+        if (formData.payment_method.trim() === "") {
+            newErrors.payment_method = 'This field is required.';
+            formIsValid = false;
+        }
+
+        if (formData.hmo.trim() === "" && formData.payment_method === "HMO") {
+            newErrors.hmo = 'This field is required.';
             formIsValid = false;
         }
     
@@ -689,46 +701,68 @@ function RegistrationPage() {
                                     {errors.religion && (<p className="text-red-500 text-sm">{errors.religion}</p>)}
                                 </div>
 
-                                {/* HMO */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        HMO
+                                        Payment Method <span className="text-red-600">*</span>
                                     </label>
                                     <select
-                                        name="hmo"
+                                        name="payment_method"
                                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                                        value={formData.hmo}
+                                        value={formData.payment_method}
                                         onChange={handleChange}
+                                        required
                                     >
-                                        <option value="">Select HMO</option>
-                                        <option value="Dynamic Care Corporation">Dynamic Care Corporation</option>
-                                        <option value="MediCard">MediCard</option>
-                                        <option value="PhilCare">PhilCare</option>
-                                        <option value="Getwell Health Systems">Getwell Health Systems</option>
-                                        <option value="Sun Life Grepa">Sun Life Grepa</option>
-                                        <option value="AsianCare">AsianCare</option>
-                                        <option value="medicareplus">medicareplus</option>
-                                        <option value="Pacific Cross Philippines">Pacific Cross Philippines</option>
-                                        <option value="ValuCare">ValuCare</option>
-                                        <option value="Health Plans Philippines, Inc.">Health Plans Philippines, Inc.</option>
-                                        <option value="Intellicare">Intellicare</option>
-                                        <option value="Lacson & Lacson Insurance Brokers, Inc.">Lacson & Lacson Insurance Brokers, Inc.</option>
-                                        <option value="Maxicare">Maxicare</option>
-                                        <option value="MedAsia">MedAsia</option>
-                                        <option value="MedoCare">MedoCare</option>
-                                        <option value="Advanced Medical Access Philippines, Inc.">Advanced Medical Access Philippines, Inc.</option>
-                                        <option value="Avega">Avega</option>
-                                        <option value="Carewell Health Systems">Carewell Health Systems</option>
-                                        <option value="CocoLife HealthCare">CocoLife HealthCare</option>
-                                        <option value="EastWest Healthcare">EastWest Healthcare</option>
-                                        <option value="eTiQa">eTiQa</option>
-                                        <option value="Generali">Generali</option>
-                                        <option value="Health Maintenance, Inc.">Health Maintenance, Inc.</option>
-                                        <option value="Health Bridge Medical Services, Inc.">Health Bridge Medical Services, Inc.</option>
-                                        <option value="iCare">iCare</option>
-                                        <option value="ims wellth care inc.">ims wellth care inc.</option>
+                                        <option value="">Select Payment Method</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="HMO">HMO</option>
                                     </select>
+                                    {errors.payment_method && (<p className="text-red-500 text-sm">{errors.payment_method}</p>)}
                                 </div>
+
+                                {/* HMO */}
+                                {formData.payment_method == "HMO" &&
+                                    <div>
+                                        <label className="block text-sm font-medium">
+                                            HMO <span className="text-red-600">*</span>
+                                        </label>
+                                        <select
+                                            name="hmo"
+                                            className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                            value={formData.hmo}
+                                            onChange={handleChange}
+                                            required
+                                        >
+                                            <option value="">Select HMO</option>
+                                            <option value="Advanced Medical Access Philippines">Advanced Medical Access Philippines</option>
+                                            <option value="AsianCare">AsianCare</option>
+                                            <option value="Avega">Avega</option>
+                                            <option value="Carewell Health Systems">Carewell Health Systems</option>
+                                            <option value="CocoLife HealthCare">CocoLife HealthCare</option>
+                                            <option value="Dynamic Care Corporation">Dynamic Care Corporation</option>
+                                            <option value="EastWest Healthcare">EastWest Healthcare</option>
+                                            <option value="eTiQa">eTiQa</option>
+                                            <option value="Generali">Generali</option>
+                                            <option value="Getwell Health Systems">Getwell Health Systems</option>
+                                            <option value="Health Bridge Medical Services">Health Bridge Medical Services</option>
+                                            <option value="Health Maintenance">Health Maintenance</option>
+                                            <option value="Health Plans Philippines">Health Plans Philippines</option>
+                                            <option value="iCare">iCare</option>
+                                            <option value="IMS Wellth Care">IMS Wellth Care</option>
+                                            <option value="Intellicare">Intellicare</option>
+                                            <option value="Lacson & Lacson Insurance Brokers">Lacson & Lacson Insurance Brokers</option>
+                                            <option value="MediCard">MediCard</option>
+                                            <option value="Medicare Plus">Medicare Plus</option>
+                                            <option value="Maxicare">Maxicare</option>
+                                            <option value="MedAsia">MedAsia</option>
+                                            <option value="MedoCare">MedoCare</option>
+                                            <option value="Pacific Cross Philippines">Pacific Cross Philippines</option>
+                                            <option value="PhilCare">PhilCare</option>
+                                            <option value="Sun Life Grepa">Sun Life Grepa</option>
+                                            <option value="ValuCare">ValuCare</option>
+                                        </select>
+                                        {errors.hmo && (<p className="text-red-500 text-sm">{errors.hmo}</p>)}
+                                    </div>
+                                }
 
                                 {/* Email */}
                                 <div>
@@ -832,7 +866,7 @@ function RegistrationPage() {
 
                 {showConfirmation && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
-                        <div className="bg-white p-8 max-w-[80%] lg:max-w-[40%] max-h-[90vh] rounded-lg shadow-lg overflow-y-auto">
+                        <div className="bg-white p-8 w-fit max-w-[80%] lg:max-w-[40%] max-h-[80vh] rounded-lg shadow-lg overflow-y-auto">
                             <h3 className="text-xl font-bold text-center mb-4">Confirm Your Details</h3>
                             <div>
                                 <div className='grid grid-cols-8 gap-y-2 gap-x-4'>
@@ -886,6 +920,14 @@ function RegistrationPage() {
                                         <>
                                             <p className='col-span-3 font-semibold'>Email </p>
                                             <p className='col-span-5 break-words'>{formData.email}</p>
+                                        </>
+                                    )}
+                                    <p className='col-span-3 font-semibold'>Payment Method </p>
+                                    <p className='col-span-5 break-words'>{formData.payment_method}</p>
+                                    { formData.hmo && (
+                                        <>
+                                            <p className='col-span-3 font-semibold'>HMO </p>
+                                            <p className='col-span-5 break-words'>{formData.hmo}</p>
                                         </>
                                     )}
                                 </div>

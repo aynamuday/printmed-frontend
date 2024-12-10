@@ -53,6 +53,8 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         'phone_number': patient.phone_number ?? '',
         'email': patient.email ?? '',
         'email_username': patient.email?.slice(0, patient.email.indexOf("@gmail.com")) || '',
+        'payment_method': patient.payment_method ?? '',
+        'hmo': patient.hmo ?? '',
         'physician_id': patient.physician ? patient.physician.id : '',
     })
     const [image, setImage] = useState(patient.photo_url ?? null)
@@ -80,7 +82,46 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
         if (user.role == "secretary") {
             getRegions()
         }
+
+        resetUpdate()
     }, [update])
+
+    useEffect(() => {
+        resetUpdate()
+    }, [patient])
+
+    const resetUpdate = () => {
+        setUpdateData({
+            'first_name': patient.first_name ?? '',
+            'middle_name': patient.middle_name ?? '',
+            'last_name': patient.last_name ?? '',
+            'suffix': patient.suffix ?? '',
+            'birthdate': patient.birthdate ?? '',
+            'birthplace': patient.birthplace ?? '',
+            'sex': patient.sex ?? '',
+            'house_number': patient.house_number ?? '',
+            'street': patient.street ?? '',
+            'region': patient.region ?? '',
+            'region_code': patient.region_code ?? '',
+            'province': patient.province ?? '',
+            'province_code': patient.province_code ?? '',
+            'city': patient.city ?? '',
+            'city_code': patient.city_code ?? '',
+            'barangay': patient.barangay ?? '',
+            'barangay_code': patient.barangay_code ?? '',
+            'postal_code': patient.postal_code ?? '',
+            'civil_status': patient.civil_status ?? '',
+            'religion': patient.religion ?? '',
+            'phone_number': patient.phone_number ?? '',
+            'email': patient.email ?? '',
+            'email_username': patient.email?.slice(0, patient.email.indexOf("@gmail.com")) || '',
+            'payment_method': patient.payment_method ?? '',
+            'hmo': patient.hmo ?? '',
+            'physician_id': patient.physician ? patient.physician.id : '',
+        })
+
+        setErrors([])
+    }
 
     const handleChange = (e) => {
         validatePatientDetails(e, setErrors, setUpdateData, updateData)
@@ -231,6 +272,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             })
 
             const data = await res.json()
+            console.log(data)
         
             if(!res.ok) {
                 throw new Error("Something went wrong. Please try again later.")
@@ -273,7 +315,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             <p className='font-semibold text-white text-lg'>Details</p>
                         ) : (
                             <>
-                                <button onClick={() => setUpdate(false)}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
+                                <button onClick={() => {setUpdate(false);}}> <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i></button>
                                 <p className='font-semibold text-white text-lg'>Edit Details</p>
                             </>
                         )}
@@ -664,6 +706,82 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                     <span className="bg-gray-100 p-2">@gmail.com</span> {/* Fixed domain */}
                                                 </div>
                                                 {errors.email && (<p className="text-red-600 text-sm">{errors.email}</p>)}
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            )}
+                            <tr>
+                                <th className='text-start border border-[#828282] p-2 w-[35%]'>Payment Method {update && <span className='text-red-600'>*</span>}</th>
+                                <td className='border p-2 border-[#828282] w-[65%]'>
+                                    { !update ? (
+                                        patient.payment_method
+                                    ) : (
+                                        <>
+                                            <div className="relative">
+                                                <select
+                                                    name="payment_method"
+                                                    className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
+                                                    value={updateData.payment_method}
+                                                    onChange={handleChange} 
+                                                    required
+                                                >
+                                                    <option value="">Select Payment Method</option>
+                                                    <option value="Cash">Cash</option>
+                                                    <option value="HMO">HMO</option>
+                                                </select>
+                                            </div>
+                                            {errors.payment_method && (<p className="text-red-600 text-sm">{errors.payment_method}</p>)}
+                                        </>
+                                    )}
+                                </td>
+                            </tr>
+                            { ((update && updateData.payment_method == "HMO") || (!update && patient.payment_method == "HMO")) && (
+                                <tr>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>HMO {update && <span className='text-red-600'>*</span>}</th>
+                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                        { !update ? (
+                                            patient.hmo
+                                        ) : (
+                                            <>
+                                                <div className="relative">
+                                                    <select
+                                                        name="hmo"
+                                                        className="col-span-2 border border-gray-800 block w-full py-2 px-2 rounded bg-white"
+                                                        value={updateData.hmo}
+                                                        onChange={handleChange} 
+                                                        required
+                                                    >
+                                                        <option value="">Select HMO</option>
+                                                        <option value="Advanced Medical Access Philippines">Advanced Medical Access Philippines</option>
+                                                        <option value="AsianCare">AsianCare</option>
+                                                        <option value="Avega">Avega</option>
+                                                        <option value="Carewell Health Systems">Carewell Health Systems</option>
+                                                        <option value="CocoLife HealthCare">CocoLife HealthCare</option>
+                                                        <option value="Dynamic Care Corporation">Dynamic Care Corporation</option>
+                                                        <option value="EastWest Healthcare">EastWest Healthcare</option>
+                                                        <option value="eTiQa">eTiQa</option>
+                                                        <option value="Generali">Generali</option>
+                                                        <option value="Getwell Health Systems">Getwell Health Systems</option>
+                                                        <option value="Health Bridge Medical Services">Health Bridge Medical Services</option>
+                                                        <option value="Health Maintenance">Health Maintenance</option>
+                                                        <option value="Health Plans Philippines">Health Plans Philippines</option>
+                                                        <option value="iCare">iCare</option>
+                                                        <option value="IMS Wellth Care">IMS Wellth Care</option>
+                                                        <option value="Intellicare">Intellicare</option>
+                                                        <option value="Lacson & Lacson Insurance Brokers">Lacson & Lacson Insurance Brokers</option>
+                                                        <option value="MediCard">MediCard</option>
+                                                        <option value="Medicare Plus">Medicare Plus</option>
+                                                        <option value="Maxicare">Maxicare</option>
+                                                        <option value="MedAsia">MedAsia</option>
+                                                        <option value="MedoCare">MedoCare</option>
+                                                        <option value="Pacific Cross Philippines">Pacific Cross Philippines</option>
+                                                        <option value="PhilCare">PhilCare</option>
+                                                        <option value="Sun Life Grepa">Sun Life Grepa</option>
+                                                        <option value="ValuCare">ValuCare</option>
+                                                    </select>
+                                                </div>
+                                                {errors.hmo && (<p className="text-red-600 text-sm">{errors.hmo}</p>)}
                                             </>
                                         )}
                                     </td>

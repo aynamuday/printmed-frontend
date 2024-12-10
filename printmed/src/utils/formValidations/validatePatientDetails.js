@@ -4,7 +4,7 @@ export const validatePatientDetails = (e, setErrors, setFormData, formData) => {
     const { name, value } = e.target
 
     setErrors((prevErrors) => ({...prevErrors, [name]: ''}))
-    const capitalizedValue = name !== "email" && name !== "suffix" ? capitalizedWords(value) : value
+    const capitalizedValue = name !== "email" && name !== "suffix" && name !== "payment_method" && name !== "hmo" ? capitalizedWords(value) : value
 
     // should not accept numbers and special characters    
     if ((name === 'first_name' || name === 'middle_name' || name === 'last_name') && /[^a-zA-Z\s]/.test(value)) {
@@ -23,6 +23,11 @@ export const validatePatientDetails = (e, setErrors, setFormData, formData) => {
             }));
             return
         }
+    }
+
+    if (name == "payment_method" && value != "HMO") {
+        setFormData({...formData, hmo: "", [name]: capitalizedValue})
+        return
     }
       
     // no symbols allowed

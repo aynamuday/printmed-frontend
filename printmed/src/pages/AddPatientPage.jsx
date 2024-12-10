@@ -59,6 +59,8 @@ const AddPatientPage = () => {
     email: registration.email || '',
     email_username: registration.email?.slice(0, registration.email.indexOf("@gmail.com")) || '',
     phone_number: registration.phone_number || '',
+    payment_method: registration.payment_method || '',
+    hmo: registration.hmo || '',
     physician_id: '',
     registration_id: registration.id || '',
   });
@@ -84,6 +86,8 @@ const AddPatientPage = () => {
         showError(err)
       }
     };
+
+    console.log(registration)
 
     getPhysicians()
   }, [])
@@ -284,6 +288,8 @@ const AddPatientPage = () => {
         barangay: '',
         barangay_code: '',
         postal_code: '',
+        payment_method: '',
+        hmo: ''
       });
 
       globalSwalWithIcon.fire({
@@ -714,6 +720,67 @@ const AddPatientPage = () => {
                     </div>
                     {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium">
+                        Payment Method
+                    </label>
+                    <select
+                        name="payment_method"
+                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                        value={newPatientData.payment_method}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Payment Method</option>
+                        <option value="Cash">Cash</option>
+                        <option value="HMO">HMO</option>
+                    </select>
+                  </div>
+
+                  {/* HMO */}
+                  {newPatientData.payment_method == "HMO" &&
+                    <div>
+                        <label className="block text-sm font-medium">
+                            HMO
+                        </label>
+                        <select
+                          name="hmo"
+                          className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                          value={newPatientData.hmo}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select HMO</option>
+                          <option value="Advanced Medical Access Philippines">Advanced Medical Access Philippines</option>
+                          <option value="AsianCare">AsianCare</option>
+                          <option value="Avega">Avega</option>
+                          <option value="Carewell Health Systems">Carewell Health Systems</option>
+                          <option value="CocoLife HealthCare">CocoLife HealthCare</option>
+                          <option value="Dynamic Care Corporation">Dynamic Care Corporation</option>
+                          <option value="EastWest Healthcare">EastWest Healthcare</option>
+                          <option value="eTiQa">eTiQa</option>
+                          <option value="Generali">Generali</option>
+                          <option value="Getwell Health Systems">Getwell Health Systems</option>
+                          <option value="Health Bridge Medical Services">Health Bridge Medical Services</option>
+                          <option value="Health Maintenance">Health Maintenance</option>
+                          <option value="Health Plans Philippines">Health Plans Philippines</option>
+                          <option value="iCare">iCare</option>
+                          <option value="IMS Wellth Care">IMS Wellth Care</option>
+                          <option value="Intellicare">Intellicare</option>
+                          <option value="Lacson & Lacson Insurance Brokers">Lacson & Lacson Insurance Brokers</option>
+                          <option value="MediCard">MediCard</option>
+                          <option value="Medicare Plus">Medicare Plus</option>
+                          <option value="Maxicare">Maxicare</option>
+                          <option value="MedAsia">MedAsia</option>
+                          <option value="MedoCare">MedoCare</option>
+                          <option value="Pacific Cross Philippines">Pacific Cross Philippines</option>
+                          <option value="PhilCare">PhilCare</option>
+                          <option value="Sun Life Grepa">Sun Life Grepa</option>
+                          <option value="ValuCare">ValuCare</option>
+                        </select>
+                    </div>
+                }
                   
                   {/* Physician */}
                   <div>
