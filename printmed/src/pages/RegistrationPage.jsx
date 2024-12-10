@@ -47,6 +47,7 @@ function RegistrationPage() {
         phone_number: '',
         email: '',
         email_username: '',
+        hmo: '',
     });
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [showTerms, setShowTerms] = useState(false);
@@ -95,6 +96,7 @@ function RegistrationPage() {
             phone_number: '',
             email: '',
             email_username: '',
+            hmo: '',
         });
 
         setErrors({});
@@ -632,13 +634,37 @@ function RegistrationPage() {
                                     <input 
                                         type="text" 
                                         name="postal_code" 
-                                        className="mt-1 block w-full border p-2 rounded-md border-black" 
+                                        className="block w-full border p-2 rounded-md border-black" 
                                         value={formData.postal_code} 
                                         maxLength="4"
                                         minLength="4"
                                         onChange={(e) => {handleChange(e)}}
                                     />
                                     {errors.postal_code && (<p className="text-red-500 text-sm">{errors.postal_code}</p>)}
+                                </div>
+
+                                {/* Phone Number */}
+                                <div>
+                                    <label className="block text-sm font-medium">
+                                        Phone Number <span className="text-red-600">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        {/* Phone number container */}
+                                        <div className="flex items-center border rounded-md border-black overflow-hidden">
+                                            <span className="bg-gray-100 p-2">+63</span>
+                                            {/* Input field */}
+                                            <input
+                                                type="text"
+                                                name="phone_number"
+                                                value={formData.phone_number}
+                                                onChange={(e) => handlePhoneNumberChange(e)}
+                                                className="flex-1 p-2 border-l border-black focus:outline-none"
+                                                maxLength="10"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    {errors.phone_number && (<p className="text-red-600 text-sm">{errors.phone_number}</p>)}
                                 </div>
 
                                 {/* Religion */}
@@ -664,28 +690,45 @@ function RegistrationPage() {
                                     {errors.religion && (<p className="text-red-500 text-sm">{errors.religion}</p>)}
                                 </div>
 
-                                {/* Phone Number */}
+                                {/* HMO */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Phone Number <span className="text-red-600">*</span>
+                                        HMO
                                     </label>
-                                    <div className="relative">
-                                        {/* Phone number container */}
-                                        <div className="flex items-center border rounded-md border-black overflow-hidden">
-                                            <span className="bg-gray-100 p-2">+63</span>
-                                            {/* Input field */}
-                                            <input
-                                                type="text"
-                                                name="phone_number"
-                                                value={formData.phone_number}
-                                                onChange={(e) => handlePhoneNumberChange(e)}
-                                                className="flex-1 p-2 border-l border-black focus:outline-none"
-                                                maxLength="10"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    {errors.phone_number && (<p className="text-red-600 text-sm">{errors.phone_number}</p>)}
+                                    <select
+                                        name="hmo"
+                                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                                        value={formData.hmo}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select HMO</option>
+                                        <option value="Dynamic Care Corporation">Dynamic Care Corporation</option>
+                                        <option value="MediCard">MediCard</option>
+                                        <option value="PhilCare">PhilCare</option>
+                                        <option value="Getwell Health Systems">Getwell Health Systems</option>
+                                        <option value="Sun Life Grepa">Sun Life Grepa</option>
+                                        <option value="AsianCare">AsianCare</option>
+                                        <option value="medicareplus">medicareplus</option>
+                                        <option value="Pacific Cross Philippines">Pacific Cross Philippines</option>
+                                        <option value="ValuCare">ValuCare</option>
+                                        <option value="Health Plans Philippines, Inc.">Health Plans Philippines, Inc.</option>
+                                        <option value="Intellicare">Intellicare</option>
+                                        <option value="Lacson & Lacson Insurance Brokers, Inc.">Lacson & Lacson Insurance Brokers, Inc.</option>
+                                        <option value="Maxicare">Maxicare</option>
+                                        <option value="MedAsia">MedAsia</option>
+                                        <option value="MedoCare">MedoCare</option>
+                                        <option value="Advanced Medical Access Philippines, Inc.">Advanced Medical Access Philippines, Inc.</option>
+                                        <option value="Avega">Avega</option>
+                                        <option value="Carewell Health Systems">Carewell Health Systems</option>
+                                        <option value="CocoLife HealthCare">CocoLife HealthCare</option>
+                                        <option value="EastWest Healthcare">EastWest Healthcare</option>
+                                        <option value="eTiQa">eTiQa</option>
+                                        <option value="Generali">Generali</option>
+                                        <option value="Health Maintenance, Inc.">Health Maintenance, Inc.</option>
+                                        <option value="Health Bridge Medical Services, Inc.">Health Bridge Medical Services, Inc.</option>
+                                        <option value="iCare">iCare</option>
+                                        <option value="ims wellth care inc.">ims wellth care inc.</option>
+                                    </select>
                                 </div>
 
                                 {/* Email */}
