@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { capitalizedWords } from '../utils/wordUtils';
 import { getFormattedNumericDate } from '../utils/dateUtils';
-import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
+import { globalSwalWithIcon } from '../utils/globalSwal';
 import {showError} from "../utils/fetch/showError";
 
 import AppContext from '../context/AppContext';
@@ -10,13 +10,13 @@ import AdminContext from '../context/AdminContext';
 import { useNavigate } from 'react-router-dom';
 
 const UsersTable = ({ users }) => {
-  const { token, user } = useContext(AppContext);
-  const { setUsers } = useContext(AdminContext);
+  const { token, user } = useContext(AppContext)
+  const { setUsers } = useContext(AdminContext)
   const navigate = useNavigate()
 
-  const [updatedUser, setUpdatedUser] = useState(null);
-  const [actionMenuOpen, setActionMenuOpen] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState(null)
+  const [actionMenuOpen, setActionMenuOpen] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const actionMenuRefs = useRef([]);
   const setActionMenuRef = (index, element) => {
@@ -143,48 +143,7 @@ const UsersTable = ({ users }) => {
     finally {
       setLoading(false)
     }
-  };
-
-  // const handleSendResetLink = async (email, personnelNumber) => {
-  //   setActionMenuOpen(null)
-
-  //   globalSwalNoIcon.fire({
-  //     title: `Send reset link to user ${personnelNumber}?`,
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes"
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //         setLoading(true)
-    
-  //         const res = await fetch('/api/send-reset-link', {
-  //           method: 'POST',
-  //           headers: {
-  //             Authorization: `Bearer ${token}`
-  //           },
-  //           body: JSON.stringify({ email }),
-  //         });
-    
-  //         if(!res.ok) {
-  //           throw new Error("Something went wrong. Please try again later.")
-  //         }
-          
-  //         globalSwalWithIcon.fire({
-  //           icon: 'success',
-  //           title: `Reset link sent successfully!`,
-  //           showConfirmButton: false,
-  //           showCloseButton: true
-  //         })
-  //       }
-  //       catch (err) {
-  //         showError(err)
-  //       }
-  //       finally {
-  //         setLoading(false)
-  //       }
-  //     }
-  //   })
-  // }
+  }
 
   const getUserStatus = (user) => {
     let status = 'Active';
@@ -203,7 +162,7 @@ const UsersTable = ({ users }) => {
   return (
     <div>
       {loading && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-50 z-50">
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-30 z-50">
           <BounceLoader color="#6CB6AD" loading={loading} size={60} />
         </div>
       )}

@@ -72,12 +72,6 @@ const UpdateEmailPage = () => {
             const data = await res.json()
      
             setOtpToken(data.token);
-            // globalSwalWithIcon.fire({
-            //     title: 'An OTP has been sent to your new email.',
-            //     icon: 'info',
-            //     showConfirmButton: false,
-            //     showCloseButton: true
-            // });
             setStep(2);   
         }
         catch (err) {
@@ -197,7 +191,7 @@ const UpdateEmailPage = () => {
             <Header />
 
             { loading && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-40 flex justify-center items-center z-50">
+                <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-30 flex justify-center items-center z-50">
                     <BounceLoader color="#6CB6AD" loading={loading} size={60} />
                 </div>
             )}

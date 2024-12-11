@@ -5,9 +5,12 @@ import AppContext from "../context/AppContext";
 import { BounceLoader } from "react-spinners";
 import {globalSwalWithIcon} from "../utils/globalSwal";
 import { fetchDepartments } from "../utils/fetch/fetchDepartments";
+import { useNavigate } from "react-router-dom";
+import {showLoggedOut} from "../utils/fetch/showLoggedOut"
 
 const DepartmentsPage = () => {
   const { token } = useContext(AppContext)
+  const navigate = useNavigate()
   
   const [departments, setDepartments] = useState([]);
   const [ newDepartment, setNewDepartment ] = useState("");
@@ -34,7 +37,16 @@ const DepartmentsPage = () => {
 
   useEffect(() => {
     const getDepartments = async () => {
-      setDepartments(await fetchDepartments(token))
+      try {
+        setDepartments(await fetchDepartments(token))
+      } catch (err) {
+        if (err.message == "Unauthenticated") {
+          showLoggedOut()
+          navigate('/')
+        } else {
+          showError(err)
+        }
+      }
     }
     
     getDepartments()
@@ -60,13 +72,19 @@ const DepartmentsPage = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name: newDepartment }),
-      });
-
-      if(!res.ok) {
-        throw new Error("Something went wrong. Please try again later.")
-      }
+      })
 
       const data = await res.json()  
+
+      if(!res.ok) {
+        if (res.status == 401 && data.message == "Unauthenticated.") {
+          showLoggedOut()
+          navigate('/')
+          return
+        } else {
+          throw new Error("Something went wrong. Please try again later.")
+        }
+      }
       
       setDepartments((prevDepartments) => ([...prevDepartments, data]))
       setNewDepartment("")
@@ -106,8 +124,16 @@ const DepartmentsPage = () => {
             }
           });
     
+          const data = await res.json()  
+
           if(!res.ok) {
-            throw new Error("Something went wrong. Please try again later.")
+            if (res.status == 401 && data.message == "Unauthenticated.") {
+              showLoggedOut()
+              navigate('/')
+              return
+            } else {
+              throw new Error("Something went wrong. Please try again later.")
+            }
           }
 
           setDepartments(departments.filter((department) => department.id !== id));
@@ -132,7 +158,7 @@ const DepartmentsPage = () => {
   return (
     <>
       {loading && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-40 z-50">
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-30 z-50">
           <BounceLoader color="#6CB6AD" loading={true} size={60} />
         </div>
       )}

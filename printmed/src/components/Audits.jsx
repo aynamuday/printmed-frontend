@@ -7,6 +7,7 @@ import { getFormattedNumericDate } from '../utils/dateUtils';
 import AuditsTable from './AuditsTable';
 import { echo as Echo } from '../utils/pusher/echo';
 import Pusher from 'pusher-js';
+import { showError } from '../utils/fetch/showError';
 
 window.pusher = Pusher
 
@@ -81,7 +82,7 @@ const Audits = ({ forDashboard = false }) => {
                         }
             
                         return {
-                        ...prevState, data: updatedData, total: prevState.total+1
+                            ...prevState, data: updatedData, total: prevState.total+1
                         }
                     })
                 }
@@ -130,34 +131,43 @@ const Audits = ({ forDashboard = false }) => {
             }
         }
 
-        const res = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                throw new Error("An error occurred while fetching the audits. You may refresh to try again.")
             }
-        })
 
-        const data = await res.json()
-        forDashboard ? setAuditsToday(data) : setAuditsAll(data)
-
-        setLoadingAudits(false)
+            forDashboard ? setAuditsToday(data) : setAuditsAll(data)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoadingAudits(false)
+        }
     }
 
     // executes when user selects audit resource
-    const handleAuditsResourceChange = (e) => {
-        setLoadingAudits(true)
+    // const handleAuditsResourceChange = (e) => {
+    //     setLoadingAudits(true)
 
-        // if (forDashboard) {
-        //     setAuditsTodayResource(e.target.value)
-        //     getAudits(1, e.target.value, undefined, undefined)
-        // } else {
-        setAuditsAllFilters({
-            ...auditsAllFilters,
-            resource: e.target.value
-        })
+    //     // if (forDashboard) {
+    //     //     setAuditsTodayResource(e.target.value)
+    //     //     getAudits(1, e.target.value, undefined, undefined)
+    //     // } else {
+    //     setAuditsAllFilters({
+    //         ...auditsAllFilters,
+    //         resource: e.target.value
+    //     })
         
-        getAudits(1, e.target.value, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
-        // }
-    };
+    //     getAudits(1, e.target.value, auditsAllFilters.dateFrom, auditsAllFilters.dateUntil)
+    //     // }
+    // };
 
     // executes when user selects date from
     const handleAuditsDateFromChange = (e) => {
@@ -241,27 +251,33 @@ const Audits = ({ forDashboard = false }) => {
             }
         }
 
-        const res = await fetch(fetchUrl, {
-            headers: {
-                'Content-Type': 'application/pdf',
-                Authorization: `Bearer ${token}`
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: {
+                    'Content-Type': 'application/pdf',
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            if (!res.ok) {
+                throw new Error("Something went wrong. Please try again later.")
             }
-        })
 
-        if (!res.ok) {
-            console.log(await res.json())
+            const blob = await res.blob()
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = `printmed-audits-${dateToday}`
+            link.click()
+
+            window.URL.revokeObjectURL(url)
+
+            forDashboard ? setLoadingAuditsTodayDownload(false) : setLoadingAuditsAllDownload(false)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoadingAudits(false)
         }
-
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `printmed-audits-${dateToday}`
-        link.click()
-
-        window.URL.revokeObjectURL(url)
-
-        forDashboard ? setLoadingAuditsTodayDownload(false) : setLoadingAuditsAllDownload(false)
     }
 
     const handleClear = () => {

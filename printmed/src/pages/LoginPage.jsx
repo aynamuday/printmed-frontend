@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ScaleLoader } from 'react-spinners';
 import { showError } from '../utils/fetch/showError'
 
@@ -73,7 +73,7 @@ const LoginPage = () => {
       });
 
       if(!res.ok) {
-        if (res.status === 404 || res.status === 401) {
+        if (res.status === 404 || res.status === 401 || res.status === 422) {
           setErrors({ ...errors, general: "The provided credentials are incorrect." });
           return
         } else if (res.status === 403) {
@@ -124,7 +124,7 @@ const LoginPage = () => {
           } else if (res.status === 410) {
             setErrors({ ...errors, general: "OTP is expired." });
             return
-          } else if (res.status === 401) {
+          } else if (res.status === 401 || res.status === 422) {
             setErrors({ ...errors, general: "OTP is invalid." });
             return
           } else {

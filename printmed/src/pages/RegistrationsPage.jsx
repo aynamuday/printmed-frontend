@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Pusher from 'pusher-js'
 import { echo as Echo } from '../utils/pusher/echo';
+import { showError } from '../utils/fetch/showError';
 
 window.Pusher = Pusher   // Pusher for realtime
 
@@ -70,7 +71,7 @@ const RegistrationsPage = () => {
     return () => {
       echo.leave('registration')
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (registrations.length != 0) {
@@ -115,24 +116,7 @@ const RegistrationsPage = () => {
       setRegistrations(data)
     }
     catch (err) {
-      let error = err.message ?? "Something went wrong. Please try again later."
-      if (err.name === "TypeError") {
-          setError("Something went wrong. Please try again later. You may refresh or check your Internet connection.")
-      } 
-
-      if (!registrations.data || registrations.data.length < 1) {
-        Swal.fire({
-          icon: 'error',
-          title: `${error}`,
-          showConfirmButton: false,
-          showCloseButton: true,
-          customClass: {
-              title: 'text-xl font-bold text-black text-center',
-              popup: 'border-2 rounded-xl px-4 py-8',
-              icon: 'p-0 mx-auto my-0'
-          }
-        })
-      }
+      showError(err)
     }
     finally {
         setLoading(false)

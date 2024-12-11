@@ -27,6 +27,7 @@ import { fetchProvinces } from "../utils/fetch/fetchProvinces";
 import { fetchRegions } from "../utils/fetch/fetchRegions";
 import { fetchCities } from "../utils/fetch/fetchCities";
 import { fetchBarangays } from "../utils/fetch/fetchBarangays";
+import { showLoggedOut } from "../utils/fetch/showLoggedOut";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
@@ -83,9 +84,14 @@ const AddPatientPage = () => {
       try {
         setPhysicians(await fetchPhysicians(token))
       } catch (err) {
-        showError(err)
+        if (err.message == "Unauthenticated") {
+          showLoggedOut()
+          navigate('/')
+        } else {
+          showError(err)
+        }
       }
-    };
+    }
 
     getPhysicians()
   }, [])
@@ -93,14 +99,14 @@ const AddPatientPage = () => {
   const getRegions = async () => {
     const data = await fetchRegions()
     setRegions(data.geonames)
-  };
+  }
 
   // executes when region code changes
   useEffect(() => {
     const getProvinces = async () => {
       const data = await fetchProvinces(newPatientData.region_code)
       setProvinces(data.geonames)
-    }
+    } 
     getProvinces()
   }, [newPatientData.region_code])
 
@@ -174,6 +180,7 @@ const AddPatientPage = () => {
     }
 
     if (!formIsValid) {
+      newErrors.general = "Please check your inputs for errors."
       setErrors(newErrors);
       return
     }
@@ -199,18 +206,24 @@ const AddPatientPage = () => {
               headers: {
                   Authorization: `Bearer ${token}`,
               },
-          });
-    
-          if(!res.ok) {
-            throw new Error("Something went wrong. Please try again later.")
-          }
-    
+          })
+
           const data = await res.json()
+
+          if(!res.ok) {
+            if (res.status == 401 && data.message == "Unauthenticated.") {
+              showLoggedOut()
+              navigate('/')
+              return
+            } else {
+              throw new Error("Something went wrong. Please try again later.")
+            }
+          }
     
           if (data.length > 0) {
             setDuplicatePatients(data);
-            setLoading(false);
-            return;
+            setLoading(false)
+            return
           }
     
           addPatient(e)
@@ -250,17 +263,22 @@ const AddPatientPage = () => {
               Authorization: `Bearer ${token}`,
           },
           body: formData,
-      });
+      })
+
+      const data = await res.json()
 
       if(!res.ok) {
-        throw new Error("Something went wrong. Please try again later.")
+        if (res.status == 401 && data.message == "Unauthenticated.") {
+          showLoggedOut()
+          navigate('/')
+          return
+        } else {
+          throw new Error("Something went wrong. Please try again later.")
+        }
       }
 
-      const patient = await res.json()
-
-      navigate(`/patients/${patient.id}`, {
-        state: { patient }
-      });
+      sessionStorage.setItem('patient', JSON.stringify(data))
+      navigate(`/patient`)
 
       setNewPatientData({
         first_name: '',
@@ -313,13 +331,18 @@ const AddPatientPage = () => {
       const patient = await fetchPatient(patientId, token)
 
       sessionStorage.setItem('patient', JSON.stringify(patient))
-      navigate(`/patient`);
+      navigate(`/patient`)
     }
     catch (err) {
-      showError(err)
+      if (err.message == "Unauthenticated") {
+        showLoggedOut()
+        navigate('/')
+      } else {
+        showError(err)
+      }
     }
     finally {
-        setLoading(false)
+      setLoading(false)
     }
   }
 
@@ -330,7 +353,7 @@ const AddPatientPage = () => {
         <>
           {/* loader */}
           {loading && (
-            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-40 z-50'>
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-30 z-50'>
               <BounceLoader color="#6CB6AD" loading={true} size={60} />
             </div>
           )}
@@ -624,7 +647,6 @@ const AddPatientPage = () => {
                       className="mt-1 block w-full border p-2 rounded-md border-black"
                     />
                     {errors.street && <p className="text-red-600 text-sm mt-1">{errors.street}</p>}
-                  
                   </div>
 
                   {/* House No */}
@@ -641,7 +663,6 @@ const AddPatientPage = () => {
                       required 
                     />
                     {errors.house_number && <p className="text-red-600 text-sm mt-1">{errors.house_number}</p>}
-                  
                   </div>
 
                   {/* Postal Code */}
@@ -821,7 +842,8 @@ const AddPatientPage = () => {
                   </div>
                 </div>
 
-                <button type="submit" className="mt-8 w-[30%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
+                {errors.general && <p className="text-red-600 text-sm mt-8">{errors.general}</p>}
+                <button type="submit" className="mt-2 w-[30%] bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 h-10">Add Patient</button>
               </form>
             </div>
           </div>

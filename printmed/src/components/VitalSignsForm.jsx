@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import AppContext from '../context/AppContext'
-import Swal from 'sweetalert2'
 import { showError } from '../utils/fetch/showError'
 
 const VitalSignsForm = ({ setPatient, setVitalSignsState, setLoading, patient }) => {

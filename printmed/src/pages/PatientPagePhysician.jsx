@@ -5,7 +5,7 @@ import PhysicianContext from '../context/PhysicianContext'
 
 import qr from '../assets/images/qr.png'
 import '../assets/styles/QrScanAnimation.css'
-import { ClipLoader } from 'react-spinners'
+import { BounceLoader } from 'react-spinners'
 
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
@@ -24,7 +24,7 @@ import { echo as Echo } from '../utils/pusher/echo';
 window.pusher = Pusher
 
 const PatientPagePhysician = () => {
-    const { token } = useContext(AppContext)
+    const { user, token } = useContext(AppContext)
     const { 
         patientPageLoading, setPatientPageLoading,
         resetPatientViewer,
@@ -41,7 +41,7 @@ const PatientPagePhysician = () => {
     const [patientIdError, setPatientIdError] = useState('')
 
     useEffect(() => {
-        if (patient) {
+        if (patient && user.role === "physician") {
             const echo = Echo(token)
             echo.private(`vital-signs.${patient.id}`)
                 .listen('VitalSignsNew', (e) => {
@@ -56,7 +56,7 @@ const PatientPagePhysician = () => {
                 })
 
             return () => {
-                echo.leave('registration')
+                echo.leave(`vital-signs.${patient.id}`)
             }
         }
     }, [patient])
@@ -151,40 +151,11 @@ const PatientPagePhysician = () => {
         setConsultationComponentStatus("add")
     }
 
-    // useEffect(() => {
-    //     const handleClickOutside = (event) => {
-    //         if (modalRef.current && !modalRef.current.contains(event.target)) {
-    //             setManualLookup(false);
-    //         }
-    //     };
-
-    //     const handleKeyDown = (event) => {
-    //         if (event.key === 'Escape') {
-    //             setManualLookup(false);
-    //         }
-    //     };
-
-    //     if (manualLookup) {
-    //         window.addEventListener('mousedown', handleClickOutside);
-    //         window.addEventListener('keydown', handleKeyDown);
-    //     }
-
-    //     return () => {
-    //         window.removeEventListener('mousedown', handleClickOutside);
-    //         window.removeEventListener('keydown', handleKeyDown);
-    //     };
-    // }, [manualLookup, setManualLookup])
-
-    // const closeModal = () => {
-    //     setManualLookup(false);
-    //     setPatientId('');
-    // };
-
     return (
         <>
             { patientPageLoading && (
                 <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
-                    <ClipLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
+                    <BounceLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
                 </div>
             )}
 

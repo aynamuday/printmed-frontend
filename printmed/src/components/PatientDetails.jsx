@@ -21,6 +21,7 @@ import { fetchProvinces } from "../utils/fetch/fetchProvinces";
 import { fetchRegions } from "../utils/fetch/fetchRegions";
 import { fetchCities } from "../utils/fetch/fetchCities";
 import { fetchBarangays } from "../utils/fetch/fetchBarangays";
+import { showLoggedOut } from '../utils/fetch/showLoggedOut';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
@@ -71,7 +72,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                 const data = await fetchPhysicians(token)
                 setPhysicians(data)
             } catch (err) {
-                showError(err)
+                if (err.message == "Unauthenticated") {
+                    showLoggedOut()
+                    navigate('/')
+                } else {
+                    showError(err)
+                }                
             }
         };
         

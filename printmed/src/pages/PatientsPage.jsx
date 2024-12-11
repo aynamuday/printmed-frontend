@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { PulseLoader, ClipLoader } from 'react-spinners';
+import { PulseLoader, BounceLoader } from 'react-spinners';
 import qr from '../assets/images/qr.png'
 
 import AppContext from '../context/AppContext';
@@ -150,7 +150,7 @@ const PatientsPage = () => {
     try {
       const patient = await fetchPatientUsingQr(qrCode, token)
       sessionStorage.setItem('patient', JSON.stringify(patient))
-      navigate(`/patient`);
+      navigate(`/patient`)
     }
     catch (err) {
       showError(err)
@@ -165,7 +165,7 @@ const PatientsPage = () => {
     <>
       { loading && (
         <div className='flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30 z-50'>
-            <ClipLoader className='' loading={loading} size={60} color='#6CB6AD' />
+            <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
         </div>
       )}
 

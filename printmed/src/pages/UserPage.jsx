@@ -14,6 +14,7 @@ import { showWarning } from "../utils/fetch/showWarning";
 import { validateUserDetails } from "../utils/formValidations/validateUserDetails";
 import { validateUserBirthdate } from "../utils/formValidations/validateUserBirthdate";
 import { fetchDepartments } from "../utils/fetch/fetchDepartments";
+import { showLoggedOut } from "../utils/fetch/showLoggedOut";
 
 // for viewing/updating a user, and adding a new user
 const UserPage = () => {
@@ -48,7 +49,16 @@ const UserPage = () => {
 
   useEffect(() => {
     const getDepartments = async () => {
-      setDepartments(await fetchDepartments(token))
+      try {
+        setDepartments(await fetchDepartments(token)) 
+      } catch (err) {
+        if (err.message == "Unauthenticated") {
+          showLoggedOut()
+          navigate('/')
+        } else {
+          showError(err)
+        }
+      }
     }
     
     getDepartments()
@@ -213,7 +223,7 @@ const UserPage = () => {
       <Header />
       <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 grid grid-cols-1 place-items-center relative">
         { loading && (
-            <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-40 flex justify-center items-center z-50">
+            <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-30 flex justify-center items-center z-50">
                 <BounceLoader color="#6CB6AD" loading={loading} size={60} />
             </div>
         )}

@@ -1,3 +1,5 @@
+import { showWarning } from "./showWarning"
+
 export const fetchPatient = async (patientId, token) => {
     try {
         const res = await fetch(`/api/patients/${patientId}`, {
@@ -6,19 +8,23 @@ export const fetchPatient = async (patientId, token) => {
             }
         })
 
+        const data = await res.json()
+
         if(!res.ok) {
-            if (res.status === 500) {
-                throw new Error("Something went wrong. Please try again later.")
+            if (res.status == 401 && data.message == "Unauthenticated.") {
+                throw new Error("Unauthenticated")
             } else if (res.status === 404) {
-                throw new Error("Patient not found.")
+                showWarning("Patient not found.")
+                return
             } else if (res.status === 403) {
-                throw new Error("You are not authorized to perform this action.")
+                showWarning("You are not authorized to perform this action.")
+                return
             } else {
                 throw new Error("Something went wrong. Please try again later.")
             }
         }
 
-        return await res.json()
+        return data
     }
     catch (err) {
       throw err

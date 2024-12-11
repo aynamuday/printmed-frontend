@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BounceLoader } from "react-spinners";
 import AppContext from '../context/AppContext';
 import {globalSwalWithIcon} from '../utils/globalSwal';

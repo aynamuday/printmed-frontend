@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import AppContext from '../context/AppContext'
 
-import { ClipLoader } from 'react-spinners'
+import { BounceLoader } from 'react-spinners'
 import { globalSwalWithIcon, globalSwalNoIcon } from '../utils/globalSwal'
 import { getFormattedNumericDate, getFormattedStringDate } from '../utils/dateUtils'
 import { printPdf } from '../utils/printPdf'
@@ -70,11 +70,11 @@ const PatientPageSecretary = () => {
                     })
              
                    if(!res.ok) {
-                       if (res.status === 404) {
-                           throw new Error("Vital signs record not found.")
-                       } else {
-                           throw new Error("Something went wrong. Please try again later.")
-                       }
+                        if (res.status === 404) {
+                            throw new Error("Vital signs record not found.")
+                        } else {
+                            throw new Error("Something went wrong. Please try again later.")
+                        }
                    }    
         
                    const updatedPatient = {...patient, vital_signs: null}
@@ -227,7 +227,7 @@ const PatientPageSecretary = () => {
         <>
             { loading && (
                 <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
-                    <ClipLoader className='' loading={loading} size={60} color='#6CB6AD' />
+                    <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
                 </div>
             )}
 

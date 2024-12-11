@@ -39,8 +39,6 @@ const ViewConsultation = () => {
             if(!res.ok) {
                 if (res.status === 404) {
                     throw new Error("Consultation not found.")
-                } else if (res.status === 403) {
-                    throw new Error("You are not authorized to perform this action.")
                 } else {
                     throw new Error("Something went wrong with your request. Please try again later.")
                 }
@@ -48,7 +46,6 @@ const ViewConsultation = () => {
 
             const data = await res.json()
             setConsultation(data)
-            console.log(data)
             setConsultations((prevData) => ({...prevData, [data.id]: data}))
         }
         catch (err) {

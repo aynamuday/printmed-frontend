@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useContext } from 'react';
 import AppContext from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import Settings from '../components/Settings'
 import { BounceLoader } from "react-spinners";
 import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import {showLoggedOut} from "../utils/fetch/showLoggedOut"
 
 const ChangePasswordPage = () => {
   const { token } = useContext(AppContext)
@@ -18,10 +18,6 @@ const ChangePasswordPage = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [visibility, setVisibility] = useState({
     current: false,
@@ -73,12 +69,16 @@ const ChangePasswordPage = () => {
           });
     
           if(!res.ok) {
-              if (res.status === 401) {
-                setError("Old password is incorrect.")
-                return
-              } else {
-                throw new Error("Something went wrong. Please try again later.")
-              }
+            if (res.status === 401) {
+              setError("Old password is incorrect.")
+              return
+            } else if (res.status == 401 && data.message == "Unauthenticated.") {
+              showLoggedOut()
+              navigate('/')
+              return
+            } else {
+              throw new Error("Something went wrong. Please try again later.")
+            } 
           }
         
           globalSwalWithIcon.fire({
@@ -113,7 +113,7 @@ const ChangePasswordPage = () => {
               </button>
             </div>
             {loading && (
-              <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+              <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-30 z-50">
                 <BounceLoader color="#6CB6AD" size={60} />
               </div>
             )}

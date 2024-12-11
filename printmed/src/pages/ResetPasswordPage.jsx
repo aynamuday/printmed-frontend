@@ -87,7 +87,7 @@ const ResetPasswordPage = () => {
         } else if (res.status === 410) {
           setError("Reset link is expired.");
           return
-        } else if (res.status === 401) {
+        } else if (res.status === 401 || res.status === 422) {
           setError("The provided credentials are invalid.");
           return
         } else {

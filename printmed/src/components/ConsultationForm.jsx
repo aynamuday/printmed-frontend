@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import { getFormattedNumericDate } from '../utils/dateUtils'
 
 import AppContext from '../context/AppContext'
