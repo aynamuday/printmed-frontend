@@ -1,6 +1,6 @@
 export const fetchBarangays = async (cityCode) => {
     try {
-        const res = await fetch(`http://api.geonames.org/childrenJSON?geonameId=${cityCode}&username=nico_183`);
+        const res = await fetch(`https://psgc.cloud/api/cities-municipalities/${cityCode}/barangays`);
         if (!res.ok) {
             throw new Error('An error occured while getting the list of barangays.')
         }
@@ -8,4 +8,4 @@ export const fetchBarangays = async (cityCode) => {
     } catch (err) {
         showError(err)
     }
-}
+};

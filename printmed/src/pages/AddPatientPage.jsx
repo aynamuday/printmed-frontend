@@ -98,34 +98,40 @@ const AddPatientPage = () => {
 
   const getRegions = async () => {
     const data = await fetchRegions()
-    setRegions(data.geonames)
-  }
+    setRegions(data)
+  };
 
   // executes when region code changes
   useEffect(() => {
-    const getProvinces = async () => {
-      const data = await fetchProvinces(newPatientData.region_code)
-      setProvinces(data.geonames)
-    } 
-    getProvinces()
+    if (newPatientData.region_code) {
+      const getProvinces = async () => {
+        const data = await fetchProvinces(newPatientData.region_code)
+        setProvinces(data)
+      }
+      getProvinces()
+    }
   }, [newPatientData.region_code])
 
   // executes when province code changes
   useEffect(() => {
-    const getCities = async () => {
-      const data = await fetchCities(newPatientData.province_code)
-      setCities(data.geonames)
+    if (newPatientData.province_code) {
+      const getCities = async () => {
+        const data = await fetchCities(newPatientData.province_code)
+        setCities(data)
+      }
+      getCities()
     }
-    getCities()
   }, [newPatientData.province_code])
 
   // executes when city code changes
   useEffect(() => {
-    const getBarangays = async () => {
-      const data = await fetchBarangays(newPatientData.city_code)
-      setBarangays(data.geonames)
+    if (newPatientData.city_code) {
+      const getBarangays = async () => {
+        const data = await fetchBarangays(newPatientData.city_code)
+        setBarangays(data)
+      }
+      getBarangays()
     }
-    getBarangays()
   }, [newPatientData.city_code])
 
   // handle changes in form fields
@@ -555,18 +561,22 @@ const AddPatientPage = () => {
                           Region <span className="text-red-600">*</span>
                       </label>
                       <select
-                          name="region"
-                          value={newPatientData.region}
-                          onChange={(e) => handleRegionChange(e, setNewPatientData, setCities, setBarangays)}
-                          className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                          required
+                        name="region"
+                        value={newPatientData.region}
+                        onChange={(e) => handleRegionChange(e, setNewPatientData, setCities, setBarangays)}
+                        className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
+                        required
                       >
-                          <option value="">Select Region</option>
-                          {regions?.map((region) => (
-                              <option key={region.geonameId} data-code={region.geonameId} value={region.name}>
-                                  {region.name} 
-                              </option>
-                          ))}
+                        <option value="">Select Region</option>
+                        {regions?.map((region) => (
+                          <option 
+                            key={region.id}
+                            data-code={region.code}
+                            value={region.name}
+                          >
+                            {region.name} 
+                          </option>
+                        ))}
                       </select>
                   </div>
 
@@ -584,9 +594,13 @@ const AddPatientPage = () => {
                     >
                     <option value="">Select Province</option>
                     {provinces?.map((province) => (
-                        <option key={province.geonameId} data-code={province.geonameId} value={province.name}>
-                            {province.name} 
-                        </option>
+                        <option 
+                        key={province.id}
+                        data-code={province.code}
+                        value={province.name}
+                    >
+                        {province.name} 
+                    </option>
                     ))}
                     </select>
                   </div>
@@ -606,9 +620,13 @@ const AddPatientPage = () => {
                       >
                       <option value="">Select City/Municipality</option>
                       {cities?.map((city) => (
-                          <option key={city.geonameId} data-code={city.geonameId} value={city.name}>
-                              {city.name} 
-                          </option>
+                          <option 
+                          key={city.id}
+                          data-code={city.code}
+                          value={city.name}
+                      >
+                          {city.name} 
+                      </option>
                       ))}
                       </select>
                   </div>
@@ -627,9 +645,13 @@ const AddPatientPage = () => {
                       >
                       <option value="">Select Barangay</option>
                       {barangays?.map((barangay) => (
-                          <option key={barangay.geonameId} data-code={barangay.geonameId} value={barangay.name}>
-                              {barangay.name} 
-                          </option>
+                          <option 
+                          key={barangay.id}
+                          data-code={barangay.code}
+                          value={barangay.name}
+                      >
+                          {barangay.name} 
+                      </option>
                       ))}
                       </select>
                   </div>

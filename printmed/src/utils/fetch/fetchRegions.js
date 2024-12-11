@@ -2,7 +2,7 @@ import { showError } from "./showError";
 
 export const fetchRegions = async () => {
     try {
-        const res = await fetch('http://api.geonames.org/childrenJSON?geonameId=1694008&username=nico_183');
+        const res = await fetch('https://psgc.cloud/api/regions');
         const data = await res.json();
 
         if (!res.ok) {

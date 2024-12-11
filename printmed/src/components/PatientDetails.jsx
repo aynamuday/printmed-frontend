@@ -144,29 +144,34 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
     const getRegions = async () => {
         const data = await fetchRegions()
-        setRegions(data.geonames)
+        setRegions(data)
+        console.log(data);
     }
 
     // executes when region code changes
     useEffect(() => {
         if (patient.length != 0 && user.role == "secretary") {
-            const getProvinces = async () => {
-                const data = await fetchProvinces(updateData.region_code)
-                setProvinces(data.geonames)
+            if (updateData.region_code) {
+                const getProvinces = async () => {
+                    const data = await fetchProvinces(updateData.region_code)
+                    setProvinces(data)
+                }
+                getProvinces()
             }
-            getProvinces()
         }
     }, [updateData.region_code])
 
     // executes when province code changes
     useEffect(() => {
         if (patient.length != 0 && user.role == "secretary") {
-            const getCities = async () => {
-                const data = await fetchCities(updateData.province_code)
-                setCities(data.geonames)
+            if (updateData.province_code) {
+                const getCities = async () => {
+                    const data = await fetchCities(updateData.province_code)
+                    setCities(data)
+                }
+                
+                getCities()
             }
-            
-            getCities()
             // encountered a problem here, since I call this every time updateData.province_code is updated, it executed multiple times even province_code is empty
             // and since it is asynchronous, I received responses multiple times too and not in order
             // so I get response last for the empty, then setCities to empty
@@ -177,11 +182,13 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     // executes when city code changes
     useEffect(() => {
         if (patient.length != 0 && user.role == "secretary") {
-            const getBarangays = async () => {
-                const data = await fetchBarangays(updateData.city_code)
-                setBarangays(data.geonames)
+            if (updateData.city_code) {
+                const getBarangays = async () => {
+                    const data = await fetchBarangays(updateData.city_code)
+                    setBarangays(data)
+                }
+                getBarangays()
             }
-            getBarangays()
         }
     }, [updateData.city_code])
 
@@ -512,7 +519,11 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             >
                                                 <option value="">Select Region</option>
                                                 {regions?.map((region) => (
-                                                    <option key={region.geonameId} data-code={region.geonameId} value={region.name}>
+                                                    <option 
+                                                        key={region.id}
+                                                        data-code={region.code}
+                                                        value={region.name}
+                                                    >
                                                         {region.name} 
                                                     </option>
                                                 ))}
@@ -531,7 +542,11 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             >
                                                 <option value="">Select Province</option>
                                                 {provinces?.map((province) => (
-                                                    <option key={province.geonameId} data-code={province.geonameId} value={province.name}>
+                                                    <option 
+                                                        key={province.id}
+                                                        data-code={province.code}
+                                                        value={province.name}
+                                                    >
                                                         {province.name} 
                                                     </option>
                                                 ))}
@@ -550,7 +565,11 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             >
                                                 <option value="">Select City/Municipality</option>
                                                 {cities?.map((city) => (
-                                                    <option key={city.geonameId} data-code={city.geonameId} value={city.name}>
+                                                    <option 
+                                                        key={city.id}
+                                                        data-code={city.code}
+                                                        value={city.name}
+                                                    >
                                                         {city.name} 
                                                     </option>
                                                 ))}
@@ -569,7 +588,11 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             >
                                                 <option value="">Select Barangay</option>
                                                 {barangays?.map((barangay) => (
-                                                    <option key={barangay.geonameId} data-code={barangay.geonameId} value={barangay.name}>
+                                                    <option 
+                                                        key={barangay.id}
+                                                        data-code={barangay.code}
+                                                        value={barangay.name}
+                                                    >
                                                         {barangay.name} 
                                                     </option>
                                                 ))}

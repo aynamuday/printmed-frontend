@@ -107,35 +107,41 @@ function RegistrationPage() {
 
     const getRegions = async () => {
         const data = await fetchRegions()
-        setRegions(data.geonames)
+        setRegions(data)
     };
 
     // executes when region code changes, sets the provinces
     useEffect(() => {
-        const getProvinces = async () => {
-          const data = await fetchProvinces(formData.region_code)
-          setProvinces(data.geonames)
+        if (formData.region_code) {
+            const getProvinces = async () => {
+                const data = await fetchProvinces(formData.region_code)
+                setProvinces(data)
+            }
+            getProvinces()
         }
-        getProvinces()
     }, [formData.region_code])
 
 
     // executes when province code changes, sets the cities
     useEffect(() => {
-        const getCities = async () => {
-            const data = await fetchCities(formData.province_code)
-            setCities(data.geonames)
-        }
-        getCities()
+        if (formData.province_code) {
+            const getCities = async () => {
+                const data = await fetchCities(formData.province_code)
+                setCities(data)
+            }
+            getCities()
+        };
     }, [formData.province_code])
 
     // executes when city code changes
     useEffect(() => {
-        const getBarangays = async () => {
-            const data = await fetchBarangays(formData.city_code)
-            setBarangays(data.geonames)
+        if (formData.city_code) {
+            const getBarangays = async () => {
+                const data = await fetchBarangays(formData.city_code)
+                setBarangays(data)
+            }
+            getBarangays()
         }
-        getBarangays()
     }, [formData.city_code])
 
     const handleChange = (e) => {
@@ -532,7 +538,11 @@ function RegistrationPage() {
                                     >
                                         <option value="">Select Region</option>
                                         {regions?.map((region) => (
-                                            <option key={region.geonameId} data-code={region.geonameId} value={region.name}>
+                                            <option 
+                                                key={region.id}
+                                                data-code={region.code}
+                                                value={region.name}
+                                            >
                                                 {region.name} 
                                             </option>
                                         ))}
@@ -554,7 +564,11 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select Province</option>
                                     {provinces?.map((province) => (
-                                        <option key={province.geonameId} data-code={province.geonameId} value={province.name}>
+                                        <option 
+                                            key={province.id}
+                                            data-code={province.code}
+                                            value={province.name}
+                                        >
                                             {province.name} 
                                         </option>
                                     ))}
@@ -576,7 +590,11 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select City/Municipality</option>
                                     {cities?.map((city) => (
-                                        <option key={city.geonameId} data-code={city.geonameId} value={city.name}>
+                                        <option 
+                                            key={city.id}
+                                            data-code={city.code}
+                                            value={city.name}
+                                        >
                                             {city.name} 
                                         </option>
                                     ))}
@@ -598,7 +616,11 @@ function RegistrationPage() {
                                     >
                                     <option value="">Select Barangay</option>
                                     {barangays?.map((barangay) => (
-                                        <option key={barangay.geonameId} data-code={barangay.geonameId} value={barangay.name}>
+                                        <option 
+                                            key={barangay.id}
+                                            data-code={barangay.code}
+                                            value={barangay.name}
+                                        >
                                             {barangay.name} 
                                         </option>
                                     ))}
