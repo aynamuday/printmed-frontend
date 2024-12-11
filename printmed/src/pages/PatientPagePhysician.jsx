@@ -33,6 +33,7 @@ const PatientPagePhysician = () => {
      } = useContext(PhysicianContext)
 
     const qrInputRef = useRef(null)
+    const patientIdInputRef = useRef(null)
     const [isQrInputFocused, setIsQrInputFocused] = useState(false)
     const [qrCode, setQrCode] = useState("")
     const modalRef = useRef(null);
@@ -151,6 +152,18 @@ const PatientPagePhysician = () => {
         setConsultationComponentStatus("add")
     }
 
+    const handleManualLookupClick = () => {
+        setManualLookup(true);
+    };
+
+    // Focus the patient ID input field when modal is shown
+    useEffect(() => {
+        if (manualLookup && patientIdInputRef.current) {
+            patientIdInputRef.current.focus();
+        }
+    }, [manualLookup]);
+    
+
     return (
         <>
             { patientPageLoading && (
@@ -169,6 +182,7 @@ const PatientPagePhysician = () => {
                                 <div className="flex items-center border rounded-md border-black overflow-hidden">
                                     <span className="bg-gray-200 p-2 border-r border-r-black">P</span>
                                     <input
+                                        ref={patientIdInputRef}
                                         type="text"
                                         placeholder="00000-0000"
                                         value={patientId}
@@ -217,7 +231,7 @@ const PatientPagePhysician = () => {
                                 <p className='text-center my-2 text-lg font-semibold'>Scan the patient's QR code to access their medical records.</p>
                                 <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan</button>
                                 <p className='text-center my-2 font-normal text-sm'>Or you may do a manual lookup using Patient ID&nbsp;  
-                                    <span onClick={() => setManualLookup(true)} className='underline hover:text-[#248176] cursor-pointer'>here</span>.
+                                    <span onClick={handleManualLookupClick} className='underline hover:text-[#248176] cursor-pointer'>here</span>.
                                 </p>
                             </div>
                             <form onSubmit={(e) => getPatientUsingQr(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
