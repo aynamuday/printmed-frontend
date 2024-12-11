@@ -79,7 +79,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             getPhysicians()
         }
 
-        if (patient.length != 0 && user.role == "secretary") {
+        if (user.role == "secretary") {
             getRegions()
         }
     }, [])
