@@ -39,7 +39,7 @@ const ResetPasswordPage = () => {
     setFormData((prevData) => ({
       ...prevData,
       personnelNumberInput: value,
-      personnelNumber: "PN" + value
+      personnelNumber: "PN-" + value
     }));
   };
 
@@ -60,7 +60,7 @@ const ResetPasswordPage = () => {
     }
 
     setLoading(false);
-
+    
     try {
       setLoading(true)
 
