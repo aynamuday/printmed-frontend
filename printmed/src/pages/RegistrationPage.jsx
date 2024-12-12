@@ -19,6 +19,7 @@ import { handleBarangayChange } from '../utils/handleBarangayChange';
 import { validatePostalCode } from '../utils/formValidations/validatePostalCode';
 import { validatePatientBirthdate } from '../utils/formValidations/validatePatientBirthdate';
 import html2pdf from 'html2pdf.js';
+import { capitalizedWords } from '../utils/wordUtils';
 
 function RegistrationPage() {
     const navigate = useNavigate()
@@ -134,15 +135,15 @@ function RegistrationPage() {
     }, [formData.province_code])
 
     // executes when city code changes
-    useEffect(() => {
-        if (formData.city_code) {
-            const getBarangays = async () => {
-                const data = await fetchBarangays(formData.city_code)
-                setBarangays(data)
-            }
-            getBarangays()
-        }
-    }, [formData.city_code])
+    // useEffect(() => {
+    //     if (formData.city_code) {
+    //         const getBarangays = async () => {
+    //             const data = await fetchBarangays(formData.city_code)
+    //             setBarangays(data)
+    //         }
+    //         getBarangays()
+    //     }
+    // }, [formData.city_code])
 
     const handleChange = (e) => {
         validatePatientDetails(e, setErrors, setFormData, formData)
@@ -363,6 +364,27 @@ function RegistrationPage() {
                 setLoading(false)
             });
     }
+
+    const handleBarangayInputChange = (e, setFormData) => {
+        const value = e.target.value;
+        const regex = /^[a-zA-ZñÑ0-9\s]*$/;
+        
+        if (regex.test(value) || value === "") {
+            const formattedValue = capitalizedWords(value);
+            
+            setFormData((prev) => ({
+                ...prev,
+                barangay: formattedValue,
+                barangayError: "",
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                barangayError: "Only letters and letters are allowed.",
+            }));
+        }
+    };
+    
 
     return (
         <>
@@ -602,25 +624,17 @@ function RegistrationPage() {
                                     <label className="block text-sm font-medium">
                                         Barangay <span className="text-red-600">*</span>
                                     </label>
-                                    <select
+                                    <input
+                                        type="text"
                                         id="barangay"
                                         name="barangay"
                                         value={formData.barangay}
-                                        onChange={(e) => handleBarangayChange(e, setFormData)}
+                                        onChange={(e) => handleBarangayInputChange(e, setFormData)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
-                                    >
-                                    <option value="">Select Barangay</option>
-                                    {barangays?.map((barangay) => (
-                                        <option 
-                                            key={barangay.id}
-                                            data-code={barangay.code}
-                                            value={barangay.name}
-                                        >
-                                            {barangay.name} 
-                                        </option>
-                                    ))}
-                                    </select>
+                                        placeholder="Enter Barangay"
+                                    />
+                                    <p className="text-red-600 text-xs">{formData.barangayError}</p>
                                 </div>
 
                                 {/* Street */}

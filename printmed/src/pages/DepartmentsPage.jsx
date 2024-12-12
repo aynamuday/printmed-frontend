@@ -55,13 +55,17 @@ const DepartmentsPage = () => {
     getDepartments()
   }, [])
 
-  useContext(() => {
-    if (departments) {
-      departmentsList = departmentsList.filter(
-        (department) => !departments.some((item) => item.name === department)
-      );
-    }
-  }, [departments])
+  const filteredDepartmentsList = departmentsList.filter(
+    (department) => !departments.some((item) => item.name === department)
+  );
+
+  // useContext(() => {
+  //   if (departments) {
+  //     departmentsList = departmentsList.filter(
+  //       (department) => !departments.some((item) => item.name === department)
+  //     );
+  //   }
+  // }, [departments])
 
   const addDepartment = async () => {
     if (!newDepartment) return
@@ -173,7 +177,7 @@ const DepartmentsPage = () => {
           <h2 className="text-2xl font-bold">Departments</h2>
 
           {/* add department */}
-          {departmentsList.length > 0 && 
+          {filteredDepartmentsList.length > 0 && 
             <div className="flex flex-col sm:flex-row gap-4">
               <select
                 value={newDepartment}
@@ -181,7 +185,7 @@ const DepartmentsPage = () => {
                 className="border border-black rounded-md shadow-sm bg-white p-2 w-full"
               >
                 <option value="">Select Department</option>
-                { departmentsList.map((department, index) => (
+                { filteredDepartmentsList.map((department, index) => (
                   <option key={index} value={department}>{department}</option>
                 ))}
               </select>
