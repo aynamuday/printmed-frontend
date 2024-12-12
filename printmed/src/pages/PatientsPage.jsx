@@ -13,6 +13,7 @@ import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr';
 import { useNavigate } from 'react-router-dom';
 import { showError } from '../utils/fetch/showError';
 import { capitalizedWords } from '../utils/wordUtils';
+import { showWarning } from '../utils/fetch/showWarning';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -63,6 +64,7 @@ const PatientsPage = () => {
 
       const data = await res.json()
       setPatients(data);
+      console.log(data)
     }
     catch (err) {
       showError(err)
@@ -153,7 +155,15 @@ const PatientsPage = () => {
       navigate(`/patient`)
     }
     catch (err) {
-      showError(err)
+      if (err.message === "Invalid") {
+        showWarning("The QR code is invalid.")
+      } else if (err.message === "Not found") {
+          showWarning("The QR code is either deactivated, expired, or does not exists.")
+      } else if (err.message === "Unauthorized") {
+          showWarning("You are not authorized to access this patient. ")
+      } else {
+        showError(err)
+      }
     }
     finally {
       setLoading(false)

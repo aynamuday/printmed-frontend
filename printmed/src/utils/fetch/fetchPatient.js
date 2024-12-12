@@ -14,11 +14,9 @@ export const fetchPatient = async (patientId, token) => {
             if (res.status == 401 && data.message == "Unauthenticated.") {
                 throw new Error("Unauthenticated")
             } else if (res.status === 404) {
-                showWarning("Patient not found.")
-                return
+                throw new Error("Not found")
             } else if (res.status === 403) {
-                showWarning("You are not authorized to perform this action.")
-                return
+                throw new Error("Unauthorized")
             } else {
                 throw new Error("Something went wrong. Please try again later.")
             }

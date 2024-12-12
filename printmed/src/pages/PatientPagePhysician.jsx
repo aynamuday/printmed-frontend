@@ -20,6 +20,7 @@ import { showError } from '../utils/fetch/showError'
 import { fetchPatientUsingId } from '../utils/fetch/fetchPatientUsingId'
 import Pusher from 'pusher-js'
 import { echo as Echo } from '../utils/pusher/echo';
+import { showWarning } from '../utils/fetch/showWarning'
 
 window.pusher = Pusher
 
@@ -72,7 +73,15 @@ const PatientPagePhysician = () => {
             setPatient(data)
         }
         catch (err) {
-            showError(err)
+            if (err.message === "Invalid") {
+                showWarning("The QR code is invalid.")
+            } else if (err.message === "Not found") {
+                showWarning("The QR code is either deactivated, expired, or does not exists.")
+            } else if (err.message === "Unauthorized") {
+                showWarning("You are not authorized to access this patient. Make sure you are an assigned physician.")
+            } else {
+                showError(err)
+            }
         }
         finally {
             setPatientPageLoading(false)
@@ -92,7 +101,15 @@ const PatientPagePhysician = () => {
             setPatientId('')
         }
         catch (err) {
-            showError(err)
+            if (err.message === "Invalid") {
+                showWarning("The patient ID is invalid.")
+            } else if (err.message === "Not found") {
+                showWarning("Patient not found.")
+            } else if (err.message === "Unauthorized") {
+                showWarning("You are not authorized to access this patient. Make sure you are an assigned physician.")
+            } else {
+                showError(err)
+            }
         }
         finally {
             setPatientPageLoading(false)

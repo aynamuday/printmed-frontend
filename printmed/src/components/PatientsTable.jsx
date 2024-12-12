@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AppContext from '../context/AppContext';
 import { fetchPatient } from '../utils/fetch/fetchPatient';
 import { showError } from '../utils/fetch/showError';
+import { showWarning } from '../utils/fetch/showWarning';
 
 const PatientsTable = ({ patients, setLoading }) => {
   const navigate = useNavigate();
@@ -18,7 +19,13 @@ const PatientsTable = ({ patients, setLoading }) => {
       navigate(`/patient`)
     }
     catch (err) {
-      showError(err)
+      if (err.message === "Not found") {
+        showWarning("Patient not found.")
+      } else if (err.message === "Unauthorized") {
+        showWarning("You are not authorized to access this patient.")
+      } else {
+        showError(err)
+      }
     }
     finally {
         setLoading(false)
