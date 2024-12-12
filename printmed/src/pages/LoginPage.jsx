@@ -73,7 +73,11 @@ const LoginPage = () => {
       });
 
       if(!res.ok) {
-        if (res.status === 404 || res.status === 401 || res.status === 422) {
+        console.log(await res.text())
+        if (res.status === 404) {
+          setErrors({ ...errors, general: "User not found." });
+          return
+        } else if (res.status === 401 || res.status === 422) {
           setErrors({ ...errors, general: "The provided credentials are incorrect." });
           return
         } else if (res.status === 403) {

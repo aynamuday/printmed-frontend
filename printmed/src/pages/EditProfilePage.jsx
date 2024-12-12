@@ -9,6 +9,7 @@ import Header from '../components/Header';
 import { validateUserDetails } from '../utils/formValidations/validateUserDetails';
 import { validateEmail } from '../utils/formValidations/validateEmail';
 import { validateUserBirthdate } from '../utils/formValidations/validateUserBirthdate';
+import { showWarning } from '../utils/fetch/showWarning';
 
 const EditProfilePage = () => {
   const { user, setUser, token } = useContext(AppContext);

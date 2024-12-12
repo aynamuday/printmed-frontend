@@ -8,6 +8,7 @@ import AuditsTable from './AuditsTable';
 import { echo as Echo } from '../utils/pusher/echo';
 import Pusher from 'pusher-js';
 import { showError } from '../utils/fetch/showError';
+import { showWarning } from '../utils/fetch/showWarning';
 
 window.pusher = Pusher
 
@@ -33,6 +34,8 @@ const Audits = ({ forDashboard = false }) => {
         dateUntil: ''
     })
     const [showDownloadPopup, setShowDownloadPopup] = useState(false)
+    const [downloadError, setDownloadError] = useState('')
+    const [dateError, setDateError] = useState('')
 
     useEffect(() => {
         if(audits.length < 1) {
@@ -177,6 +180,13 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user selects date from
     const handleAuditsDateFromChange = (e) => {
         if (!forDashboard) {
+            const value = e.target.value
+
+            if ((auditsAllFilters.dateUntil !== "" && (new Date(value) > new Date(auditsAllFilters.dateUntil))) || (new Date(value) > new Date())) {
+                showWarning("Maximum date is today and 'date until' must be greater than 'date from'.")
+                return
+            }
+
             setLoadingAudits(true)
 
             setAuditsAllFilters({
@@ -191,6 +201,13 @@ const Audits = ({ forDashboard = false }) => {
     // executes when user selects date until
     const handleAuditsDateUntilChange = (e) => {
         if (!forDashboard) {
+            const value = e.target.value
+
+            if ((auditsAllFilters.dateFrom !== "" && (new Date(value) < new Date(auditsAllFilters.dateFrom)) )|| (new Date(value) > new Date())) {
+                showWarning("Maximum date is today and 'date until' must be greater than 'date from'.")
+                return
+            }
+
             setLoadingAudits(true)
 
             setAuditsAllFilters({
@@ -229,6 +246,14 @@ const Audits = ({ forDashboard = false }) => {
     // executes when button for audits download is clicked
     const handleAuditsDownload = async (e) => {
         e.preventDefault()
+        setDownloadError('')
+
+        const monthAfterDateFrom = getFormattedNumericDate(new Date(auditsDownloadFilters.dateFrom).setMonth(new Date(auditsDownloadFilters.dateFrom).getMonth() + 1))
+        if (new Date(auditsDownloadFilters.dateUntil) > monthAfterDateFrom) {
+            setDownloadError("Date until must be maximum of one month from 'date from'.")
+            return
+        }
+
         setShowDownloadPopup(false)
         forDashboard ? setLoadingAuditsTodayDownload(true) : setLoadingAuditsAllDownload(true)
 
@@ -333,11 +358,12 @@ const Audits = ({ forDashboard = false }) => {
                             value={auditsDownloadFilters.dateUntil}
                             onChange={(e) => (setAuditsDownloadFilters({...auditsDownloadFilters, dateUntil: e.target.value}))}
                             min={auditsDownloadFilters.dateFrom}
-                            max={getFormattedNumericDate(new Date(auditsDownloadFilters.dateFrom).setMonth(new Date(auditsDownloadFilters.dateFrom).getMonth() + 1))}
+                            max={dateToday}
                             className='px-4 py-1.5 h-8 border border-black rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                             required
                         />
                     </div>
+                    {downloadError && <p className='text-sm text-red-500'>{downloadError}</p>}
                     <div className="flex items-center justify-center gap-4 mt-6">
                         <button type='submit' className="py-2 px-4 bg-[#248176] hover:bg-blue-600 text-white rounded-md">Continue</button>
                         <button type='button' onClick={() => setShowDownloadPopup(false)} className="py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md">Cancel</button>

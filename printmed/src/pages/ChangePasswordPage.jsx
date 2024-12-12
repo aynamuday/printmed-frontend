@@ -7,6 +7,7 @@ import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import {showLoggedOut} from "../utils/fetch/showLoggedOut"
+import { showError } from '../utils/fetch/showError';
 
 const ChangePasswordPage = () => {
   const { token } = useContext(AppContext)
@@ -34,7 +35,7 @@ const ChangePasswordPage = () => {
 
     setError('');
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/
 
     if(!passwordRegex.test(newPassword)) {
       setError("Password must be at least 8 characters long, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character.")

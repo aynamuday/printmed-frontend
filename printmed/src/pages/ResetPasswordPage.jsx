@@ -53,7 +53,7 @@ const ResetPasswordPage = () => {
       setError('Passwords do not match.');
       return;
     }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/
     if(password.length < 8 || !passwordRegex.test(passwordConfirmation)) {
       setError("Password must be at least 8 characters long, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character.")
       return;

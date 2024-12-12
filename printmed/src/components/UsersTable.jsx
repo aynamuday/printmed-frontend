@@ -199,14 +199,14 @@ const UsersTable = ({ users }) => {
                         {actionMenuOpen === item.id && (
                           <>
                           <div className="absolute right-0 min-w-40 w-max bg-white shadow-xl rounded-md py-0.5 border overflow-clip border-[#248176] z-10">
-                            {!item.is_locked && (
+                            {/* {!item.is_locked && ( */}
                               <button onClick={() => {viewUser(item)}} className="block w-full hover:bg-gray-200 text-left px-3 pe-4 py-0.5">
                                 <i className={`me-2 bi bi-pencil`}></i>Edit
                               </button>
-                            )}
+                            {/* )} */}
 
                             {item.failed_login_attempts > 2 && (
-                              <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-0.5 text-green-600 bg-gray-200">
+                              <button onClick={() => handleUnrestrictButton(item.id)} className="block w-full text-left px-3 pe-4 py-0.5 text-green-600 hover:bg-gray-200">
                                 <i className={`me-2 bi bi-unlock`}></i>Unrestrict
                               </button>
                             )}
