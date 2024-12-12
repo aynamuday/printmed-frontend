@@ -133,15 +133,15 @@ const AddPatientPage = () => {
   }, [newPatientData.province_code])
 
   // executes when city code changes
-  useEffect(() => {
-    if (newPatientData.city_code) {
-      const getBarangays = async () => {
-        const data = await fetchBarangays(newPatientData.city_code)
-        setBarangays(data)
-      }
-      getBarangays()
-    }
-  }, [newPatientData.city_code])
+  // useEffect(() => {
+  //   if (newPatientData.city_code) {
+  //     const getBarangays = async () => {
+  //       const data = await fetchBarangays(newPatientData.city_code)
+  //       setBarangays(data)
+  //     }
+  //     getBarangays()
+  //   }
+  // }, [newPatientData.city_code])
 
   // handle changes in form fields
   const handleChange = (e) => {

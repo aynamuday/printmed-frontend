@@ -189,17 +189,17 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     }, [updateData.province_code])
 
     // executes when city code changes
-    useEffect(() => {
-        if (patient.length != 0 && user.role == "secretary") {
-            if (updateData.city_code) {
-                const getBarangays = async () => {
-                    const data = await fetchBarangays(updateData.city_code)
-                    setBarangays(data)
-                }
-                getBarangays()
-            }
-        }
-    }, [updateData.city_code])
+    // useEffect(() => {
+    //     if (patient.length != 0 && user.role == "secretary") {
+    //         if (updateData.city_code) {
+    //             const getBarangays = async () => {
+    //                 const data = await fetchBarangays(updateData.city_code)
+    //                 setBarangays(data)
+    //             }
+    //             getBarangays()
+    //         }
+    //     }
+    // }, [updateData.city_code])
 
     const handleSubmit = (e) => {
         e.preventDefault()
