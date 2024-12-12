@@ -6,7 +6,7 @@ export const fetchProvinces = async (regionCode) => {
         if (!res.ok) {
             throw new Error('An error occured while getting the list of provinces')
         }
-        return await res.json();
+        return await res.json()
     } catch (err) {
         showError(err)
     }

@@ -63,8 +63,7 @@ const PatientsPage = () => {
       }
 
       const data = await res.json()
-      setPatients(data);
-      console.log(data)
+      setPatients(data)
     }
     catch (err) {
       showError(err)
