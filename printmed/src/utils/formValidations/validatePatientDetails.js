@@ -25,6 +25,16 @@ export const validatePatientDetails = (e, setErrors, setFormData, formData) => {
         }
     }
 
+    if (name === "barangay" && value !== "") {
+        if (!/^[a-zA-ZñÑ0-9\s]*$/.test(value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: 'Can only contain letters and numbers.',
+            }));
+            return
+        }
+    }
+
     if (name == "payment_method" && value != "HMO") {
         setFormData({...formData, hmo: "", [name]: capitalizedValue})
         return

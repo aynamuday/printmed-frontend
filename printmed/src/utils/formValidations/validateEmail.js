@@ -13,6 +13,10 @@ export const validateEmail = (emailUsername) => {
         return 'Email username must end with a letter or number.';
     }
 
+    if (!/[a-zA-Z]/.test(emailUsername)) {
+        return 'Email must contain a letter.';
+    }
+
     if (emailUsername.length < 6 || emailUsername.length > 30) {
         return 'Email username must be between 6 to 30 characters.';
     }

@@ -142,7 +142,6 @@ const PatientPageSecretary = () => {
 
                     const updatedPatient = {...patient, qr_status: {...patient.qr_status, status: "Active", date_issued: getFormattedNumericDate(), issuances_count: patient.qr_status.issuances_count ? + patient.qr_status.issuances_count + 1 : 1}}
                     setPatient(updatedPatient)
-                    setVitalSignsState(null)
                     sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
                 }
                 catch (err) {
@@ -193,7 +192,6 @@ const PatientPageSecretary = () => {
 
                     const updatedPatient = {...patient, qr_status: {...patient.qr_status, status: "Deactivated", date_deactivated: getFormattedNumericDate()}}
                     setPatient(updatedPatient)
-                    setVitalSignsState(null)
                     sessionStorage.setItem('patient', JSON.stringify(updatedPatient))
                 }
                 catch (err) {
@@ -288,6 +286,8 @@ const PatientPageSecretary = () => {
                                             { vitalSignsState === "edit" && patient.vital_signs && (
                                                 <VitalSignsForm setPatient={setPatient} patient={patient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} />
                                             )}
+
+                                            {console.log(vitalSignsState, patient.vital_signs)}
 
                                             {/* add vital signs */}
                                             { vitalSignsState === "add" && !patient.vital_signs && (
