@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AppContext from '../context/AppContext';
 import Settings from '../components/Settings';
 import {globalSwalNoIcon, globalSwalWithIcon} from '../utils/globalSwal';
+import { capitalizedWords } from '../utils/wordUtils';
 
 const SettingsPage = () => {
   const { user, setUser, token, setToken } = useContext(AppContext);
@@ -50,6 +51,7 @@ const SettingsPage = () => {
   return (
     <Settings>
       <h2 className="text-2xl font-bold text-center sm:text-left">{user.full_name.toUpperCase()}</h2>
+      <p className="text-black-500 text-center sm:text-left">{capitalizedWords(user.role)}</p>
       <p className="text-black-500 text-center sm:text-left">{user.personnel_number}</p>
       <p className="text-black-500 text-center sm:text-left">{user.email}</p>
 

@@ -39,7 +39,7 @@ const PatientPageSecretary = () => {
     
         return () => {
           document.removeEventListener('click', handleClickOutside)
-        };
+        }
     }, [])
 
     const handleClickOutside = (event) => {
@@ -70,9 +70,7 @@ const PatientPageSecretary = () => {
                     })
              
                    if(!res.ok) {
-                        if (res.status === 404) {
-                            throw new Error("Vital signs record not found.")
-                        } else {
+                        if (res.status != 404) {
                             throw new Error("Something went wrong. Please try again later.")
                         }
                    }    

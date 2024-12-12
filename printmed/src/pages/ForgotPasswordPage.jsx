@@ -5,6 +5,7 @@ import AppContext from '../context/AppContext';
 import { ScaleLoader } from "react-spinners";
 import { globalSwalWithIcon } from '../utils/globalSwal';
 import { showError } from '../utils/fetch/showError';
+import { showWarning } from '../utils/fetch/showWarning';
 import backdrop from '../assets/images/Backdrop.png';
 
 const ForgotPasswordPage = () => {
@@ -36,7 +37,8 @@ const ForgotPasswordPage = () => {
       
             if(!res.ok) {
                 if (res.status == 422 || res.status == 404) {
-                    throw new Error("Email not found.")
+                    showWarning("Email not found.")
+                    return
                 } else {
                     throw new Error("Something went wrong. Please try again later.")
                 }

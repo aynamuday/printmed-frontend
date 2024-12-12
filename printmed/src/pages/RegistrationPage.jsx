@@ -372,10 +372,6 @@ function RegistrationPage() {
                 </div>
             )}
 
-            <div>
-                
-            </div>
-
             <div className="min-h-screen grid place-items-center lg:p-16 p-8 bg-cover bg-center bg-[url('assets/images/bg_nurse_transparent.png')]">
                 <div className="grid grid-cols-1 md:grid-cols-5 bg-white rounded-lg shadow-lg overflow-hidden max-w-5xl mx-auto">
                     <div className="hidden md:block bg-cover bg-center col-span-2" style={{ backgroundImage: `url(${bg_nurse})` }}></div>

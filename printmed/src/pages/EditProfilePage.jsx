@@ -96,6 +96,7 @@ const EditProfilePage = () => {
       if(!res.ok) {
         if (res.status === 422 && data.field == "personnel_number") {
           showWarning("Personnel number is already taken.")
+          return
         } else {
           throw new Error("Something went wrong. Please try again later.")
         }

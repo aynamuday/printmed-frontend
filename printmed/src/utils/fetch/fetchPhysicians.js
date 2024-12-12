@@ -1,5 +1,3 @@
-import { showLoggedOut } from "./showLoggedOut";
-
 export const fetchPhysicians = async (token) => {
     try {
         const res = await fetch('/api/physicians', {

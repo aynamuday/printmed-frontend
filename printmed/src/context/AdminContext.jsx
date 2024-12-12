@@ -25,6 +25,7 @@ export const AdminProvider = () => {
     sort_by: '',
     order_by: ''
   })
+  const [departments, setDepartments] = useState([])
 
   return (
     <AdminContext.Provider value={{ 
@@ -38,7 +39,8 @@ export const AdminProvider = () => {
       loadingAuditsAllDownload, setLoadingAuditsAllDownload,
       users, setUsers,
       searchUser, setSearchUser,
-      usersFilters, setUsersFilters
+      usersFilters, setUsersFilters,
+      departments, setDepartments
     }}>
       <Outlet />
     </AdminContext.Provider>

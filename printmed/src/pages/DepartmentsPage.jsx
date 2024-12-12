@@ -7,12 +7,13 @@ import {globalSwalWithIcon} from "../utils/globalSwal";
 import { fetchDepartments } from "../utils/fetch/fetchDepartments";
 import { useNavigate } from "react-router-dom";
 import {showLoggedOut} from "../utils/fetch/showLoggedOut"
+import AdminContext from "../context/AdminContext";
 
 const DepartmentsPage = () => {
   const { token } = useContext(AppContext)
+  const {departments, setDepartments} = useContext(AdminContext);
   const navigate = useNavigate()
   
-  const [departments, setDepartments] = useState([]);
   const [ newDepartment, setNewDepartment ] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +45,9 @@ const DepartmentsPage = () => {
           showLoggedOut()
           navigate('/')
         } else {
-          showError(err)
+          if (departments.length < 1) {
+            showError(err)
+          }
         }
       }
     }

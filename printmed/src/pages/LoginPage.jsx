@@ -222,7 +222,7 @@ const LoginPage = () => {
                   <option value="physician">Physician</option>
                   <option value="secretary">Secretary</option>
                   <option value="admin">Admin</option>
-                  <option value="super admin">Super Admin</option>
+                  {/* <option value="super admin">Super Admin</option> */}
                 </select>
                 {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
               </div>
