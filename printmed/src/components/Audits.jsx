@@ -12,7 +12,7 @@ import { showError } from '../utils/fetch/showError';
 window.pusher = Pusher
 
 const Audits = ({ forDashboard = false }) => {
-    const { token } = useContext(AppContext)
+    const { user, token } = useContext(AppContext)
     const { 
         auditsToday, 
         setAuditsToday,
@@ -28,6 +28,11 @@ const Audits = ({ forDashboard = false }) => {
     const [ loadingAudits, setLoadingAudits ] = useState(false)
     const audits = forDashboard ? auditsToday : auditsAll
     const dateToday = getFormattedNumericDate()
+    const [auditsDownloadFilters, setAuditsDownloadFilters] = useState({
+        dateFrom: '',
+        dateUntil: ''
+    })
+    const [showDownloadPopup, setShowDownloadPopup] = useState(false)
 
     useEffect(() => {
         if(audits.length < 1) {
@@ -222,7 +227,9 @@ const Audits = ({ forDashboard = false }) => {
     };
 
     // executes when button for audits download is clicked
-    const handleAuditsDownload = async () => {
+    const handleAuditsDownload = async (e) => {
+        e.preventDefault()
+        setShowDownloadPopup(false)
         forDashboard ? setLoadingAuditsTodayDownload(true) : setLoadingAuditsAllDownload(true)
 
         let fetchUrl = `/api/audits/download?`
@@ -234,9 +241,8 @@ const Audits = ({ forDashboard = false }) => {
             //     fetchUrl += `&resource=${resource}`
             // }
         }  else {
-            const dateFrom = auditsAllFilters.dateFrom
-            const dateUntil = auditsAllFilters.dateUntil
-            const resource = auditsAllFilters.resource
+            const dateFrom = auditsDownloadFilters.dateFrom
+            const dateUntil = auditsDownloadFilters.dateUntil
 
             if (!(dateFrom.trim() === "")) {
                 fetchUrl += `date_from=${dateFrom}`
@@ -245,10 +251,10 @@ const Audits = ({ forDashboard = false }) => {
                 dateFrom.trim() === "" ? fetchUrl += `` : fetchUrl += `&`
                 fetchUrl += `date_until=${dateUntil}`
             }
-            if (!(resource.trim() === "")) {
-                dateFrom.trim() === "" && dateUntil.trim() === "" ? fetchUrl += `` : fetchUrl += `&`
-                fetchUrl += `resource=${resource}`
-            }
+            // if (!(resource.trim() === "")) {
+            //     dateFrom.trim() === "" && dateUntil.trim() === "" ? fetchUrl += `` : fetchUrl += `&`
+            //     fetchUrl += `resource=${resource}`
+            // }
         }
 
         try {
@@ -298,8 +304,48 @@ const Audits = ({ forDashboard = false }) => {
     };
 
     return (
-
         <>  
+        {/* pop up for downloads*/}
+          {showDownloadPopup  && (
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-40'>
+              <div className="bg-white rounded-md flex justify-items-center flex-col pt-6 pb-8 px-8 max-w-[30%] max-h-[70vh] overflow-y-auto">
+                <p className="text-center font-bold text-lg text-black">Please specify the date of audits you want to download.</p>
+                <p className="text-center">You may download a maximum of one month of audits.</p>
+                <form onSubmit={(e) => handleAuditsDownload(e)} className='flex items-center justify-center mt-4 flex-col'>
+                    <div className="w-full sm:w-auto">
+                        <label htmlFor="dateFrom" className='mb-1 mr-2 text-sm'>Date From</label>
+                        <input
+                            type="date"
+                            name="dateFrom"
+                            value={auditsDownloadFilters.dateFrom}
+                            onChange={(e) => (setAuditsDownloadFilters({...auditsDownloadFilters, dateFrom: e.target.value}))}
+                            min="2024-11-05"
+                            max={dateToday}
+                            className='px-4 py-1.5 h-8 border border-black rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                            required
+                        />
+                    </div>
+                    <div className="w-full sm:w-auto mt-2">
+                        <label htmlFor="dateFrom" className='mb-1 mr-2 text-sm'>Date Until</label>
+                        <input
+                            type="date"
+                            name="dateFrom"
+                            value={auditsDownloadFilters.dateUntil}
+                            onChange={(e) => (setAuditsDownloadFilters({...auditsDownloadFilters, dateUntil: e.target.value}))}
+                            min={auditsDownloadFilters.dateFrom}
+                            max={getFormattedNumericDate(new Date(auditsDownloadFilters.dateFrom).setMonth(new Date(auditsDownloadFilters.dateFrom).getMonth() + 1))}
+                            className='px-4 py-1.5 h-8 border border-black rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                            required
+                        />
+                    </div>
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                        <button type='submit' className="py-2 px-4 bg-[#248176] hover:bg-blue-600 text-white rounded-md">Continue</button>
+                        <button type='button' onClick={() => setShowDownloadPopup(false)} className="py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md">Cancel</button>
+                    </div>
+                </form>
+              </div>
+            </div>)}
+
             <div className={`flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
                 <h2 className={`font-bold text-2xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
 
@@ -323,7 +369,7 @@ const Audits = ({ forDashboard = false }) => {
                                     name="dateFrom"
                                     value={auditsAllFilters.dateFrom}
                                     onChange={handleAuditsDateFromChange}
-                                    min="2024-11-15"
+                                    min="2024-11-05"
                                     max={dateToday}
                                     className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
@@ -337,7 +383,7 @@ const Audits = ({ forDashboard = false }) => {
                                     name="dateUntil"
                                     value={auditsAllFilters.dateUntil}
                                     onChange={handleAuditsDateUntilChange}
-                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-15"}
+                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-05"}
                                     max={dateToday}
                                     className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
                                 />
@@ -362,12 +408,14 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
 
-                            <button className='px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto' 
-                                onClick={handleAuditsDownload} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
-                                { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
-                                    <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
-                                ) : ( "Download" ) }
-                            </button>
+                            { user.role == "super admin" && !forDashboard && (
+                                <button className='px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto' 
+                                    onClick={() => setShowDownloadPopup(true)} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
+                                    { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
+                                        <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
+                                    ) : ( "Download" ) }
+                                </button>
+                            )}
                         </>
                     )}
 
