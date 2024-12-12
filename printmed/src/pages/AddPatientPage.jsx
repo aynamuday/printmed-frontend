@@ -103,12 +103,21 @@ const AddPatientPage = () => {
 
   // executes when region code changes
   useEffect(() => {
-    if (newPatientData.region_code) {
-      const getProvinces = async () => {
-        const data = await fetchProvinces(newPatientData.region_code)
-        setProvinces(data)
-      }
-      getProvinces()
+    if (newPatientData.region === "National Capital Region (NCR)") {
+        const getCities = async () => {
+            const data = await fetchCities(newPatientData.region_code, true)
+            setCities(data)
+        }
+        getCities()
+        setProvinces([])
+    } else {
+        if (newPatientData.region_code) {
+            const getProvinces = async () => {
+                const data = await fetchProvinces(newPatientData.region_code)
+                setProvinces(data)
+            }
+            getProvinces()
+        }
     }
   }, [newPatientData.region_code])
 
@@ -523,7 +532,7 @@ const AddPatientPage = () => {
                   {/* Birthplace */}
                   <div>
                     <label className="block text-sm font-medium">
-                      Birthplace <span className="text-red-600 cursor-help">*</span>
+                      Birthplace <span className="text-red-600 cursor-help">*</span> <span className='text-gray-700'>(City, Province)</span> 
                     </label>
                     <input 
                       type="text" 
@@ -583,14 +592,14 @@ const AddPatientPage = () => {
                   {/* Province */}
                   <div>
                     <label className="block text-sm font-medium">
-                        Province <span className="text-red-600">*</span>
+                        Province 
                     </label>
                     <select
                         name="province"
                         value={newPatientData.province}
                         onChange={(e) => handleProvinceChange(e, setNewPatientData, setBarangays)}
                         className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                        required
+                        // required
                     >
                     <option value="">Select Province</option>
                     {provinces?.map((province) => (
@@ -632,7 +641,7 @@ const AddPatientPage = () => {
                   </div>
 
                   {/* Barangay */}
-                  <div>
+                  {/* <div>
                       <label className="block text-sm font-medium">
                           Barangay <span className="text-red-600">*</span>
                       </label>
@@ -654,6 +663,21 @@ const AddPatientPage = () => {
                       </option>
                       ))}
                       </select>
+                  </div> */}
+
+                  <div>
+                    <label className="block text-sm font-medium">
+                      Barangay <span className="text-red-600">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      name="barangay"
+                      value={newPatientData.barangay} 
+                      onChange={handleChange} 
+                      className="mt-1 block w-full border p-2 rounded-md border-black"
+                      required
+                    />
+                    {errors.barangay && <p className="text-red-600 text-sm mt-1">{errors.barangay}</p>}
                   </div>
                 
                   {/* Street */}

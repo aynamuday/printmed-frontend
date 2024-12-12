@@ -40,7 +40,7 @@ function RegistrationPage() {
         city: '',
         city_code: '',
         barangay: '',
-        barangay_code: '',
+        // barangay_code: '',
         street: '',
         house_number: '',
         postal_code: '',
@@ -113,12 +113,21 @@ function RegistrationPage() {
 
     // executes when region code changes, sets the provinces
     useEffect(() => {
-        if (formData.region_code) {
-            const getProvinces = async () => {
-                const data = await fetchProvinces(formData.region_code)
-                setProvinces(data)
+        if (formData.region === "National Capital Region (NCR)") {
+            const getCities = async () => {
+                const data = await fetchCities(formData.region_code, true)
+                setCities(data)
             }
-            getProvinces()
+            getCities()
+            setProvinces([])
+        } else {
+            if (formData.region_code) {
+                const getProvinces = async () => {
+                    const data = await fetchProvinces(formData.region_code)
+                    setProvinces(data)
+                }
+                getProvinces()
+            }
         }
     }, [formData.region_code])
 
@@ -211,10 +220,10 @@ function RegistrationPage() {
             formIsValid = false;
         }
 
-        if (formData.province.trim() === "") {
-            newErrors.barangay = 'This field is required.';
-            formIsValid = false;
-        }
+        // if (formData.province.trim() === "") {
+        //     newErrors.barangay = 'This field is required.';
+        //     formIsValid = false;
+        // }
     
         if (formData.email_username.trim() != "") {
             const error = validateEmail(formData.email_username)
@@ -365,25 +374,25 @@ function RegistrationPage() {
             });
     }
 
-    const handleBarangayInputChange = (e, setFormData) => {
-        const value = e.target.value;
-        const regex = /^[a-zA-ZñÑ0-9\s]*$/;
+    // const handleBarangayInputChange = (e, setFormData) => {
+    //     const value = e.target.value;
+    //     const regex = /^[a-zA-ZñÑ0-9\s]*$/;
         
-        if (regex.test(value) || value === "") {
-            const formattedValue = capitalizedWords(value);
+    //     if (regex.test(value) || value === "") {
+    //         const formattedValue = capitalizedWords(value);
             
-            setFormData((prev) => ({
-                ...prev,
-                barangay: formattedValue,
-                barangayError: "",
-            }));
-        } else {
-            setFormData((prev) => ({
-                ...prev,
-                barangayError: "Only letters and letters are allowed.",
-            }));
-        }
-    };
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             barangay: formattedValue,
+    //             barangayError: "",
+    //         }));
+    //     } else {
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             barangayError: "Only letters and letters are allowed.",
+    //         }));
+    //     }
+    // };
     
 
     return (
@@ -570,7 +579,7 @@ function RegistrationPage() {
                                 {/* Province */}
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Province <span className="text-red-600">*</span>
+                                        Province 
                                     </label>
                                     <select
                                         id="province"
@@ -578,7 +587,6 @@ function RegistrationPage() {
                                         value={formData.province}
                                         onChange={(e) => handleProvinceChange(e, setFormData, setBarangays)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
-                                        required
                                     >
                                     <option value="">Select Province</option>
                                     {provinces?.map((province) => (
@@ -629,12 +637,11 @@ function RegistrationPage() {
                                         id="barangay"
                                         name="barangay"
                                         value={formData.barangay}
-                                        onChange={(e) => handleBarangayInputChange(e, setFormData)}
+                                        onChange={(e) => handleChange(e)}
                                         className="mt-1 block w-full border p-2.5 rounded-md bg-white border-black"
                                         required
-                                        placeholder="Enter Barangay"
                                     />
-                                    <p className="text-red-600 text-xs">{formData.barangayError}</p>
+                                    {errors.barangay && (<p className="text-red-500 text-sm">{errors.barangay}</p>)}
                                 </div>
 
                                 {/* Street */}
@@ -660,7 +667,6 @@ function RegistrationPage() {
                                     <input
                                         type="text"
                                         name="house_number"
-                                        placeholder="House Number"
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         value={formData.house_number}
                                         onChange={(e) => {handleChange(e)}}
@@ -804,7 +810,6 @@ function RegistrationPage() {
                                         <input
                                             type="text"
                                             name="email_username"
-                                            placeholder="Email"
                                             className="w-full p-2 focus:outline-none border-r border-r-black"
                                             value={formData.email_username}
                                             onChange={(e) => {handleChange(e)}}
@@ -932,8 +937,12 @@ function RegistrationPage() {
                                     <p className='col-span-5'>{formData.civil_status}</p>
                                     <p className='col-span-3 font-semibold'>Region</p>
                                     <p className='col-span-5 break-words'>{formData.region}</p>
-                                    <p className='col-span-3 font-semibold'>Province</p>
-                                    <p className='col-span-5 break-words'>{formData.province}</p>
+                                    {formData.province && 
+                                        <>
+                                            <p className='col-span-3 font-semibold'>Province</p>
+                                            <p className='col-span-5 break-words'>{formData.province}</p>
+                                        </>
+                                    }
                                     <p className='col-span-3 font-semibold'>City</p>
                                     <p className='col-span-5 break-words'>{formData.city}</p>
                                     <p className='col-span-3 font-semibold'>Barangay</p>

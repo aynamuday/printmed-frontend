@@ -1,8 +1,11 @@
 import { showError } from "./showError";
 
-export const fetchCities = async (provinceCode) => {
+export const fetchCities = async (provinceCode, isNcr) => {
     try {
-        const res = await fetch(`https://psgc.cloud/api/provinces/${provinceCode}/cities-municipalities`);
+        const url = isNcr ? `https://psgc.cloud/api/regions/1300000000/cities-municipalities` : `https://psgc.cloud/api/provinces/${provinceCode}/cities-municipalities`
+        const res = await fetch(url);
+
+        console.log(provinceCode)
         
         if (!res.ok) {
             throw new Error('An error occured while getting the list of cities/municipalities.')

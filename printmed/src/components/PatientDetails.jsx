@@ -151,12 +151,21 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     // executes when region code changes
     useEffect(() => {
         if (patient.length != 0 && user.role == "secretary") {
-            if (updateData.region_code) {
-                const getProvinces = async () => {
-                    const data = await fetchProvinces(updateData.region_code)
-                    setProvinces(data)
+            if (updateData.region === "National Capital Region (NCR)") {
+                const getCities = async () => {
+                    const data = await fetchCities(updateData.region_code, true)
+                    setCities(data)
                 }
-                getProvinces()
+                getCities()
+                setProvinces([])
+            } else {
+                if (updateData.region_code) {
+                    const getProvinces = async () => {
+                        const data = await fetchProvinces(updateData.region_code)
+                        setProvinces(data)
+                    }
+                    getProvinces()
+                }
             }
         }
     }, [updateData.region_code])
@@ -458,7 +467,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             </tr>
                             { ((patient.birthplace && !update) || update) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthplace {update && <span className='text-red-600'>*</span>}</th>
+                                    <th className='text-start border border-[#828282] p-2 w-[35%]'>Birthplace {update && <span className='text-red-600'>*</span> && <span className='text-gray-700 font-normal'>(City, Province)</span>} </th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>
                                         { !update ? (
                                             patient.birthplace
@@ -531,14 +540,14 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Province {update && <span className='text-red-600'>*</span>}</th>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Province</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             <select
                                                 name="province"
                                                 value={updateData.province}
                                                 onChange={(e) => handleProvinceChange(e, setUpdateData, setBarangays)}
                                                 className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                                                required
+                                                // required
                                             >
                                                 <option value="">Select Province</option>
                                                 {provinces?.map((province) => (
@@ -576,7 +585,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             </select>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    {/* <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Barangay {update && <span className='text-red-600'>*</span>}</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             <select
@@ -597,6 +606,23 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                     </option>
                                                 ))}
                                             </select>
+                                        </td>
+                                    </tr> */}
+                                    <tr>
+                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Barangay {update && <span className='text-red-600'>*</span>}</th>
+                                        <td className='border p-2 border-[#828282] w-[65%]'>
+                                            <input
+                                                type="text"
+                                                name="barangay"
+                                                className="col-span-2 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                value={updateData.barangay}
+                                                placeholder='Barangay'
+                                                minLength={2}
+                                                maxLength={50}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            {errors.barangay && <p className="text-red-600 text-sm mt-1">{errors.barangay}</p>}
                                         </td>
                                     </tr>
                                     <tr>
