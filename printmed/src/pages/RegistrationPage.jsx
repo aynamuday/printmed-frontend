@@ -730,7 +730,7 @@ function RegistrationPage() {
                                         <option value="">Select Religion</option>
                                         <option value="Roman Catholicism">Roman Catholicism</option>
                                         <option value="Protestant Christianity">Protestant Christianity</option>
-                                        <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                                        <option value="Iglesia Ni Cristo">Iglesia Ni Cristo</option>
                                         <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Buddhism">Buddhism</option>

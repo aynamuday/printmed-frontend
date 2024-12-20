@@ -713,7 +713,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                                 <option value="">Select Religion</option>
                                                 <option value="Roman Catholicism">Roman Catholicism</option>
                                                 <option value="Protestant Christianity">Protestant Christianity</option>
-                                                <option value="Iglesia ni Cristo">Iglesia ni Cristo</option>
+                                                <option value="Iglesia Ni Cristo">Iglesia Ni Cristo</option>
                                                 <option value="Jehovah's Witnesses">Jehovah's Witnesses</option>
                                                 <option value="Islam">Islam</option>
                                                 <option value="Buddhism">Buddhism</option>
@@ -861,7 +861,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                         <td className='border p-2 border-[#828282] w-[65%]'>
                                             { patient.follow_up_date ? (
                                                 <>
-                                                    {patient.follow_up_date} 
+                                                    {getFormattedStringDate(patient.follow_up_date)} 
                                                     <span className={`ms-3 italic ${followUpDateStatus == "Missed" ? "text-red-600" : followUpDateStatus == "Today" ? "text-green-500" : ""}`}>
                                                         {followUpDateStatus}
                                                     </span>

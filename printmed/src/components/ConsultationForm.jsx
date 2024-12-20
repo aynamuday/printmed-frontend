@@ -85,6 +85,7 @@ const ConsultationForm = () => {
                     setConsultations((prevData) => ({...prevData, [data.id]: data}))
                     setPatient(prevPatient => ({
                         ...prevPatient,
+                        follow_up_date: data.follow_up_date ? data.follow_up_date : null,    // added
                         consultations: [
                             {id: data.id, chief_complaint: data.chief_complaint, primary_diagnosis: data.primary_diagnosis, created_at: data.created_at},
                             ...prevPatient.consultations, 

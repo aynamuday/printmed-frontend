@@ -57,17 +57,17 @@ const SettingsPage = () => {
 
       <div className='min-h-10'></div>
 
-      <div className='grid grid-cols-2 gap-x-4 gap-y-0'>
+      <div className='grid grid-cols-3 gap-x-4 gap-y-0 ml-10 max-w-[400px]'>
         {(user.role == "physician" || user.role == "secretary") && (
           <>
             <p>Department:</p>
-            <p><strong>{user.department_name}</strong></p>
+            <p className='col-span-2'><strong>{user.department_name}</strong></p>
           </>
         )}
         <p>Sex:</p>
-        <p><strong>{user.sex}</strong></p>
+        <p className='col-span-2'><strong>{user.sex}</strong></p>
         <p>Birthdate:</p>
-        <p><strong>{user.birthdate}</strong></p>
+        <p className='col-span-2'><strong>{user.birthdate}</strong></p>
       </div>
 
       <div className='min-h-10'></div>
