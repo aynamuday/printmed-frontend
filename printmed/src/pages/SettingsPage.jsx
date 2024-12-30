@@ -162,66 +162,68 @@ const SettingsPage = () => {
         </div>
 
         <div className="mt-6 space-y-4 w-full flex flex-col items-center">
-          <div className={`relative`}>
-            <input 
-              id='upload-signature'
-              type="file" 
-              accept='image/*'
-              onChange={handleSignatureChange}
-              className='hidden'
-            />
+          {user.role == "physician" && 
+            <div className={`relative`}>
+              <input 
+                id='upload-signature'
+                type="file" 
+                accept='image/*'
+                onChange={handleSignatureChange}
+                className='hidden'
+              />
 
-            {user.signature || signature ? (
-              <div className='flex gap-4 mb-4 justify-center items-center'>
-                <div className='relative'>
-                  <img 
-                    src={ signature ? URL.createObjectURL(signature) : (user.signature || '') }
-                    className={`max-w-full h-20 object-cover rounded-md ${signature && "border border-gray-400 p-2" }`}
-                  />
-                  { signature && 
-                    <i onClick={() => {setSignature(null)}} className='bi bi-x px-1 rounded-full focus:outline-none text-center bg-gray-50 text-[#248176] cursor-pointer absolute -top-3 -right-3'></i>
-                  }
+              {user.signature || signature ? (
+                <div className='flex gap-4 mb-4 justify-center items-center'>
+                  <div className='relative'>
+                    <img 
+                      src={ signature ? URL.createObjectURL(signature) : (user.signature || '') }
+                      className={`max-w-full h-20 object-cover rounded-md ${signature && "border border-gray-400 p-2" }`}
+                    />
+                    { signature && 
+                      <i onClick={() => {setSignature(null)}} className='bi bi-x px-1 rounded-full focus:outline-none text-center bg-gray-50 text-[#248176] cursor-pointer absolute -top-3 -right-3'></i>
+                    }
+                  </div>
+
+                  {signature ? (
+                    <div>
+                      <button
+                        className="px-8 py-2 bg-[#248176] rounded-md focus:outline-none text-center hover:bg-blue-600 text-white cursor-pointer"
+                        onClick={(e) => uploadSignature(e)}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <label
+                        htmlFor='upload-signature'
+                        className="px-2 py-2 rounded-full focus:outline-none text-center hover:bg-[#f4f4f4] text-[#248176] cursor-pointer"
+                      >
+                        <i className='bi bi-pencil-fill'></i>
+                      </label>
+                      <button
+                        className="px-2 py-1 rounded-full focus:outline-none text-center hover:bg-[#f4f4f4] text-[#248176] cursor-pointer"
+                        onClick={(e) => deleteSignature(e)}
+                      >
+                        <i className='bi bi-trash'></i>
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                {signature ? (
-                  <div>
-                    <button
-                      className="px-8 py-2 bg-[#248176] rounded-md focus:outline-none text-center hover:bg-blue-600 text-white cursor-pointer"
-                      onClick={(e) => uploadSignature(e)}
-                    >
-                      Save
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <label
-                      htmlFor='upload-signature'
-                      className="px-2 py-2 rounded-full focus:outline-none text-center hover:bg-gray-50 text-[#248176] cursor-pointer"
-                    >
-                      <i className='bi bi-pencil-fill'></i>
-                    </label>
-                    <button
-                      className="px-2 py-1 rounded-full focus:outline-none text-center hover:bg-gray-50 text-[#248176] cursor-pointer"
-                      onClick={(e) => deleteSignature(e)}
-                    >
-                      <i className='bi bi-trash'></i>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <div className='min-h-10'></div>
-      
-                <label
-                  htmlFor='upload-signature'
-                  className="w-48 px-4 py-2 bg-[#248176] inline-block rounded-md hover:bg-[#359c90] focus:outline-none text-center text-white cursor-pointer"
-                >
-                  Upload Signature
-                </label>
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  <div className='min-h-10'></div>
+        
+                  <label
+                    htmlFor='upload-signature'
+                    className="w-48 px-4 py-2 bg-[#248176] inline-block rounded-md hover:bg-[#359c90] focus:outline-none text-center text-white cursor-pointer"
+                  >
+                    Upload Signature
+                  </label>
+                </>
+              )}
+            </div>
+          }
 
           {user.role === 'super admin' && (
             <Link
