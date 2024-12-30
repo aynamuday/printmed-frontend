@@ -282,8 +282,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
 
             const formData = new FormData();
             if (image != patient.photo_url) {
-                console.log(image)
-                console.log(patient.photo_url)
                 const photo = base64ToPngFile(image)  // util function for converting base64 to png
                 formData.append('photo', photo)
             }
@@ -750,7 +748,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                     )}
                                 </td>
                             </tr>
-                            { ((patient.email && !update) || update) && (
+                            { ((!update && patient.email && patient.email != "") || update) && (
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Email</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>

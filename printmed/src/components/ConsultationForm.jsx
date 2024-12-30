@@ -16,6 +16,7 @@ const ConsultationForm = () => {
         isNext, setIsNext,
         addConsultationErrors, setAddConsultationErrors,
         setConsultations,
+        setViewConsultationId,
         setConsultationComponentStatus, 
         resetAddConsultation
     } = useContext(PhysicianContext)
@@ -92,7 +93,8 @@ const ConsultationForm = () => {
                         ]
                     }));
         
-                    setConsultationComponentStatus(null)
+                    setViewConsultationId(data.id)
+                    setConsultationComponentStatus("view")
                     resetAddConsultation()
                 }
                 catch (err) {

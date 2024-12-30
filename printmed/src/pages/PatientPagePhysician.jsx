@@ -158,7 +158,7 @@ const PatientPagePhysician = () => {
     const handleAddConsultationButton = () => {
         if (!patient.vital_signs) {
             globalSwalWithIcon.fire({
-                title: "Vital signs not available, unable to add consultation record.",
+                title: "Vital signs not available, cannot add consultation record.",
                 icon: 'warning',
                 showConfirmButton: false,
                 showCloseButton: true
