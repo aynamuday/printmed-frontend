@@ -67,7 +67,8 @@ const ViewConsultation = () => {
         try {
             setPatientPageLoading(true)
 
-            var url = `/api/consultations/${viewConsultationId}/print-prescription?sendToPatientEmail=${printPrescriptionData.sendToPatientEmail}`
+            var url = `/api/consultations/${viewConsultationId}/print-prescription?sendToPatientEmail=`
+            url += patient.email != null && patient.email != "" ? `${printPrescriptionData.sendToPatientEmail}` : 'false'
             if (printPrescriptionData.ptr.trim() != "") {
                 url += `&ptr=${printPrescriptionData.ptr}`
             }
