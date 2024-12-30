@@ -74,7 +74,7 @@ export const validatePatientDetails = (e, setErrors, setFormData, formData) => {
         setFormData({
             ...formData,
             email_username: emailUsername,
-            email: emailUsername + "@gmail.com", 
+            email: emailUsername != "" ? emailUsername + "@gmail.com" : "", 
         });
         return
     }

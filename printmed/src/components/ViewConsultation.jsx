@@ -9,6 +9,7 @@ import { printPdf } from '../utils/printPdf'
 const ViewConsultation = () => {
     const { token, user } = useContext(AppContext)
     const { 
+        patient,
         setPatientPageLoading,
         setConsultationComponentStatus,
         consultations, setConsultations,
@@ -16,13 +17,18 @@ const ViewConsultation = () => {
     } = useContext(PhysicianContext)
 
     const [consultation, setConsultation] = useState(null)
+    const [printPrescription, setPrintPrescription] = useState(false)
+    const [printPrescriptionData, setPrintPrescriptionData] = useState({
+        s2: "",
+        ptr: "",
+        sendToPatientEmail: true
+    })
 
     useEffect(() => {
         if (consultations[viewConsultationId] === null || consultations[viewConsultationId] === undefined) {
             fetchConsultation()
         } else {
             setConsultation(consultations[viewConsultationId])
-            console.log(consultations[viewConsultationId])
         }
     }, [])
 
@@ -57,11 +63,19 @@ const ViewConsultation = () => {
         }
     }
 
-    const printPrescription = async () => {
+    const getPrescriptionPdf = async () => {
         try {
             setPatientPageLoading(true)
 
-            const res = await fetch(`/api/consultations/${viewConsultationId}/print-prescription`, {
+            var url = `/api/consultations/${viewConsultationId}/print-prescription?sendToPatientEmail=${printPrescriptionData.sendToPatientEmail}`
+            if (printPrescriptionData.ptr.trim() != "") {
+                url += `&ptr=${printPrescriptionData.ptr}`
+            }
+            if (printPrescriptionData.s2.trim() != "") {
+                url += `&s2=${printPrescriptionData.s2}`
+            }
+
+            const res = await fetch(url, {
                 'Content-Type': 'application/pdf',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -69,12 +83,14 @@ const ViewConsultation = () => {
             })
     
             if(!res.ok) {
+                console.log(await res.text())
                 throw new Error("An error occured while getting the printable prescription. Please try again later.")
             }
 
             const data = await res.blob()
-            const url = URL.createObjectURL(data)
-            printPdf(url)   
+            const pdfUrl = URL.createObjectURL(data)
+            printPdf(pdfUrl)   
+            setPrintPrescriptionData({...printPrescriptionData, ptr: '', s2: '', sendToPatientEmail: true})
         }
         catch (err) {
             showError(err)
@@ -88,6 +104,51 @@ const ViewConsultation = () => {
         <>
             { consultation && (
                 <div className='p-4 bg-white'>
+                    {printPrescription && (
+                        <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-40 z-40'>
+                            <div className='bg-white px-8 py-6 rounded-md'>
+                                <form onSubmit={(e) => {e.preventDefault(); setPrintPrescription(false); getPrescriptionPdf()}} className='flex items-center flex-col'>
+                                    <div className='grid grid-cols-5 items-center'>
+                                        <label className='col-span-1 font-bold'>PTR #</label>
+                                        <input 
+                                            type="text" 
+                                            className='col-span-4 border border-black focus:outline-none px-2 py-1 rounded-md' 
+                                            value={printPrescriptionData.ptr || ''}
+                                            onChange={(e) => {setPrintPrescriptionData({...printPrescriptionData, ptr: e.target.value})}}
+                                        />
+                                    </div>
+                                    <div className='grid grid-cols-5 items-center mt-3'>
+                                        <label className='col-span-1 font-bold'>S2 #</label>
+                                        <input 
+                                            type="text" 
+                                            className='col-span-4 border border-black focus:outline-none px-2 py-1 rounded-md'
+                                            value={printPrescriptionData.s2 || ''}
+                                            onChange={(e) => {setPrintPrescriptionData({...printPrescriptionData, s2: e.target.value})}}
+                                        />
+                                    </div>
+                                    { patient.email != null && patient.email != "" && user.signature != null && user.signature != "" &&
+                                        <div className='flex gap-2 items-center mt-5'>
+                                            <input 
+                                                id='send-to-patient-email'
+                                                type="checkbox" 
+                                                checked={printPrescriptionData.sendToPatientEmail}
+                                                onChange={() => {setPrintPrescriptionData({...printPrescriptionData, sendToPatientEmail: !printPrescriptionData.sendToPatientEmail})}}
+                                            />
+                                            <label htmlFor='send-to-patient-email'>Send prescription to patient's email</label>
+                                        </div>
+                                    }
+                                    <div className='flex items-center justify-center gap-4 mt-6'>
+                                        <button type='submit' className='bg-[#248176] text-white rounded-lg px-6 py-2 hover:bg-blue-700'>
+                                            Continue
+                                        </button>
+                                        <button type='button' onClick={() => {setPrintPrescription(false); setPrintPrescriptionData({...printPrescriptionData, ptr: '', s2: '', sendToPatientEmail: true})}} className='bg-[#b33c39] text-white rounded-lg px-6 py-2 hover:bg-blue-700'>
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                     <p className='font-semibold mb-4'>Consultation Date: <span className='font-normal ms-2'>{getFormattedStringDate(consultation.created_at)}</span></p>
                     <table className='text-start mb-4 border-collapse border border-black bg-white w-full break-words'>
                         <tbody>
@@ -105,6 +166,7 @@ const ViewConsultation = () => {
                             </tr>
                         </tbody>
                     </table>
+
                     <table className='text-start border-collapse border border-black bg-white w-full break-words'>
                         <tbody>
                             <tr>
@@ -173,7 +235,7 @@ const ViewConsultation = () => {
                                         <div className='flex items-center'>
                                             Prescriptions
                                             {consultation.prescriptions.length != 0 && 
-                                                <button onClick={() => {printPrescription()}} className='ms-2 px-2 py-1 hover:bg-[#f4f4f4] rounded-full'>
+                                                <button onClick={() => {setPrintPrescription(true)}} className='ms-2 px-2 py-1 hover:bg-[#f4f4f4] rounded-full'>
                                                     <i className='text-[#b43c3a] text-xl bi bi-printer-fill'></i>
                                                 </button>
                                             }
