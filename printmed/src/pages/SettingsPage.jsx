@@ -62,9 +62,8 @@ const SettingsPage = () => {
   const deleteSignature = async (e) => {
     e.preventDefault()
 
-    globalSwalWithIcon.fire({
+    globalSwalNoIcon.fire({
       title: "Are you sure you want to delete your signature?",
-      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: "Yes"
     }).then(async (result) => {

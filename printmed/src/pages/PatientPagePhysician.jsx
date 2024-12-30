@@ -41,6 +41,7 @@ const PatientPagePhysician = () => {
     const [manualLookup, setManualLookup] = useState(false)
     const [patientId, setPatientId] = useState('')
     const [patientIdError, setPatientIdError] = useState('')
+    const [isAddHovered, setIsAddHovered] = useState(false)
 
     useEffect(() => {
         if (patient && user.role === "physician") {
@@ -157,12 +158,12 @@ const PatientPagePhysician = () => {
 
     const handleAddConsultationButton = () => {
         if (!patient.vital_signs) {
-            globalSwalWithIcon.fire({
-                title: "Vital signs not available, cannot add consultation record.",
-                icon: 'warning',
-                showConfirmButton: false,
-                showCloseButton: true
-            });
+            // globalSwalWithIcon.fire({
+            //     title: "Vital signs not available, cannot add consultation record.",
+            //     icon: 'warning',
+            //     showConfirmButton: false,
+            //     showCloseButton: true
+            // });
             return
         }
 
@@ -295,7 +296,15 @@ const PatientPagePhysician = () => {
                                         { consultationComponentStatus === null && 
                                             <div className='flex justify-between items-center w-full'>
                                                 <p className='font-semibold text-white text-lg'>Consultations</p>
-                                                <button onClick={() => handleAddConsultationButton()}><i className={`bi bi-plus-square-fill me-2 text-xl text-white`}></i></button>
+                                                <div className='relative'>
+                                                    <button 
+                                                        onMouseEnter={() => setIsAddHovered(true)}
+                                                        onMouseLeave={() => setIsAddHovered(false)}
+                                                        onClick={() => handleAddConsultationButton()}>
+                                                            <i className={`bi bi-plus-square-fill me-2 text-xl ${patient.vital_signs == null ? 'text-gray-300' : 'text-white'}`}></i>
+                                                    </button>
+                                                    {isAddHovered && <div className='bg-gray-700 text-sm text-white p-2 rounded-md absolute right-0 w-40'>Vital signs unavailable.</div>}
+                                                </div>
                                             </div>
                                         }
                                     </div>
