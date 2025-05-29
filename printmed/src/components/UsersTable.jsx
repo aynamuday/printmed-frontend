@@ -160,36 +160,36 @@ const UsersTable = ({ users }) => {
   };
 
   return (
-    <div>
+    <div className="w-full overflow-x-auto">
       {loading && (
         <div className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white bg-opacity-30 z-50">
           <BounceLoader color="#6CB6AD" loading={loading} size={60} />
         </div>
       )}
-      <table className="min-w-full border border-spacing-0 border-gray-300">
+      <table className="min-w-full border border-spacing-0 border-gray-300 text-sm sm:text-base">
         <thead>
           <tr>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Personnel No.</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Role</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Last Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">First Name</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Department</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Date Registered</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">Status</th>
-            <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[5%]">Action</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Personnel No.</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Role</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Last Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">First Name</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Department</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Date Registered</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Status</th>
+            <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[5%]">Action</th>
           </tr>
         </thead>
         <tbody>
           {users && users.length > 0 ? (
             users.map((item) => (
               <tr key={item.id}>
-                <td className="border p-0.5 border-[#828282] text-center">{item.personnel_number}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{capitalizedWords(item.role)}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{item.last_name}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{item.first_name}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{item.department_name}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{getFormattedNumericDate(item.created_at)}</td>
-                <td className="border p-0.5 border-[#828282] text-center">{getUserStatus(item)}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{item.personnel_number}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{capitalizedWords(item.role)}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{item.last_name}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{item.first_name}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{item.department_name}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{getFormattedNumericDate(item.created_at)}</td>
+                <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{getUserStatus(item)}</td>
                 <td className="border p-0.5 border-[#828282] text-center">
                   <div key={item.id} ref={(element) => setActionMenuRef(item.id, element)} className="ms-2 relative flex items-center justify-center gap-2">
                     <div>

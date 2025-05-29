@@ -168,116 +168,147 @@ const UsersPage = () => {
     };
 
     return (
-        <>  
-            <Sidebar />
-            <div className="lg:ml-64">
-                <Header />  
-                
-                { users && (
-                    <div className="ml-20 mr-10 mt-20 mb-8 px-4 sm:px-6 md:px-8 pt-16 lg:pt-20">
-                        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6">
-                            <h2 className="font-bold text-2xl">Users</h2>
-                            <div className="flex flex-col sm:flex-row justify-end gap-4 items-center sm:items-end">
-                                {/* search */}
-                                <div className="mt-4 sm:mt-0">
-                                    <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Personnel No."}</label>
-                                    <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
-                                        <input
-                                            type="text"
-                                            name="search"
-                                            className="focus:outline-none focus:border-none"
-                                            value={searchUser}
-                                            onChange={(e) => {setSearchUser(e.target.value)}}
-                                            placeholder='Search'
-                                        />
-                                        <button onClick={(e) => handleSearch(e)} className="btn btn-primary d-flex align-items-center">
-                                            <i className="bi bi-search me-2 text-[#374151]"></i>
-                                        </button>
-                                    </form>
-                                </div>
+    <>
+        <Sidebar />
+        <div className="lg:pl-[250px] min-h-screen bg-white">
+            <Header />
+            <div className="px-4 sm:px-6 mt-4">
+                {users && (
+                <div>
+                    <h2 className="font-bold text-2xl">Users</h2>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                            {/* Search */}
+                            <div className="flex flex-col w-full sm:w-auto">
+                                <label className="text-xs mb-1">Name (FN LN or FN or LN) or Personnel No.</label>
+                                <form
+                                    onSubmit={handleSearch}
+                                    className="flex border border-[#248176] rounded items-center px-4 py-1.5 h-8"
+                                >
+                                    <input
+                                        type="text"
+                                        name="search"
+                                        className="flex-1 focus:outline-none text-sm"
+                                        value={searchUser}
+                                        onChange={(e) => setSearchUser(e.target.value)}
+                                        placeholder="Search"
+                                    />
+                                    <button type="submit" className="text-[#374151]">
+                                        <i className="bi bi-search text-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
 
-                                {/* select role dropdown */}
-                                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                                        name="resource" id="resource" value={usersFilters.role} onChange={handleRoleChange}>
-                                <option value="">Select role</option>
-                                {user.role == "super admin" && <option value="admin">Admin</option>}
-                                <option value="physician">Physician</option>
-                                <option value="secretary">Secretary</option>
+                            {/* Role Filter */}
+                            <div className="flex flex-col w-full sm:w-40">
+                                <label className="text-xs mb-1">Role</label>
+                                <select
+                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                    name="resource"
+                                    id="resource"
+                                    value={usersFilters.role}
+                                    onChange={handleRoleChange}
+                                >
+                                    <option value="">Select role</option>
+                                    {user.role === "super admin" && <option value="admin">Admin</option>}
+                                    <option value="physician">Physician</option>
+                                    <option value="secretary">Secretary</option>
                                 </select>
+                            </div>
 
-                                {/* select department id dropdown */}
-                                {/* <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                                        name="resource" id="resource" value={usersFilters.department_id} onChange={handleDepartmentIdChange}>
-                                    <option value="">Select department</option>
-                                    {departments && departments.map((department) => (
-                                        <option key={department.id} value={department.id}>{department.name}</option>
-                                    ))}
-                                </select> */}
-
-                                {/* select status dropdown */}
-                                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                                        name="resource" id="resource" value={usersFilters.status} onChange={handleStatusChange}>
+                            {/* Status Filter */}
+                            <div className="flex flex-col w-full sm:w-40">
+                                <label className="text-xs mb-1">Status</label>
+                                <select
+                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                    name="resource"
+                                    id="resource"
+                                    value={usersFilters.status}
+                                    onChange={handleStatusChange}
+                                >
                                     <option value="">Select status</option>
                                     <option value="active">Active</option>
                                     <option value="restricted">Restricted</option>
                                     <option value="locked">Locked</option>
                                     <option value="new">New</option>
                                 </select>
+                            </div>
 
-                                {/* sort */}
-                                <div>
-                                    <label className='text-xs block mb-1'>Sort by</label>
-                                    <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                                    value={usersFilters.sort_by + "_" + usersFilters.order_by} onChange={(e) => handleSortByChange(e)}
-                                    >
-                                        <option value="" data-sort-by="" data-order-by="">Last updated</option>
-                                        <option value="personnel_number_asc" data-sort-by="personnel_number" data-order-by="asc">&uarr; &nbsp;Personnel No.</option>
-                                        <option value="personnel_number_desc" data-sort-by="personnel_number" data-order-by="desc">&darr; &nbsp;Personnel No.</option>
-                                    </select>
-                                </div>
+                            {/* Sort */}
+                            <div className="flex flex-col w-full sm:w-40">
+                                <label className="text-xs mb-1">Sort by</label>
+                                <select
+                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                    value={usersFilters.sort_by + "_" + usersFilters.order_by}
+                                    onChange={handleSortByChange}
+                                >
+                                    <option value="">Last updated</option>
+                                    <option value="personnel_number_asc">
+                                        &uarr; &nbsp;Personnel No.
+                                    </option>
+                                    <option value="personnel_number_desc">
+                                        &darr; &nbsp;Personnel No.
+                                    </option>
+                                </select>
+                            </div>
 
-                                {/* pagination buttons */}
-                                {users.data != null && 
-                                    <div className="flex justify-center items-center mt-4">
-                                        <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                                disabled={users.current_page <= 1} onClick={handlePrevious}>
+                            {/* Pagination + Clear */}
+                            {users.data != null && (
+                                <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                                    {/* Pagination */}
+                                    <div className="flex items-center">
+                                        <button
+                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            disabled={users.current_page <= 1}
+                                            onClick={handlePrevious}
+                                        >
                                             &lt;
                                         </button>
-                                        <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
+                                        <button
+                                            className="px-4 h-8 border border-[#248176] text-sm"
+                                            disabled
+                                        >
                                             {users.current_page} OF {users.last_page}
                                         </button>
-                                        <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                                disabled={users.current_page === users.last_page} onClick={handleNext}>
+                                        <button
+                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            disabled={users.current_page === users.last_page}
+                                            onClick={handleNext}
+                                        >
                                             &gt;
                                         </button>
                                     </div>
-                                }
 
-                                {/* clear button */}
-                                <div>
-                                    <label className='text-xs block mb-1'>Clear</label>
-                                    <button 
-                                        onClick={() => {handleClear()}}
-                                        className={`px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm`}
-                                    >
-                                    <i className='bi bi-arrow-clockwise text-xl'></i>  
-                                    </button>
+                                    {/* Clear Button */}
+                                    <div className="flex flex-col w-full sm:w-auto">
+                                        <label className="text-xs mb-1">Clear</label>
+                                        <button
+                                            onClick={handleClear}
+                                            className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
+                                        >
+                                            <i className="bi bi-arrow-clockwise text-xl"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
-
-                        { loading ? (
-                            <div className='flex justify-center items-center mt-20'>
-                                <PulseLoader color="#6cb6ad" loading={loading} size={15} />
-                            </div>
-                        ) : (
-                            <UsersTable users={users.data} />
-                        )}
                     </div>
-                )}
+
+                    {/* Table or Loader */}
+                    { loading ? (
+                        <div className="flex justify-center items-center mt-20">
+                            <PulseLoader color="#6cb6ad" loading={loading} size={15} />
+                        </div>
+                    ) : (
+                        <UsersTable users={users.data} />
+                    )}
+                </div>
+            )}
             </div>
-        </>
-    );
+        </div>
+    </>
+);
+
 };
 
 export default UsersPage;
