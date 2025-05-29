@@ -14,28 +14,24 @@ const Sidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const linkClass = ({ isActive }) => isActive ? 
-  `p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold bg-gray-700` : 
-  "p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold hover:bg-blue-600";
+  const linkClass = ({ isActive }) => 
+    isActive 
+      ? `p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold bg-gray-700` 
+      : `p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer font-semibold hover:bg-blue-600`;
 
   return (
     <>
-      {!isSidebarOpen && (
-        <span
-          className="absolute text-white text-4xl top-2.5 left-4 cursor-pointer z-20 lg:hidden"
-          onClick={toggleSidebar}
-        >
-          <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
-        </span>
-      )}
-
-      <div
-        className={`sidebar fixed top-0 bottom-0 lg:left-0 duration-300
-        p-2 w-[250px] md:w-[300px] overflow-y-auto text-center bg-[#6CB6AD] shadow h-screen z-20
-        ${isSidebarOpen ? "left-0" : "left-[-250px] md:left-[-300px]"}`}
+      <button
+        className="absolute text-white text-3xl top-2 left-4 z-30 lg:hidden"
+        onClick={toggleSidebar}
       >
+        {isSidebarOpen ? '' : '☰'}
+      </button>
 
-        <div className="text-white text-3xl">
+      <div className={`fixed top-0 left-0 h-full z-20 bg-[#6CB6AD] text-white shadow-lg duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+        w-[250px] md:w-[300px] lg:translate-x-0 lg:w-[250px] overflow-y-auto`}>
+
         <div className="relative p-2.5 mt-1 flex items-center rounded-md bg-[#FFFF00]">
           <img src={logo} className="h-100" alt="Logo" />
           <i
@@ -43,14 +39,14 @@ const Sidebar = () => {
             onClick={toggleSidebar}
           ></i>
         </div>
-          <hr className="my-2 text-white" />
 
-          <div>
-            { user.role === "admin" || user.role === "super admin" ? (
-              <>
-                <NavLink to="/" className={linkClass}>
-                  <i className="bi bi-house-door-fill text-2xl"></i>
-                  <span className="text-xl ml-4 text-white">Dashboard</span>
+        <hr className="my-2 text-white" />
+
+        <div className="px-4">
+          { user.role === "admin" || user.role === "super admin" ? (
+            <>
+              <NavLink to="/" className={linkClass}>
+                <i className="bi bi-house-door-fill text-2xl"></i>                  <span className="text-xl ml-4 text-white">Dashboard</span>
                 </NavLink>
                 <NavLink to="/users" className={({ isActive }) => `${linkClass({ isActive })} ${!isActive && location.pathname.includes('/users') ? "bg-gray-700" : ""}`}>
                   <i className="bi bi-people text-2xl"></i>
@@ -108,7 +104,6 @@ const Sidebar = () => {
             ) : (<></>))) }
           </div>
         </div>
-      </div>
     </>
   );
 };

@@ -171,65 +171,67 @@ const DepartmentsPage = () => {
       )}
 
       <Sidebar />
-      <Header />
-      <div className="mb-8 p-4 relative w-full md:w-[55%] md:ml-[22%] mt-[10%] px-4 sm:px-6 md:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-4">
-          <h2 className="text-2xl font-bold">Departments</h2>
+      <div className="lg:pl-[250px] min-h-screen bg-white">
+        <Header />
+        <div className="px-4 sm:px-6 mt-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-4 mb-4">
+            <h2 className="text-2xl font-bold">Departments</h2>
 
-          {/* add department */}
-          {filteredDepartmentsList.length > 0 && 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <select
-                value={newDepartment}
-                onChange={(e) => setNewDepartment(e.target.value)}
-                className="border border-black rounded-md shadow-sm bg-white p-2 w-full"
-              >
-                <option value="">Select Department</option>
-                { filteredDepartmentsList.map((department, index) => (
-                  <option key={index} value={department}>{department}</option>
-                ))}
-              </select>
+            {/* add department */}
+            {filteredDepartmentsList.length > 0 && 
+              <div className="flex flex-col sm:flex-row gap-4">
+                <select
+                  value={newDepartment}
+                  onChange={(e) => setNewDepartment(e.target.value)}
+                  className="border border-black rounded-md shadow-sm bg-white p-2 w-full"
+                >
+                  <option value="">Select Department</option>
+                  { filteredDepartmentsList.map((department, index) => (
+                    <option key={index} value={department}>{department}</option>
+                  ))}
+                </select>
 
-              <button onClick={addDepartment} className="bg-[#248176] hover:bg-blue-700 text-white px-6 rounded">Add</button> 
-            </div>
-          }
+                <button onClick={addDepartment} className="bg-[#248176] hover:bg-blue-700 text-white px-6 rounded">Add</button> 
+              </div>
+            }
+          </div>
+
+          {/* departments table */}
+          <table className="w-full border border-spacing-0 border-gray-300">
+            <thead>
+              <tr>
+                <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">ID</th>
+                <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center">Name</th>
+                <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[30%]">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {departments && departments.length > 0 ? (
+                departments.map((item, index) => (
+                  <tr key={item.id}>
+                    <td className="border p-0.5 border-[#828282] text-center">{index + 1}</td>
+                    <td className="border p-0.5 border-[#828282] text-center">{item.name}</td>
+                    <td className="border p-0.5 border-[#828282]">
+                      <div className="flex flex-row w-full items-center justify-center">
+                        { item.users_count < 1 &&
+                          <button onClick={() => deleteDepartment(item.id)} className="py-0.5 w-20 rounded-lg text-red-600 hover:underline">
+                            Delete
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <>
+                  <tr>
+                    <td colSpan="3" className="border p-2 border-[#828282] text-center">No departments</td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
         </div>
-
-        {/* departments table */}
-        <table className="w-full border border-spacing-0 border-gray-300">
-          <thead>
-            <tr>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[10%]">ID</th>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center">Name</th>
-              <th className="bg-[#D9D9D9] border border-[#828282] p-0.5 text-center w-[30%]">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {departments && departments.length > 0 ? (
-              departments.map((item, index) => (
-                <tr key={item.id}>
-                  <td className="border p-0.5 border-[#828282] text-center">{index + 1}</td>
-                  <td className="border p-0.5 border-[#828282] text-center">{item.name}</td>
-                  <td className="border p-0.5 border-[#828282]">
-                    <div className="flex flex-row w-full items-center justify-center">
-                      { item.users_count < 1 &&
-                        <button onClick={() => deleteDepartment(item.id)} className="py-0.5 w-20 rounded-lg text-red-600 hover:underline">
-                          Delete
-                        </button>
-                      }
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <>
-                <tr>
-                  <td colSpan="3" className="border p-2 border-[#828282] text-center">No departments</td>
-                </tr>
-              </>
-            )}
-          </tbody>
-        </table>
       </div>
     </>
   );

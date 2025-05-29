@@ -19,8 +19,10 @@ const Header = () => {
     };
   
     return (
-      <header className="bg-[#6CB6AD] text-white font-semibold p-4 md:p-10 flex flex-row items-center justify-between md:justify-end gap-4 md:gap-6 fixed top-0 left-0 right-0 z-10">
-        <p className="text-sm md:text-2xl ml-auto">{formatDateTime(dateTime)}</p>
+      <header className="bg-[#6CB6AD] text-white font-semibold px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-6 flex flex-row items-center justify-between gap-2 sm:gap-4 top-0 w-full">
+        <p className="text-sm sm:text-base md:text-xl lg:text-2xl ml-auto">
+          {formatDateTime(dateTime)}
+        </p>
       </header>
     );
   };
