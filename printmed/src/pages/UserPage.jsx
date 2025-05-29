@@ -222,224 +222,226 @@ const UserPage = () => {
   return (
     <>
       <Sidebar />
-      <Header />
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 grid grid-cols-1 place-items-center relative">
-        { loading && (
+      <div className="lg:pl-[250px] mih-h-screen bg-white">
+        <Header />
+        <div className="px-4 sm:px-6 mt-4">
+          { loading && (
             <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-30 flex justify-center items-center z-50">
-                <BounceLoader color="#6CB6AD" loading={loading} size={60} />
-            </div>
-        )}
-        
-        <div className="relative w-full md:w-[70%] bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
-          <div className="flex justify-center items-center rounded-md">
-            <img src={logo} className="h-20" alt="Logo" />
-          </div>
-          {userId && (
-            <div className="absolute top-4 left-4 p-4">      
-              <button onClick={() => navigate("/users")} className="mr-4">
-                <i className="bi bi-arrow-left text-2xl font-bold"></i>
-              </button>
+              <BounceLoader color="#6CB6AD" loading={loading} size={60} />
             </div>
           )}
-
-          <h2 className="text-2xl text-center font-bold m-6">{userId ? "Update User Account" : "Create New Account"}</h2>
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-[90%] sm:w-[70%]">
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                  Role <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
-                  required
-                >
-                  <option value="">Select Role</option>
-                  {user.role == "super admin" && <option value="admin">Admin</option>}
-                  <option value="physician">Physician</option>
-                  <option value="secretary">Secretary</option>
-                </select>
+          <div className="relative w-full max-w-5xl mx-auto bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
+            <div className="flex justify-center items-center rounded-md">
+              <img src={logo} className="h-20" alt="Logo" />
+            </div>
+            {userId && (
+              <div className="absolute top-4 left-4 p-4">      
+                <button onClick={() => navigate("/users")} className="mr-4">
+                  <i className="bi bi-arrow-left text-2xl font-bold"></i>
+                </button>
               </div>
+            )}
 
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                    Personnel Number <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <div className="relative">
-                  <div className="flex items-center border rounded-md border-black overflow-hidden">
-                    <span className="bg-gray-100 p-2">PN-</span>
-                    <input
-                        type="text"
-                        name="personnel_number_input"
-                        placeholder="Personnel Number"
-                        value={formData.personnel_number_input}
-                        onChange={handleChange}
-                        className="flex-1 p-2 border-l border-black focus:outline-none"
-                        maxLength="7"
-                        minLength="7"
-                        required
-                    />
-                  </div>
-                </div>
-                {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.personnel_number}</p>}
-              </div>
+            <h2 className="text-2xl text-center font-bold m-6">{userId ? "Update User Account" : "Create New Account"}</h2>
 
-              <div>
-                <label className="block text-sm font-medium">
-                  First Name <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="first_name"
-                  placeholder="First Name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  required
-                />
-                {errors.first_name && (<p className="text-red-500 text-sm">{errors.first_name}</p>)}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Middle Name</label>
-                <input
-                  type="text"
-                  name="middle_name"
-                  placeholder="Middle Name"
-                  value={formData.middle_name}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                />
-                {errors.middle_name && (<p className="text-red-500 text-sm">{errors.middle_name}</p>)}
-              </div>
-
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                  Last Name <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="last_name"
-                  placeholder="Last Name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  required
-                />
-                {errors.last_name && (<p className="text-red-500 text-sm">{errors.last_name}</p>)}
-              </div>
-
-              <div className="mb-2 w-1/2">
-                <label className="block text-sm font-medium">Suffix</label>
-                <select
-                  name="suffix"
-                  value={formData.suffix}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
-                >
-                  <option value="">Select Suffix</option>
-                  <option value="Jr.">Jr.</option>
-                  <option value="Sr.">Sr.</option>
-                  <option value="II">II</option>
-                  <option value="III">III</option>
-                  <option value="IV">IV</option>
-                </select>
-              </div>
-
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                  Sex <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <select
-                  name="sex"
-                  value={formData.sex}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
-                  required
-                >
-                  <option value="">Select Sex</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                  Birthdate <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="birthdate"
-                  placeholder="Birthdate"
-                  value={formData.birthdate}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
-                  required
-                />
-                {errors.birthdate && (
-                  <p className="text-red-600 text-sm mt-1 mb-1">{errors.birthdate}</p>
-                )}
-              </div>
-
-              <div className="mb-2">
-                <label className="block text-sm font-medium">
-                  Email <span className="text-red-600 cursor-help">*</span>
-                </label>
-                <div className="flex items-center border rounded-md border-black overflow-hidden">
-                  <input
-                    type="text"
-                    name="email_username"
-                    placeholder="Email"
-                    value={formData.email_username}
-                    onChange={handleChange}
-                    className="w-full p-2 focus:outline-none border-r border-r-black"
-                    required
-                  />
-                  <span className="bg-gray-100 px-2">@gmail.com</span>
-                </div>
-                {errors.email && (
-                  <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>
-                )}
-              </div>
-
-              {(formData.role === 'physician' || formData.role === 'secretary') && (
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 place-items-center justify-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-[90%] sm:w-[70%]">
                 <div className="mb-2">
                   <label className="block text-sm font-medium">
-                    Department <span className="text-red-600 cursor-help">*</span>
+                    Role <span className="text-red-600 cursor-help">*</span>
                   </label>
                   <select
-                    name="department_id"
-                    value={formData.department_id}
+                    name="role"
+                    value={formData.role}
                     onChange={handleChange}
                     className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
                     required
                   >
-                    <option value="">Select Department</option>
-                    {departments.map((department) => (
-                      <option key={department.id} value={department.id}>
-                        {department.name}
-                      </option>
-                    ))}
+                    <option value="">Select Role</option>
+                    {user.role == "super admin" && <option value="admin">Admin</option>}
+                    <option value="physician">Physician</option>
+                    <option value="secretary">Secretary</option>
                   </select>
                 </div>
-              )}
-            </div>
 
-            <div className="mt-8 w-full">
-              <div className="flex justify-center items-center">
-                <button
-                  type="submit"
-                  className="mt-1 block w-[30%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
-                    { userId ? "Save" : "Create" }
-                </button>
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">
+                      Personnel Number <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="flex items-center border rounded-md border-black overflow-hidden">
+                      <span className="bg-gray-100 p-2">PN-</span>
+                      <input
+                          type="text"
+                          name="personnel_number_input"
+                          placeholder="Personnel Number"
+                          value={formData.personnel_number_input}
+                          onChange={handleChange}
+                          className="flex-1 p-2 border-l border-black focus:outline-none"
+                          maxLength="7"
+                          minLength="7"
+                          required
+                      />
+                    </div>
+                  </div>
+                  {errors.personnel_number && <p className="text-red-600 text-sm mt-1 mb-1">{errors.personnel_number}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium">
+                    First Name <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    placeholder="First Name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
+                    required
+                  />
+                  {errors.first_name && (<p className="text-red-500 text-sm">{errors.first_name}</p>)}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium">Middle Name</label>
+                  <input
+                    type="text"
+                    name="middle_name"
+                    placeholder="Middle Name"
+                    value={formData.middle_name}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
+                  />
+                  {errors.middle_name && (<p className="text-red-500 text-sm">{errors.middle_name}</p>)}
+                </div>
+
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">
+                    Last Name <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    placeholder="Last Name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
+                    required
+                  />
+                  {errors.last_name && (<p className="text-red-500 text-sm">{errors.last_name}</p>)}
+                </div>
+
+                <div className="mb-2 w-1/2">
+                  <label className="block text-sm font-medium">Suffix</label>
+                  <select
+                    name="suffix"
+                    value={formData.suffix}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
+                  >
+                    <option value="">Select Suffix</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </select>
+                </div>
+
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">
+                    Sex <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <select
+                    name="sex"
+                    value={formData.sex}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
+                    required
+                  >
+                    <option value="">Select Sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">
+                    Birthdate <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="birthdate"
+                    placeholder="Birthdate"
+                    value={formData.birthdate}
+                    onChange={handleChange}
+                    className="mt-1 block w-full border border-black rounded-md shadow-sm p-2"
+                    required
+                  />
+                  {errors.birthdate && (
+                    <p className="text-red-600 text-sm mt-1 mb-1">{errors.birthdate}</p>
+                  )}
+                </div>
+
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">
+                    Email <span className="text-red-600 cursor-help">*</span>
+                  </label>
+                  <div className="flex items-center border rounded-md border-black overflow-hidden">
+                    <input
+                      type="text"
+                      name="email_username"
+                      placeholder="Email"
+                      value={formData.email_username}
+                      onChange={handleChange}
+                      className="w-full p-2 focus:outline-none border-r border-r-black"
+                      required
+                    />
+                    <span className="bg-gray-100 px-2">@gmail.com</span>
+                  </div>
+                  {errors.email && (
+                    <p className="text-red-600 text-sm mt-1 mb-1">{errors.email}</p>
+                  )}
+                </div>
+
+                {(formData.role === 'physician' || formData.role === 'secretary') && (
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium">
+                      Department <span className="text-red-600 cursor-help">*</span>
+                    </label>
+                    <select
+                      name="department_id"
+                      value={formData.department_id}
+                      onChange={handleChange}
+                      className="mt-1 block w-full border bg-white border-black rounded-md shadow-sm p-2"
+                      required
+                    >
+                      <option value="">Select Department</option>
+                      {departments.map((department) => (
+                        <option key={department.id} value={department.id}>
+                          {department.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
-            </div>
-          </form>
+
+              <div className="mt-8 w-full">
+                <div className="flex justify-center items-center">
+                  <button
+                    type="submit"
+                    className="mt-1 block w-[30%] h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
+                      { userId ? "Save" : "Create" }
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
+      
     </>
   );
 };
