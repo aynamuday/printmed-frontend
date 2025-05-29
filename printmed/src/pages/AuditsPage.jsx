@@ -8,9 +8,11 @@ const AuditsPage = () => {
   return (
     <>
       <Sidebar />
-      <Header />       
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-10 px-4 sm:px-6 md:px-8">
-        <Audits />
+      <div className="lg:pl-[250px] min-h-screen bg-white">
+        <Header />       
+        <div className="px-4 sm:px-6 mt-4">
+          <Audits />
+        </div>
       </div>
     </>
   );

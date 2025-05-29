@@ -333,7 +333,7 @@ const Audits = ({ forDashboard = false }) => {
         {/* pop up for downloads*/}
           {showDownloadPopup  && (
             <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-40'>
-              <div className="bg-white rounded-md flex justify-items-center flex-col pt-6 pb-8 px-8 max-w-[30%] max-h-[70vh] overflow-y-auto">
+              <div className="bg-white rounded-md flex flex-col pt-6 pb-8 px-6 sm:px-8 w-full max-w-lg sm:max-w-[30%] max-h-[70vh] overflow-y-auto">
                 <p className="text-center font-bold text-lg text-black">Please specify the date of audits you want to download.</p>
                 <p className="text-center">You may download a maximum of one month of audits.</p>
                 <form onSubmit={(e) => handleAuditsDownload(e)} className='flex items-center justify-center mt-4 flex-col'>
@@ -346,7 +346,7 @@ const Audits = ({ forDashboard = false }) => {
                             onChange={(e) => (setAuditsDownloadFilters({...auditsDownloadFilters, dateFrom: e.target.value}))}
                             min="2024-11-05"
                             max={dateToday}
-                            className='px-4 py-1.5 h-8 border border-black rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                            className='px-4 py-1.5 h-10 border border-black rounded-md bg-white font-medium focus:outline-none w-full' 
                             required
                         />
                     </div>
@@ -359,102 +359,117 @@ const Audits = ({ forDashboard = false }) => {
                             onChange={(e) => (setAuditsDownloadFilters({...auditsDownloadFilters, dateUntil: e.target.value}))}
                             min={auditsDownloadFilters.dateFrom}
                             max={dateToday}
-                            className='px-4 py-1.5 h-8 border border-black rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
+                            className='px-4 py-1.5 h-10 border border-black rounded-md bg-white font-medium focus:outline-none w-full' 
                             required
                         />
                     </div>
                     {downloadError && <p className='text-sm text-red-500'>{downloadError}</p>}
-                    <div className="flex items-center justify-center gap-4 mt-6">
-                        <button type='submit' className="py-2 px-4 bg-[#248176] hover:bg-blue-600 text-white rounded-md">Continue</button>
-                        <button type='button' onClick={() => setShowDownloadPopup(false)} className="py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md">Cancel</button>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6 w-full">
+                        <button 
+                            type='submit' 
+                            className="w-full sm:w-auto py-2 px-4 bg-[#248176] hover:bg-blue-600 text-white rounded-md text-center"
+                        >
+                            Continue
+                        </button>
+                        <button 
+                            type='button' 
+                            onClick={() => setShowDownloadPopup(false)} 
+                            className="w-full sm:w-auto py-2 px-4 bg-[#b33c39] hover:bg-[#e34441] text-white rounded-md text-center"
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </form>
               </div>
             </div>)}
 
-            <div className={`flex flex-col sm:flex-row justify-between items-center sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
-                <h2 className={`font-bold text-2xl mb-4 sm:mb-0`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
-
-                <div className={`flex flex-col sm:flex-row justify-between gap-4 items-center sm:items-end w-full sm:w-auto`}>
+            <div className={`flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+                <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
                     {!forDashboard && (
-                        <>
-                            {/* select audit resources dropdown */}
-                            {/* <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                                    name="resource" id="resource" value={auditsAllFilters.resource} onChange={handleAuditsResourceChange}
-                            >
-                                <option value="">Select resource</option>
-                                <option value="user">User</option>
-                                <option value="patient">Patient</option>
-                            </select> */}
+                    <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
+                        {/* Date From */}
+                        <div className="flex flex-col w-full sm:w-40">
+                        <label htmlFor="dateFrom" className="text-xs mb-1">Date From</label>
+                        <input
+                            type="date"
+                            name="dateFrom"
+                            value={auditsAllFilters.dateFrom}
+                            onChange={handleAuditsDateFromChange}
+                            min="2024-11-05"
+                            max={dateToday}
+                            className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                        />
+                        </div>
 
-                            {/* date from */}
-                            <div className="w-full sm:w-auto">
-                                <label htmlFor="dateFrom" className='text-xs block mb-1'>Date From</label>
-                                <input
-                                    type="date"
-                                    name="dateFrom"
-                                    value={auditsAllFilters.dateFrom}
-                                    onChange={handleAuditsDateFromChange}
-                                    min="2024-11-05"
-                                    max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
-                                />
-                            </div>
-
-                            {/* date until */}
-                            <div className="w-full sm:w-auto">
-                                <label htmlFor="dateUntil" className='text-xs block mb-1'>Date Until</label>
-                                <input
-                                    type="date"
-                                    name="dateUntil"
-                                    value={auditsAllFilters.dateUntil}
-                                    onChange={handleAuditsDateUntilChange}
-                                    min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-05"}
-                                    max={dateToday}
-                                    className='block px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none w-full sm:w-auto' 
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    { audits.data && audits.data.length > 0 && ( 
-                        <>
-                            {/* pagination buttons */}
-                            <div className="flex">
-                                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                        disabled={audits.current_page <= 1} onClick={handlePreviousAudits}>
-                                    &lt;
-                                </button>
-                                <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
-                                    {audits.current_page} OF {audits.last_page}
-                                </button>
-                                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                                        disabled={audits.current_page === audits.last_page} onClick={handleNextAudits}>
-                                    &gt;
-                                </button>
-                            </div>
-
-                            { user.role == "super admin" && !forDashboard && (
-                                <button className='px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto' 
-                                    onClick={() => setShowDownloadPopup(true)} disabled={ forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload }>
-                                    { (forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
-                                        <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
-                                    ) : ( "Download" ) }
-                                </button>
-                            )}
-                        </>
-                    )}
-
-                    {/* clear button */}
-                    <div>
-                        <label className='text-xs block mb-1'>Clear</label>
-                        <button 
-                            onClick={() => {handleClear()}}
-                            className={`px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm`}
-                        >
-                        <i className='bi bi-arrow-clockwise text-xl'></i>  
-                        </button>
+                        {/* Date Until */}
+                        <div className="flex flex-col w-full sm:w-40">
+                        <label htmlFor="dateUntil" className="text-xs mb-1">Date Until</label>
+                        <input
+                            type="date"
+                            name="dateUntil"
+                            value={auditsAllFilters.dateUntil}
+                            onChange={handleAuditsDateUntilChange}
+                            min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-05"}
+                            max={dateToday}
+                            className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                        />
+                        </div>
                     </div>
+                    )}
+
+                    {/* Pagination + Download + Clear */}
+                    {audits.data && audits.data.length > 0 && (
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                        
+                        {/* Pagination */}
+                        <div className="flex items-center">
+                        <button
+                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`}
+                            disabled={audits.current_page <= 1}
+                            onClick={handlePreviousAudits}
+                        >
+                            &lt;
+                        </button>
+                        <button className="px-4 h-8 border border-[#248176] text-sm" disabled>
+                            {audits.current_page} OF {audits.last_page}
+                        </button>
+                        <button
+                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white text-sm`}
+                            disabled={audits.current_page === audits.last_page}
+                            onClick={handleNextAudits}
+                        >
+                            &gt;
+                        </button>
+                        </div>
+
+                        {/* Download button */}
+                        {user.role === "super admin" && !forDashboard && (
+                        <button
+                            className="px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto"
+                            onClick={() => setShowDownloadPopup(true)}
+                            disabled={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload}
+                        >
+                            {(forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
+                            <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
+                            ) : (
+                            "Download"
+                            )}
+                        </button>
+                        )}
+
+                        {/* Clear button */}
+                        <div className="flex flex-col w-full sm:w-auto">
+                        <label className="text-xs mb-1">Clear</label>
+                        <button
+                            onClick={handleClear}
+                            className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
+                        >
+                            <i className="bi bi-arrow-clockwise text-xl"></i>
+                        </button>
+                        </div>
+                    </div>
+                    )}
                 </div>
             </div>
 
