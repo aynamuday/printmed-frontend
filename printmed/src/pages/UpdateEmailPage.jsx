@@ -188,75 +188,76 @@ const UpdateEmailPage = () => {
     return (
         <>
             <Sidebar />
-            <Header />
+            <div className="lg:pl-[250px] min-h-screen bg-white">
+                <Header />
+                { loading && (
+                    <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-30 flex justify-center items-center z-50">
+                        <BounceLoader color="#6CB6AD" loading={loading} size={60} />
+                    </div>
+                )}
 
-            { loading && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-white bg-opacity-30 flex justify-center items-center z-50">
-                    <BounceLoader color="#6CB6AD" loading={loading} size={60} />
-                </div>
-            )}
-
-            <div className="w-full md:w-[70%] md:ml-[25%] mt-[10%] relative">
-                <div className="mt-10 bg-[#98e6dd] bg-opacity-50 p-16 rounded-lg shadow-lg min-h-80">
-                    <div className="flex flex-col items-center min-w-96">
-                        <div className="absolute top-4 left-4 p-4">
-                            <button
-                                onClick={() => {step === 1 ? navigate('/settings') : setStep(1)}}
-                                className="focus:outline-none"
-                            >
+                <div className="px-4 sm:px-6 mt-4">
+                    <div className="flex flex-col items-center justify-center mt-10 bg-[#98e6dd] bg-opacity-50 p-6 sm:p-10 md:p-16 rounded-lg shadow-lg w-full max-w-5xl mx-auto mb-12">
+                        <div className="w-full relative">
+                            <div className="flex items-center space-x-4 mb-4">
+                                <button
+                                    onClick={() => {step === 1 ? navigate('/settings') : setStep(1)}}
+                                    className="focus:outline-none"
+                                >
                                 <i className="bi bi-arrow-left font-bold text-2xl"></i> {/* Left arrow icon */}
-                            </button>
-                        </div>
-                        <h2 className="text-xl font-bold mb-4">
-                            {step == 1 ? "Update Email" : "Verify OTP"}
-                        </h2>
+                                </button>
+                                <h2 className="text-xl font-bold">
+                                    {step == 1 ? "Update Email" : "Verify OTP"}
+                                </h2>
+                            </div>
 
-                        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-                        {step === 1 && (
-                            <form onSubmit={(e) => handleSendOtp(e)} className='flex flex-col items-center justify-center '>
-                                <div className="flex items-center border rounded-md border-black overflow-hidden mb-6 mt-2">
+                            {step === 1 && (
+                                <form onSubmit={(e) => handleSendOtp(e)} className='flex flex-col items-center justify-center '>
+                                    <div className="flex items-center border rounded-md border-black overflow-hidden mb-6 mt-2">
+                                        <input
+                                            type="text"
+                                            name="email_username"
+                                            placeholder="Email"
+                                            value={newEmailUsername}
+                                            onChange={(e) => {handleNewEmailUsernameChange(e)}}
+                                            className="w-full p-2 focus:outline-none border-r border-r-black"
+                                            required
+                                        />
+                                        <span className="bg-gray-100 p-2">@gmail.com</span>
+                                    </div>
+                                    <button
+                                        type='submit'
+                                        className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
+                                    >
+                                        Send OTP
+                                    </button>
+                                </form>
+                            )}
+
+                            {step === 2 && (
+                                <form onSubmit={(e) => handleVerifyOtp(e)} className='flex flex-col items-center justify-center '>
                                     <input
                                         type="text"
-                                        name="email_username"
-                                        placeholder="Email"
-                                        value={newEmailUsername}
-                                        onChange={(e) => {handleNewEmailUsernameChange(e)}}
-                                        className="w-full p-2 focus:outline-none border-r border-r-black"
-                                        required
+                                        placeholder="Enter OTP"
+                                        value={otp}
+                                        onChange={(e) => {setError(''); setOtp(e.target.value);}}
+                                        className="w-full min-w-[290px] p-2 mb-4 border border-black rounded-md focus:outline-none"
+                                        maxLength="6"
                                     />
-                                    <span className="bg-gray-100 p-2">@gmail.com</span>
-                                </div>
-                                <button
-                                    type='submit'
-                                    className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
-                                >
-                                    Send OTP
-                                </button>
-                            </form>
-                        )}
-
-                        {step === 2 && (
-                            <form onSubmit={(e) => handleVerifyOtp(e)} className='flex flex-col items-center justify-center '>
-                                <input
-                                    type="text"
-                                    placeholder="Enter OTP"
-                                    value={otp}
-                                    onChange={(e) => {setError(''); setOtp(e.target.value);}}
-                                    className="w-full min-w-[290px] p-2 mb-4 border border-black rounded-md focus:outline-none"
-                                    maxLength="6"
-                                />
-                                <button
-                                    type='submit'
-                                    className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
-                                >
-                                    Verify OTP
-                                </button>
-                                <p className='text-sm mt-4'>
-                                    Didn't get an email? <button type='submit' disabled={loading} onClick={(e) => handleResendOtp(e)} className='text-red-600 hover:underline'>Resend</button>
-                                </p>
-                            </form>
-                        )}
+                                    <button
+                                        type='submit'
+                                        className="mt-1 block w-[50%] h-10 bg-[#248176] text-white rounded-md hover:bg-blue-700 transition duration-200"
+                                    >
+                                        Verify OTP
+                                    </button>
+                                    <p className='text-sm mt-4'>
+                                        Didn't get an email? <button type='submit' disabled={loading} onClick={(e) => handleResendOtp(e)} className='text-red-600 hover:underline'>Resend</button>
+                                    </p>
+                                </form>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

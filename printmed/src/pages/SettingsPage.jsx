@@ -6,6 +6,8 @@ import {globalSwalNoIcon, globalSwalWithIcon} from '../utils/globalSwal';
 import { capitalizedWords } from '../utils/wordUtils';
 import { showError } from '../utils/fetch/showError';
 import { BounceLoader } from 'react-spinners';
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
 
 const SettingsPage = () => {
   const { user, setUser, token, setToken } = useContext(AppContext);
@@ -133,13 +135,15 @@ const SettingsPage = () => {
 
   return (
     <>
+      <Sidebar />
       { loading && (
         <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
           <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
         </div>
       )}
-
-      <Settings>
+      <div className="lg:pl-[250px] min-h-screen bg-white">
+        <Header />
+        <Settings>
         <h2 className="text-2xl font-bold text-center sm:text-left">{user.full_name.toUpperCase()}</h2>
         <p className="text-black-500 text-center sm:text-left">{capitalizedWords(user.role)}</p>
         <p className="text-black-500 text-center sm:text-left">{user.personnel_number}</p>
@@ -254,6 +258,8 @@ const SettingsPage = () => {
           Logout
         </button>
       </Settings>
+      </div>
+      
     </>
   );
 };
