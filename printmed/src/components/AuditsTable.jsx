@@ -4,7 +4,7 @@ import { capitalizedWords } from '../utils/wordUtils'
 const AuditsTable = ({ forDashboard, audits }) => {
   return (
     <div className="w-full overflow-x-auto">
-        <table className="min-w-full border border-spacing-0 border-gray-300 text-sm sm:text-base">
+        <table className="min-w-full border border-spacing-0 border-gray-300 text-sm sm:text-base mb-10">
             <thead>
               <tr>
                 <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">{forDashboard ? "Time" : "Date"}</th>
