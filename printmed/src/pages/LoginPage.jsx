@@ -194,30 +194,30 @@ const LoginPage = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col justify-center items-center"
+      className="min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8"
       style={{
         backgroundImage: `url(${backdrop})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}>
-        <div
-          className="absolute inset-0 bg-white bg-opacity-50"
-          aria-hidden="true"
-        ></div>
-      <div className='relative z-10 flex justify-center flex-col lg:w-[30%] md:w-[40%] bg-gray-100 p-6 rounded-md'>
-        <div className="flex flex-col items-center">
-          <img src={logo} alt="" className="w-100 h-28" />
+      <div className="absolute inset-0 bg-white bg-opacity-50" aria-hidden="true"></div>
+      <div className='relative z-10 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-gray-100 p-6 sm:p-8 md:p-10 rounded-md shadow-md'>
+        <div className="flex flex-col items-center text-center">
+          <img src={logo} alt="" className="h-20 sm:h-24 md:h-28 lg:h-32 max-w-full object-contain" />
           <h2 className="text-center text-2xl font-bold mt-4">Patient Records Management System</h2>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={isOtpSent ? handleVerifyOtp : handleLogin}>
+        <form 
+          className="mt-8 space-y-6" 
+          onSubmit={isOtpSent ? handleVerifyOtp : handleLogin}
+        >
           {!isOtpSent ? (
-            <div className="rounded-md shadow-sm space-y-4">
+            <div className="space-y-4">
               <div>
                 <select
                   name="role"
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
+                  className="w-full rounded-md px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   value={credentials.role}
                   onChange={handleChange}
                   required
@@ -234,7 +234,7 @@ const LoginPage = () => {
                 <input
                   name="email"
                   type="email"
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
+                  className="w-full rounded-md px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Email"
                   value={credentials.email}
                   onChange={handleChange}
@@ -247,7 +247,7 @@ const LoginPage = () => {
                 <input
                   name="password"
                   type={visibility.password ? "text" : "password"}
-                  className="appearance-none rounded-md w-full px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
+                  className="w-full rounded-md px-3 py-2 border border-black text-gray-900 focus:outline-none sm:text-sm"
                   placeholder="Password"
                   value={credentials.password}
                   onChange={handleChange}
@@ -268,7 +268,7 @@ const LoginPage = () => {
               <input
                 name="otp"
                 type="text"
-                className="appearance-none rounded-md w-full px-3 py-2 border border-black focus:outline-none sm:text-sm"
+                className="w-full rounded-md px-3 py-2 border border-black focus:outline-none sm:text-sm"
                 placeholder="Enter OTP"
                 value={otp.code}
                 maxLength="6"
@@ -284,14 +284,14 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             disabled={loading}
           >
             {loading ? <ScaleLoader color="#ffffff" height={20} width={5} radius={2} margin={2} /> : isOtpSent ? 'Verify OTP' : 'Login'}
           </button>
 
           {isOtpSent && (
-            <div className='flex gap-2 mt-4 justify-center'>
+            <div className='flex gap-2 mt-4 justify-center text-sm'>
               <span className='text-sm text-gray-600'>Didn't get the code?</span>
               <button
                 onClick={handleResendOtp}

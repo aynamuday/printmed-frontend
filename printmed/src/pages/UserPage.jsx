@@ -232,7 +232,7 @@ const UserPage = () => {
           )}
           <div className="relative w-full max-w-5xl mx-auto bg-gray-100 pt-8 pb-10 rounded-lg shadow-md mb-6">
             <div className="flex justify-center items-center rounded-md">
-              <img src={logo} className="h-20" alt="Logo" />
+              <img src={logo} className="h-20 sm:h-24 md:h-28 lg:h-32 max-w-full object-contain" alt="Logo" />
             </div>
             {userId && (
               <div className="absolute top-4 left-4 p-4">      

@@ -4,16 +4,15 @@ import logo from "../assets/images/logo.png";
 import bgBuilding from "../assets/images/bg_building_2.png";
 
 const LandingPage = () => {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   return (
     <div
-      className="flex items-center justify-center h-screen bg-cover bg-center"
+      className="flex items-center justify-center min-h-screen bg-cover bg-center px-4 sm:px-6"
       style={{ backgroundImage: `url(${bgBuilding})` }}
     >
-      {/* <div className="absolute inset-0 bg-black opacity-25"></div> */}
-      <div className="bg-gray-100 rounded-lg shadow-lg p-8 w-96 text-center z-10">
-        <img src={logo} alt="Logo" className="mx-auto mb-4 w-30" />
+      <div className="bg-gray-100 rounded-lg shadow-lg p-6 sm:p-8 w-full max-w-sm sm:max-w-md lg:max-w-lg text-center z-10">
+        <img src={logo} alt="Logo" className="h-20 sm:h-24 md:h-28 lg:h-32 max-w-full object-contain mb-5" />
         <h1 className="text-lg font-semibold mb-4">
           Please select your destination
         </h1>

@@ -344,7 +344,7 @@ function RegistrationPage() {
             <div style='display: flex; align-items: center; justify-content: center; padding: 16px; flex-direction: column;'>
                 <div style='display: flex; align-items: center; justify-content: center; gap: 8px;'>
                     <div style='height: 6px; background-color: #6CB6AD; width: 290px;'></div>
-                    <img src=${logo} style='max-width: 100%; height: 50px;'>
+                    <img src=${logo} style='max-width: 100%; width: 120px; height: auto; object-fit: contain;'>
                     <div style='height: 6px; background-color: #6CB6AD; width: 290px;'></div>
                 </div>
                 <p style="max-width: 60%; text-align: center; font-weight: bold;">Hello, ${registrationName}.</p>
