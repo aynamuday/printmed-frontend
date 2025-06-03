@@ -151,113 +151,127 @@ const RegistrationsPage = () => {
   return (
     <>
       <Sidebar />
-      <Header />
-
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] pb-10">
-        <div className={`flex justify-between items-end mb-6 mt-4`}>
-          <h2 className={`font-bold text-2xl`}>Registrations</h2>
-          <div className={`flex justify-end gap-4 items-end`}>
-            <div>
-                <label className='text-xs block mb-1'>{"Name (FN LN or FN or LN) or Registration ID"}</label>
-                <form onSubmit={(e) => {handleSearchSubmit(e)}} className='border border-[#248176] py-1 rounded ps-4'>
-                    <input
-                        type="text"
-                        name="search"
-                        className="focus:outline-none focus:border-none"
-                        value={registrationsSearch}
-                        onChange={(e) => {setRegistrationsSearch(e.target.value)}}
-                        placeholder='Search'
-                    />
-                    <button type='submit' className="btn btn-primary d-flex align-items-center">
-                        <i className="bi bi-search me-2 text-[#374151]"></i>
-                    </button>
-                </form>
-            </div>
-
-            {/* Pagination Controls */}
-            <div className="flex justify-end items-center">
-              <button 
-                  onClick={() => handlePageChange(registrations.current_page - 1)} 
-                  disabled={registrations.current_page <= 1 || !registrations.current_page} 
-                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
-                  &lt;
-              </button>
-
-              <button className="px-4 h-8 border border-[#248176] text-sm" disabled>
-                  {registrations.current_page} OF {registrations.last_page}
-              </button>
-
-              <button
-                  onClick={() => handlePageChange(registrations.current_page + 1 || !registrations.current_page)} 
-                  disabled={registrations.current_page >= registrations.last_page} 
-                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''}`}>
-                  &gt;
-              </button>
-            </div>
-
-            {/* clear button */}
-            <div>
-                <label className='text-xs block mb-1'>Clear</label>
-                <button 
-                  onClick={() => {handleClear()}}
-                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
-                >
-                  <i className='bi bi-arrow-clockwise text-xl'></i>  
-                </button>
-            </div>
-          </div>
-        </div>
-
-        {!loading && (
-            <table className="w-full border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-200">
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Registration ID</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Last Name</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">First Name</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Middle Name</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[10%]">Age</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Sex</th>
-                      <th className="p-0.5 border text-center bg-[#D9D9D9] border-[#828282] w-[15%]">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {registrations && registrations.data && registrations.data.length > 0 ? (
-                    registrations.data.map((registration, index) => (
-                      <tr key={index}>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.registration_id}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.last_name}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.first_name}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.middle_name}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.age}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">{registration.sex}</td>
-                        <td className="p-0.5 border text-center border-[#828282]">
-                          <button
-                            onClick={() => handleViewRegistration(registration)}
-                            className="text-blue-600 hover:text-red-500 hover:underline px-4 py-0.5 rounded-lg "
-                          >
-                            View Registration
+      <div className="lg:pl-[250px] min-h-screen bg-white">
+        <Header />
+        <div className="px-4 sm:px-6 mt-4">
+          <div>
+            <h2 className="font-bold text-2xl">Registrations</h2>
+              <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-end mb-6 mt-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                  {/* Search */}
+                  <div className="flex flex-col w-full sm:w-auto">
+                      <label className="text-xs mb-1">Name (FN LN or FN or LN) or Personnel No</label>
+                      <form 
+                        onSubmit={(e) => {handleSearchSubmit(e)}} 
+                        className="flex border border-[#248176] rounded items-center px-4 py-1.5 h-8">
+                          <input
+                              type="text"
+                              name="search"
+                              className="flex-1 focus:outline-none text-sm"
+                              value={registrationsSearch}
+                              onChange={(e) => {setRegistrationsSearch(e.target.value)}}
+                              placeholder='Search'
+                          />
+                          <button type='submit' className="text-[#374151]">
+                              <i className="bi bi-search text-lg"></i>
                           </button>
+                      </form>
+                  </div>
+
+                  {/* Pagination + Clear */}
+                  <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                    {/* Pagination Controls */}
+                    <div className="flex items-center">
+                      <button 
+                          onClick={() => handlePageChange(registrations.current_page - 1)} 
+                          disabled={registrations.current_page <= 1 || !registrations.current_page} 
+                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''} text-white text-sm`}>
+                          &lt;
+                      </button>
+                      <button 
+                        className="px-4 h-8 border border-[#248176] text-sm" 
+                        disabled
+                      >
+                        {registrations.current_page} OF {registrations.last_page}
+                      </button>
+                      <button
+                          onClick={() => handlePageChange(registrations.current_page + 1 || !registrations.current_page)} 
+                          disabled={registrations.current_page >= registrations.last_page} 
+                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''} text-white text-sm`}
+                        >
+                          &gt;
+                      </button>
+                    </div>
+
+                    {/* clear button */}
+                    <div className="flex flex-col w-full sm:w-auto">
+                        <label className='text-xs mb-1'>Clear</label>
+                        <button 
+                          onClick={() => {handleClear()}}
+                          className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
+                        >
+                          <i className='bi bi-arrow-clockwise text-xl'></i>  
+                        </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div className="w-full overflow-x-auto">
+            {!loading && (
+              <table className="min-w-full border border-spacing-0 border-gray-300 text-sm sm:text-base">
+                  <thead>
+                    <tr>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">Registration ID</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">Last Name</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">First Name</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">Middle Name</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[10%]">Age</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">Sex</th>
+                        <th className="bg-[#D9D9D9] border border-[#828282] px-2 py-1 text-center whitespace-nowrap w-[15%]">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {registrations && registrations.data && registrations.data.length > 0 ? (
+                      registrations.data.map((registration, index) => (
+                        <tr key={index}>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.registration_id}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.last_name}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.first_name}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.middle_name}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.age}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">{registration.sex}</td>
+                          <td className="border p-0.5 border-[#828282] text-center whitespace-nowrap">
+                            <button
+                              onClick={() => handleViewRegistration(registration)}
+                              className="text-blue-600 hover:text-red-500 hover:underline px-4 py-0.5 rounded-lg "
+                            >
+                              View Registration
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className="border p-2 border-[#828282] text-center">
+                          No registrations
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="border p-2 border-[#828282] text-center">
-                        No registrations
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-            </table>
-        )}
+                    )}
+                  </tbody>
+              </table>
+          )}
 
-        {loading && (
-          <div className="flex justify-center items-center py-6">
-              <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+          {loading && (
+            <div className="flex justify-center items-center mt-20">
+                <PulseLoader color="#6CB6AD" loading={loading} size={15} />
+            </div>
+          )}
           </div>
-        )}
+        </div>
       </div>
+      
     </>
   );
 };
