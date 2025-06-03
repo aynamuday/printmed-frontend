@@ -184,6 +184,7 @@ const PatientPagePhysician = () => {
 
     return (
         <>
+            <Sidebar />
             { patientPageLoading && (
                 <div className='z-50 flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30'>
                     <BounceLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
@@ -205,7 +206,7 @@ const PatientPagePhysician = () => {
                                         placeholder="00000-0000"
                                         value={patientId}
                                         onChange={handlePatientIdChange}
-                                        className="w-full p-2 focus:outline-none min-w-[300px]"
+                                        className="w-full p-2 focus:outline-none min-w-[250px] sm:min-w-[300px]"
                                         minLength={10}
                                         maxLength={10}
                                         required
@@ -224,10 +225,11 @@ const PatientPagePhysician = () => {
                 </div>
             )}
 
-            <div>
+            <div className='lg:pl-[250px] min-h-screen bg-white'>
+                <Header />
                 { !patient && isQrInputFocused && (
-                    <div className='flex items-center justify-center absolute w-full h-full bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 z-40'>
-                        <div className='px-4 py-6 bg-white shadow-lg w-[400px] rounded-md'>
+                    <div className='fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50'>
+                        <div className='w-[90%] max-w-md bg-white shadow-lg rounded-md p-6 sm:p-8'>
                             <QrScanning />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
                             <p className='text-center'>Please ensure that the QR code is properly placed on the scanner for accurate reading.</p>
@@ -237,15 +239,11 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 )}
-                
-                <Sidebar />
-                <Header />
-
                 { !patient ? (
-                    <div className={`md:ml-[300px] min-h-[calc(100vh-120px)] mt-[7%]`}>
-                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover min-h-[calc(100vh-105px)] pt-28">
-                            <div className='w-[300px] mx-auto flex flex-col items-center bg-white p-4'>
-                                <img src={qr} alt="" className='w-full p-3 border border-black' />
+                    <div className={``}>
+                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center px-4 sm:px-6">
+                            <div className='w-full max-w-sm mx-auto flex flex-col items-center bg-white p-4 rounded-lg'>
+                                <img src={qr} alt="" className='w-full max-w-[250px] p-3 border border-black' />
                                 <p className='text-center my-2 text-lg font-semibold'>Scan the patient's QR code to access their medical records.</p>
                                 <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan</button>
                                 <p className='text-center my-2 font-normal text-sm'>Or you may do a manual lookup using Patient ID&nbsp;  
@@ -268,7 +266,7 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="md:w-[calc(100%-370px)] w-[calc(100%-320px)]  md:ml-[335px] ml-[285px] mt-[10%] mb-12">
+                    <div className="">
                         <div className='flex items-center mb-4'>
                             <button onClick={() => handleClose()} className='me-6 flex items-center h-full'><i className='bi bi-x-lg'></i></button>
                             <h2 className='me-3 font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
@@ -281,11 +279,11 @@ const PatientPagePhysician = () => {
                                 <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {patient.vital_signs == null && "Not"} Available</p>
                             </div>
                         </div>
-                        <div className='grid grid-cols-5 gap-4'>
-                            <div className='col-span-2'>
+                        <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
+                            <div className='col-span-1 lg:col-span-2'>
                                 <PatientDetails patient={patient} />
                             </div>
-                            <div className='bg-[#D9D9D9] bg-opacity-30 col-span-3'>
+                            <div className='col-span-1 lg:col-span-3 bg-[#D9D9D9] bg-opacity-30'>
                                 <div className='bg-[#248176] py-2 px-4 flex items-center justify-between'>
                                     <div className='flex gap-4 w-full'>
                                         { consultationComponentStatus != null && 
