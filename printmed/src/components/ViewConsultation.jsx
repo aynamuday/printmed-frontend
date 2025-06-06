@@ -104,11 +104,14 @@ const ViewConsultation = () => {
     return (
         <>
             { consultation && (
-                <div className='p-4 bg-white'>
+                <div className=' bg-[#D9D9D9] bg-opacity-30'>
                     {printPrescription && (
                         <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-40 z-40'>
                             <div className='bg-white px-8 py-6 rounded-md'>
-                                <form onSubmit={(e) => {e.preventDefault(); setPrintPrescription(false); getPrescriptionPdf()}} className='flex items-center flex-col'>
+                                <form 
+                                    onSubmit={(e) => {e.preventDefault(); setPrintPrescription(false); getPrescriptionPdf()}} 
+                                    className='flex flex-col items-center justify-center px-4 sm:px-6 py-4 w-full'
+                                >
                                     <div className='grid grid-cols-5 items-center'>
                                         <label className='col-span-1 font-bold'>PTR #</label>
                                         <input 
@@ -151,98 +154,138 @@ const ViewConsultation = () => {
                         </div>
                     )}
                     <p className='font-semibold mb-4'>Consultation Date: <span className='font-normal ms-2'>{getFormattedStringDate(consultation.created_at)}</span></p>
-                    <table className='text-start mb-4 border-collapse border border-black bg-white w-full break-words'>
-                        <tbody>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Height</th>
-                                <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.height + " " + consultation.height_unit}</td>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Weight</th>
-                                <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.weight + " " + consultation.weight_unit}</td>
-                            </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
-                                <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.temperature} &#176;C</td>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
-                                <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.systolic + "/" + consultation.diastolic }</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className='w-full bg-white overflow-x-auto mb-4 break-words text-sm sm:text-base md:text-lg'>
+                        {/* Desktop Layout */}
+                        <div className='hidden md:block'>
+                            <table className='w-full text-left bg-white border border-black border-collapse'>
+                                <tbody>
+                                    <tr>
+                                        <th className='border border-[#828282] p-2 w-[15%]'>Height</th>
+                                        <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.height + " " + consultation.height_unit}</td>
+                                        <th className='border border-[#828282] p-2 w-[15%]'>Weight</th>
+                                        <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.weight + " " + consultation.weight_unit}</td>
+                                    </tr>
+                                    <tr>
+                                        <th className='border border-[#828282] p-2 w-[15%]'>Temperature</th>
+                                        <td className='border p-2 border-[#828282] w-[20%]'>{ consultation.temperature} &#176;C</td>
+                                        <th className='border border-[#828282] p-2 w-3/12'>Blood Pressure</th>
+                                        <td className='border p-2 border-[#828282] w-[35%]'>{ consultation.systolic + "/" + consultation.diastolic }</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {/* Mobile Layout */}
+                        <div className="md:hidden">
+                            <table className="w-full text-left border border-black border-collapse">
+                                <tbody>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2 w-1/2">Height</th>
+                                        <td className="border border-[#828282] p-2 w-1/2">
+                                            { consultation.height + " " + consultation.height_unit}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2 w-1/2">Weight</th>
+                                        <td className="border border-[#828282] p-2 w-1/2">
+                                            { consultation.weight + " " + consultation.weight_unit}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2 w-1/2">Temperature</th>
+                                        <td className="border border-[#828282] p-2 w-1/2">
+                                            { consultation.temperature} &#176;C
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2 w-1/2">Blood Pressure</th>
+                                        <td className="border border-[#828282] p-2 w-1/2">
+                                            { consultation.systolic + "/" + consultation.diastolic }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                    <table className='text-start border-collapse border border-black bg-white w-full break-words'>
+                    <div className='w-full overflow-x-auto'>
+                        <table className='text-start border-collapse border border-black bg-white w-full break-words text-sm sm:text-base md:text-lg'>
                         <tbody>
                             <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Chief Complaint</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.chief_complaint}</td>
+                                <th className='text-start border border-[#828282] p-2 w-3/12'>Chief Complaint</th>
+                                <td className='border p-2 border-[#828282] w-3/4'>{ consultation.chief_complaint}</td>
                             </tr>
                             { consultation.present_illness_hx && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>History of Present Illness</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.present_illness_hx}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>History of Present Illness</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.present_illness_hx}</td>
                                 </tr>
                             )}  
                             { consultation.family_hx && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Family History</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.family_hx}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Family History</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.family_hx}</td>
                                 </tr>
                             )}  
                             { consultation.medical_hx && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Medical History</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.medical_hx}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Medical History</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.medical_hx}</td>
                                 </tr>
                             )}
                             { (consultation.birth_maternal_hx) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Birth and Maternal History</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.birth_maternal_hx}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Birth and Maternal History</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.birth_maternal_hx}</td>
                                 </tr>
                             )}
                             { (consultation.immunization) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Immunization</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.immunization}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Immunization</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.immunization}</td>
                                 </tr>
                             )}
                             { (consultation.heads) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>HEADS</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.heads}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>HEADS</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.heads}</td>
                                 </tr>
                             )}
                             { (consultation.pertinent_physical_examination) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Pertinent Physical Examination</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.pertinent_physical_examination}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Pertinent Physical Examination</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.pertinent_physical_examination}</td>
                                 </tr>
                             )}
                             { (consultation.laboratory_diagnostics_tests) && (
                                 <tr>
-                                    <th className='text-start border border-[#828282] p-2 w-[25%]'>Laboratory or Diagnostics Tests</th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.laboratory_diagnostics_tests}</td>
+                                    <th className='text-start border border-[#828282] p-2 w-3/12'>Laboratory or Diagnostics Tests</th>
+                                    <td className='border p-2 border-[#828282] w-3/4'>{ consultation.laboratory_diagnostics_tests}</td>
                                 </tr>
                             )}
                             <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Primary Diagnosis</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.primary_diagnosis}</td>
+                                <th className='text-start border border-[#828282] p-2 w-3/12'>Primary Diagnosis</th>
+                                <td className='border p-2 border-[#828282] w-3/4'>{ consultation.primary_diagnosis}</td>
                             </tr>
                             <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Diagnosis</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>{ consultation.diagnosis}</td>
+                                <th className='text-start border border-[#828282] p-2 w-3/12'>Diagnosis</th>
+                                <td className='border p-2 border-[#828282] w-3/4'>{ consultation.diagnosis}</td>
                             </tr>
                             { consultation.prescriptions && (
                                 <tr>
-                                    <th className='align-top p-2 w-[25%]'>
-                                        <div className='flex items-center'>
+                                    <th className='align-top p-2 w-3/12'>
+                                        <div className="flex flex-wrap items-center gap-2">
                                             Prescriptions
-                                            {consultation.prescriptions.length != 0 && 
-                                                <button onClick={() => {setPrintPrescription(true)}} className='ms-2 px-2 py-1 hover:bg-[#f4f4f4] rounded-full'>
-                                                    <i className='text-[#b43c3a] text-xl bi bi-printer-fill'></i>
+                                            {consultation.prescriptions.length !== 0 && (
+                                                <button
+                                                    onClick={() => setPrintPrescription(true)}
+                                                    className="px-2 py-1 hover:bg-[#f4f4f4] rounded-full"
+                                                >
+                                                <i className="text-[#b43c3a] text-lg sm:text-xl bi bi-printer-fill"></i>
                                                 </button>
-                                            }
+                                            )}
                                         </div>
                                     </th>
-                                    <td className='border p-2 border-[#828282] w-[65%]'>
+                                    <td className='border p-2 border-[#828282] w-3/4'>
                                         {consultation.prescriptions.length != 0 ? (
                                             <>
                                                 { consultation.prescriptions.map((item, index) => (
@@ -257,11 +300,12 @@ const ViewConsultation = () => {
                                 </tr>
                             )}
                             <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Physician</th>
-                                <td className='border p-2 border-[#828282] w-[65%]'>{consultation.physician.id == user.id ? <span className='italic'>You</span> : "Doc. " + consultation.physician.full_name}</td>
+                                <th className='text-start border border-[#828282] p-2 w-3/12'>Physician</th>
+                                <td className='border p-2 border-[#828282] w-3/4'>{consultation.physician.id == user.id ? <span className='italic'>You</span> : "Doc. " + consultation.physician.full_name}</td>
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             )}
         </>

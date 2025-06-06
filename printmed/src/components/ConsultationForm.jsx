@@ -148,25 +148,72 @@ const ConsultationForm = () => {
     };
 
     return (
-        <form onSubmit={(e) => handleSubmit(e)} className='py-4 px-8'>
+        <form onSubmit={(e) => handleSubmit(e)}
+            className='break-words text-sm sm:text-base md:text-lg'    
+        >
             { !isNext ? (
                 <>
-                    <table className='text-start mb-8 border-collapse border border-black bg-white w-full break-words'>
-                        <tbody>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Height</th>
-                                <td className='border p-2 border-[#828282] w-[20%]'>{ addConsultationData.height + " " + addConsultationData.height_unit}</td>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Weight</th>
-                                <td className='border p-2 border-[#828282] w-[35%]'>{ addConsultationData.weight + " " + addConsultationData.weight_unit}</td>
-                            </tr>
-                            <tr>
-                                <th className='text-start border border-[#828282] p-2 w-[15%]'>Temperature</th>
-                                <td className='border p-2 border-[#828282] w-[20%]'>{ addConsultationData.temperature} &#176;C</td>
-                                <th className='text-start border border-[#828282] p-2 w-[25%]'>Blood Pressure</th>
-                                <td className='border p-2 border-[#828282] w-[35%]'>{ addConsultationData.systolic + "/" + addConsultationData.diastolic }</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="w-full bg-white overflow-x-auto mb-4 break-words text-sm sm:text-base md:text-lg">
+                        {/* Desktop layout */}
+                        <div className="hidden md:block">
+                            <table className="w-full text-left border border-black border-collapse">
+                            <tbody>
+                                <tr>
+                                    <th className="border border-[#828282] p-2 w-[15%]">Height</th>
+                                    <td className="border border-[#828282] p-2 w-[20%]">
+                                        {addConsultationData.height} {addConsultationData.height_unit}
+                                    </td>
+                                    <th className="border border-[#828282] p-2 w-[15%]">Weight</th>
+                                    <td className="border border-[#828282] p-2 w-[35%]">
+                                        {addConsultationData.weight} {addConsultationData.weight_unit}
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                    <th className="border border-[#828282] p-2 w-[15%]">Temperature</th>
+                                    <td className="border border-[#828282] p-2 w-[20%]">
+                                        {addConsultationData.temperature} &#176;C
+                                    </td>
+                                    <th className="border border-[#828282] p-2 w-[25%]">Blood Pressure</th>
+                                    <td className="border border-[#828282] p-2 w-[35%]">
+                                        {addConsultationData.systolic}/{addConsultationData.diastolic}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile layout */}
+                        <div className="md:hidden">
+                            <table className="w-full text-left border border-black border-collapse">
+                                <tbody>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2 w-1/2">Height</th>
+                                        <td className="border border-[#828282] p-2 w-1/2">
+                                            {addConsultationData.height} {addConsultationData.height_unit}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2">Weight</th>
+                                        <td className="border border-[#828282] p-2">
+                                            {addConsultationData.weight} {addConsultationData.weight_unit}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2">Temperature</th>
+                                        <td className="border border-[#828282] p-2">
+                                            {addConsultationData.temperature} &#176;C
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th className="border border-[#828282] p-2">Blood Pressure</th>
+                                        <td className="border border-[#828282] p-2">
+                                            {addConsultationData.systolic}/{addConsultationData.diastolic}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <div className='mb-4'>
                         <p className="block font-semibold text-black col-span-2 mb-2">Chief Complaint<span className='text-red-600 ms-2'>*</span></p>
                         <textarea
@@ -256,13 +303,6 @@ const ConsultationForm = () => {
                 </>
             ) : (
                 <>
-                    <div className="w-full">
-                        <div className="flex justify-end items-center">
-                            <button type='button' onClick={() => setIsNext(false)} className="block px-6 h-10 bg-[#248176] text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200">
-                                Previous
-                            </button>
-                        </div>
-                    </div>
                     <div className='mb-4'>
                         <p className="block font-semibold text-black col-span-2 mb-2">Pertinent Physical Examination</p>
                         <textarea
@@ -309,48 +349,60 @@ const ConsultationForm = () => {
                             </button>
                         </div>
                         { addConsultationErrors.prescriptions.trim() != "" && (<p className='text-red-600 text-sm'>{addConsultationErrors.prescriptions}</p>)}
-                        <div className='px-2 mt-4'>
+                        <div className='px-2 mt-4 space-y-6'>
                             { addConsultationData.prescriptions.map((item, index) => (
-                                <div key={index} className='mb-4 flex gap-4'>
-                                    <div>
-                                        <div className='grid grid-cols-2 gap-4'>
-                                            <div className='flex gap-2 items-center'>
-                                                <label className='text-sm font-semibold'>Name</label>
-                                                <input
-                                                    type='text'
-                                                    className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                                    value={ item.name }
-                                                    onChange={(e) => {handlePrescriptionChange(index, "name", e.target.value)}}
-                                                />
-                                            </div>
-                                            <div className='flex gap-2 items-center'>
-                                                <label className='text-sm font-semibold'>Dosage</label>
-                                                <input
-                                                    type='text'
-                                                    className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
-                                                    value={ item.dosage }
-                                                    onChange={(e) => {handlePrescriptionChange(index, "dosage", e.target.value)}}
-                                                />
+                                <div key={index} className='mb-4 gap-4'>
+                                    <div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
+                                        <div className='flex-1 space-y-4'>
+                                            {/* Name and Dosage */}
+                                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                                <div>
+                                                    <label className='block text-sm font-semibold mb-1'>Name</label>
+                                                    <input
+                                                        type='text'
+                                                        className="w-full border border-gray-800 py-1 px-2 rounded"
+                                                        value={ item.name }
+                                                        onChange={(e) => {handlePrescriptionChange(index, "name", e.target.value)}}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className='text-sm font-semibold'>Dosage</label>
+                                                    <input
+                                                        type='text'
+                                                        className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                        value={ item.dosage }
+                                                        onChange={(e) => {handlePrescriptionChange(index, "dosage", e.target.value)}}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className='flex gap-2 items-center mt-2'>
-                                            <label className='text-sm font-semibold'>Instruction</label>
+                                        {/* Instructions */}
+                                        <div>
+                                            <label className='block text-sm font-semibold mb-1'>Instruction</label>
                                             <input
                                                 type='text'
-                                                className="col-span-5 border border-gray-800 block w-full py-1 px-2 rounded"
+                                                className="w-full border border-gray-800 py-1 px-2 rounded"
                                                 value={ item.instruction }
                                                 onChange={(e) => {handlePrescriptionChange(index, "instruction", e.target.value)}}
                                             />
                                         </div>
                                     </div>
-                                    <button onClick={(e) => {e.preventDefault(); removePrescription(index)}}>
-                                        <i className={`bi bi-x text-2xl text-red-500 font-extrabold`}></i>
-                                    </button>
+                                    {/* Remove Button */}
+                                    <div className="flex justify-end md:justify-center md:items-start pt-2 md:pt-0">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.preventDefault(); 
+                                                removePrescription(index);
+                                            }}
+                                        >
+                                            <i className="bi bi-x text-2xl text-red-500 font-extrabold"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             )) }
                         </div>
                     </div>
-                    <div className='mb-4 flex items-center gap-4'>
+                    <div className='mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4'>
                         <p className="font-semibold text-black col-span-2 mb-2">Follow-up Date</p>
                         <input
                             type='date'
