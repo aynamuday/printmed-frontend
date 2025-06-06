@@ -133,106 +133,132 @@ const VitalSignsForm = ({ setPatient, setVitalSignsState, setLoading, patient })
     }
 
   return (
-    <>
-        <form onSubmit={(e) => {handleSubmit(e)}}>
-            <div className='grid grid-cols-2 gap-y-2 gap-x-2'>
-                <div className='h-full'>
-                    <div className='flex gap-4 items-center'>
-                        <p className="block font-semibold text-black mb-2">Height<span className='text-red-600 ms-2'>*</span></p>
-                        <div className='flex gap-2 w-full h-full'>
-                            <input
-                                type='text'
-                                className="px-2 border h-fit border-gray-800 block w-[70px] py-1 rounded"
-                                value={ vitalSignsData.height }
-                                onChange={(e) => {handleVitalSignsInputChange("height", e.target.value)}}
-                                maxLength={5}
-                                required
-                            />
-                            <select
-                                className="border border-gray-800 block px-2 py-1 rounded bg-white"
-                                value={ vitalSignsData.height_unit }
-                                onChange={(e) => {setVitalSignsData((prevData) => ({...prevData, height_unit: e.target.value}))}}
-                                required
-                            >
-                                <option value="cm">cm</option>
-                                <option value="m">m</option>
-                            </select>
-                        </div>
-                    </div>
-                    { vitalSignsErrors.height.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{vitalSignsErrors.height}</p>)}
-                </div>
-                <div className='h-full'>
-                    <div className='flex gap-4 items-center'>
-                        <p className="block font-semibold text-black mb-2">Weight<span className='text-red-600 ms-2'>*</span></p>
-                        <div className='flex gap-2 w-full h-full'>
-                            <input
-                                type='text'
-                                className="px-2 border border-gray-800 block w-[70px] py-1 rounded"
-                                value={ vitalSignsData.weight }
-                                onChange={(e) => {handleVitalSignsInputChange("weight", e.target.value)}}
-                                maxLength={5}
-                                required
-                            />
-                            <select
-                                className="border border-gray-800 block px-2 py-1 rounded bg-white"
-                                value={ vitalSignsData.weight_unit }
-                                onChange={(e) => {setVitalSignsData((prevData) => ({...prevData, weight_unit: e.target.value}))}}
-                                required
-                            >
-                                <option value="kg">kg</option>
-                                <option value="lb">lb</option>
-                            </select>
-                        </div>
-                    </div>
-                    { vitalSignsErrors.weight.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{vitalSignsErrors.weight}</p>)}
-                </div>
-                <div className='h-full'>
-                    <div className='flex gap-4 items-center'>
-                        <p className="block font-semibold text-black mb-2">Temperature<span className='text-red-600 ms-2'>*</span></p>
-                        <div className='flex gap-1'>
-                            <input
-                                type='text'
-                                className="px-2 border border-gray-800 block w-[50px] py-1 rounded"
-                                value={ vitalSignsData.temperature }
-                                onChange={(e) => {handleVitalSignsInputChange("temperature", e.target.value)}}
-                                maxLength={4}
-                                required
-                            />
-                            <p>&#176;C</p>
-                        </div>
-                    </div>
-                    { vitalSignsErrors.temperature.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{vitalSignsErrors.temperature}</p>)}
-                </div>
-                <div className='h-full'>
-                    <div className='flex gap-2 items-top'>
-                        <p className="font-semibold text-black mb-2 w-24">Blood Pressure<span className='text-red-600 ms-2'>*</span></p>
-                        <input
-                            type='text'
-                            className="px-2 border border-gray-800 w-[50px] py-1 rounded h-fit"
-                            value={ vitalSignsData.systolic }
-                            onChange={(e) => {handleVitalSignsInputChange("systolic", e.target.value)}}
-                            maxLength={3}
-                            required
-                        />
-                        <p>/</p>
-                        <input
-                            type='text'
-                            className="px-2 border border-gray-800 w-[50px] py-1 rounded h-fit"
-                            value={ vitalSignsData.diastolic }
-                            onChange={(e) => {handleVitalSignsInputChange("diastolic", e.target.value)}}
-                            maxLength={3}
-                            required
-                        />
-                    </div>
-                    { vitalSignsErrors.blood_pressure.trim() != "" && (<p className='text-red-600 text-sm mt-1'>{vitalSignsErrors.blood_pressure}</p>)}
-                </div>
-            </div>
-            <div className='flex items-center justify-center w-full mt-2'>
-                <button type='submit' className='bg-[#248176] px-4 py-1 text-white rounded-md hover:bg-blue-700'>Save</button>
-            </div>
-        </form>
-    </>
-  )
+  <form onSubmit={(e) => handleSubmit(e)} className="w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Height */}
+      <div>
+        <label className="block font-semibold text-black mb-1 text-sm sm:text-base md:text-lg">
+          Height<span className="text-red-600 ms-1">*</span>
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            className="px-2 border border-gray-800 w-[70px] py-1 rounded text-sm sm:text-base"
+            value={vitalSignsData.height}
+            onChange={(e) => handleVitalSignsInputChange("height", e.target.value)}
+            maxLength={5}
+            required
+          />
+          <select
+            className="border border-gray-800 px-2 py-1 rounded bg-white text-sm sm:text-base"
+            value={vitalSignsData.height_unit}
+            onChange={(e) =>
+              setVitalSignsData((prevData) => ({ ...prevData, height_unit: e.target.value }))
+            }
+            required
+          >
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+          </select>
+        </div>
+        {vitalSignsErrors.height.trim() !== "" && (
+          <p className="text-red-600 text-xs sm:text-sm mt-1">{vitalSignsErrors.height}</p>
+        )}
+      </div>
+
+      {/* Weight */}
+      <div>
+        <label className="block font-semibold text-black mb-1 text-sm sm:text-base md:text-lg">
+          Weight<span className="text-red-600 ms-1">*</span>
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            className="px-2 border border-gray-800 w-[70px] py-1 rounded text-sm sm:text-base"
+            value={vitalSignsData.weight}
+            onChange={(e) => handleVitalSignsInputChange("weight", e.target.value)}
+            maxLength={5}
+            required
+          />
+          <select
+            className="border border-gray-800 px-2 py-1 rounded bg-white text-sm sm:text-base"
+            value={vitalSignsData.weight_unit}
+            onChange={(e) =>
+              setVitalSignsData((prevData) => ({ ...prevData, weight_unit: e.target.value }))
+            }
+            required
+          >
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+          </select>
+        </div>
+        {vitalSignsErrors.weight.trim() !== "" && (
+          <p className="text-red-600 text-xs sm:text-sm mt-1">{vitalSignsErrors.weight}</p>
+        )}
+      </div>
+
+      {/* Temperature */}
+      <div>
+        <label className="block font-semibold text-black mb-1 text-sm sm:text-base md:text-lg">
+          Temperature<span className="text-red-600 ms-1">*</span>
+        </label>
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            className="px-2 border border-gray-800 w-[70px] py-1 rounded text-sm sm:text-base"
+            value={vitalSignsData.temperature}
+            onChange={(e) => handleVitalSignsInputChange("temperature", e.target.value)}
+            maxLength={4}
+            required
+          />
+          <span>&#176;C</span>
+        </div>
+        {vitalSignsErrors.temperature.trim() !== "" && (
+          <p className="text-red-600 text-xs sm:text-sm mt-1">{vitalSignsErrors.temperature}</p>
+        )}
+      </div>
+
+      {/* Blood Pressure */}
+      <div>
+        <label className="block font-semibold text-black mb-1 text-sm sm:text-base md:text-lg">
+          Blood Pressure<span className="text-red-600 ms-1">*</span>
+        </label>
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            className="px-2 border border-gray-800 w-[70px] py-1 rounded text-sm sm:text-base"
+            value={vitalSignsData.systolic}
+            onChange={(e) => handleVitalSignsInputChange("systolic", e.target.value)}
+            maxLength={3}
+            required
+          />
+          <span>/</span>
+          <input
+            type="text"
+            className="px-2 border border-gray-800 w-[70px] py-1 rounded text-sm sm:text-base"
+            value={vitalSignsData.diastolic}
+            onChange={(e) => handleVitalSignsInputChange("diastolic", e.target.value)}
+            maxLength={3}
+            required
+          />
+        </div>
+        {vitalSignsErrors.blood_pressure.trim() !== "" && (
+          <p className="text-red-600 text-xs sm:text-sm mt-1">{vitalSignsErrors.blood_pressure}</p>
+        )}
+      </div>
+    </div>
+
+    {/* Submit Button */}
+    <div className="flex items-center justify-center w-full mt-4">
+      <button
+        type="submit"
+        className="bg-[#248176] px-6 py-2 text-white rounded-md hover:bg-blue-700"
+      >
+        Save
+      </button>
+    </div>
+  </form>
+)
 }
 
 export default VitalSignsForm
