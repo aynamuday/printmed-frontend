@@ -172,25 +172,7 @@ const PatientsPage = () => {
 
   return (
     <>
-      { loading && (
-        <div className='flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30 z-50'>
-            <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
-        </div>
-      )}
-
-      {/* for QR scanning */}
-      { isQrInputFocused && (
-        <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
-            <div className='px-4 py-6 bg-white shadow-lg w-[400px] rounded-md'>
-                <QrScanning />
-                <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
-                <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
-                <button onClick={handleQrInputBlur} className='bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
-                    Cancel
-                </button>
-            </div>
-        </div>
-      )}
+      <Sidebar />
       <form onSubmit={(e) => handleQrCodeSubmit(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
         <input 
           className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'
@@ -204,86 +186,132 @@ const PatientsPage = () => {
           required
         />
       </form>
+      <div className="lg:pl-[250px] min-h-screen bg-white">
+        <Header />
+        <div className="px-4 sm:px-6 mt-4">
+          <div>
+              <h2 className="font-bold text-2xl">Patients</h2>
+              <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-end mb-6 mt-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                  {/* Search */}
+                  <div className="flex flex-col w-full sm:w-auto">
+                      <label htmlFor="search" className='text-xs block mb-1'>Name (FN LN or FN or LN) or Personnel No.</label>
+                      <form 
+                        onSubmit={(e) => handleSearch(e)} 
+                        className="flex border border-[#248176] rounded items-center px-4 py-1.5 h-8"
+                      >
+                        <input
+                            type="text"
+                            name="search"
+                            className="flex-1 focus:outline-none text-sm"
+                            value={searchPatient}
+                            onChange={(e) => {
+                              setSearchPatient(capitalizedWords(e.target.value));
+                            }}
+                            placeholder='Search'
+                        />
+                        <button 
+                          // onClick={(e) => handleSearch} 
+                          className="text-[#374151]">
+                          <i className="bi bi-search text-lg"></i>
+                        </button>
+                      </form>
+                  </div>
 
-      <Sidebar />
-      <Header />
+                  {/* Sort */}
+                  <div className="flex flex-col w-full sm:w-40">
+                        <label className='text-xs block mb-1'>Sort by</label>
+                        <select 
+                          className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none" 
+                          value={patientsFilters.sortBy + "_" + patientsFilters.orderBy} 
+                          onChange={(e) => handleSortByChange(e)}
+                        >
+                            <option value="" data-sort-by="" data-order-by="">Last updated</option>
+                            <option value="name_asc" data-sort-by="name" data-order-by="asc">Last Name (A&rarr;Z)</option>
+                            <option value="name_desc" data-sort-by="name" data-order-by="desc">Last Name (Z&rarr;A)</option>
+                        </select>
+                  </div>
 
-      <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] pb-10">
-      <div className={`flex justify-between items-end mb-6 mt-4`}>
-          <h2 className={`font-bold text-2xl`}>Patients</h2>
-          <div className={`flex justify-end gap-4 items-end`}>
-            {/* search */}
-            <div>
-                <label htmlFor="search" className='text-xs block mb-1'>{"Patient No. or Name (FN LN or FN or LN)"}</label>
-                <form onSubmit={(e) => handleSearch(e)} className='border border-[#248176] py-1 rounded ps-2'>
-                    <input
-                        type="text"
-                        name="search"
-                        className="focus:outline-none focus:border-none"
-                        value={searchPatient}
-                        onChange={(e) => {
-                          setSearchPatient(capitalizedWords(e.target.value));
-                        }}
-                        placeholder='Search'
-                    />
-                    <button onClick={(e) => handleSearch} className="btn btn-primary d-flex align-items-center">
-                        <i className="bi bi-search me-2 text-[#374151]"></i>
+                  {/* QR Scanning */}
+                  <div className="flex flex-col w-full sm:w-20">
+                    <button 
+                      onClick={handleScanButtonClick} 
+                      className=''
+                    >
+                      <img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
                     </button>
-                </form>
-            </div>
+                  </div>
 
-            {/* sort */}
-            <div>
-                <label className='text-xs block mb-1'>Sort by</label>
-                <select className='px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none' 
-                  value={patientsFilters.sortBy + "_" + patientsFilters.orderBy} onChange={(e) => handleSortByChange(e)}
-                >
-                    <option value="" data-sort-by="" data-order-by="">Last updated</option>
-                    <option value="name_asc" data-sort-by="name" data-order-by="asc">Last Name (A&rarr;Z)</option>
-                    <option value="name_desc" data-sort-by="name" data-order-by="desc">Last Name (Z&rarr;A)</option>
-                </select>
-            </div>
+                  {/* Pagination + Clear */}
+                  { patients.current_page &&
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                      {/* Pagination */}
+                      <div className="flex items-center">
+                        <button 
+                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          disabled={patients.current_page <= 1} 
+                          onClick={handlePrevious}
+                        >
+                          &lt;
+                        </button>
+                        <button 
+                          className="px-4 h-8 border border-[#248176] text-sm"
+                          disabled={true}
+                        >
+                          {patients.current_page} OF {patients.last_page}
+                        </button>
+                        <button 
+                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          disabled={patients.current_page === patients.last_page} 
+                          onClick={handleNext}
+                        >
+                          &gt;
+                        </button>
+                      </div>
 
-            {/* qr scanning */}
-            <button onClick={handleScanButtonClick} className=''><img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' /></button>
-
-            {/* pagination controls */}
-            { patients.current_page &&
-              <div className="flex justify-end items-center">
-                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                    disabled={patients.current_page <= 1} onClick={handlePrevious}>
-                  &lt;
-                </button>
-                <button className={`px-4 h-8 border border-[#248176] text-sm`} disabled={true}>
-                  {patients.current_page} OF {patients.last_page}
-                </button>
-                <button className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
-                    disabled={patients.current_page === patients.last_page} onClick={handleNext}>
-                  &gt;
-                </button>
+                      {/* Clear Button */}
+                      <div className="flex flex-col w-full sm:w-auto">
+                          <label className='text-xs mb-1'>Clear</label>
+                          <button 
+                            onClick={() => {handleClear()}}
+                            className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
+                          >
+                            <i className='bi bi-arrow-clockwise text-xl'></i>  
+                          </button>
+                      </div>
+                    </div>
+                  }
+                </div>
               </div>
-            }
+          </div>
 
-            {/* clear button */}
-            <div>
-                <label className='text-xs block mb-1'>Clear</label>
-                <button 
-                  onClick={() => {handleClear()}}
-                  className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
-                >
-                  <i className='bi bi-arrow-clockwise text-xl'></i>  
-                </button>
+          {tableLoading ? (
+            <div className="flex justify-center items-center mt-20">
+              <PulseLoader color="#6CB6AD" loading={tableLoading} size={15} />
             </div>
+          ) : (
+              <PatientsTable patients={patients.data} setLoading={setLoading}/>
+          )}
+          { loading && (
+          <div className='flex items-center justify-center fixed top-0 start-0 end-0 bottom-0 scroll-m-0 bg-white bg-opacity-30 z-50'>
+              <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
           </div>
-        </div>
+          )}
 
-        {tableLoading ? (
-          <div className="flex justify-center items-center mt-20">
-            <PulseLoader color="#6CB6AD" loading={tableLoading} size={15} />
-          </div>
-        ) : (
-            <PatientsTable patients={patients.data} setLoading={setLoading}/>
-        )}
+          {/* for QR scanning */}
+          { isQrInputFocused && (
+            <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
+                <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
+                    <QrScanning />
+                    <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
+                    <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
+                    <button onClick={handleQrInputBlur} className='bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

@@ -351,18 +351,32 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                     {!update && user.role != "physician" && <button onClick={() => {setUpdate(true)}}><i className={`bi bi-pencil-square me-2 text-white`}></i></button>}
                 </div>
 
-                <form onSubmit={(e) => handleSubmit(e)} className='flex flex-col items-center justify-center px-6 py-4 pb-6 w-full'>
+                <form 
+                    onSubmit={(e) => handleSubmit(e)} 
+                    className='flex flex-col items-center justify-center px-4 sm:px-6 py-4 w-full'>
                     <div className={`relative ${update && "mb-2"}`}>
-                        <img src={ !update ? patient.photo_url || '' : image } alt="" className="w-40 h-40 object-cover rounded-md mb-4 bg-gray-300" />
-                        { update && (
-                            <button type='button' onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className='bg-[#248176] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-[#6cb6ad]'>
+                        <img 
+                            src={!update ? patient.photo_url || '' : image } 
+                            alt="" 
+                            className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-md mb-4 bg-gray-300"
+                        />
+                        {update && (
+                            <button 
+                                type='button' 
+                                onClick={(e) => {
+                                    e.preventDefault(); 
+                                    setTakePhoto(true);
+                                }} 
+                                className='bg-[#248176] px-2 py-1 rounded-full text-white shadow absolute bottom-1 -right-2 hover:bg-[#6cb6ad]'
+                            >
                                 <i className='bi bi-pen'></i>
                             </button>
                         )}
                     </div>
-                    <table className='text-start border-collapse border border-black bg-white w-full break-words'>
+                    <div className="w-full overflow-x-auto">
+                        <table className='min-w-full border-collapse border border-black bg-white text-start break-words text-sm sm:text-base'>
                         <tbody>
-                            { !update ? (
+                            {!update ? (
                                 <tr>
                                     <th className='text-start border border-[#828282] p-2 w-[35%]'>Name</th>
                                     <td className='border p-2 border-[#828282] w-[65%]'>{patient.full_name}</td>
@@ -583,29 +597,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                                             </select>
                                         </td>
                                     </tr>
-                                    {/* <tr>
-                                        <th className='text-start border border-[#828282] p-2 w-[35%]'>Barangay {update && <span className='text-red-600'>*</span>}</th>
-                                        <td className='border p-2 border-[#828282] w-[65%]'>
-                                            <select
-                                                name="region"
-                                                value={updateData.barangay}
-                                                onChange={(e) => handleBarangayChange(e, setUpdateData)}
-                                                className="mt-1 block w-full border p-2 rounded-md bg-white border-black"
-                                                required
-                                            >
-                                                <option value="">Select Barangay</option>
-                                                {barangays?.map((barangay) => (
-                                                    <option 
-                                                        key={barangay.id}
-                                                        data-code={barangay.code}
-                                                        value={barangay.name}
-                                                    >
-                                                        {barangay.name} 
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr> */}
                                     <tr>
                                         <th className='text-start border border-[#828282] p-2 w-[35%]'>Barangay {update && <span className='text-red-600'>*</span>}</th>
                                         <td className='border p-2 border-[#828282] w-[65%]'>
@@ -902,6 +893,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             }
                         </tbody>
                     </table>
+                    </div>
                     { update && (
                         <div className="mt-4 w-full">
                             {errors.general && <p className="text-red-600 mb-1 text-center">{errors.general}</p>}
