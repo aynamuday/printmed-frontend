@@ -240,7 +240,7 @@ const PatientPagePhysician = () => {
                     </div>
                 )}
                 { !patient ? (
-                    <div className={``}>
+                    <div>
                         <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center px-4 sm:px-6">
                             <div className='w-full max-w-sm mx-auto flex flex-col items-center bg-white p-4 rounded-lg'>
                                 <img src={qr} alt="" className='w-full max-w-[250px] p-3 border border-black' />
@@ -266,7 +266,7 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="">
+                    <div className="px-4 sm:px-6 mt-4">
                         <div className='flex items-center mb-4'>
                             <button onClick={() => handleClose()} className='me-6 flex items-center h-full'><i className='bi bi-x-lg'></i></button>
                             <h2 className='me-3 font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
@@ -279,16 +279,18 @@ const PatientPagePhysician = () => {
                                 <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {patient.vital_signs == null && "Not"} Available</p>
                             </div>
                         </div>
-                        <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
-                            <div className='col-span-1 lg:col-span-2'>
+                        <div className='grid grid-cols-1 lg:grid-cols-7 gap-4 w-full px-2 lg:px-0'>
+                            {/* Left Panel */}
+                            <div className='col-span-1 lg:col-span-3 w-full'>
                                 <PatientDetails patient={patient} />
                             </div>
-                            <div className='col-span-1 lg:col-span-3 bg-[#D9D9D9] bg-opacity-30'>
-                                <div className='bg-[#248176] py-2 px-4 flex items-center justify-between'>
+                            {/* Right Panel */}
+                            <div className='col-span-1 lg:col-span-4 bg-[#D9D9D9] bg-opacity-30 mb-4 w-full'>
+                                <div className='bg-[#248176] py-3 px-4 flex items-center justify-between'>
                                     <div className='flex gap-4 w-full'>
                                         { consultationComponentStatus != null && 
                                             <button onClick={() => setConsultationComponentStatus(null)}>
-                                                <i className={`bi bi-arrow-left text-xl me-2 text-white`}></i>
+                                                <i className="bi bi-arrow-left text-xl me-2 text-white"></i>
                                             </button>
                                         }
                                         { consultationComponentStatus === null && 
@@ -307,8 +309,8 @@ const PatientPagePhysician = () => {
                                         }
                                     </div>
                                 </div>
-                                <div>
-                                    <div className='grid grid-cols-1 justify-center p-6'>
+                                <div className='p-4'>
+                                    <div className='grid grid-cols-1 justify-center'>
                                         { consultationComponentStatus === null ? (
                                             <ConsultationsTable consultations={patient.consultations} />
                                         ) : consultationComponentStatus === "view" ? (

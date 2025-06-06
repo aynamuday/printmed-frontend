@@ -227,28 +227,39 @@ const PatientPageSecretary = () => {
                 </div>
             )}
 
-            {patient && (
-                <>
+            <Sidebar />
+            <div className="lg:pl-[250px] min-h-screen bg-white">
+                <Header />
+                {patient && (
+                <div className="px-4 sm:px-6 mt-4 mb-4">
                     <div>
-                        <Sidebar />
-                        <Header />
-
-                        <div className="w-full md:w-[75%] md:ml-[22%] mt-[10%] mb-12">
-                            <div className='flex items-center mb-4'>
-                                <button onClick={() => handleClose()} className='flex items-center h-full me-6'><i className='bi bi-x-lg'></i></button>
-                                <h2 className='font-bold text-2xl me-3'>Patient No. {patient.patient_number}</h2>
-                                { patient.is_new_in_department && 
-                                    <div className='me-2 h-full border border-green-500 border-1 px-2 py-1 rounded-lg'>
+                        <div>
+                            <div className='flex flex-wrap items-center mb-4 gap-3'>
+                                <button onClick={() => handleClose()} className='flex items-center tex-xl'>
+                                    <i className='bi bi-x-lg'></i>
+                                </button>
+                                <h2 className='font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl'>
+                                    Patient No. {patient.patient_number}
+                                </h2>
+                                {patient.is_new_in_department && 
+                                    <div className='border border-green-500 px-2 py-1 rounded-lg'>
                                         <p className='text-xs text-green-500 font-semibold'>New</p>
                                     </div> 
                                 }
                             </div>
-                            <div className='grid grid-cols-2 gap-4'>
+                            <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
+                                {/* Patient Details */}
                                 <div>
-                                    <PatientDetails patient={patient} setPatient={setPatient} setLoading={setLoading} />
+                                    <PatientDetails 
+                                        patient={patient} 
+                                        setPatient={setPatient} 
+                                        setLoading={setLoading} 
+                                    />
                                 </div>
-                                <div className='bg-[#D9D9D9] bg-opacity-30 flex flex-col gap-4'>
-                                    <div>
+                                {/* Right Panel */}
+                                <div>
+                                    {/* Vital Signs */}
+                                    <div className='bg-[#D9D9D9] bg-opacity-30 flex flex-col gap-4 mb-4'>
                                         <div className='flex bg-[#248176] py-2 px-4 font-semibold text-white text-lg'>
                                             { (vitalSignsState === "edit" || vitalSignsState === "add") && (
                                                 <button onClick={() => {setVitalSignsState(!patient.vital_signs ? null : "view")}}>
@@ -257,23 +268,22 @@ const PatientPageSecretary = () => {
                                             )}
                                             <p>Vital Signs Today</p>
                                         </div>
-                                        <div className='px-6 py-4'>
+                                        <div className='px-4 py-3'>
                                             <div className='flex gap-2 items-center mb-2'>
-                                                {/* <p className={`text-black font-semibold`}>Vital Signs</p> */}
-                                                { !vitalSignsState && (!patient.vital_signs) && (
+                                                {!vitalSignsState && (!patient.vital_signs) && (
                                                     <button onClick={() => {setVitalSignsState("add")}}>
-                                                        <i className={`bi bi-plus-square-fill ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
+                                                        <i className="bi bi-plus-square-fill ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]"></i>
                                                     </button>
                                                 )}
                                                 { vitalSignsState === "view" && patient.vital_signs && (
-                                                    <button onClick={() => {setVitalSignsState("edit")}}>
-                                                        <i className={`bi bi-pencil-square ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
-                                                    </button>
-                                                )}
-                                                { vitalSignsState === "view" && patient.vital_signs && (
-                                                    <button onClick={() => {deleteVitalSigns()}}>
-                                                        <i className={`bi bi-trash ms-4 text-lg text-[#248176] hover:text-[#6cb6ad]`}></i>
-                                                    </button>
+                                                    <>
+                                                        <button onClick={() => {setVitalSignsState("edit")}}>
+                                                            <i className="bi bi-pencil-square text-lg text-[#248176] hover:text-[#6cb6ad]"></i>
+                                                        </button>
+                                                        <button onClick={() => {deleteVitalSigns()}}>
+                                                            <i className="bi bi-trash text-lg text-[#248176] hover:text-[#6cb6ad]"></i>
+                                                        </button>
+                                                    </>
                                                 )}
                                             </div>
 
@@ -283,31 +293,32 @@ const PatientPageSecretary = () => {
                                             )}
 
                                             {/* edit vital signs */}
-                                            { vitalSignsState === "edit" && patient.vital_signs && (
-                                                <VitalSignsForm setPatient={setPatient} patient={patient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} />
-                                            )}
-
-                                            {console.log(vitalSignsState, patient.vital_signs)}
-
-                                            {/* add vital signs */}
-                                            { vitalSignsState === "add" && !patient.vital_signs && (
-                                                <VitalSignsForm setPatient={setPatient} patient={patient} setVitalSignsState={setVitalSignsState} setLoading={setLoading} />
+                                            {(vitalSignsState === "edit" || vitalSignsState === "add") && (
+                                                <VitalSignsForm 
+                                                    setPatient={setPatient} 
+                                                    patient={patient} 
+                                                    setVitalSignsState={setVitalSignsState} 
+                                                    setLoading={setLoading} 
+                                                />
                                             )}
                                         </div>
                                     </div>
-                                    <div>
+                                    {/* Patient ID Card */}
+                                    <div className='bg-[#D9D9D9] bg-opacity-30 flex flex-col gap-4 mb-4'>
                                         <div className='bg-[#248176] py-2 px-4 font-semibold text-white text-lg flex justify-between items-center'>
                                             <p>Patient Identification Card</p>
-                                            <div ref={patientIdMenuRef}>
-                                                <button onClick={() => {setShowPatientIdMenu(!showPatientIdMenu)}}><i className='bi bi-three-dots-vertical text-xl text-white hover:text-gray-300 relative'></i></button>
-                                                { showPatientIdMenu && (
-                                                    <div className='absolute bg-white border border-[#6cb6ad] rounded-md text-black text-base right-16 shadow'>
-                                                        {patient.qr_status && patient.qr_status.status == "Active" ? (
-                                                            <button onClick={() => deactivateIdCard()} className='hover:bg-gray-200 p-2 pe-12 rounded-md font-normal'> 
+                                            <div ref={patientIdMenuRef} className='relative'>
+                                                <button onClick={() => {setShowPatientIdMenu(!showPatientIdMenu)}}>
+                                                    <i className='bi bi-three-dots-vertical text-xl text-white hover:text-gray-300'></i>
+                                                </button>
+                                                {showPatientIdMenu && (
+                                                    <div className='absolute bg-white border border-[#6cb6ad] rounded-md text-black text-base right-0 mt-2 shadow z-10'>
+                                                        {patient.qr_status?.status == "Active" ? (
+                                                            <button onClick={deactivateIdCard} className='hover:bg-gray-200 p-2 pe-12 w-full text-left'> 
                                                                 <i className='bi bi-dash-circle me-1 text-xl'></i> Deactivate
                                                             </button>
                                                         ) : (
-                                                            <button onClick={() => generateIdCard()} className='hover:bg-gray-200 p-2 pe-12 rounded-md font-normal'> 
+                                                            <button onClick={generateIdCard} className='hover:bg-gray-200 p-2 pe-12 w-full text-left'> 
                                                                 <i className='bi bi-arrow-repeat me-1 text-xl'></i> Generate
                                                             </button>
                                                         )}
@@ -315,19 +326,22 @@ const PatientPageSecretary = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className='px-6 py-4'>
-                                            <p className='text-black font-semibold'>Status: <span className='font-normal ms-2'>
-                                                {patient.qr_status && (patient.qr_status && patient.qr_status.status == null ? "No issues yet" : patient.qr_status.status)}
-                                            </span></p>
-                                            { patient.qr_status && patient.qr_status.status != null && (
+                                        <div className='px-4 py-3'>
+                                            <p className='text-black font-semibold'>Status: 
+                                                <span className='font-normal ms-2'>
+                                                    {patient.qr_status?.status ?? "No issues yet"}
+                                                </span>
+                                            </p>
+                                            {patient.qr_status?.status && (
                                                 <>
-                                                    { patient.qr_status.status == "Active" && (
-                                                        <p className='text-black font-semibold'>Date of Issue: <span className='font-normal ms-2'>{getFormattedStringDate(patient.qr_status.date_issued)}</span></p>  
+                                                    {patient.qr_status.status == "Active" && (
+                                                        <p className='text-black font-semibold'>Date of Issue: 
+                                                            <span className='font-normal ms-2'>{getFormattedStringDate(patient.qr_status.date_issued)}</span>
+                                                        </p>  
                                                     )}
-                                                    {/* { patient.qr_status.status == "Deactivated" && (
-                                                        <p className='text-black font-semibold'>Date of Deactivation: <span className='font-normal ms-2'>{getFormattedStringDate(patient.qr_status.date_deactivated)}</span></p>  
-                                                    )} */}
-                                                    <p className='text-black font-semibold'>Number of Issuances: <span className='font-normal ms-2'>{patient.qr_status.issuances_count}</span></p>  
+                                                    <p className='text-black font-semibold'>Number of Issuances: 
+                                                        <span className='font-normal ms-2'>{patient.qr_status.issuances_count}</span>
+                                                    </p>  
                                                 </>
                                             )}
                                         </div>
@@ -336,8 +350,9 @@ const PatientPageSecretary = () => {
                             </div>
                         </div>
                     </div> 
-                </>
+                </div>
             )}
+            </div>
         </>
     )
 }
