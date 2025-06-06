@@ -176,7 +176,7 @@ const UsersPage = () => {
                 {users && (
                 <div>
                     <h2 className="font-bold text-2xl">Users</h2>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
+                    <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-end mb-6 mt-4">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
                             {/* Search */}
                             <div className="flex flex-col w-full sm:w-auto">
