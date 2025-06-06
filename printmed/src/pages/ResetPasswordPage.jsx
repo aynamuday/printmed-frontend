@@ -127,14 +127,14 @@ const ResetPasswordPage = () => {
         ></div>
       <div className="relative z-10 flex justify-center flex-col bg-gray-100 p-6 rounded-lg lg:w-[30%] md:w-[40%]">
         <div className="flex flex-col items-center mb-6">
-          <img src={logo} alt="" className="w-100 h-28" />
-          <h2 className="text-center text-2xl font-bold mt-4">Reset Your Password</h2>
+          <img src={logo} alt="" className="w-24 h-auto sm:w-32 md:w-36" />
+          <h2 className="text-center text-xl sm:text-2xl font-bold mt-4">Reset Your Password</h2>
         </div>
 
         {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
 
         <form className="space-y-6 px-2" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+          <div className="space-y-4">
             <div>
               <label className='text-sm'>Personnel Number</label>
               <div className="relative">

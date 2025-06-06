@@ -64,7 +64,7 @@ const ForgotPasswordPage = () => {
 
     return (
         <div 
-            className="min-h-screen flex flex-col justify-center items-center bg-white-100"
+            className="min-h-screen flex flex-col justify-center items-center bg-white-100 px-4 sm:px-6"
             style={{
                 backgroundImage: `url(${backdrop})`,
                 backgroundSize: 'cover',
@@ -78,7 +78,7 @@ const ForgotPasswordPage = () => {
             
             <div className="relative z-10 flex justify-center flex-col bg-gray-100 p-6 rounded-lg lg:w-[30%] md:w-[40%]">
                 <div className="flex flex-col items-center mb-4">
-                    <img src={logo} alt="" className="w-100 h-28" />
+                    <img src={logo} alt="" className="h-20 sm:h-24 md:h-28 lg:h-32 max-w-full object-contain" />
                     <h2 className="text-center text-2xl font-bold mt-4">Forgot Password</h2>
                 </div>
                 {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
