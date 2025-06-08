@@ -219,7 +219,7 @@ const PatientsPage = () => {
                   </div>
 
                   {/* Sort */}
-                  <div className="flex flex-col w-full sm:w-40">
+                  <div className="flex flex-col w-full sm:w-auto">
                         <label className='text-xs block mb-1'>Sort by</label>
                         <select 
                           className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none" 
@@ -232,19 +232,19 @@ const PatientsPage = () => {
                         </select>
                   </div>
 
-                  {/* QR Scanning */}
-                  <div className="flex flex-col w-full sm:w-20">
-                    <button 
-                      onClick={handleScanButtonClick} 
-                      className=''
-                    >
-                      <img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
-                    </button>
-                  </div>
-
                   {/* Pagination + Clear */}
                   { patients.current_page &&
-                    <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                    <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                      {/* QR Scanning */}
+                      <div className="flex items-center">
+                        <button 
+                          onClick={handleScanButtonClick} 
+                          className=''
+                        >
+                          <img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
+                        </button>
+                      </div>
+                      
                       {/* Pagination */}
                       <div className="flex items-center">
                         <button 
@@ -270,8 +270,8 @@ const PatientsPage = () => {
                       </div>
 
                       {/* Clear Button */}
-                      <div className="flex flex-col w-full sm:w-auto">
-                          <label className='text-xs mb-1'>Clear</label>
+                      <div className="flex items-center">
+                          {/* <label className='text-xs mb-1'>Clear</label> */}
                           <button 
                             onClick={() => {handleClear()}}
                             className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
