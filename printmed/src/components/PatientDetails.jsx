@@ -22,6 +22,7 @@ import { fetchRegions } from "../utils/fetch/fetchRegions";
 import { fetchCities } from "../utils/fetch/fetchCities";
 import { fetchBarangays } from "../utils/fetch/fetchBarangays";
 import { showLoggedOut } from '../utils/fetch/showLoggedOut';
+import IdentificationPhotoGuidelinesPopup from './IdentificationPhotoGuidelinesPopup';
 
 const PatientDetails = ({setLoading, patient, setPatient}) => {
     const { token, user } = useContext(AppContext)
@@ -29,37 +30,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     const [physicians, setPhysicians] = useState('')
     const followUpDateStatus = getFollowUpDateStatus(patient.follow_up_date)
     const [update, setUpdate] = useState(false)
-    const [updateData, setUpdateData] = useState({
-        'first_name': patient.first_name ?? '',
-        'middle_name': patient.middle_name ?? '',
-        'last_name': patient.last_name ?? '',
-        'suffix': patient.suffix ?? '',
-        'birthdate': patient.birthdate ?? '',
-        'birthplace': patient.birthplace ?? '',
-        'sex': patient.sex ?? '',
-        'house_number': patient.house_number ?? '',
-        'street': patient.street ?? '',
-        'region': patient.region ?? '',
-        'region_code': patient.region_code ?? '',
-        'province': patient.province ?? '',
-        'province_code': patient.province_code ?? '',
-        'city': patient.city ?? '',
-        'city_code': patient.city_code ?? '',
-        'barangay': patient.barangay ?? '',
-        'barangay_code': patient.barangay_code ?? '',
-        'postal_code': patient.postal_code ?? '',
-        'civil_status': patient.civil_status ?? '',
-        'religion': patient.religion ?? '',
-        'phone_number': patient.phone_number ?? '',
-        'email': patient.email ?? '',
-        'email_username': patient.email?.slice(0, patient.email.indexOf("@gmail.com")) || '',
-        'payment_method': patient.payment_method ?? '',
-        'hmo': patient.hmo ?? '',
-        'physician_id': patient.physician ? patient.physician.id : '',
-    })
-    const [image, setImage] = useState(patient.photo_url ?? null)
+    const [updateData, setUpdateData] = useState({})
+    const [image, setImage] = useState(null)
     const [takePhoto, setTakePhoto] = useState(false)
     const [errors, setErrors] = useState([])
+    const [showPhotoGuidelines, setShowPhotoGuidelines] = useState(false)
+    const [isInvalidPhoto, setIsInvalidPhoto] = useState(false)
 
     const [regions, setRegions] = useState([]);
     const [provinces, setProvinces] = useState([]);
@@ -302,7 +278,14 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
             const data = await res.json()
         
             if(!res.ok) {
-                throw new Error("Something went wrong. Please try again later.")
+                if (res.status == 400 && data.message == "Invalid Photo") {
+                    setIsInvalidPhoto(true)
+                    setImage(patient.photo_url ?? null)
+                    setLoading(false)
+                    return
+                } else {
+                    throw new Error("Something went wrong. Please try again later.")
+                }
             }
               
             globalSwalNoIcon.fire({
@@ -336,6 +319,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                 </>
             )}
 
+            <IdentificationPhotoGuidelinesPopup 
+                isOpen={showPhotoGuidelines || isInvalidPhoto} 
+                onClose={() => {setShowPhotoGuidelines(false); setIsInvalidPhoto(false)}} 
+                isInvalidPhoto={isInvalidPhoto}
+            />
+
             <div className='bg-[#D9D9D9] bg-opacity-30'>
                 <div className='bg-[#248176] py-2 px-4 flex items-center justify-between'>
                     <div className='flex gap-2'>
@@ -354,7 +343,7 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                 <form 
                     onSubmit={(e) => handleSubmit(e)} 
                     className='flex flex-col items-center justify-center px-4 sm:px-6 py-4 w-full'>
-                    <div className={`relative ${update && "mb-2"}`}>
+                    <div className={`relative ${update && "mb-1"}`}>
                         <img 
                             src={!update ? patient.photo_url || '' : image } 
                             alt="" 
@@ -373,6 +362,12 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
                             </button>
                         )}
                     </div>
+                    {update && (
+                        <p onClick={() => {setShowPhotoGuidelines(true)}} className="font-medium mb-4 bg-gray-300 text-sm italic cursor-pointer rounded-md px-2 py-1">
+                            <i className="bi bi-info-circle pr-2 cursor-pointer"></i>
+                            Photo Guidelines
+                        </p>
+                    )}
                     <div className="w-full overflow-x-auto">
                         <table className='min-w-full border-collapse border border-black bg-white text-start break-words text-sm sm:text-base'>
                         <tbody>

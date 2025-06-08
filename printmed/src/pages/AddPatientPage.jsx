@@ -28,6 +28,7 @@ import { fetchRegions } from "../utils/fetch/fetchRegions";
 import { fetchCities } from "../utils/fetch/fetchCities";
 import { fetchBarangays } from "../utils/fetch/fetchBarangays";
 import { showLoggedOut } from "../utils/fetch/showLoggedOut";
+import IdentificationPhotoGuidelinesPopup from "../components/IdentificationPhotoGuidelinesPopup";
 
 const AddPatientPage = () => {
   const { token } = useContext(AppContext);
@@ -68,6 +69,8 @@ const AddPatientPage = () => {
   const [image, setImage] = useState(null)
   const [takePhoto, setTakePhoto] = useState(false)
   const [duplicatePatients, setDuplicatePatients] = useState([])
+  const [showPhotoGuidelines, setShowPhotoGuidelines] = useState(false)
+  const [isInvalidPhoto, setIsInvalidPhoto] = useState(false)
 
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -271,8 +274,9 @@ const AddPatientPage = () => {
         formData.append(key, value);
       }
 
-      //const res = await fetch('http://127.0.0.1:8000/api/patients', {
-      const res = await fetch('http://192.169.1.6:8000/api/patients', {
+      console.log(formData)
+
+      const res = await fetch('http://127.0.0.1:8000/api/patients', {
           method: 'POST',
           headers: {
               Accept: "application/json",
@@ -287,6 +291,10 @@ const AddPatientPage = () => {
         if (res.status == 401 && data.message == "Unauthenticated.") {
           showLoggedOut()
           navigate('/')
+          return
+        } else if (res.status == 400 && data.message == "Invalid Photo") {
+          setIsInvalidPhoto(true)
+          setLoading(false)
           return
         } else {
           throw new Error("Something went wrong. Please try again later.")
@@ -383,6 +391,13 @@ const AddPatientPage = () => {
                 </div>
               </>
             )}
+
+            {/* pop-up for photo guidelines */}
+            <IdentificationPhotoGuidelinesPopup 
+                isOpen={showPhotoGuidelines || isInvalidPhoto} 
+                onClose={() => {setShowPhotoGuidelines(false); setIsInvalidPhoto(false)}} 
+                isInvalidPhoto={isInvalidPhoto}
+            />
 
             {/* pop up if there are duplicate patients */}
             {duplicatePatients && duplicatePatients.length > 0 && (
@@ -790,7 +805,7 @@ const AddPatientPage = () => {
 
                     <div>
                       <label className="block text-sm font-medium">
-                          Payment Method
+                          Payment Method <span className="text-red-600 cursor-help">*</span>
                       </label>
                       <select
                           name="payment_method"
@@ -809,7 +824,7 @@ const AddPatientPage = () => {
                     {newPatientData.payment_method == "HMO" &&
                       <div>
                           <label className="block text-sm font-medium">
-                              HMO
+                              HMO <span className="text-red-600 cursor-help">*</span>
                           </label>
                           <select
                             name="hmo"
@@ -878,11 +893,15 @@ const AddPatientPage = () => {
                     {/* Photo */}
                     <div>
                       <label className="block text-sm font-medium">
-                        Photo <span className="text-red-600 cursor-help">*</span>
+                        Photo <span className="text-red-600 cursor-help mr-2">*</span>
+                        <span onClick={() => {setShowPhotoGuidelines(true)}} className="bg-gray-300 text-sm italic cursor-pointer rounded-md px-2 py-1">
+                          <i className="bi bi-info-circle pr-2 cursor-pointer"></i>
+                          Guidelines
+                        </span>
                       </label>
                       <div>
                         { image && ( <img src={image} className="max-w-full h-[170px] mt-2 mb-2 rounded-lg" /> )}
-                        <button type="button" onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-[60%] py-1 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
+                        <button type="button" onClick={(e) => {e.preventDefault(); setTakePhoto(true)}} className={`w-[60%] mt-2 py-1 px-4 rounded-lg text-white ${image ? "bg-red-700 hover:bg-red-500" : "bg-orange-500 hover:bg-orange-600"}`}>
                           <i className="bi bi-camera mr-1 text-xl font-bold"></i> {image ? "Retake" : "Take"} Photo
                         </button>
                       </div>

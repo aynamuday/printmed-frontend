@@ -25,7 +25,7 @@ const WebcamCapture = ({setImage, setShow}) => {
               <Webcam 
                 ref={webcamRef}
                 audio={false}
-                className='w-[600px] h-[600px] object-cover rounded-2xl bg-black'
+                className='w-[650px] h-[650px] object-cover rounded-2xl bg-black'
                 screenshotFormat='image/png'
                 videoConstraints={{
                   facingMode: "user",
