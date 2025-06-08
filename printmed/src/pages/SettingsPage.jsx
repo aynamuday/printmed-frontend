@@ -100,38 +100,38 @@ const SettingsPage = () => {
     })
   }
 
-  const handleLogout = async () => {
-    const result = await globalSwalNoIcon.fire({
-      title: 'Are you sure you want to log out?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'Cancel'
-    });
+  // const handleLogout = async () => {
+  //   const result = await globalSwalNoIcon.fire({
+  //     title: 'Are you sure you want to log out?',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes',
+  //     cancelButtonText: 'Cancel'
+  //   });
   
-    if (result.isConfirmed) {
-      try {
-        const res = await fetch("api/logout", {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+  //   if (result.isConfirmed) {
+  //     try {
+  //       const res = await fetch("api/logout", {
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         }
+  //       });
   
-        if (!res.ok) {
-          throw new Error('There was an issue logging out. Please try again.')
-        }
+  //       if (!res.ok) {
+  //         throw new Error('There was an issue logging out. Please try again.')
+  //       }
   
-        await res.json();
+  //       await res.json();
   
-        localStorage.removeItem('token');
-        setToken(null);
-        setUser(null);
-        navigate('/login');
-      } catch (err) {
-        showError(err)
-      }
-    }
-  };
+  //       localStorage.removeItem('token');
+  //       setToken(null);
+  //       setUser(null);
+  //       navigate('/login');
+  //     } catch (err) {
+  //       showError(err)
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -250,13 +250,13 @@ const SettingsPage = () => {
           </Link>
         </div>
 
-        <div className='min-h-10'></div>
+        {/* <div className='min-h-10'></div>
         <button
           onClick={handleLogout}
           className="w-48 sm:w-48 px-4 py-2 bg-[#b43c39] text-white rounded-md hover:bg-[#a43331] focus:outline-none"
         >
           Logout
-        </button>
+        </button> */}
       </Settings>
       </div>
       
