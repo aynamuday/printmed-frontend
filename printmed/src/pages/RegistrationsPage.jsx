@@ -179,17 +179,17 @@ const RegistrationsPage = () => {
                   </div>
 
                   {/* Pagination + Clear */}
-                  <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                  <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
                     {/* Pagination Controls */}
-                    <div className="flex items-center">
+                    <div className="flex items-center text-xs sm:text-sm md:text-base">
                       <button 
                           onClick={() => handlePageChange(registrations.current_page - 1)} 
                           disabled={registrations.current_page <= 1 || !registrations.current_page} 
-                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''} text-white text-sm`}>
+                          className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page <= 1 || !registrations.current_page ? 'bg-opacity-70' : ''} text-white rounded`}>
                           &lt;
                       </button>
                       <button 
-                        className="px-4 h-8 border border-[#248176] text-sm" 
+                        className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded" 
                         disabled
                       >
                         {registrations.current_page} OF {registrations.last_page}
@@ -197,18 +197,18 @@ const RegistrationsPage = () => {
                       <button
                           onClick={() => handlePageChange(registrations.current_page + 1 || !registrations.current_page)} 
                           disabled={registrations.current_page >= registrations.last_page} 
-                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''} text-white text-sm`}
+                          className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${registrations.current_page >= registrations.last_page || !registrations.current_page ? 'bg-opacity-70' : ''} text-white rounded`}
                         >
                           &gt;
                       </button>
                     </div>
 
                     {/* clear button */}
-                    <div className="flex flex-col w-full sm:w-auto">
-                        <label className='text-xs mb-1'>Clear</label>
+                    <div className="flex items-center">
+                        {/* <label className='text-xs mb-1'>Clear</label> */}
                         <button 
                           onClick={() => {handleClear()}}
-                          className={`px-4 h-8 border border-[#248176] bg-[#248176] text-white text-sm`}
+                          className={`px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm`}
                         >
                           <i className='bi bi-arrow-clockwise text-xl'></i>  
                         </button>

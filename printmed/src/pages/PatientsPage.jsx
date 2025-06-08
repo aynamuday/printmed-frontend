@@ -246,22 +246,22 @@ const PatientsPage = () => {
                       </div>
                       
                       {/* Pagination */}
-                      <div className="flex items-center">
+                      <div className="flex items-center text-xs sm:text-sm md:text-base">
                         <button 
-                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === 1 ? 'bg-opacity-70' : ''} text-white rounded`} 
                           disabled={patients.current_page <= 1} 
                           onClick={handlePrevious}
                         >
                           &lt;
                         </button>
                         <button 
-                          className="px-4 h-8 border border-[#248176] text-sm"
+                          className="x-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded"
                           disabled={true}
                         >
                           {patients.current_page} OF {patients.last_page}
                         </button>
                         <button 
-                          className={`px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white text-sm`} 
+                          className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${patients.current_page === patients.last_page ? 'bg-opacity-70' : ''} text-white rounded`} 
                           disabled={patients.current_page === patients.last_page} 
                           onClick={handleNext}
                         >

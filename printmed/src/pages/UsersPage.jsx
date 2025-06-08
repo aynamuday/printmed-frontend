@@ -258,22 +258,22 @@ const UsersPage = () => {
                             {users.data != null && (
                                 <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
                                     {/* Pagination */}
-                                    <div className="flex items-center">
+                                    <div className="flex items-center text-xs sm:text-sm md:text-base">
                                         <button
-                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white rounded`}
                                             disabled={users.current_page <= 1}
                                             onClick={handlePrevious}
                                         >
                                             &lt;
                                         </button>
                                         <button
-                                            className="px-4 h-8 border border-[#248176] text-sm"
+                                            className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded"
                                             disabled
                                         >
                                             {users.current_page} OF {users.last_page}
                                         </button>
                                         <button
-                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white rounded`}
                                             disabled={users.current_page === users.last_page}
                                             onClick={handleNext}
                                         >
