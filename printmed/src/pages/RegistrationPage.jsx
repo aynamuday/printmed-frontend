@@ -20,6 +20,7 @@ import { validatePostalCode } from '../utils/formValidations/validatePostalCode'
 import { validatePatientBirthdate } from '../utils/formValidations/validatePatientBirthdate';
 import html2pdf from 'html2pdf.js';
 import { capitalizedWords } from '../utils/wordUtils';
+import { format } from 'date-fns';
 
 function RegistrationPage() {
     const navigate = useNavigate()
@@ -511,6 +512,11 @@ function RegistrationPage() {
                                         className="mt-1 block w-full border p-2 rounded-md border-black"
                                         required
                                     />
+                                    {formData.birthdate && (
+                                        <p className="text-sm text-gray-700 mt-1">
+                                        Selected Date: {format(new Date(formData.birthdate), 'MMMM d, yyyy')}
+                                        </p>
+                                    )}
                                     {errors.birthdate && (<p className="text-red-500 text-sm">{errors.birthdate}</p>)}
                                 </div>
 

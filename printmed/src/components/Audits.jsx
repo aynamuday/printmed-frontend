@@ -383,93 +383,95 @@ const Audits = ({ forDashboard = false }) => {
               </div>
             </div>)}
 
-            <div className={`flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 ${!forDashboard ? `mt-12` : ``}`}>
+            <div>
                 <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
-                    {!forDashboard && (
-                    <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
-                        {/* Date From */}
-                        <div className="flex flex-col w-full sm:w-40">
-                        <label htmlFor="dateFrom" className="text-xs mb-1">Date From</label>
-                        <input
-                            type="date"
-                            name="dateFrom"
-                            value={auditsAllFilters.dateFrom}
-                            onChange={handleAuditsDateFromChange}
-                            min="2024-11-05"
-                            max={dateToday}
-                            className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
-                        />
-                        </div>
+                <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-end mb-6 mt-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                        {!forDashboard && (
+                        <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
+                            {/* Date From */}
+                            <div className="flex flex-col">
+                                <label htmlFor="dateFrom" className="text-xs mb-1">Date From</label>
+                                <input
+                                    type="date"
+                                    name="dateFrom"
+                                    value={auditsAllFilters.dateFrom}
+                                    onChange={handleAuditsDateFromChange}
+                                    min="2024-11-05"
+                                    max={dateToday}
+                                    className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                />
+                            </div>
 
-                        {/* Date Until */}
-                        <div className="flex flex-col w-full sm:w-40">
-                        <label htmlFor="dateUntil" className="text-xs mb-1">Date Until</label>
-                        <input
-                            type="date"
-                            name="dateUntil"
-                            value={auditsAllFilters.dateUntil}
-                            onChange={handleAuditsDateUntilChange}
-                            min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-05"}
-                            max={dateToday}
-                            className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
-                        />
+                            {/* Date Until */}
+                            <div className="flex flex-col">
+                            <label htmlFor="dateUntil" className="text-xs mb-1">Date Until</label>
+                            <input
+                                type="date"
+                                name="dateUntil"
+                                value={auditsAllFilters.dateUntil}
+                                onChange={handleAuditsDateUntilChange}
+                                min={auditsAllFilters.dateFrom !== "" ? auditsAllFilters.dateFrom : "2024-11-05"}
+                                max={dateToday}
+                                className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                            />
+                            </div>
                         </div>
-                    </div>
-                    )}
-
-                    {/* Pagination + Download + Clear */}
-                    {audits.data && audits.data.length > 0 && (
-                    <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
-                        
-                        {/* Pagination */}
-                        <div className="flex items-center">
-                        <button
-                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white text-sm`}
-                            disabled={audits.current_page <= 1}
-                            onClick={handlePreviousAudits}
-                        >
-                            &lt;
-                        </button>
-                        <button className="px-4 h-8 border border-[#248176] text-sm" disabled>
-                            {audits.current_page} OF {audits.last_page}
-                        </button>
-                        <button
-                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white text-sm`}
-                            disabled={audits.current_page === audits.last_page}
-                            onClick={handleNextAudits}
-                        >
-                            &gt;
-                        </button>
-                        </div>
-
-                        {/* Download button */}
-                        {user.role === "super admin" && !forDashboard && (
-                        <button
-                            className="px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto"
-                            onClick={() => setShowDownloadPopup(true)}
-                            disabled={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload}
-                        >
-                            {(forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
-                            <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
-                            ) : (
-                            "Download"
-                            )}
-                        </button>
                         )}
 
-                        {/* Clear button */}
-                        <div className="flex flex-col w-full sm:w-auto">
-                        <label className="text-xs mb-1">Clear</label>
-                        <button
-                            onClick={handleClear}
-                            className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
-                        >
-                            <i className="bi bi-arrow-clockwise text-xl"></i>
-                        </button>
+                        {/* Pagination + Download + Clear */}
+                        {audits.data && audits.data.length > 0 && (
+                        <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                            {/* Pagination */}
+                            <div className="flex items-center text-xs sm:text-sm md:text-base">
+                                <button
+                                    className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === 1 ? 'bg-opacity-70' : ''} text-white rounded`}
+                                    disabled={audits.current_page <= 1}
+                                    onClick={handlePreviousAudits}
+                                >
+                                    &lt;
+                                </button>
+                                <button className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded" disabled>
+                                    {audits.current_page} OF {audits.last_page}
+                                </button>
+                                <button
+                                    className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${audits.current_page === audits.last_page ? 'bg-opacity-70' : ''} text-white rounded`}
+                                    disabled={audits.current_page === audits.last_page}
+                                    onClick={handleNextAudits}
+                                >
+                                    &gt;
+                                </button>
+                            </div>
+
+                            {/* Download button */}
+                            {user.role === "super admin" && !forDashboard && (
+                            <div className="flex items-center">
+                                <button
+                                    className="px-4 h-8 border border-[#248176] bg-[#248176] text-white font-medium rounded-md hover:bg-[#418981] w-full sm:w-auto"
+                                    onClick={() => setShowDownloadPopup(true)}
+                                    disabled={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload}
+                                >
+                                    {(forDashboard && loadingAuditsTodayDownload) || (!forDashboard && loadingAuditsAllDownload) ? (
+                                    <ClipLoader color="#FFFFFF" loading={forDashboard ? loadingAuditsTodayDownload : loadingAuditsAllDownload} size={14} />
+                                    ) : (
+                                    "Download"
+                                    )}
+                                </button>
+                            </div>
+                            )}
+
+                            {/* Clear button */}
+                            <div className="flex items-center">
+                                <button
+                                    onClick={handleClear}
+                                    className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
+                                >
+                                    <i className="bi bi-arrow-clockwise text-xl"></i>
+                                </button>
+                            </div>
                         </div>
+                        )}
                     </div>
-                    )}
                 </div>
             </div>
 

@@ -199,79 +199,81 @@ const UsersPage = () => {
                                 </form>
                             </div>
 
-                            {/* Role Filter */}
-                            <div className="flex flex-col w-full sm:w-40">
-                                <label className="text-xs mb-1">Role</label>
-                                <select
-                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
-                                    name="resource"
-                                    id="resource"
-                                    value={usersFilters.role}
-                                    onChange={handleRoleChange}
-                                >
-                                    <option value="">Select role</option>
-                                    {user.role === "super admin" && <option value="admin">Admin</option>}
-                                    <option value="physician">Physician</option>
-                                    <option value="secretary">Secretary</option>
-                                </select>
-                            </div>
+                            <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                                {/* Role Filter */}
+                                <div className="flex flex-col w-full sm:w-40">
+                                    <label className="text-xs mb-1">Role</label>
+                                    <select
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        name="resource"
+                                        id="resource"
+                                        value={usersFilters.role}
+                                        onChange={handleRoleChange}
+                                    >
+                                        <option value="">Select role</option>
+                                        {user.role === "super admin" && <option value="admin">Admin</option>}
+                                        <option value="physician">Physician</option>
+                                        <option value="secretary">Secretary</option>
+                                    </select>
+                                </div>
 
-                            {/* Status Filter */}
-                            <div className="flex flex-col w-full sm:w-40">
-                                <label className="text-xs mb-1">Status</label>
-                                <select
-                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
-                                    name="resource"
-                                    id="resource"
-                                    value={usersFilters.status}
-                                    onChange={handleStatusChange}
-                                >
-                                    <option value="">Select status</option>
-                                    <option value="active">Active</option>
-                                    <option value="restricted">Restricted</option>
-                                    <option value="locked">Locked</option>
-                                    <option value="new">New</option>
-                                </select>
-                            </div>
+                                {/* Status Filter */}
+                                <div className="flex flex-col w-full sm:w-40">
+                                    <label className="text-xs mb-1">Status</label>
+                                    <select
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        name="resource"
+                                        id="resource"
+                                        value={usersFilters.status}
+                                        onChange={handleStatusChange}
+                                    >
+                                        <option value="">Select status</option>
+                                        <option value="active">Active</option>
+                                        <option value="restricted">Restricted</option>
+                                        <option value="locked">Locked</option>
+                                        <option value="new">New</option>
+                                    </select>
+                                </div>
 
-                            {/* Sort */}
-                            <div className="flex flex-col w-full sm:w-40">
-                                <label className="text-xs mb-1">Sort by</label>
-                                <select
-                                    className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
-                                    value={usersFilters.sort_by + "_" + usersFilters.order_by}
-                                    onChange={handleSortByChange}
-                                >
-                                    <option value="">Last updated</option>
-                                    <option value="personnel_number_asc">
-                                        &uarr; &nbsp;Personnel No.
-                                    </option>
-                                    <option value="personnel_number_desc">
-                                        &darr; &nbsp;Personnel No.
-                                    </option>
-                                </select>
+                                {/* Sort */}
+                                <div className="flex flex-col w-full sm:w-40">
+                                    <label className="text-xs mb-1">Sort by</label>
+                                    <select
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        value={usersFilters.sort_by + "_" + usersFilters.order_by}
+                                        onChange={handleSortByChange}
+                                    >
+                                        <option value="">Last updated</option>
+                                        <option value="personnel_number_asc">
+                                            &uarr; &nbsp;Personnel No.
+                                        </option>
+                                        <option value="personnel_number_desc">
+                                            &darr; &nbsp;Personnel No.
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                             {/* Pagination + Clear */}
                             {users.data != null && (
-                                <div className="flex flex-col sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                                <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
                                     {/* Pagination */}
-                                    <div className="flex items-center">
+                                    <div className="flex items-center text-xs sm:text-sm md:text-base">
                                         <button
-                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white rounded`}
                                             disabled={users.current_page <= 1}
                                             onClick={handlePrevious}
                                         >
                                             &lt;
                                         </button>
                                         <button
-                                            className="px-4 h-8 border border-[#248176] text-sm"
+                                            className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded"
                                             disabled
                                         >
                                             {users.current_page} OF {users.last_page}
                                         </button>
                                         <button
-                                            className={`px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white text-sm`}
+                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white rounded`}
                                             disabled={users.current_page === users.last_page}
                                             onClick={handleNext}
                                         >
@@ -280,8 +282,8 @@ const UsersPage = () => {
                                     </div>
 
                                     {/* Clear Button */}
-                                    <div className="flex flex-col w-full sm:w-auto">
-                                        <label className="text-xs mb-1">Clear</label>
+                                    <div className="flex items-center">
+                                        {/* <label className="text-xs mb-1">Clear</label> */}
                                         <button
                                             onClick={handleClear}
                                             className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
