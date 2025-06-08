@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { PulseLoader, BounceLoader } from 'react-spinners';
-import qr from '../assets/images/qr.png'
+import qr from '../assets/images/qr.png';
+import facial_recognition_icon from '../assets/images/facial-recognition-icon.png';
 
 import AppContext from '../context/AppContext';
 import SecretaryContext from '../context/SecretaryContext';
@@ -8,12 +9,13 @@ import SecretaryContext from '../context/SecretaryContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import PatientsTable from '../components/PatientsTable';
-import QrScanning from '../components/QrScanning';
+import IconScanning from '../components/IconScanning';
 import { fetchPatientUsingQr } from '../utils/fetch/fetchPatientUsingQr';
 import { useNavigate } from 'react-router-dom';
 import { showError } from '../utils/fetch/showError';
 import { capitalizedWords } from '../utils/wordUtils';
 import { showWarning } from '../utils/fetch/showWarning';
+import WebcamCapture from '../components/WebcamCapture';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -26,6 +28,8 @@ const PatientsPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
+  const [searchFace, setSearchFace] = useState(false)
+  const [image, setImage] = useState(null)
 
   useEffect(() => {
     if (patients.length < 1) {
@@ -170,6 +174,26 @@ const PatientsPage = () => {
     }
   }
 
+
+  // face search
+
+  useEffect(() => {
+    if(image != null) {
+      
+    }
+
+
+
+
+
+
+
+
+
+    
+
+  }, [image])
+
   return (
     <>
       <Sidebar />
@@ -232,18 +256,29 @@ const PatientsPage = () => {
                         </select>
                   </div>
 
-                  {/* Pagination + Clear */}
+                  {/* Pagination + Search Buttons + Clear */}
                   { patients.current_page &&
                     <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
                       {/* QR Scanning */}
                       <div className="flex items-center">
-                        <button 
-                          onClick={handleScanButtonClick} 
-                          className=''
-                        >
+                        <button onClick={handleScanButtonClick}>
                           <img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
                         </button>
                       </div>
+
+                      {/* Face Search */}
+                      <div className="flex items-center">
+                        <button onClick={() => {setSearchFace(true)}}>
+                          <img src={facial_recognition_icon} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
+                        </button>
+                      </div>
+
+
+
+
+
+
+
                       
                       {/* Pagination */}
                       <div className="flex items-center text-xs sm:text-sm md:text-base">
@@ -302,12 +337,27 @@ const PatientsPage = () => {
           { isQrInputFocused && (
             <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
                 <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
-                    <QrScanning />
+                    <IconScanning src={qr} />
                     <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
                     <p className='text-center'>Please ensure the QR is properly placed on the scanner for accurate reading.</p>
                     <button onClick={handleQrInputBlur} className='bg-[#b43c3a] text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
                         Cancel
                     </button>
+                </div>
+            </div>
+          )}
+
+          {/* face search */}
+          {searchFace && (
+            <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
+              <WebcamCapture image={image} setImage={setImage} setShow={setSearchFace} />
+            </div>
+          )}
+          {image && (
+            <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
+                <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
+                    <IconScanning src={facial_recognition_icon} />
+                    <p className='text-center italic mt-4'>Looking for patient. Please wait.</p>
                 </div>
             </div>
           )}

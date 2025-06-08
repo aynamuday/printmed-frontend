@@ -11,7 +11,6 @@ import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import PatientDetails from '../components/PatientDetails'
 import ConsultationForm from '../components/ConsultationForm'
-import QrScanning from '../components/QrScanning'
 import ConsultationsTable from '../components/ConsultationsTable'
 import ViewConsultation from '../components/ViewConsultation'
 import { globalSwalNoIcon, globalSwalWithIcon } from '../utils/globalSwal'
@@ -21,6 +20,7 @@ import { fetchPatientUsingId } from '../utils/fetch/fetchPatientUsingId'
 import Pusher from 'pusher-js'
 import { echo as Echo } from '../utils/pusher/echo';
 import { showWarning } from '../utils/fetch/showWarning'
+import IconScanning from '../components/IconScanning'
 
 window.pusher = Pusher
 
@@ -230,7 +230,7 @@ const PatientPagePhysician = () => {
                 { !patient && isQrInputFocused && (
                     <div className='fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50'>
                         <div className='w-[90%] max-w-md bg-white shadow-lg rounded-md p-6 sm:p-8'>
-                            <QrScanning />
+                            <IconScanning src={qr} />
                             <p className='mt-4 font-semibold text-center'>Waiting for your scan</p>
                             <p className='text-center'>Please ensure that the QR code is properly placed on the scanner for accurate reading.</p>
                             <button onClick={handleQrInputBlur} className='bg-red-700 text-xl text-white font-medium hover:bg-[#d05250] p-1.5 rounded-md w-[50%] mx-auto mt-3 block'>
