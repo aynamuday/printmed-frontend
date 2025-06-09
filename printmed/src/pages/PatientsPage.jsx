@@ -16,6 +16,9 @@ import { showError } from '../utils/fetch/showError';
 import { capitalizedWords } from '../utils/wordUtils';
 import { showWarning } from '../utils/fetch/showWarning';
 import WebcamCapture from '../components/WebcamCapture';
+import { base64ToPngFile } from '../utils/fileUtils';
+import { fetchPatientUsingFace } from '../utils/fetch/fetchPatientUsingFace';
+import FoundPatientPopup from '../components/FoundPatientPopup';
 
 const PatientsPage = () => {
   const { token } = useContext(AppContext);
@@ -30,6 +33,7 @@ const PatientsPage = () => {
   const [tableLoading, setTableLoading] = useState(false);
   const [searchFace, setSearchFace] = useState(false)
   const [image, setImage] = useState(null)
+  const [foundPatient, setFoundPatient] = useState(null)
 
   useEffect(() => {
     if (patients.length < 1) {
@@ -127,7 +131,6 @@ const PatientsPage = () => {
 
 
   // for QR scanning
-
   const qrInputRef = useRef(null)
   const [isQrInputFocused, setIsQrInputFocused] = useState(false)
   const [qrCode, setQrCode] = useState("")
@@ -153,9 +156,7 @@ const PatientsPage = () => {
     setIsQrInputFocused(false)
 
     try {
-      const patient = await fetchPatientUsingQr(qrCode, token)
-      sessionStorage.setItem('patient', JSON.stringify(patient))
-      navigate(`/patient`)
+      setFoundPatient(await fetchPatientUsingQr(qrCode, token))
     }
     catch (err) {
       if (err.message === "Invalid") {
@@ -174,25 +175,40 @@ const PatientsPage = () => {
     }
   }
 
-
   // face search
-
-  useEffect(() => {
-    if(image != null) {
-      
+  useEffect(() => { 
+    if(image == null) {
+      return 
     }
 
-
-
-
-
-
-
-
-
-    
-
+    getPatientUsingFace()
   }, [image])
+
+  const getPatientUsingFace = async () => {
+    const photo = base64ToPngFile(image)
+
+    try {
+      setFoundPatient(await fetchPatientUsingFace(photo, token))
+    } catch (err) {
+      if (err.message === "Not found") {
+          showWarning("Patient not found.")
+      } else if (err.message === "Unauthorized") {
+          showWarning("You are not authorized to access this patient. ")
+      } else {
+        showError(err)
+      }
+    } finally {
+      setImage(null)
+      setSearchFace(false)
+    }
+  }
+
+  const viewPatient = () => {
+    if(foundPatient) {
+      sessionStorage.setItem('patient', JSON.stringify(foundPatient))
+      navigate(`/patient`)
+    }
+  }
 
   return (
     <>
@@ -272,13 +288,6 @@ const PatientsPage = () => {
                           <img src={facial_recognition_icon} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
                         </button>
                       </div>
-
-
-
-
-
-
-
                       
                       {/* Pagination */}
                       <div className="flex items-center text-xs sm:text-sm md:text-base">
@@ -361,6 +370,9 @@ const PatientsPage = () => {
                 </div>
             </div>
           )}
+
+          {/* pop-up for found patient */}
+          <FoundPatientPopup isOpen={foundPatient} onClose={() => {setFoundPatient(null)}} patient={foundPatient} viewPatient={viewPatient}/>
         </div>
       </div>
     </>
