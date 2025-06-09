@@ -1,6 +1,4 @@
 export const fetchPatientUsingQr = async (qrCode, token) => {
-
-    console.log(qrCode)
     try {
         const res = await fetch(`/api/patient-using-qr/`, {
             method: 'POST',

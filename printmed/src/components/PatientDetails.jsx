@@ -121,7 +121,6 @@ const PatientDetails = ({setLoading, patient, setPatient}) => {
     const getRegions = async () => {
         const data = await fetchRegions()
         setRegions(data)
-        console.log(data);
     }
 
     // executes when region code changes

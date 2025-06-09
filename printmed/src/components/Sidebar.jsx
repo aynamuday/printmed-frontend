@@ -144,7 +144,7 @@ const Sidebar = () => {
             className="w-full px-4 py-2 mt-3 text-white rounded-md hover:bg-[#a43331] focus:outline-none flex items-center justify-start"
           >
             <i className="bi bi-box-arrow-right text-2xl"></i>
-            <span className="text-xl ml-4 text-white">Logout</span>
+            <span className="text-xl ml-4 font-bold text-white">Logout</span>
           </button>
         </div>
       </div>

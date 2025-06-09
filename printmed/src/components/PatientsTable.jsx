@@ -14,6 +14,8 @@ const PatientsTable = ({ patients, setLoading }) => {
 
     try {
       const patient = await fetchPatient(patientId, token)
+
+      console.log(patient)
   
       sessionStorage.setItem('patient', JSON.stringify(patient))
       navigate(`/patient`)

@@ -274,8 +274,6 @@ const AddPatientPage = () => {
         formData.append(key, value);
       }
 
-      console.log(formData)
-
       const res = await fetch('http://127.0.0.1:8000/api/patients', {
           method: 'POST',
           headers: {
@@ -297,6 +295,7 @@ const AddPatientPage = () => {
           setLoading(false)
           return
         } else {
+          console.log(data)
           throw new Error("Something went wrong. Please try again later.")
         }
       }
