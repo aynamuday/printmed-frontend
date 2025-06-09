@@ -4,6 +4,7 @@ import AppContext from '../context/AppContext'
 import PhysicianContext from '../context/PhysicianContext'
 
 import qr from '../assets/images/qr.png'
+import facial_recognition_icon from '../assets/images/facial-recognition-icon.png'
 import '../assets/styles/QrScanAnimation.css'
 import { BounceLoader } from 'react-spinners'
 
@@ -21,6 +22,10 @@ import Pusher from 'pusher-js'
 import { echo as Echo } from '../utils/pusher/echo';
 import { showWarning } from '../utils/fetch/showWarning'
 import IconScanning from '../components/IconScanning'
+import WebcamCapture from '../components/WebcamCapture'
+import FoundPatientPopup from '../components/FoundPatientPopup'
+import { fetchPatientUsingFace } from '../utils/fetch/fetchPatientUsingFace'
+import { base64ToPngFile } from '../utils/fileUtils'
 
 window.pusher = Pusher
 
@@ -42,6 +47,10 @@ const PatientPagePhysician = () => {
     const [patientId, setPatientId] = useState('')
     const [patientIdError, setPatientIdError] = useState('')
     const [isAddHovered, setIsAddHovered] = useState(false)
+
+    const [searchFace, setSearchFace] = useState(false)
+    const [image, setImage] = useState(null)
+    const [foundPatient, setFoundPatient] = useState(null)
 
     useEffect(() => {
         if (patient && user.role === "physician") {
@@ -70,8 +79,7 @@ const PatientPagePhysician = () => {
         setIsQrInputFocused(false)
 
         try {
-            const data = await fetchPatientUsingQr(qrCode, token)
-            setPatient(data)
+            setFoundPatient(fetchPatientUsingQr(qrCode, token))
         }
         catch (err) {
             if (err.message === "Invalid") {
@@ -95,8 +103,7 @@ const PatientPagePhysician = () => {
         setPatientPageLoading(true)
 
         try {
-            const data = await fetchPatientUsingId(patientId, token)
-            setPatient(data)
+            setFoundPatient(await fetchPatientUsingId(patientId, token))
             
             setManualLookup(false)
             setPatientId('')
@@ -142,6 +149,13 @@ const PatientPagePhysician = () => {
         });
     }
 
+    const viewPatient = () => {
+        if(foundPatient) {
+            setPatient(foundPatient)
+            setFoundPatient(null)
+        }
+    }
+
     const handleQrInputFocus = () => {
         setIsQrInputFocused(true);   
     };
@@ -180,7 +194,34 @@ const PatientPagePhysician = () => {
             patientIdInputRef.current.focus();
         }
     }, [manualLookup]);
-    
+
+    // face search
+    useEffect(() => { 
+        if(image == null) {
+            return 
+        }
+
+        getPatientUsingFace()
+    }, [image])
+
+    const getPatientUsingFace = async () => {
+        const photo = base64ToPngFile(image)
+
+        try {
+            setFoundPatient(await fetchPatientUsingFace(photo, token))
+        } catch (err) {
+            if (err.message === "Not found") {
+                showWarning("Patient not found.")
+            } else if (err.message === "Unauthorized") {
+                showWarning("You are not authorized to access this patient. ")
+            } else {
+            showError(err)
+            }
+        } finally {
+            setImage(null)
+            setSearchFace(false)
+        }
+    }
 
     return (
         <>
@@ -239,15 +280,42 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 )}
+
+                {/* face search */}
+                {!patient && searchFace && (
+                    <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
+                    <WebcamCapture image={image} setImage={setImage} setShow={setSearchFace} />
+                    </div>
+                )}
+
+                {!patient && image && (
+                    <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
+                        <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
+                            <IconScanning src={facial_recognition_icon} />
+                            <p className='text-center italic mt-4'>Looking for patient. Please wait.</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* pop-up for found patient */}
+                {!patient && foundPatient && (
+                    <FoundPatientPopup isOpen={foundPatient} onClose={() => {setFoundPatient(null)}} patient={foundPatient} viewPatient={viewPatient}/>
+                )}
+                
                 { !patient ? (
                     <div>
-                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center px-4 sm:px-6">
-                            <div className='w-full max-w-sm mx-auto flex flex-col items-center bg-white p-4 rounded-lg'>
-                                <img src={qr} alt="" className='w-full max-w-[250px] p-3 border border-black' />
-                                <p className='text-center my-2 text-lg font-semibold'>Scan the patient's QR code to access their medical records.</p>
-                                <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan</button>
+                        <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center sm:px-6">
+                            <div className='w-fit max-w-[600px] mx-auto bg-white rounded-lg p-4'>
+                                <div className='grid grid-cols-2 gap-4 place-items-center'>
+                                    <img onClick={() => {}} src={qr} alt="" className='w-full max-w-[250px] p-3 border border-black rounded-md' />
+                                    <img onClick={() => {}} src={facial_recognition_icon} alt="" className='w-full max-w-[250px] p-3 border border-black rounded-md' />
+                                    <p className='text-center leading-tight text-base'>Scan the patient's QR code to access their medical records.</p>
+                                    <p className='text-center leading-tight text-base'>Use facial recognition to access the patient's medical records.</p>
+                                    <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan QR</button>
+                                    <button onClick={() => {setSearchFace(true)}} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Use Face ID</button>
+                                </div>
                                 <p className='text-center my-2 font-normal text-sm'>Or you may do a manual lookup using Patient ID&nbsp;  
-                                    <span onClick={handleManualLookupClick} className='underline hover:text-[#248176] cursor-pointer'>here</span>.
+                                    <span onClick={handleManualLookupClick} className='underline text-[#248176] hover:text-orange-600 cursor-pointer'>here</span>.
                                 </p>
                             </div>
                             <form onSubmit={(e) => getPatientUsingQr(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
