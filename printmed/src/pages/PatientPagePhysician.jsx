@@ -26,6 +26,8 @@ import WebcamCapture from '../components/WebcamCapture'
 import FoundPatientPopup from '../components/FoundPatientPopup'
 import { fetchPatientUsingFace } from '../utils/fetch/fetchPatientUsingFace'
 import { base64ToPngFile } from '../utils/fileUtils'
+import { isPatientFaceVerified } from '../utils/fetch/isPatientFaceVerified'
+import FaceVerificationPopup from '../components/FaceVerificationPopup'
 
 window.pusher = Pusher
 
@@ -51,6 +53,10 @@ const PatientPagePhysician = () => {
     const [searchFace, setSearchFace] = useState(false)
     const [image, setImage] = useState(null)
     const [foundPatient, setFoundPatient] = useState(null)
+    const [verifyFace, setVerifyFace] = useState(false)
+    const [verifyFaceImage, setVerifyFaceImage] = useState(null)
+    const [isVerified, setIsVerified] = useState(false)
+    const [showVerificationPopup, setShowIsVerifiedPopup] = useState(false)
 
     useEffect(() => {
         if (patient && user.role === "physician") {
@@ -223,6 +229,23 @@ const PatientPagePhysician = () => {
         }
     }
 
+    // verify face 
+    useEffect(() => { 
+        if(verifyFaceImage == null) {
+            return 
+        }
+
+        verifyPatientFace()
+    }, [verifyFaceImage])
+
+    const verifyPatientFace = async () => {
+        const photo = base64ToPngFile(verifyFaceImage)
+        setIsVerified(await isPatientFaceVerified(photo, patient.id, token))
+        setShowIsVerifiedPopup(true)
+        setVerifyFace(false)
+        setVerifyFaceImage(null)
+    }
+
     return (
         <>
             <Sidebar />
@@ -231,6 +254,22 @@ const PatientPagePhysician = () => {
                     <BounceLoader className='' loading={patientPageLoading} size={60} color='#6CB6AD' />
                 </div>
             )}
+
+            {/* verify face */}
+            {verifyFace && (
+                <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
+                    <WebcamCapture image={verifyFaceImage} setImage={setVerifyFaceImage} setShow={setVerifyFace} />
+                </div>
+            )}
+            {verifyFaceImage && (
+                <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
+                    <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
+                        <IconScanning src={facial_recognition_icon} />
+                        <p className='text-center italic mt-4'>Verifying patient. Please wait.</p>
+                    </div>
+                </div>
+            )}
+            <FaceVerificationPopup isOpen={showVerificationPopup} onClose={() => {setShowIsVerifiedPopup(false); setPatientId("")}} isSuccessful={isVerified}/>
 
             {/* pop up to find patient */}
             {manualLookup && (
@@ -284,7 +323,7 @@ const PatientPagePhysician = () => {
                 {/* face search */}
                 {!patient && searchFace && (
                     <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
-                    <WebcamCapture image={image} setImage={setImage} setShow={setSearchFace} />
+                        <WebcamCapture image={image} setImage={setImage} setShow={setSearchFace} />
                     </div>
                 )}
 
@@ -334,7 +373,7 @@ const PatientPagePhysician = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="px-4 sm:px-6 mt-4">
+                    <div className="px-4 sm:px-6 mt-4 pb-8">
                         <div className='flex items-center mb-4'>
                             <button onClick={() => handleClose()} className='me-6 flex items-center h-full'><i className='bi bi-x-lg'></i></button>
                             <h2 className='me-3 font-bold text-2xl'>Patient No. {patient.patient_number}</h2>
@@ -343,8 +382,14 @@ const PatientPagePhysician = () => {
                                     <p className='text-xs text-green-500 font-semibold'>New</p>
                                 </div> 
                             }
-                            <div className={`h-full border ${patient.vital_signs == null ? "border-gray-500" : "border-orange-500"} border-1 px-2 py-1 rounded-lg`}>
+                            <div className={`h-full border ${patient.vital_signs == null ? "border-gray-500" : "border-orange-500"} border-1 px-2 py-1 rounded-lg me-3`}>
                                 <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {patient.vital_signs == null && "Not"} Available</p>
+                            </div>
+                            {/* Verify Face Button */}
+                            <div className="flex items-center">
+                                <button onClick={() => {setVerifyFace(true)}} title='Verify patient using facial recognition.'>
+                                    <img src={facial_recognition_icon} alt="" className='w-[40px] h-full rounded-md p-0.5 border border-[#248176]' />
+                                </button>
                             </div>
                         </div>
                         <div className='grid grid-cols-1 lg:grid-cols-7 gap-4 w-full px-2 lg:px-0'>

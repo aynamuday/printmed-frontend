@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import facial_recognition_icon from '../assets/images/facial-recognition-icon.png';
 
 import AppContext from '../context/AppContext'
 
@@ -14,6 +15,12 @@ import PatientDetails from '../components/PatientDetails'
 import VitalSignsTable from '../components/VitalSignsTable'
 import VitalSignsForm from '../components/VitalSignsForm'
 import { showError } from '../utils/fetch/showError'
+import WebcamCapture from '../components/WebcamCapture';
+import IconScanning from '../components/IconScanning';
+import { showWarning } from '../utils/fetch/showWarning';
+import { base64ToPngFile } from '../utils/fileUtils';
+import FaceVerificationPopup from '../components/FaceVerificationPopup';
+import { isPatientFaceVerified } from '../utils/fetch/isPatientFaceVerified';
 
 const PatientPageSecretary = () => {
     const { token } = useContext(AppContext)
@@ -24,6 +31,10 @@ const PatientPageSecretary = () => {
     const [showPatientIdMenu, setShowPatientIdMenu] = useState(false)
     const patientIdMenuRef = useRef(null)
     const [loading, setLoading] = useState(false)
+    const [verifyFace, setVerifyFace] = useState(false)
+    const [verifyFaceImage, setVerifyFaceImage] = useState(null)
+    const [isVerified, setIsVerified] = useState(false)
+    const [showVerificationPopup, setShowIsVerifiedPopup] = useState(false)
 
     useEffect(() => {
         const sessionStoragePatient = sessionStorage.getItem('patient')
@@ -219,6 +230,24 @@ const PatientPageSecretary = () => {
         });
     }
 
+
+    // verify face 
+    useEffect(() => { 
+        if(verifyFaceImage == null) {
+            return 
+        }
+
+        verifyPatientFace()
+    }, [verifyFaceImage])
+
+    const verifyPatientFace = async () => {
+        const photo = base64ToPngFile(verifyFaceImage)
+        setIsVerified(await isPatientFaceVerified(photo, patient.id, token))
+        setShowIsVerifiedPopup(true)
+        setVerifyFace(false)
+        setVerifyFaceImage(null)
+    }
+
     return (
         <>
             { loading && (
@@ -226,6 +255,22 @@ const PatientPageSecretary = () => {
                     <BounceLoader className='' loading={loading} size={60} color='#6CB6AD' />
                 </div>
             )}
+
+            {/* verify face */}
+            {verifyFace && (
+                <div className='fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-30'>
+                    <WebcamCapture image={verifyFaceImage} setImage={setVerifyFaceImage} setShow={setVerifyFace} />
+                </div>
+            )}
+            {verifyFaceImage && (
+                <div className='flex items-center justify-center absolute top-0 right-0 left-0 bottom-0 bg-black bg-opacity-50 z-30'>
+                    <div className='px-4 py-6 bg-white shadow-lg w-[90%] sm:w-[400px] rounded-md'>
+                        <IconScanning src={facial_recognition_icon} />
+                        <p className='text-center italic mt-4'>Verifying patient. Please wait.</p>
+                    </div>
+                </div>
+            )}
+            <FaceVerificationPopup isOpen={showVerificationPopup} onClose={() => {setShowIsVerifiedPopup(false)}} isSuccessful={isVerified}/>
 
             <Sidebar />
             <div className="lg:pl-[250px] min-h-screen bg-white">
@@ -246,6 +291,13 @@ const PatientPageSecretary = () => {
                                         <p className='text-xs text-green-500 font-semibold'>New</p>
                                     </div> 
                                 }
+                                {/* Verify Face Button */}
+                                <div className="flex items-center">
+                                    <button onClick={() => {setVerifyFace(true)}} title='Verify patient using facial recognition.'>
+                                        <img src={facial_recognition_icon} alt="" className='w-[40px] h-full rounded-md p-0.5 border border-[#248176]' />
+                                    </button>
+                                </div>
+
                             </div>
                             <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
                                 {/* Patient Details */}
