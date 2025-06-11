@@ -212,18 +212,23 @@ const AddPatientPage = () => {
       if(result.isConfirmed) {
         try {
           setLoading(true)
+
+          const formData = new FormData()
+          formData.append('first_name', newPatientData.first_name);
+          formData.append('last_name', newPatientData.last_name);
+          formData.append('birthdate', newPatientData.birthdate);
+          formData.append('sex', newPatientData.sex);
+
+          const photo = base64ToPngFile(image)
+          formData.append('photo', photo);
     
-          const queryParams = new URLSearchParams({
-            first_name: newPatientData.first_name,
-            last_name: newPatientData.last_name,
-            birthdate: newPatientData.birthdate,
-            sex: newPatientData.sex,
-          }).toString();
-    
-          const res = await fetch(`/api/duplicate-patients?${queryParams}`, {
+          const res = await fetch(`http://127.0.0.1:8000/api/duplicate-patient`, {
+              Accept: "application/json",
+              method: 'POST',
               headers: {
                   Authorization: `Bearer ${token}`,
               },
+              body: formData
           })
 
           const data = await res.json()
@@ -239,13 +244,14 @@ const AddPatientPage = () => {
             }
           }
     
-          if (data.length > 0) {
-            setDuplicatePatients(data);
-            setLoading(false)
+          if (data.message && data.message == "No duplicates found") {
+            addPatient(e)
             return
           }
-    
-          addPatient(e)
+
+          setDuplicatePatients([data]);
+          setLoading(false)
+          return
         }
         catch (err) {
           setLoading(false)
