@@ -344,17 +344,54 @@ const PatientPagePhysician = () => {
                 { !patient ? (
                     <div>
                         <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center sm:px-6">
-                            <div className='w-fit max-w-[600px] mx-auto bg-white rounded-lg p-4'>
-                                <div className='grid grid-cols-2 gap-4 place-items-center'>
-                                    <img onClick={() => {}} src={qr} alt="" className='w-full max-w-[250px] p-3 border border-black rounded-md' />
-                                    <img onClick={() => {}} src={facial_recognition_icon} alt="" className='w-full max-w-[250px] p-3 border border-black rounded-md' />
-                                    <p className='text-center leading-tight text-base'>Scan the patient's QR code to access their medical records.</p>
-                                    <p className='text-center leading-tight text-base'>Use facial recognition to access the patient's medical records.</p>
-                                    <button onClick={handleScanButtonClick} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Scan QR</button>
-                                    <button onClick={() => {setSearchFace(true)}} className='bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-1.5 w-full rounded-md'>Use Face ID</button>
+                            <div className="w-full max-w-4xl mx-auto bg-white rounded-lg p-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* QR Section */}
+                                    <div className="flex flex-col items-center space-y-2">
+                                        <img
+                                            onClick={() => {}}
+                                            src={qr}
+                                            alt="QR Code"
+                                            className="w-full max-w-[250px] p-3 border border-black rounded-md"
+                                        />
+                                        <p className="text-center leading-tight text-base">
+                                            Scan the patient's QR code to access their medical records.
+                                        </p>
+                                        <button
+                                            onClick={handleScanButtonClick}
+                                            className="bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-2 w-full rounded-md"
+                                        >
+                                            Scan QR
+                                        </button>
+                                    </div>
+
+                                    {/* Face Recognition Section */}
+                                    <div className="flex flex-col items-center space-y-2">
+                                        <img
+                                            onClick={() => {}}
+                                            src={facial_recognition_icon}
+                                            alt="Facial Recognition"
+                                            className="w-full max-w-[250px] p-3 border border-black rounded-md"
+                                        />
+                                        <p className="text-center leading-tight text-base">
+                                            Use facial recognition to access the patient's medical records.
+                                        </p>
+                                        <button
+                                            onClick={() => setSearchFace(true)}
+                                            className="bg-[#248176] text-xl text-white font-medium hover:bg-[#499e94] p-2 w-full rounded-md"
+                                        >
+                                            Use Face ID
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className='text-center my-2 font-normal text-sm'>Or you may do a manual lookup using Patient ID&nbsp;  
-                                    <span onClick={handleManualLookupClick} className='underline text-[#248176] hover:text-orange-600 cursor-pointer'>here</span>.
+                                <p className="text-center mt-4 text-sm font-normal">
+                                        Or you may do a manual lookup using Patient ID&nbsp;
+                                    <span
+                                        onClick={handleManualLookupClick}
+                                        className="underline text-[#248176] hover:text-orange-600 cursor-pointer"
+                                    >
+                                        here.
+                                    </span>
                                 </p>
                             </div>
                             <form onSubmit={(e) => getPatientUsingQr(e)} className='absolute w-0 h-0 p-0 m-0 border-0 clip-rect opacity-0'>
