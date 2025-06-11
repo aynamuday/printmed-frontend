@@ -285,7 +285,6 @@ const AddPatientPage = () => {
       })
 
       const data = await res.json()
-      console.log("Submitting patient data:", data); // <-- Add this line
 
 
       if(!res.ok) {
