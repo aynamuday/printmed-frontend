@@ -32,7 +32,7 @@ function RegistrationPage() {
         suffix: '',
         sex: '',
         birthdate: '',
-        //birthplace: '',
+        birthplace: '',
         civil_status: '',
         region: '',
         region_code: '',
@@ -81,7 +81,7 @@ function RegistrationPage() {
             suffix: '',
             sex: '',
             birthdate: '',
-            //birthplace: '',
+            birthplace: '',
             civil_status: '',
             region: '',
             region_code: '',
@@ -521,7 +521,7 @@ function RegistrationPage() {
                                 </div>
 
                                 {/* Birthplace */}
-                                {/* <div> 
+                                <div> 
                                     <label className="block text-sm font-medium">
                                         Birthplace <span className="text-red-600">*</span> <span className='text-gray-700'>(City, Province)</span> 
                                     </label>
@@ -534,7 +534,7 @@ function RegistrationPage() {
                                         required
                                     />
                                     {errors.birthplace && (<p className="text-red-500 text-sm">{errors.birthplace}</p>)}
-                                </div> */}
+                                </div>
 
                                 {/* Civil Status */}
                                 <div>
