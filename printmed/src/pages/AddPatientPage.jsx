@@ -44,7 +44,7 @@ const AddPatientPage = () => {
     suffix: registration.suffix || '',
     sex: registration.sex || '',
     birthdate: registration.birthdate || '',
-    birthplace: registration.birthplace || '',
+    //birthplace: registration.birthplace || '',
     civil_status: registration.civil_status || '',
     house_number: registration.house_number || '',
     street: registration.street || '',
@@ -309,7 +309,7 @@ const AddPatientPage = () => {
         last_name: '',
         suffix: '',
         birthdate: '',
-        birthplace: '',
+        //birthplace: '',
         phone_number: '',
         sex: '',
         civil_status: '',
@@ -546,7 +546,7 @@ const AddPatientPage = () => {
                     </div>
 
                     {/* Birthplace */}
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium">
                         Birthplace <span className="text-red-600 cursor-help">*</span> <span className='text-gray-700'>(City, Province)</span> 
                       </label>
@@ -559,7 +559,7 @@ const AddPatientPage = () => {
                         required
                       />
                       {errors.birthplace && <p className="text-red-600 text-sm mt-1">{errors.birthplace}</p>}
-                    </div>
+                    </div> */}
                     
                     {/* Civil Status */}
                     <div>
