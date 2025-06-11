@@ -1,5 +1,3 @@
-import React from 'react';
-
 const FoundPatientPopup = ({ isOpen, onClose, patient, viewPatient }) => {
   if (!isOpen) return null;
 
