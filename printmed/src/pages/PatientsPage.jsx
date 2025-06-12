@@ -312,19 +312,18 @@ const PatientsPage = () => {
                           &gt;
                         </button>
                       </div>
-
-                      {/* Clear Button */}
-                      <div className="flex items-center">
-                          {/* <label className='text-xs mb-1'>Clear</label> */}
-                          <button 
-                            onClick={() => {handleClear()}}
-                            className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
-                          >
-                            <i className='bi bi-arrow-clockwise text-xl'></i>  
-                          </button>
-                      </div>
                     </div>
                   }
+                  {/* Clear Button */}
+                  <div className="flex items-center">
+                  {/* <label className='text-xs mb-1'>Clear</label> */}
+                    <button 
+                      onClick={() => {handleClear()}}
+                      className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
+                    >
+                      <i className='bi bi-arrow-clockwise text-xl'></i>  
+                    </button>
+                  </div>
                 </div>
               </div>
           </div>
