@@ -243,11 +243,25 @@ const UsersPage = () => {
                                         value={usersFilters.sort_by + "_" + usersFilters.order_by}
                                         onChange={handleSortByChange}
                                     >
-                                        <option value="">Last updated</option>
-                                        <option value="personnel_number_asc">
+                                        <option 
+                                            value="" 
+                                            data-sort-by="" 
+                                            data-order-by=""
+                                        >
+                                            Last updated
+                                        </option>
+                                        <option 
+                                            value="personnel_number_asc"
+                                            data-sort-by="personnel_number" 
+                                            data-order-by="asc"
+                                        >
                                             &uarr; &nbsp;Personnel No.
                                         </option>
-                                        <option value="personnel_number_desc">
+                                        <option 
+                                            value="personnel_number_desc"
+                                            data-sort-by="personnel_number" 
+                                            data-order-by="desc"
+                                        >
                                             &darr; &nbsp;Personnel No.
                                         </option>
                                     </select>
