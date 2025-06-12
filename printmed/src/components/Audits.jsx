@@ -384,8 +384,9 @@ const Audits = ({ forDashboard = false }) => {
             </div>)}
 
             <div>
-                <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
-                <div className="flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-end mb-6 mt-4">
+                
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
+                    <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
                         {!forDashboard && (
                         <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
