@@ -420,7 +420,7 @@ const PatientPagePhysician = () => {
                                 </div> 
                             }
                             <div className={`h-full border ${patient.vital_signs == null ? "border-gray-500" : "border-orange-500"} border-1 px-2 py-1 rounded-lg me-3`}>
-                                <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {patient.vital_signs == null && "Not"} Available</p>
+                                <p className={`text-xs ${patient.vital_signs == null ? "text-gray-500" : "text-orange-500"} font-semibold`}>Vital Signs {(patient.vital_signs == null) && "Not"} Available</p>
                             </div>
                             {/* Verify Face Button */}
                             <div className="flex items-center">
@@ -453,7 +453,7 @@ const PatientPagePhysician = () => {
                                                         onClick={() => handleAddConsultationButton()}>
                                                             <i className={`bi bi-plus-square-fill me-2 text-xl ${patient.vital_signs == null ? 'text-gray-300' : 'text-white'}`}></i>
                                                     </button>
-                                                    {isAddHovered && <div className='bg-gray-700 text-sm text-white p-2 rounded-md absolute right-0 w-40'>Vital signs unavailable.</div>}
+                                                    {(isAddHovered && patient.vital_signs == null) && <div className='bg-gray-700 text-sm text-white p-2 rounded-md absolute right-0 w-40'>Vital signs unavailable.</div>}
                                                 </div>
                                             </div>
                                         }

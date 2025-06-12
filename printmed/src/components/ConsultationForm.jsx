@@ -378,26 +378,27 @@ const ConsultationForm = () => {
                                         </div>
                                         {/* Instructions */}
                                         <div>
-                                            <label className='block text-sm font-semibold mb-1'>Instruction</label>
+                                            <label className='block text-sm font-semibold mt-1'>Instruction</label>
                                             <input
                                                 type='text'
-                                                className="w-full border border-gray-800 py-1 px-2 rounded"
+                                                className="w-full border border-gray-800 py-1 px-2 rounded mt-1"
                                                 value={ item.instruction }
                                                 onChange={(e) => {handlePrescriptionChange(index, "instruction", e.target.value)}}
                                             />
                                         </div>
+                                        {/* Remove Button */}
+                                        <div>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.preventDefault(); 
+                                                    removePrescription(index);
+                                                }}
+                                            >
+                                                <i className="bi bi-x text-2xl text-red-500 font-extrabold"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    {/* Remove Button */}
-                                    <div className="flex justify-end md:justify-center md:items-start pt-2 md:pt-0">
-                                        <button 
-                                            onClick={(e) => {
-                                                e.preventDefault(); 
-                                                removePrescription(index);
-                                            }}
-                                        >
-                                            <i className="bi bi-x text-2xl text-red-500 font-extrabold"></i>
-                                        </button>
-                                    </div>
+                                    
                                 </div>
                             )) }
                         </div>
