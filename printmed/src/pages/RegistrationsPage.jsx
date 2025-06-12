@@ -154,10 +154,12 @@ const RegistrationsPage = () => {
       <div className="lg:pl-[250px] min-h-screen bg-white">
         <Header />
         <div className="px-4 sm:px-6 mt-4">
+          <div className="flex justify-center items-center">
+            <h2 className="font-bold text-2xl">Registrations</h2>
+          </div>
           <div>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
-                <h2 className="font-bold text-2xl">Registrations</h2>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between mb-6 mt-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                   {/* Search */}
                   <div className="flex flex-col w-full sm:w-auto">
                       <label className="text-xs mb-1">Name (FN LN or FN or LN) or Personnel No</label>
@@ -177,7 +179,8 @@ const RegistrationsPage = () => {
                           </button>
                       </form>
                   </div>
-
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                   {/* Pagination + Clear */}
                   <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
                     {/* Pagination Controls */}

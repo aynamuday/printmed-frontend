@@ -175,9 +175,11 @@ const UsersPage = () => {
             <div className="px-4 sm:px-6 mt-4">
                 {users && (
                 <div>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
+                    <div className="flex justify-center items-center">
                         <h2 className="font-bold text-2xl">Users</h2>
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                    </div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:justify-between mb-6 mt-4">                        
+                        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                             {/* Search */}
                             <div className="flex flex-col w-full sm:w-auto">
                                 <label className="text-xs mb-1">Name (FN LN or FN or LN) or Personnel No.</label>
@@ -199,51 +201,52 @@ const UsersPage = () => {
                                 </form>
                             </div>
 
-                            <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                            <div className="flex flex-row sm:flex-row gap-4 w-full sm:w-auto">
                                 {/* Role Filter */}
                                 <div className="flex flex-col w-full sm:w-40">
-                                    <label className="text-xs mb-1">Role</label>
+                                    <label className="text-sm sm:text-xs mb-1 font-medium text-gray-700">Role</label>
                                     <select
-                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white text-sm sm:text-xs font-medium focus:outline-none"
                                         name="resource"
                                         id="resource"
                                         value={usersFilters.role}
                                         onChange={handleRoleChange}
                                     >
-                                        <option value="">Select role</option>
-                                        {user.role === "super admin" && <option value="admin">Admin</option>}
-                                        <option value="physician">Physician</option>
-                                        <option value="secretary">Secretary</option>
+                                        <option className="text-sm sm:text-xs" value="">Select role</option>
+                                        {user.role === "super admin" && <option  className="text-sm sm:text-xs" value="admin">Admin</option>}
+                                        <option className="text-sm sm:text-xs" value="physician">Physician</option>
+                                        <option className="text-sm sm:text-xs" value="secretary">Secretary</option>
                                     </select>
                                 </div>
 
                                 {/* Status Filter */}
                                 <div className="flex flex-col w-full sm:w-40">
-                                    <label className="text-xs mb-1">Status</label>
+                                    <label className="text-sm sm:text-xs mb-1 font-medium text-gray-70">Status</label>
                                     <select
-                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white text-sm sm:text-xs font-medium focus:outline-none"
                                         name="resource"
                                         id="resource"
                                         value={usersFilters.status}
                                         onChange={handleStatusChange}
                                     >
-                                        <option value="">Select status</option>
-                                        <option value="active">Active</option>
-                                        <option value="restricted">Restricted</option>
-                                        <option value="locked">Locked</option>
-                                        <option value="new">New</option>
+                                        <option className="text-sm sm:text-xs" value="">Select status</option>
+                                        <option className="text-sm sm:text-xs" value="active">Active</option>
+                                        <option className="text-sm sm:text-xs" value="restricted">Restricted</option>
+                                        <option className="text-sm sm:text-xs" value="locked">Locked</option>
+                                        <option className="text-sm sm:text-xs" value="new">New</option>
                                     </select>
                                 </div>
 
                                 {/* Sort */}
                                 <div className="flex flex-col w-full sm:w-40">
-                                    <label className="text-xs mb-1">Sort by</label>
+                                    <label className="text-sm sm:text-xs mb-1 font-medium text-gray-70">Sort by</label>
                                     <select
-                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
+                                        className="w-full sm:w-auto px-4 h-8 border border-[#248176] rounded-md bg-white text-sm sm:text-xs font-medium focus:outline-none"
                                         value={usersFilters.sort_by + "_" + usersFilters.order_by}
                                         onChange={handleSortByChange}
                                     >
                                         <option 
+                                            className="text-sm sm:text-xs"
                                             value="" 
                                             data-sort-by="" 
                                             data-order-by=""
@@ -251,6 +254,7 @@ const UsersPage = () => {
                                             Last updated
                                         </option>
                                         <option 
+                                            className="text-sm sm:text-xs"
                                             value="personnel_number_asc"
                                             data-sort-by="personnel_number" 
                                             data-order-by="asc"
@@ -258,6 +262,7 @@ const UsersPage = () => {
                                             &uarr; &nbsp;Personnel No.
                                         </option>
                                         <option 
+                                            className="text-sm sm:text-xs"
                                             value="personnel_number_desc"
                                             data-sort-by="personnel_number" 
                                             data-order-by="desc"
@@ -268,43 +273,46 @@ const UsersPage = () => {
                                 </div>
                             </div>
 
+                            
+                        </div>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                             {/* Pagination + Clear */}
-                            {users.data != null && (
-                                <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
-                                    {/* Pagination */}
-                                    <div className="flex items-center text-xs sm:text-sm md:text-base">
-                                        <button
-                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white rounded`}
-                                            disabled={users.current_page <= 1}
-                                            onClick={handlePrevious}
-                                        >
-                                            &lt;
-                                        </button>
-                                        <button
-                                            className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded"
-                                            disabled
-                                        >
-                                            {users.current_page} OF {users.last_page}
-                                        </button>
-                                        <button
-                                            className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white rounded`}
-                                            disabled={users.current_page === users.last_page}
-                                            onClick={handleNext}
-                                        >
-                                            &gt;
-                                        </button>
-                                    </div>
+                            <div className='flex flex-row sm:flex-row sm:items-end gap-4 w-full sm:w-auto'>
+                                {users.data != null && (
+                                        // Pagination
+                                        <div className="flex items-center text-xs sm:text-sm md:text-base">
+                                            <button
+                                                className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === 1 ? "bg-opacity-70" : ""} text-white rounded`}
+                                                disabled={users.current_page <= 1}
+                                                onClick={handlePrevious}
+                                            >
+                                                &lt;
+                                            </button>
+                                            <button
+                                                className="px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-white text-[#248176] font-medium rounded"
+                                                disabled
+                                            >
+                                                {users.current_page} OF {users.last_page}
+                                            </button>
+                                            <button
+                                                className={`px-2 sm:px-3 md:px-4 h-8 border border-[#248176] bg-[#248176] ${users.current_page === users.last_page ? "bg-opacity-70" : ""} text-white rounded`}
+                                                disabled={users.current_page === users.last_page}
+                                                onClick={handleNext}
+                                            >
+                                                &gt;
+                                            </button>
+                                        </div>
+                                    
+                                )}
+                                {/* Clear Button */}
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={handleClear}
+                                        className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
+                                    >
+                                        <i className="bi bi-arrow-clockwise text-xl"></i>
+                                    </button>
                                 </div>
-                            )}
-                            {/* Clear Button */}
-                            <div className="flex items-center">
-                            {/* <label className="text-xs mb-1">Clear</label> */}
-                                <button
-                                    onClick={handleClear}
-                                    className="px-4 h-8 border border-[#248176] rounded bg-[#248176] text-white text-sm"
-                                >
-                                    <i className="bi bi-arrow-clockwise text-xl"></i>
-                                </button>
                             </div>
                         </div>
                     </div>

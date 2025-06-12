@@ -384,12 +384,13 @@ const Audits = ({ forDashboard = false }) => {
             </div>)}
 
             <div>
-                
-                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
+                <div className="flex justify-center items-center">
                     <h2 className={`font-bold text-2xl`}>{forDashboard ? "Audits | Today" : "Audits" }</h2>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between mb-6 mt-4">   
+                    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                         {!forDashboard && (
-                        <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                             {/* Date From */}
                             <div className="flex flex-col">
                                 <label htmlFor="dateFrom" className="text-xs mb-1">Date From</label>
@@ -419,10 +420,11 @@ const Audits = ({ forDashboard = false }) => {
                             </div>
                         </div>
                         )}
-
+                    </div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto mt-4">
                         {/* Pagination + Download + Clear */}
                         {audits.data && audits.data.length > 0 && (
-                        <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                        <div className="flex flex-row sm:flex-row gap-4 w-full sm:w-auto">
                             {/* Pagination */}
                             <div className="flex items-center text-xs sm:text-sm md:text-base">
                                 <button
@@ -460,17 +462,18 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
                             )}
+                            
+                            {/* Clear button */}
+                            <div className="flex items-center">
+                                <button
+                                    onClick={handleClear}
+                                    className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
+                                >
+                                    <i className="bi bi-arrow-clockwise text-xl"></i>
+                                </button>
+                            </div>
                         </div>
                         )}
-                        {/* Clear button */}
-                        <div className="flex items-center">
-                            <button
-                                onClick={handleClear}
-                                className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
-                            >
-                                <i className="bi bi-arrow-clockwise text-xl"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>

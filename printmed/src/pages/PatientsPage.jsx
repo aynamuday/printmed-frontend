@@ -230,9 +230,11 @@ const PatientsPage = () => {
         <Header />
         <div className="px-4 sm:px-6 mt-4">
           <div>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-6 mt-4">
-                <h2 className="font-bold text-2xl">Patients</h2>
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap w-full sm:w-auto">
+            <div className="flex justify-center items-center">
+              <h2 className="font-bold text-2xl">Patients</h2>
+            </div>
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between mb-6 mt-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                   {/* Search */}
                   <div className="flex flex-col w-full sm:w-auto">
                       <label htmlFor="search" className='text-xs block mb-1'>Name (FN LN or FN or LN) or Personnel No.</label>
@@ -272,9 +274,12 @@ const PatientsPage = () => {
                         </select>
                   </div>
 
-                  {/* Pagination + Search Buttons + Clear */}
+                  
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
+                  {/* Pagination + Clear */}
                   { patients.current_page &&
-                    <div className="flex flex-row sm:flex-row gap-4 sm:items-end w-full sm:w-auto">
+                    <div className="flex flex-row sm:flex-row gap-4 w-full sm:w-auto">
                       {/* QR Scanning */}
                       {/* <div className="flex items-center">
                         <button onClick={handleScanButtonClick}>
