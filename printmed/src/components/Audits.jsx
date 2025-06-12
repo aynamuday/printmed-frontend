@@ -459,18 +459,17 @@ const Audits = ({ forDashboard = false }) => {
                                 </button>
                             </div>
                             )}
-
-                            {/* Clear button */}
-                            <div className="flex items-center">
-                                <button
-                                    onClick={handleClear}
-                                    className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
-                                >
-                                    <i className="bi bi-arrow-clockwise text-xl"></i>
-                                </button>
-                            </div>
                         </div>
                         )}
+                        {/* Clear button */}
+                        <div className="flex items-center">
+                            <button
+                                onClick={handleClear}
+                                className="px-4 h-8 border border-[#248176] rounded-sm bg-[#248176] text-white text-sm"
+                            >
+                                <i className="bi bi-arrow-clockwise text-xl"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
