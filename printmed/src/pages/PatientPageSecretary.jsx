@@ -140,7 +140,9 @@ const PatientPageSecretary = () => {
                     })
              
                     if(!res.ok) {
-                        console.log(await res.json())
+                        const response = res.text()
+                        console.log(response)
+
                        if (res.status === 404) {
                            throw new Error("Patient not found.")
                        } else {
