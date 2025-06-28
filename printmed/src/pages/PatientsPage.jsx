@@ -71,6 +71,7 @@ const PatientsPage = () => {
       }
 
       const data = await res.json()
+      console.log(data)
       setPatients(data)
     }
     catch (err) {
@@ -281,11 +282,11 @@ const PatientsPage = () => {
                   { patients.current_page &&
                     <div className="flex flex-row sm:flex-row gap-4 w-full sm:w-auto">
                       {/* QR Scanning */}
-                      {/* <div className="flex items-center">
+                      <div className="flex items-center">
                         <button onClick={handleScanButtonClick}>
                           <img src={qr} alt="" className='w-[50px] h-full rounded-md p-0.5 border border-[#248176]' />
                         </button>
-                      </div> */}
+                      </div>
 
                       {/* Face Search */}
                       <div className="flex items-center">
