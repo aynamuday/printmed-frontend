@@ -85,7 +85,7 @@ const PatientPagePhysician = () => {
         setIsQrInputFocused(false)
 
         try {
-            setFoundPatient(fetchPatientUsingQr(qrCode, token))
+            setFoundPatient(await fetchPatientUsingQr(qrCode, token))
         }
         catch (err) {
             if (err.message === "Invalid") {
@@ -344,7 +344,7 @@ const PatientPagePhysician = () => {
                 { !patient ? (
                     <div>
                         <div className="bg-[url('assets/images/bg_nurse_transparent.png')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center justify-center sm:px-6">
-                            <div className="w-full max-w-[18rem]  mx-auto bg-white rounded-lg p-4">
+                            <div className="w-full max-w-4xl  mx-auto bg-white rounded-lg p-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* QR Section */}
                                     <div className="flex flex-col items-center space-y-2">

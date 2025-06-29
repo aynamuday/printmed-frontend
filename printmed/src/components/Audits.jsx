@@ -399,7 +399,7 @@ const Audits = ({ forDashboard = false }) => {
                                     name="dateFrom"
                                     value={auditsAllFilters.dateFrom}
                                     onChange={handleAuditsDateFromChange}
-                                    min="2024-11-05"
+                                    min="2025-06-13"
                                     max={dateToday}
                                     className="px-4 py-1.5 h-8 border border-[#248176] rounded-md bg-white font-medium focus:outline-none"
                                 />
