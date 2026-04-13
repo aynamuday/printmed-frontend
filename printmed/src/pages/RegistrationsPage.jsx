@@ -162,7 +162,7 @@ const RegistrationsPage = () => {
                 <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap w-full sm:w-auto">
                   {/* Search */}
                   <div className="flex flex-col w-full sm:w-auto">
-                      <label className="text-xs mb-1">Name (FN LN or FN or LN) or Personnel No</label>
+                      <label className="text-xs mb-1">Name (FN LN or FN or LN) or Registration ID</label>
                       <form 
                         onSubmit={(e) => {handleSearchSubmit(e)}} 
                         className="flex border border-[#248176] rounded items-center px-4 py-1.5 h-8">

@@ -412,7 +412,7 @@ const AddPatientPage = () => {
                 <div className="bg-white rounded-md flex justify-items-center flex-col pt-4 pb-8 px-8 max-h-[70vh] overflow-y-auto">
                   <i className="bi bi-exclamation-circle block text-[60px] text-center text-orange-500"></i>
                   <p className="text-center font-bold text-xl text-black">Duplicate Patient{duplicatePatients.length > 1 && "s"} Found</p>
-                  <p className="text-center italic">based on first name, last name, birthdate, and sex</p>
+                  <p className="text-center italic">based on photo, first name, last name, birthdate, and sex</p>
                   <table className="min-w-[600px] w-full border-collapse mt-4">
                     <thead>
                       <tr>
