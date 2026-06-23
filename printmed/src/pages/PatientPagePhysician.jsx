@@ -59,17 +59,19 @@ const PatientPagePhysician = () => {
     const [showVerificationPopup, setShowIsVerifiedPopup] = useState(false)
 
     useEffect(() => {
+        Pusher.logToConsole = true;
+        console.log(token)
         if (patient && user.role === "physician") {
             const echo = Echo(token)
             echo.private(`vital-signs.${patient.id}`)
                 .listen('VitalSignsNew', (e) => {
                     const newVitalSigns = e.vitalSigns
-                    
+                    console.log(newVitalSigns)
                     setPatient({...patient, vital_signs: newVitalSigns})
                 })
                 .listen('VitalSignsUpdated', (e) => {
                     const updatedVitalSigns = e.vitalSigns
-                    
+                    console.log(updatedVitalSigns)
                     setPatient({...patient, vital_signs: updatedVitalSigns})
                 })
 

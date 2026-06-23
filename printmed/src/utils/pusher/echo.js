@@ -4,7 +4,7 @@ import Echo from 'laravel-echo';
 export const echo = (token) => {
     return new Echo({
         broadcaster: 'pusher',
-        key: '077b71ab49dceaed5696',
+        key: '4b6776446dc7fcac030b',
         cluster: 'ap1',
         forceTLS: true,
         authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
@@ -12,6 +12,6 @@ export const echo = (token) => {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-        }
+        },
     })
 }
